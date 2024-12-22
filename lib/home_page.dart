@@ -8,6 +8,7 @@ import 'package:purity_auth/auth.dart';
 import 'package:purity_auth/auth_item_widget.dart';
 import 'package:purity_auth/auth_repository.dart';
 import 'package:purity_auth/top_bar.dart';
+import 'package:purity_auth/window_size_controller.dart';
 
 class HomePageController extends GetxController {
   @override
@@ -29,43 +30,49 @@ class HomePageController extends GetxController {
 
 class HomePage extends StatelessWidget {
   final controller = Get.put(HomePageController());
+  final windowSizeController = Get.put(WindowSizeController());
   final authRepository = Get.find<AuthRepository>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            TopBar(
-              "2FA",
-              leftIcon: Icons.settings,
-              leftOnPressed: () {},
-              rightIcon: Icons.add,
-              rightOnPressed: () => Get.toNamed("/AuthAddPage"),
-            ),
-            Expanded(
-              child: Obx(
-                () {
-                  return GridView.builder(
-                    physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 750,
-                      mainAxisExtent: 140,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 16,
+        child: Center(
+          child: Obx(() => Container(
+                width: windowSizeController.contentWidth.value,
+                child: Column(
+                  children: [
+                    TopBar(
+                      "Purity Auth",
+                      leftIcon: Icons.settings,
+                      leftOnPressed: () {},
+                      rightIcon: Icons.add,
+                      rightOnPressed: () => Get.toNamed("/AuthAddPage"),
                     ),
-                    itemCount: authRepository.authSnapshot.length,
-                    itemBuilder: (context, index) {
-                      AuthConfiguration configuration = authRepository.authSnapshot[index];
-                      return AuthItem(key: ObjectKey(configuration), authConfiguration: configuration);
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
+                    Expanded(
+                      child: Obx(
+                        () {
+                          return GridView.builder(
+                            physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: windowSizeController.maxCrossAxisExtent,
+                              mainAxisExtent: 140,
+                              mainAxisSpacing: 16,
+                              crossAxisSpacing: 16,
+                            ),
+                            itemCount: authRepository.authSnapshot.length,
+                            itemBuilder: (context, index) {
+                              AuthConfiguration configuration = authRepository.authSnapshot[index];
+                              return AuthItem(key: ObjectKey(configuration), authConfiguration: configuration);
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              )),
         ),
       ),
     );

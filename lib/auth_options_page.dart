@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:purity_auth/image_tools.dart';
 import 'package:purity_auth/top_bar.dart';
+import 'package:purity_auth/window_size_controller.dart';
 
 class AuthOptionsPageController extends GetxController {
   late List<AuthOption> authOptions = [
@@ -61,32 +62,40 @@ class AuthOptionsPageController extends GetxController {
 
 class AuthOptionsPage extends StatelessWidget {
   final controller = Get.put(AuthOptionsPageController());
+  final windowSizeController = Get.put(WindowSizeController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            TopBar("添加"),
-            Expanded(
-              child: GridView.builder(
-                physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 750,
-                  mainAxisExtent: 90,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                ),
-                itemCount: controller.authOptions.length,
-                itemBuilder: (context, index) {
-                  var item = controller.authOptions[index];
-                  return AuthOptionWidget(key: ObjectKey(item), option: item);
-                },
+        child: Center(
+          child: Obx(
+            () => Container(
+              width: windowSizeController.contentWidth.value,
+              child: Column(
+                children: [
+                  TopBar("添加"),
+                  Expanded(
+                    child: GridView.builder(
+                      physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: windowSizeController.maxCrossAxisExtent,
+                        mainAxisExtent: 90,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 16,
+                      ),
+                      itemCount: controller.authOptions.length,
+                      itemBuilder: (context, index) {
+                        var item = controller.authOptions[index];
+                        return AuthOptionWidget(key: ObjectKey(item), option: item);
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
