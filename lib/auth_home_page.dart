@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:purity_auth/auth.dart';
 import 'package:purity_auth/auth_repository.dart';
 import 'package:purity_auth/authentication_widget.dart';
@@ -14,7 +15,6 @@ class AuthHomePage extends StatelessWidget {
   AuthHomePage({super.key});
 
   final windowSizeController = Get.put(WindowSizeController());
-  final authRepository = Get.find<AuthRepository>();
 
   void toAuthAddPage(BuildContext context) {
     Navigator.pushNamed(context, "/AuthAddPage");
@@ -49,9 +49,9 @@ class AuthHomePage extends StatelessWidget {
                         mainAxisSpacing: 16,
                         crossAxisSpacing: 16,
                       ),
-                      itemCount: authRepository.authSnapshot.length,
+                      itemCount: GetIt.I<AuthRepository>().authSnapshot.length,
                       itemBuilder: (context, index) {
-                        AuthConfiguration configuration = authRepository.authSnapshot[index];
+                        AuthConfiguration configuration = GetIt.I<AuthRepository>().authSnapshot[index];
                         return AuthenticationWidget(key: ObjectKey(configuration), authConfiguration: configuration);
                       },
                     ),

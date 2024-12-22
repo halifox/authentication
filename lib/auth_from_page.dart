@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:purity_auth/auth.dart';
 import 'package:purity_auth/auth_add_page.dart';
 import 'package:purity_auth/auth_repository.dart';
@@ -34,7 +35,7 @@ class AuthFromPage extends StatelessWidget {
         ..digits = int.parse(digitsController.text)
         ..intervalSeconds = int.parse(periodController.text)
         ..counter = int.parse(counterController.text);
-      await Get.find<AuthRepository>().upsert(configuration);
+      await GetIt.I<AuthRepository>().upsert(configuration);
       Navigator.popUntil(context, (route) => route.settings.name == "/");
       showAlertDialog(context,"结果", "添加成功");
     } on ArgumentError catch (e) {

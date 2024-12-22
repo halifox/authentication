@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:purity_auth/auth.dart';
 import 'package:purity_auth/auth_add_page.dart';
@@ -67,7 +68,7 @@ class _AuthScanPageState extends State<AuthScanPage> {
         final Barcode barcode = barcodes.first;
         final String rawValue = barcode.rawValue ?? "";
         final AuthConfiguration configuration = AuthConfiguration.parse(rawValue);
-        await Get.find<AuthRepository>().upsert(configuration);
+        await GetIt.I<AuthRepository>().upsert(configuration);
 
         _isScanningAllowed = false;
         Navigator.popUntil(context, (route) => route.settings.name == "/");

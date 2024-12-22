@@ -4,6 +4,7 @@ import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:purity_auth/large_button_widget.dart';
 import 'package:purity_auth/top_bar.dart';
@@ -85,7 +86,7 @@ class AuthAddPage extends StatelessWidget {
         final Barcode barcode = barcodes.first;
         final String rawValue = barcode.rawValue ?? "";
         final AuthConfiguration configuration = AuthConfiguration.parse(rawValue);
-        await Get.find<AuthRepository>().upsert(configuration);
+        await GetIt.I<AuthRepository>().upsert(configuration);
         return;
       } on ArgumentError catch (e) {
         showAlertDialog(context, "参数错误", e.message);

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:purity_auth/auth.dart';
 import 'package:purity_auth/auth_repository.dart';
 import 'package:purity_auth/otp.dart';
@@ -62,7 +63,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
   }
 
   void onDelete() {
-    Get.find<AuthRepository>().delete(configuration);
+    GetIt.I<AuthRepository>().delete(configuration);
   }
 
   @override
@@ -201,7 +202,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
     return IconButton(
       onPressed: () {
         configuration.counter++;
-        Get.find<AuthRepository>().update(configuration); // 更新认证
+        GetIt.I<AuthRepository>().update(configuration); // 更新认证
       },
       icon: Icon(Icons.refresh),
     );
