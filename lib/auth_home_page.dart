@@ -16,8 +16,8 @@ class AuthHomePage extends StatelessWidget {
   final windowSizeController = Get.put(WindowSizeController());
   final authRepository = Get.find<AuthRepository>();
 
-  void toAuthAddPage() {
-    Get.toNamed("/AuthAddPage");
+  void toAuthAddPage(BuildContext context) {
+    Navigator.pushNamed(context, "/AuthAddPage");
   }
 
   @override

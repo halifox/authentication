@@ -35,7 +35,7 @@ class AuthFromPage extends StatelessWidget {
         ..intervalSeconds = int.parse(periodController.text)
         ..counter = int.parse(counterController.text);
       await Get.find<AuthRepository>().upsert(configuration);
-      Get.until((route) => Get.currentRoute == "/");
+      Navigator.popUntil(context, (route) => route.settings.name == "/");
       showAlertDialog(context,"结果", "添加成功");
     } on ArgumentError catch (e) {
       showAlertDialog(context,"参数错误", e.message);
@@ -99,7 +99,7 @@ class AuthFromPage extends StatelessWidget {
                     context,
                     "输入提供的密钥",
                     rightIcon: Icons.save,
-                    rightOnPressed: ()=>onSave.call(context),
+                    rightOnPressed: (context)=>onSave.call(context),
                   ),
                   Expanded(
                     child: SingleChildScrollView(

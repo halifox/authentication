@@ -58,7 +58,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
   }
 
   void onEdit() {
-    Get.toNamed("/AuthFromPage", arguments: configuration);
+    Navigator.pushNamed(context, "/AuthFromPage", arguments: configuration);
   }
 
   void onDelete() {
@@ -111,8 +111,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
     return GestureDetector(
       onTap: () {
         Clipboard.setData(ClipboardData(text: authCode.value));
-        Get.closeAllSnackbars();
-        Get.snackbar("代码已复制", "代码已复制", duration: Duration(milliseconds: 1200));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('代码已复制'), duration: Duration(milliseconds: 1200)));
       },
       child: Container(
         padding: EdgeInsets.all(16),

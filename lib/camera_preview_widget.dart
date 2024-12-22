@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:purity_auth/auth_add_page.dart';
 
 /// 相机视图组件
 class CameraPreviewWidget extends StatefulWidget {
@@ -101,10 +101,10 @@ class _CameraPreviewWidgetState extends State<CameraPreviewWidget> {
         if (e.code == "CameraAccessDenied") {
           _showPermissionAlert();
         } else {
-          _showErrorAlert(e.code, e.description);
+          showAlertDialog(context, e.code, e.description);
         }
       } else {
-        _showUnexpectedErrorAlert(e);
+        showAlertDialog(context, "发生了一些意料之外的错误", "$e");
       }
     });
   }
@@ -177,55 +177,15 @@ class _CameraPreviewWidgetState extends State<CameraPreviewWidget> {
           content: Text("需要相机权限"),
           actions: [
             ElevatedButton(
-              onPressed: () => Get.until((route) => Get.currentRoute == "/AuthAddPage"),
+              onPressed: () => Navigator.popUntil(context, (route) => route.settings.name == "/AuthAddPage"),
               child: Text("取消"),
             ),
             FilledButton(
               onPressed: () {
-                Get.until((route) => Get.currentRoute == "/AuthAddPage");
+                Navigator.popUntil(context, (route) => route.settings.name == "/AuthAddPage");
                 openAppSettings();
               },
               child: Text("申请相机权限"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  /// 显示错误提示框
-  void _showErrorAlert(String? code, String? description) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("$code"),
-          content: Text("$description"),
-          actions: [
-            ElevatedButton(
-              onPressed: () => Get.back(),
-              child: Text("确定"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  /// 显示意外错误提示框
-  void _showUnexpectedErrorAlert(Object error) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("发生了一些意料之外的错误"),
-          content: Text("$error"),
-          actions: [
-            ElevatedButton(
-              onPressed: () => Get.back(),
-              child: Text("确定"),
             ),
           ],
         );

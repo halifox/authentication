@@ -70,7 +70,7 @@ class _AuthScanPageState extends State<AuthScanPage> {
         await Get.find<AuthRepository>().upsert(configuration);
 
         _isScanningAllowed = false;
-        Get.until((route) => Get.currentRoute == "/");
+        Navigator.popUntil(context, (route) => route.settings.name == "/");
         showAlertDialog(context, "扫描结果", "添加成功");
 
         return;

@@ -14,18 +14,20 @@ import 'auth_repository.dart';
 
 Future<int?> showAlertDialog(
   BuildContext context,
-  String title,
-  String message,
-) {
+  String? title,
+  String? message, {
+  bool barrierDismissible = false,
+}) {
   return showGeneralDialog(
     context: context,
+    barrierDismissible: barrierDismissible,
     pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
       return AlertDialog(
-        title: Text(title),
-        content: Text(message),
+        title: Text(title ?? ""),
+        content: Text(message ?? ""),
         actions: [
           ElevatedButton(
-            onPressed: () => Get.back(),
+            onPressed: () => Navigator.pop(context),
             child: Text("确定"),
           ),
         ],
@@ -49,7 +51,7 @@ class AuthAddPage extends StatelessWidget {
 
   void scanQrCode(BuildContext context) {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
-      Get.toNamed("/AuthScanPage");
+      Navigator.pushNamed(context, "/AuthScanPage");
     } else {
       showAlertDialog(context, '提示', '该功能当前仅支持 Android 和 iOS 平台。');
     }
@@ -101,7 +103,7 @@ class AuthAddPage extends StatelessWidget {
   }
 
   void enterKey(BuildContext context) {
-    Get.toNamed("/AuthFromPage");
+    Navigator.pushNamed(context, "/AuthFromPage");
   }
 
   void restoreBackup(BuildContext context) {}
