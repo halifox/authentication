@@ -26,12 +26,15 @@ dependencies:
   dynamic_color: ^1.7.0
   flutter_swipe_action_cell: ^3.1.4
   talker_flutter: ^4.5.1
+  flutter_svg: ^2.0.16
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
 flutter:
   uses-material-design: true
+  assets:
+    - icons/
   fonts:
     - family: GothamRnd
       fonts:
