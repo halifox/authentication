@@ -10,33 +10,19 @@ import 'package:purity_auth/auth_repository.dart';
 import 'package:purity_auth/top_bar.dart';
 import 'package:purity_auth/window_size_controller.dart';
 
-class AuthHomePageController extends GetxController {
-  @override
-  void onReady() {
-    if (!kIsWeb && Platform.isAndroid) {
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        systemNavigationBarColor: Get.theme.colorScheme.surface,
-        systemNavigationBarDividerColor: Get.theme.colorScheme.surface,
-        systemNavigationBarIconBrightness: Get.theme.colorScheme.brightness,
-        // systemNavigationBarContrastEnforced: false,
-        statusBarColor: Colors.transparent,
-        statusBarBrightness: Get.theme.colorScheme.brightness,
-        statusBarIconBrightness: (Get.theme.colorScheme.brightness == Brightness.dark) ? Brightness.light : Brightness.dark, //MIUI的这个行为有异常
-        // systemStatusBarContrastEnforced: false,
-      ));
-    }
-  }
-}
-
 class AuthHomePage extends StatelessWidget {
   AuthHomePage({super.key});
 
-  final controller = Get.put(AuthHomePageController());
   final windowSizeController = Get.put(WindowSizeController());
   final authRepository = Get.find<AuthRepository>();
 
+  void toAuthAddPage() {
+    Get.toNamed("/AuthAddPage");
+  }
+
   @override
   Widget build(BuildContext context) {
+    setSystemUIOverlayStyle();
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -48,9 +34,9 @@ class AuthHomePage extends StatelessWidget {
                   TopBar(
                     "Purity Auth",
                     leftIcon: Icons.settings,
-                    leftOnPressed: () {},
+                    leftOnPressed: null,
                     rightIcon: Icons.add,
-                    rightOnPressed: () => Get.toNamed("/AuthAddPage"),
+                    rightOnPressed: toAuthAddPage,
                   ),
                   Expanded(
                     child: GridView.builder(
@@ -76,5 +62,20 @@ class AuthHomePage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void setSystemUIOverlayStyle() {
+    if (!kIsWeb && Platform.isAndroid) {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: Get.theme.colorScheme.surface,
+        systemNavigationBarDividerColor: Get.theme.colorScheme.surface,
+        systemNavigationBarIconBrightness: Get.theme.colorScheme.brightness,
+        // systemNavigationBarContrastEnforced: false,
+        statusBarColor: Colors.transparent,
+        statusBarBrightness: Get.theme.colorScheme.brightness,
+        statusBarIconBrightness: (Get.theme.colorScheme.brightness == Brightness.dark) ? Brightness.light : Brightness.dark, //MIUI的这个行为有异常
+        // systemStatusBarContrastEnforced: false,
+      ));
+    }
   }
 }

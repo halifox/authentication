@@ -22,9 +22,9 @@ void defaultRightOnPressed() {}
 Widget TopBar(
   String title, {
   IconData? leftIcon = Icons.arrow_back,
-  void Function()? leftOnPressed = defaultLeftOnPressed,
+  GestureTapCallback? leftOnPressed = defaultLeftOnPressed,
   IconData? rightIcon,
-  void Function()? rightOnPressed = defaultRightOnPressed,
+  GestureTapCallback? rightOnPressed = defaultRightOnPressed,
 }) {
   return Padding(
     padding: EdgeInsets.all(16),
