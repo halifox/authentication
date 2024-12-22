@@ -108,7 +108,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
 
   /// 构建认证卡片
   Widget buildAuthCard() {
-    return InkWell(
+    return GestureDetector(
       onTap: () {
         Clipboard.setData(ClipboardData(text: authCode.value));
         Get.closeAllSnackbars();
