@@ -7,12 +7,12 @@ import 'package:purity_auth/image_tools.dart';
 import 'package:purity_auth/top_bar.dart';
 
 /// 扫描条形码的页面
-class BarcodeScannerPage extends StatefulWidget {
+class AuthScanPage extends StatefulWidget {
   @override
-  _BarcodeScannerPageState createState() => _BarcodeScannerPageState();
+  _AuthScanPageState createState() => _AuthScanPageState();
 }
 
-class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
+class _AuthScanPageState extends State<AuthScanPage> {
   final BarcodeScanner _barcodeScanner = BarcodeScanner();
   bool _isScanningAllowed = true;
   bool _isProcessing = false;

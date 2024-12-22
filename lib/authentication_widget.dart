@@ -9,17 +9,17 @@ import 'package:purity_auth/auth_repository.dart';
 import 'package:purity_auth/otp.dart';
 
 /// 认证项小部件
-class AuthItem extends StatefulWidget {
+class AuthenticationWidget extends StatefulWidget {
   final AuthConfiguration authConfiguration; // 认证对象
 
-  const AuthItem({super.key, required this.authConfiguration});
+  const AuthenticationWidget({super.key, required this.authConfiguration});
 
   @override
-  State<AuthItem> createState() => _AuthItemState();
+  State<AuthenticationWidget> createState() => _AuthenticationWidgetState();
 }
 
 /// 认证项的状态类
-class _AuthItemState extends State<AuthItem> with SingleTickerProviderStateMixin {
+class _AuthenticationWidgetState extends State<AuthenticationWidget> with SingleTickerProviderStateMixin {
   late final configuration = widget.authConfiguration;
   late final AnimationController animationController; // 动画控制器
   final RxString authCode = RxString("--------"); // 存储认证代码
@@ -56,6 +56,14 @@ class _AuthItemState extends State<AuthItem> with SingleTickerProviderStateMixin
     animationController.forward(from: 1.0 - remaining); // 开始动画
   }
 
+  void onEdit() {
+    Get.toNamed("/AuthFromPage", arguments: configuration);
+  }
+
+  void onDelete() {
+    Get.find<AuthRepository>().delete(configuration);
+  }
+
   @override
   void dispose() {
     updateTimer?.cancel(); // 取消定时器
@@ -63,50 +71,42 @@ class _AuthItemState extends State<AuthItem> with SingleTickerProviderStateMixin
     super.dispose();
   }
 
-  /// 编辑认证
-  editAuth() {
-    Get.toNamed("/AuthFromPage", arguments: configuration);
-  }
-
-  /// 删除认证
-  deleteAuth() {
-    Get.find<AuthRepository>().delete(configuration);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final theme = Get.theme.colorScheme; // 获取主题颜色
     return SwipeActionCell(
       key: ObjectKey(configuration), // 唯一标识
       trailingActions: [
-        buildSwipeAction("删除", deleteAuth),
-        buildSwipeAction("编辑", editAuth),
+        buildSwipeAction("删除", onDelete),
+        buildSwipeAction("编辑", onEdit),
       ],
-      child: buildAuthCard(theme), // 构建认证卡片
+      child: buildAuthCard(), // 构建认证卡片
     );
   }
 
   /// 构建滑动操作按钮
   SwipeAction buildSwipeAction(String label, VoidCallback onTap) {
     return SwipeAction(
-      widthSpace: 140,
+      widthSpace: 140 + 12,
       onTap: (handler) async => onTap(), // 执行操作
       color: Colors.transparent,
-      content: Container(
-        width: double.infinity,
-        height: double.infinity,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: Get.theme.colorScheme.primaryContainer,
-          borderRadius: BorderRadius.circular(24),
+      content: Padding(
+        padding: const EdgeInsets.only(left: 12),
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Get.theme.colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Text(label), // 按钮标签
         ),
-        child: Text(label), // 按钮标签
       ),
     );
   }
 
   /// 构建认证卡片
-  Widget buildAuthCard(ColorScheme theme) {
+  Widget buildAuthCard() {
     return InkWell(
       onTap: () {
         Clipboard.setData(ClipboardData(text: authCode.value));
@@ -115,13 +115,10 @@ class _AuthItemState extends State<AuthItem> with SingleTickerProviderStateMixin
       child: Container(
         padding: EdgeInsets.all(16),
         alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: theme.primaryContainer,
-          borderRadius: BorderRadius.circular(24),
-        ),
+        decoration: BoxDecoration(color: Get.theme.colorScheme.primaryContainer, borderRadius: BorderRadius.circular(24)),
         child: Column(
           children: [
-            buildTopRow(theme), // 顶部行
+            buildTopRow(), // 顶部行
             Spacer(),
             buildCodeRow(), // 代码行
           ],
@@ -131,13 +128,13 @@ class _AuthItemState extends State<AuthItem> with SingleTickerProviderStateMixin
   }
 
   /// 构建顶部行，包括图标和认证信息
-  Widget buildTopRow(ColorScheme theme) {
+  Widget buildTopRow() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        buildIconContainer(theme.primary), // 图标容器
+        buildIconContainer(), // 图标容器
         SizedBox(width: 16),
-        buildAuthDetails(theme), // 认证信息
+        buildAuthDetails(), // 认证信息
         SizedBox(width: 16),
         buildActionButton(), // 动作按钮
       ],
@@ -145,28 +142,26 @@ class _AuthItemState extends State<AuthItem> with SingleTickerProviderStateMixin
   }
 
   /// 构建图标容器
-  Widget buildIconContainer(Color color) {
+  Widget buildIconContainer() {
     return Container(
       height: 48,
       width: 48,
       alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(12),
-      ),
+      decoration: BoxDecoration(color: Get.theme.colorScheme.primary, borderRadius: BorderRadius.circular(12)),
       child: Icon(Icons.account_balance_sharp, size: 24, color: Get.theme.colorScheme.onPrimary),
     );
   }
 
   /// 构建认证详细信息
-  Widget buildAuthDetails(ColorScheme theme) {
+  Widget buildAuthDetails() {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(configuration.issuer, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(height: 0, fontSize: 18, color: theme.onPrimaryContainer, fontWeight: FontWeight.bold)),
+          Text(configuration.issuer,
+              maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(height: 0, fontSize: 18, color: Get.theme.colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
           SizedBox(height: 4),
-          Text(configuration.account, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(height: 0, fontSize: 13, color: theme.onPrimaryContainer.withAlpha(200))),
+          Text(configuration.account, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(height: 0, fontSize: 13, color: Get.theme.colorScheme.onPrimaryContainer.withAlpha(200))),
         ],
       ),
     );
@@ -178,25 +173,38 @@ class _AuthItemState extends State<AuthItem> with SingleTickerProviderStateMixin
       height: 48,
       width: 48,
       alignment: Alignment.center,
-      child: [AuthType.totp, AuthType.motp].contains(configuration.type)
-          ? Obx(() => CircularProgressIndicator(value: 1.0 - countdownValue.value, strokeCap: StrokeCap.round, strokeWidth: 5.5))
-          : IconButton(
-              onPressed: () {
-                configuration.counter++;
-                Get.find<AuthRepository>().update(configuration); // 更新认证
-              },
-              icon: Icon(Icons.refresh)), // 刷新图标
+      child: switch (configuration.type) {
+        AuthType.totp => buildTotpProgress(),
+        AuthType.hotp => buildHotpNextButton(),
+        AuthType.motp => buildTotpProgress(),
+      },
+    );
+  }
+
+  Widget buildTotpProgress() {
+    return Obx(
+      () => CircularProgressIndicator(value: 1.0 - countdownValue.value, strokeCap: StrokeCap.round, strokeWidth: 5.5),
+    );
+  }
+
+  Widget buildHotpNextButton() {
+    return IconButton(
+      onPressed: () {
+        configuration.counter++;
+        Get.find<AuthRepository>().update(configuration); // 更新认证
+      },
+      icon: Icon(Icons.refresh),
     );
   }
 
   /// 构建代码行
   Widget buildCodeRow() {
-    return Obx(() {
-      return Row(
+    return Obx(
+      () => Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: authCode.value.characters.map((char) => buildCodeItem(char)).toList(), // 显示每个代码项
-      );
-    });
+      ),
+    );
   }
 
   /// 构建单个代码项
@@ -205,10 +213,7 @@ class _AuthItemState extends State<AuthItem> with SingleTickerProviderStateMixin
       height: 42,
       width: 40,
       alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Get.theme.colorScheme.tertiary,
-        borderRadius: BorderRadius.circular(14),
-      ),
+      decoration: BoxDecoration(color: Get.theme.colorScheme.tertiary, borderRadius: BorderRadius.circular(14)),
       child: Text(char, style: TextStyle(height: 0, fontSize: 32, color: Get.theme.colorScheme.onTertiary, fontWeight: FontWeight.bold, fontFamily: 'GothamRnd')), // 代码字符
     );
   }

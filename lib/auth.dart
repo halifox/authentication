@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:base32/base32.dart';
 import 'package:purity_auth/otp.dart';
 
@@ -38,9 +40,9 @@ class AuthConfiguration {
 
   AuthConfiguration({
     this.type = AuthType.totp,
-    required this.account,
-    required this.secret,
-    required this.issuer,
+    this.account = "",
+    this.secret = "",
+    this.issuer = "",
     this.algorithm = Algorithm.SHA1,
     this.digits = 6,
     this.intervalSeconds = 30,
@@ -84,6 +86,22 @@ class AuthConfiguration {
       counter: map['counter'] as int,
       pin: map['pin'] as String,
       isBase32Encoded: map['isBase32Encoded'] as bool,
+    );
+  }
+
+  factory AuthConfiguration.random() {
+    var randomSecret = OTP.randomSecret();
+    return AuthConfiguration(
+      type: AuthType.values[Random.secure().nextInt(3)],
+      account: randomSecret,
+      secret: randomSecret,
+      issuer: randomSecret,
+      algorithm: Algorithm.values[Random.secure().nextInt(3)],
+      digits: [4, 5, 6, 7, 8][Random.secure().nextInt(4)],
+      intervalSeconds: 5 + Random.secure().nextInt(100),
+      counter: Random.secure().nextInt(100),
+      pin: "1234",
+      isBase32Encoded: true,
     );
   }
 

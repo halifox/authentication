@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swipe_action_cell/core/swipe_action_navigator_observer.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:get/get.dart';
-import 'package:purity_auth/auth_details_page.dart';
-import 'package:purity_auth/auth_options_page.dart';
+import 'package:purity_auth/auth_from_page.dart';
+import 'package:purity_auth/auth_add_page.dart';
 import 'package:purity_auth/auth_repository.dart';
-import 'package:purity_auth/barcode_scanner_page.dart';
-import 'package:purity_auth/home_page.dart';
+import 'package:purity_auth/auth_scan_page.dart';
+import 'package:purity_auth/auth_home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,10 +37,10 @@ class MyApp extends StatelessWidget {
           ),
           initialRoute: "/",
           getPages: [
-            GetPage(name: '/', page: () => HomePage()),
-            GetPage(name: '/AuthAddPage', page: () => AuthOptionsPage()),
-            GetPage(name: '/AuthScanPage', page: () => BarcodeScannerPage()),
-            GetPage(name: '/AuthFromPage', page: () => AuthDetailsPage(authConfiguration: Get.arguments)),
+            GetPage(name: '/', page: () => AuthHomePage()),
+            GetPage(name: '/AuthAddPage', page: () => AuthAddPage()),
+            GetPage(name: '/AuthScanPage', page: () => AuthScanPage()),
+            GetPage(name: '/AuthFromPage', page: () => AuthFromPage()),
           ],
           navigatorObservers: [
             SwipeActionNavigatorObserver(),
