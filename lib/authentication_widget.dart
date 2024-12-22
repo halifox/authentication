@@ -110,7 +110,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
     return InkWell(
       onTap: () {
         Clipboard.setData(ClipboardData(text: authCode.value));
-        Get.showSnackbar(GetSnackBar(messageText: Text("代码已复制")));
+        Get.showSnackbar(GetSnackBar(message: "代码已复制", duration: Duration(milliseconds: 1200)));
       },
       child: Container(
         padding: EdgeInsets.all(16),
