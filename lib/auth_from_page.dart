@@ -49,7 +49,7 @@ class AuthFromPage extends StatelessWidget {
 
   Widget buildTextField(TextEditingController controller, String label, {TextInputType? inputType, List<TextInputFormatter>? inputFormatters}) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: TextField(
         controller: controller,
         decoration: InputDecoration(
@@ -68,7 +68,7 @@ class AuthFromPage extends StatelessWidget {
 
   Widget buildDropdown<T>(String label, T initialValue, Map<T, String> options, void Function(T?) onChanged) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: DropdownButtonFormField<T>(
         decoration: InputDecoration(
           labelText: label,
@@ -103,32 +103,30 @@ class AuthFromPage extends StatelessWidget {
                   Expanded(
                     child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                      child: Obx(
-                        () => Column(
-                          children: [
-                            buildDropdown<AuthType>("类型", configuration.type, typeLabels, (value) {
-                              rxConfiguration.update((configuration) {
-                                configuration?.type = value!;
-                              });
-                            }),
-                            buildTextField(issuerController, "发行方"),
-                            buildTextField(accountController, "用户名"),
-                            buildTextField(secretController, "密钥"),
-                            if (configuration.type == AuthType.totp || configuration.type == AuthType.hotp)
-                              buildDropdown<Algorithm>("算法", configuration.algorithm, algorithmLabels, (value) => configuration.algorithm = value!),
-                            if (configuration.type == AuthType.motp) buildTextField(pinController, "PIN码"),
-                            if (configuration.type == AuthType.totp || configuration.type == AuthType.hotp || configuration.type == AuthType.motp)
-                              Row(
-                                children: [
-                                  Expanded(child: buildTextField(digitsController, "位数", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
-                                  if (configuration.type == AuthType.totp || configuration.type == AuthType.motp)
-                                    Expanded(child: buildTextField(periodController, "时间间隔(秒)", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
-                                  if (configuration.type == AuthType.hotp)
-                                    Expanded(child: buildTextField(counterController, "计数器", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
-                                ],
-                              ),
-                          ],
-                        ),
+                      child: Column(
+                        children: [
+                          buildDropdown<AuthType>("类型", configuration.type, typeLabels, (value) {
+                            rxConfiguration.update((configuration) {
+                              configuration?.type = value!;
+                            });
+                          }),
+                          buildTextField(issuerController, "发行方"),
+                          buildTextField(accountController, "用户名"),
+                          buildTextField(secretController, "密钥"),
+                          if (configuration.type == AuthType.totp || configuration.type == AuthType.hotp)
+                            buildDropdown<Algorithm>("算法", configuration.algorithm, algorithmLabels, (value) => configuration.algorithm = value!),
+                          if (configuration.type == AuthType.motp) buildTextField(pinController, "PIN码"),
+                          if (configuration.type == AuthType.totp || configuration.type == AuthType.hotp || configuration.type == AuthType.motp)
+                            Row(
+                              children: [
+                                Expanded(child: buildTextField(digitsController, "位数", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
+                                if (configuration.type == AuthType.totp || configuration.type == AuthType.motp)
+                                  Expanded(child: buildTextField(periodController, "时间间隔(秒)", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
+                                if (configuration.type == AuthType.hotp)
+                                  Expanded(child: buildTextField(counterController, "计数器", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
+                              ],
+                            ),
+                        ],
                       ),
                     ),
                   ),
