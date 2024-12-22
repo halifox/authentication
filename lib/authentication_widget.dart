@@ -21,10 +21,10 @@ class AuthenticationWidget extends StatefulWidget {
 /// 认证项的状态类
 class _AuthenticationWidgetState extends State<AuthenticationWidget> with SingleTickerProviderStateMixin {
   late final configuration = widget.authConfiguration;
-  late final AnimationController animationController; // 动画控制器
   final RxString authCode = RxString("--------"); // 存储认证代码
   final RxDouble countdownValue = RxDouble(0.0); // 倒计时进度
   Timer? updateTimer; // 更新定时器
+  AnimationController? animationController; // 动画控制器
 
   @override
   void initState() {
@@ -33,7 +33,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
     if ([AuthType.totp, AuthType.motp].contains(configuration.type)) {
       animationController = AnimationController(duration: Duration(seconds: configuration.intervalSeconds), vsync: this)
         ..addListener(() {
-          countdownValue.value = animationController.value; // 更新倒计时进度
+          countdownValue.value = animationController?.value ?? 0; // 更新倒计时进度
         });
       updateTimer = Timer(Duration(seconds: OTP.remainingSeconds(intervalSeconds: configuration.intervalSeconds)), startUpdateTimer);
       refreshCodeAndCountdown(); // 刷新代码和倒计时
@@ -53,7 +53,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
     authCode.value = configuration.generateCodeString(); // 计算新的认证代码
     var remainingTime = OTP.remainingSeconds(intervalSeconds: configuration.intervalSeconds); // 剩余时间
     var remaining = remainingTime * 1.0 / configuration.intervalSeconds;
-    animationController.forward(from: 1.0 - remaining); // 开始动画
+    animationController?.forward(from: 1.0 - remaining); // 开始动画
   }
 
   void onEdit() {
@@ -67,7 +67,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
   @override
   void dispose() {
     updateTimer?.cancel(); // 取消定时器
-    animationController.dispose(); // 释放动画控制器
+    animationController?.dispose(); // 释放动画控制器
     super.dispose();
   }
 
