@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:purity_auth/auth.dart';
+import 'package:purity_auth/auth_add_page.dart';
 import 'package:purity_auth/auth_repository.dart';
-import 'package:purity_auth/image_tools.dart';
 import 'package:purity_auth/otp.dart';
 import 'package:purity_auth/top_bar.dart';
 import 'package:purity_auth/window_size_controller.dart';
@@ -24,7 +24,7 @@ class AuthFromPage extends StatelessWidget {
   late final TextEditingController periodController = TextEditingController(text: configuration.intervalSeconds.toString());
   late final TextEditingController counterController = TextEditingController(text: configuration.counter.toString());
 
-  Future<void> onSave() async {
+  void onSave(BuildContext context) async {
     try {
       configuration
         ..account = accountController.text
@@ -36,13 +36,13 @@ class AuthFromPage extends StatelessWidget {
         ..counter = int.parse(counterController.text);
       await Get.find<AuthRepository>().upsert(configuration);
       Get.until((route) => Get.currentRoute == "/");
-      showAlert("结果", "添加成功");
+      showAlertDialog(context,"结果", "添加成功");
     } on ArgumentError catch (e) {
-      showAlert("参数错误", e.message);
+      showAlertDialog(context,"参数错误", e.message);
     } on FormatException catch (e) {
-      showAlert("格式错误", e.message);
+      showAlertDialog(context,"格式错误", e.message);
     } catch (e) {
-      showAlert("未知错误", e.toString());
+      showAlertDialog(context,"未知错误", e.toString());
       rethrow;
     }
   }
@@ -99,7 +99,7 @@ class AuthFromPage extends StatelessWidget {
                     context,
                     "输入提供的密钥",
                     rightIcon: Icons.save,
-                    rightOnPressed: onSave,
+                    rightOnPressed: ()=>onSave.call(context),
                   ),
                   Expanded(
                     child: SingleChildScrollView(

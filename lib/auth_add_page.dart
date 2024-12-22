@@ -1,12 +1,38 @@
 import 'dart:io';
 
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:purity_auth/image_tools.dart';
+import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:purity_auth/large_button_widget.dart';
 import 'package:purity_auth/top_bar.dart';
 import 'package:purity_auth/window_size_controller.dart';
+
+import 'auth.dart';
+import 'auth_repository.dart';
+
+Future<int?> showAlertDialog(
+  BuildContext context,
+  String title,
+  String message,
+) {
+  return showGeneralDialog(
+    context: context,
+    pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+      return AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Get.back(),
+            child: Text("确定"),
+          ),
+        ],
+      );
+    },
+  );
+}
 
 class AuthAddPage extends StatelessWidget {
   AuthAddPage({super.key});
@@ -25,15 +51,52 @@ class AuthAddPage extends StatelessWidget {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       Get.toNamed("/AuthScanPage");
     } else {
-      showPlatformSupportDialog(context);
+      showAlertDialog(context, '提示', '该功能当前仅支持 Android 和 iOS 平台。');
     }
   }
 
-  void uploadQrCode(BuildContext context) {
+  void uploadQrCode(BuildContext context) async {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
-      selectAndProcessQRCode();
+      const imageTypes = XTypeGroup(extensions: ['jpg', 'jpeg', 'png']);
+      final selectedFile = await openFile(acceptedTypeGroups: [imageTypes]);
+
+      if (selectedFile == null) {
+        showAlertDialog(context, "上传二维码", "未选择图片");
+        return;
+      }
+
+      final inputImage = InputImage.fromFilePath(selectedFile.path);
+      final barcodeScanner = BarcodeScanner(formats: [BarcodeFormat.qrCode]);
+      final barcodes = await barcodeScanner.processImage(inputImage);
+
+      //todo 这里弹出一个新的窗口 用于确认扫描结果 如果扫描到多个 可以手动选择
+      if (barcodes.isEmpty) {
+        showAlertDialog(context, "扫描结果", "未识别到二维码");
+        return;
+      }
+      if (barcodes.length > 1) {
+        showAlertDialog(context, "扫描结果", "识别到多个二维码");
+        return;
+      }
+
+      try {
+        final Barcode barcode = barcodes.first;
+        final String rawValue = barcode.rawValue ?? "";
+        final AuthConfiguration configuration = AuthConfiguration.parse(rawValue);
+        await Get.find<AuthRepository>().upsert(configuration);
+        return;
+      } on ArgumentError catch (e) {
+        showAlertDialog(context, "参数错误", e.message);
+        return;
+      } on FormatException catch (e) {
+        showAlertDialog(context, "格式错误", e.message);
+        return;
+      } catch (e) {
+        showAlertDialog(context, "未知错误", e.toString());
+        return;
+      }
     } else {
-      showPlatformSupportDialog(context);
+      showAlertDialog(context, '提示', '该功能当前仅支持 Android 和 iOS 平台。');
     }
   }
 
@@ -44,26 +107,6 @@ class AuthAddPage extends StatelessWidget {
   void restoreBackup(BuildContext context) {}
 
   void importFromApps(BuildContext context) {}
-
-  void showPlatformSupportDialog(BuildContext context) {
-    showGeneralDialog(
-      context: context,
-      pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
-        return AlertDialog(
-          title: Text('提示'),
-          content: Text('该功能当前仅支持 Android 和 iOS 平台。'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Get.back();
-              },
-              child: Text('确定'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
