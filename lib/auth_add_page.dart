@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:purity_auth/large_button_widget.dart';
@@ -37,10 +36,14 @@ Future<int?> showAlertDialog(
   );
 }
 
-class AuthAddPage extends StatelessWidget {
+class AuthAddPage extends StatefulWidget {
   AuthAddPage({super.key});
 
-  final windowSizeController = Get.put(WindowSizeController());
+  @override
+  State<AuthAddPage> createState() => _AuthAddPageState();
+}
+
+class _AuthAddPageState extends State<AuthAddPage> with WidgetsBindingObserver, WindowSizeStateMixin {
 
   late final List<LargeButtonOption> options = [
     LargeButtonOption(icon: Icons.camera_enhance, label: "扫描二维码", onTap: scanQrCode),
@@ -116,31 +119,29 @@ class AuthAddPage extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: Obx(
-            () => SizedBox(
-              width: windowSizeController.contentWidth.value,
-              child: Column(
-                children: [
-                  TopBar(context, "添加"),
-                  Expanded(
-                    child: GridView.builder(
-                      physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: windowSizeController.maxCrossAxisExtent,
-                        mainAxisExtent: 90,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                      ),
-                      itemCount: options.length,
-                      itemBuilder: (context, index) {
-                        final option = options[index];
-                        return LargeButtonWidget(option.icon, option.label, option.onTap, key: ObjectKey(option));
-                      },
+          child: SizedBox(
+            width: contentWidth,
+            child: Column(
+              children: [
+                TopBar(context, "添加"),
+                Expanded(
+                  child: GridView.builder(
+                    physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: maxCrossAxisExtent,
+                      mainAxisExtent: 90,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 16,
                     ),
+                    itemCount: options.length,
+                    itemBuilder: (context, index) {
+                      final option = options[index];
+                      return LargeButtonWidget(option.icon, option.label, option.onTap, key: ObjectKey(option));
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

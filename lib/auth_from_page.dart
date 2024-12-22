@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:purity_auth/auth.dart';
 import 'package:purity_auth/auth_add_page.dart';
@@ -16,14 +15,8 @@ class AuthFromPage extends StatefulWidget {
   State<AuthFromPage> createState() => _AuthFromPageState();
 }
 
-class _AuthFromPageState extends State<AuthFromPage> {
-  final windowSizeController = Get.put(WindowSizeController());
-
-  late final arguments = ModalRoute.of(context)?.settings.arguments as AuthConfiguration?;
-
-  late final Rx<AuthConfiguration> rxConfiguration = Rx(arguments ?? AuthConfiguration());
-
-  AuthConfiguration get configuration => rxConfiguration.value;
+class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver, WindowSizeStateMixin {
+  late final AuthConfiguration configuration = ModalRoute.of(context)?.settings.arguments as AuthConfiguration? ?? AuthConfiguration();
 
   late final TextEditingController issuerController = TextEditingController(text: configuration.issuer);
 
@@ -105,46 +98,44 @@ class _AuthFromPageState extends State<AuthFromPage> {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: Obx(
-            () => SizedBox(
-              width: windowSizeController.contentWidth.value,
-              child: Column(
-                children: [
-                  TopBar(
-                    context,
-                    "输入提供的密钥",
-                    rightIcon: Icons.save,
-                    rightOnPressed: (context) => onSave.call(context),
-                  ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                      child: Column(
-                        children: [
-                          buildDropdown<AuthType>("类型", configuration.type, typeLabels, (value) {
-                            rxConfiguration.update((configuration) {
-                              configuration?.type = value!;
-                            });
-                          }),
-                          buildTextField(issuerController, "发行方"),
-                          buildTextField(accountController, "用户名"),
-                          buildTextField(secretController, "密钥"),
-                          if (configuration.type == AuthType.totp || configuration.type == AuthType.hotp) buildDropdown<Algorithm>("算法", configuration.algorithm, algorithmLabels, (value) => configuration.algorithm = value!),
-                          if (configuration.type == AuthType.motp) buildTextField(pinController, "PIN码"),
-                          if (configuration.type == AuthType.totp || configuration.type == AuthType.hotp || configuration.type == AuthType.motp)
-                            Row(
-                              children: [
-                                Expanded(child: buildTextField(digitsController, "位数", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
-                                if (configuration.type == AuthType.totp || configuration.type == AuthType.motp) Expanded(child: buildTextField(periodController, "时间间隔(秒)", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
-                                if (configuration.type == AuthType.hotp) Expanded(child: buildTextField(counterController, "计数器", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
-                              ],
-                            ),
-                        ],
-                      ),
+          child: SizedBox(
+            width: contentWidth,
+            child: Column(
+              children: [
+                TopBar(
+                  context,
+                  "输入提供的密钥",
+                  rightIcon: Icons.save,
+                  rightOnPressed: (context) => onSave.call(context),
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                    child: Column(
+                      children: [
+                        buildDropdown<AuthType>("类型", configuration.type, typeLabels, (value) {
+                          setState(() {
+                            configuration.type = value!;
+                          });
+                        }),
+                        buildTextField(issuerController, "发行方"),
+                        buildTextField(accountController, "用户名"),
+                        buildTextField(secretController, "密钥"),
+                        if (configuration.type == AuthType.totp || configuration.type == AuthType.hotp) buildDropdown<Algorithm>("算法", configuration.algorithm, algorithmLabels, (value) => configuration.algorithm = value!),
+                        if (configuration.type == AuthType.motp) buildTextField(pinController, "PIN码"),
+                        if (configuration.type == AuthType.totp || configuration.type == AuthType.hotp || configuration.type == AuthType.motp)
+                          Row(
+                            children: [
+                              Expanded(child: buildTextField(digitsController, "位数", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
+                              if (configuration.type == AuthType.totp || configuration.type == AuthType.motp) Expanded(child: buildTextField(periodController, "时间间隔(秒)", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
+                              if (configuration.type == AuthType.hotp) Expanded(child: buildTextField(counterController, "计数器", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
+                            ],
+                          ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

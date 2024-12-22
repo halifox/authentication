@@ -11,10 +11,14 @@ import 'package:purity_auth/authentication_widget.dart';
 import 'package:purity_auth/top_bar.dart';
 import 'package:purity_auth/window_size_controller.dart';
 
-class AuthHomePage extends StatelessWidget {
+class AuthHomePage extends StatefulWidget {
   AuthHomePage({super.key});
 
-  final windowSizeController = Get.put(WindowSizeController());
+  @override
+  State<AuthHomePage> createState() => _AuthHomePageState();
+}
+
+class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver, WindowSizeStateMixin {
 
   void toAuthAddPage(BuildContext context) {
     Navigator.pushNamed(context, "/AuthAddPage");
@@ -28,7 +32,7 @@ class AuthHomePage extends StatelessWidget {
         child: Center(
           child: Obx(
             () => SizedBox(
-              width: windowSizeController.contentWidth.value,
+              width: contentWidth,
               child: Column(
                 children: [
                   TopBar(
@@ -44,7 +48,7 @@ class AuthHomePage extends StatelessWidget {
                       physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: windowSizeController.maxCrossAxisExtent,
+                        maxCrossAxisExtent: maxCrossAxisExtent,
                         mainAxisExtent: 140,
                         mainAxisSpacing: 16,
                         crossAxisSpacing: 16,
