@@ -97,7 +97,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
           height: double.infinity,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: Get.theme.colorScheme.primaryContainer,
+            color: Theme.of(context).colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(24),
           ),
           child: Text(label), // 按钮标签
@@ -117,7 +117,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
       child: Container(
         padding: EdgeInsets.all(16),
         alignment: Alignment.center,
-        decoration: BoxDecoration(color: Get.theme.colorScheme.primaryContainer, borderRadius: BorderRadius.circular(24)),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: BorderRadius.circular(24)),
         child: Column(
           children: [
             buildTopRow(), // 顶部行
@@ -150,15 +150,15 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
       height: 48,
       width: 48,
       alignment: Alignment.center,
-      decoration: BoxDecoration(color: Get.theme.colorScheme.primary, borderRadius: BorderRadius.circular(12)),
-      // child: Icon(Icons.account_balance_sharp, size: 24, color: Get.theme.colorScheme.onPrimary),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(12)),
+      // child: Icon(Icons.account_balance_sharp, size: 24, color: Theme.of(context).colorScheme.onPrimary),
       child: SvgPicture.asset(
         assetName,
         width: 28,
         height: 28,
-        colorFilter: ColorFilter.mode(Get.theme.colorScheme.onPrimary, BlendMode.srcIn),
+        colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn),
         placeholderBuilder: (context) {
-          return Icon(Icons.account_balance, size: 24, color: Get.theme.colorScheme.onPrimary);
+          return Icon(Icons.account_balance, size: 24, color: Theme.of(context).colorScheme.onPrimary);
         },
       ),
     );
@@ -170,9 +170,9 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(configuration.issuer, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(height: 0, fontSize: 18, color: Get.theme.colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
+          Text(configuration.issuer, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
           SizedBox(height: 4),
-          Text(configuration.account, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(height: 0, fontSize: 13, color: Get.theme.colorScheme.onPrimaryContainer.withAlpha(200))),
+          Text(configuration.account, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(height: 0, fontSize: 13, color: Theme.of(context).colorScheme.onPrimaryContainer.withAlpha(200))),
         ],
       ),
     );
@@ -224,8 +224,8 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
       height: 42,
       width: 40,
       alignment: Alignment.center,
-      decoration: BoxDecoration(color: Get.theme.colorScheme.tertiary, borderRadius: BorderRadius.circular(14)),
-      child: Text(char, style: TextStyle(height: 0, fontSize: 32, color: Get.theme.colorScheme.onTertiary, fontWeight: FontWeight.bold, fontFamily: 'GothamRnd')), // 代码字符
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.tertiary, borderRadius: BorderRadius.circular(14)),
+      child: Text(char, style: TextStyle(height: 0, fontSize: 32, color: Theme.of(context).colorScheme.onTertiary, fontWeight: FontWeight.bold, fontFamily: 'GothamRnd')), // 代码字符
     );
   }
 }

@@ -74,7 +74,7 @@ class AuthAddPage extends StatelessWidget {
               width: windowSizeController.contentWidth.value,
               child: Column(
                 children: [
-                  TopBar("添加"),
+                  TopBar(context, "添加"),
                   Expanded(
                     child: GridView.builder(
                       physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),

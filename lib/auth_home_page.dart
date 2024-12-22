@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:purity_auth/auth.dart';
-import 'package:purity_auth/authentication_widget.dart';
 import 'package:purity_auth/auth_repository.dart';
+import 'package:purity_auth/authentication_widget.dart';
 import 'package:purity_auth/top_bar.dart';
 import 'package:purity_auth/window_size_controller.dart';
 
@@ -22,7 +22,7 @@ class AuthHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    setSystemUIOverlayStyle();
+    setSystemUIOverlayStyle(context);
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -32,6 +32,7 @@ class AuthHomePage extends StatelessWidget {
               child: Column(
                 children: [
                   TopBar(
+                    context,
                     "Purity Auth",
                     leftIcon: Icons.settings,
                     leftOnPressed: null,
@@ -64,16 +65,16 @@ class AuthHomePage extends StatelessWidget {
     );
   }
 
-  void setSystemUIOverlayStyle() {
+  void setSystemUIOverlayStyle(context) {
     if (!kIsWeb && Platform.isAndroid) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        systemNavigationBarColor: Get.theme.colorScheme.surface,
-        systemNavigationBarDividerColor: Get.theme.colorScheme.surface,
-        systemNavigationBarIconBrightness: Get.theme.colorScheme.brightness,
+        systemNavigationBarColor: Theme.of(context).colorScheme.surface,
+        systemNavigationBarDividerColor: Theme.of(context).colorScheme.surface,
+        systemNavigationBarIconBrightness: Theme.of(context).colorScheme.brightness,
         // systemNavigationBarContrastEnforced: false,
         statusBarColor: Colors.transparent,
-        statusBarBrightness: Get.theme.colorScheme.brightness,
-        statusBarIconBrightness: (Get.theme.colorScheme.brightness == Brightness.dark) ? Brightness.light : Brightness.dark, //MIUI的这个行为有异常
+        statusBarBrightness: Theme.of(context).colorScheme.brightness,
+        statusBarIconBrightness: (Theme.of(context).colorScheme.brightness == Brightness.dark) ? Brightness.light : Brightness.dark, //MIUI的这个行为有异常
         // systemStatusBarContrastEnforced: false,
       ));
     }

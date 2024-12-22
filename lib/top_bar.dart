@@ -20,6 +20,7 @@ void defaultRightOnPressed() {}
 /// [rightOnPressed] 右侧图标的点击回调，类型为 [void Function()?]，默认为 [defaultRightOnPressed]。
 /// 返回值为导航栏的 [Widget] 组件。
 Widget TopBar(
+  final BuildContext context,
   String title, {
   IconData? leftIcon = Icons.arrow_back,
   GestureTapCallback? leftOnPressed = defaultLeftOnPressed,
@@ -30,11 +31,11 @@ Widget TopBar(
     padding: EdgeInsets.all(16),
     child: Row(
       children: [
-        TopBarIconButton(leftIcon, () => leftOnPressed?.call()),
+        TopBarIconButton(context, leftIcon, () => leftOnPressed?.call()),
         Spacer(),
-        TopBarTitle(title),
+        TopBarTitle(context, title),
         Spacer(),
-        TopBarIconButton(rightIcon, () => rightOnPressed?.call()),
+        TopBarIconButton(context, rightIcon, () => rightOnPressed?.call()),
       ],
     ),
   );
@@ -44,6 +45,7 @@ Widget TopBar(
 /// [data] 导航栏标题文本，类型为 [String]。
 /// 返回值为标题的 [Widget] 组件。
 Widget TopBarTitle(
+  final BuildContext context,
   final String data,
 ) {
   return Text(
@@ -51,7 +53,7 @@ Widget TopBarTitle(
     style: TextStyle(
       fontSize: 20,
       fontWeight: FontWeight.bold,
-      color: Get.theme.colorScheme.onSurface,
+      color: Theme.of(context).colorScheme.onSurface,
     ),
   );
 }
@@ -61,6 +63,7 @@ Widget TopBarTitle(
 /// [onPressed] 点击回调，类型为 [VoidCallback?]。
 /// 返回值为图标按钮的 [Widget] 组件。
 Widget TopBarIconButton(
+  final BuildContext context,
   final IconData? icon,
   final VoidCallback? onPressed,
 ) {
@@ -72,12 +75,12 @@ Widget TopBarIconButton(
       child: Icon(
         icon,
         size: _TopBarIconSize,
-        color: Get.theme.colorScheme.onPrimaryContainer,
+        color: Theme.of(context).colorScheme.onPrimaryContainer,
       ),
       style: ElevatedButton.styleFrom(
         padding: EdgeInsets.zero,
         fixedSize: Size(_TopBarIconButtonSize, _TopBarIconButtonSize),
-        backgroundColor: Get.theme.colorScheme.primaryContainer,
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
         ),

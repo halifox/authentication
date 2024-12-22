@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class LargeButtonOption {
   IconData? icon;
@@ -32,7 +31,7 @@ class LargeButtonWidget extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(16),
         alignment: Alignment.center,
-        decoration: BoxDecoration(color: Get.theme.colorScheme.primaryContainer, borderRadius: BorderRadius.all(Radius.circular(24))),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: BorderRadius.all(Radius.circular(24))),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -40,11 +39,11 @@ class LargeButtonWidget extends StatelessWidget {
               height: 48,
               width: 48,
               alignment: Alignment.center,
-              decoration: BoxDecoration(color: Get.theme.colorScheme.primary, borderRadius: BorderRadius.all(Radius.circular(12))),
-              child: Icon(icon, size: 24, color: Get.theme.colorScheme.onPrimary),
+              decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.all(Radius.circular(12))),
+              child: Icon(icon, size: 24, color: Theme.of(context).colorScheme.onPrimary),
             ),
             SizedBox(width: 16),
-            Text(label, maxLines: 1, style: TextStyle(height: 0, fontSize: 18, color: Get.theme.colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
+            Text(label, maxLines: 1, style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
             SizedBox(width: 16),
           ],
         ),
