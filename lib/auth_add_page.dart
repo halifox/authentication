@@ -13,12 +13,12 @@ class AuthAddPage extends StatelessWidget {
 
   final windowSizeController = Get.put(WindowSizeController());
 
-  late List<LargeButtonOption> largeButtonOptions = [
-    LargeButtonOption(icon: "icon", label: "扫描二维码", onTap: scanQrCode),
-    LargeButtonOption(icon: "icon", label: "上传二维码", onTap: uploadQrCode),
-    LargeButtonOption(icon: "icon", label: "输入提供的密钥", onTap: enterKey),
-    LargeButtonOption(icon: "icon", label: "从备份中恢复", onTap: restoreBackup),
-    LargeButtonOption(icon: "icon", label: "从其他应用导入", onTap: importFromApps),
+  late final List<LargeButtonOption> options = [
+    LargeButtonOption(icon: Icons.camera_enhance, label: "扫描二维码", onTap: scanQrCode),
+    LargeButtonOption(icon: Icons.photo_library, label: "上传二维码", onTap: uploadQrCode),
+    LargeButtonOption(icon: Icons.edit, label: "输入提供的密钥", onTap: enterKey),
+    LargeButtonOption(icon: Icons.restore, label: "从备份中恢复", onTap: restoreBackup),
+    LargeButtonOption(icon: Icons.format_list_numbered, label: "从其他应用导入", onTap: importFromApps),
   ];
 
   void scanQrCode() {
@@ -85,10 +85,10 @@ class AuthAddPage extends StatelessWidget {
                         mainAxisSpacing: 16,
                         crossAxisSpacing: 16,
                       ),
-                      itemCount: largeButtonOptions.length,
+                      itemCount: options.length,
                       itemBuilder: (context, index) {
-                        final largeButtonOption = largeButtonOptions[index];
-                        return LargeButtonWidget(largeButtonOption.icon, largeButtonOption.label, largeButtonOption.onTap, key: ObjectKey(largeButtonOption));
+                        final option = options[index];
+                        return LargeButtonWidget(option.icon, option.label, option.onTap, key: ObjectKey(option));
                       },
                     ),
                   ),

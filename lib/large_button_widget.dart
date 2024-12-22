@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class LargeButtonOption {
-  String icon;
+  IconData? icon;
   String label;
   GestureTapCallback? onTap;
 
@@ -19,7 +19,7 @@ class LargeButtonOption {
 }
 
 class LargeButtonWidget extends StatelessWidget {
-  final String icon;
+  final IconData? icon;
   final String label;
   final GestureTapCallback? onTap;
 
@@ -41,7 +41,7 @@ class LargeButtonWidget extends StatelessWidget {
               width: 48,
               alignment: Alignment.center,
               decoration: BoxDecoration(color: Get.theme.colorScheme.primary, borderRadius: BorderRadius.all(Radius.circular(12))),
-              child: Icon(Icons.add, size: 24, color: Get.theme.colorScheme.onPrimary),
+              child: Icon(icon, size: 24, color: Get.theme.colorScheme.onPrimary),
             ),
             SizedBox(width: 16),
             Text(label, maxLines: 1, style: TextStyle(height: 0, fontSize: 18, color: Get.theme.colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
