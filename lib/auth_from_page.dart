@@ -52,7 +52,14 @@ class AuthFromPage extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: TextField(
         controller: controller,
-        decoration: InputDecoration(labelText: label, border: OutlineInputBorder()),
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(
+            borderSide: BorderSide(),
+            borderRadius: BorderRadius.all(Radius.circular(14.0)),
+            gapPadding: 8.0,
+          ),
+        ),
         keyboardType: inputType,
         inputFormatters: inputFormatters,
       ),
@@ -63,7 +70,14 @@ class AuthFromPage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: DropdownButtonFormField<T>(
-        decoration: InputDecoration(labelText: label, border: OutlineInputBorder()),
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(
+            borderSide: BorderSide(),
+            borderRadius: BorderRadius.all(Radius.circular(14.0)),
+            gapPadding: 8.0,
+          ),
+        ),
         value: initialValue,
         onChanged: onChanged,
         items: options.entries.map((entry) => DropdownMenuItem<T>(value: entry.key, child: Text(entry.value))).toList(),

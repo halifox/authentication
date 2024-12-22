@@ -38,7 +38,7 @@ class _AuthScanPageState extends State<AuthScanPage> {
               initialCameraLensDirection: _currentCameraLensDirection,
               onCameraLensDirectionChanged: (newDirection) => setState(() => _currentCameraLensDirection = newDirection),
             ),
-            Align(alignment: Alignment.topCenter, child: TopBar("")),
+            Align(alignment: Alignment.topCenter, child: TopBar("扫描二维码")),
           ],
         ),
       ),
