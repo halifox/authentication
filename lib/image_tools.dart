@@ -72,7 +72,8 @@ Future<int?> showAlert(
   String message, {
   int? result,
 }) {
-  return Get.generalDialog<int>(
+  return showGeneralDialog(
+    context: Get.context!,
     pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
       return AlertDialog(
         title: Text(title),

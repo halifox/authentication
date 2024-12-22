@@ -81,7 +81,8 @@ class _AuthScanPageState extends State<AuthScanPage> {
   /// [title] 提示框标题
   /// [message] 提示框消息
   void _showScanResultAlert(String title, String message) {
-    Get.generalDialog(
+    showGeneralDialog(
+      context: Get.context!,
       pageBuilder: (context, animation, secondaryAnimation) {
         return AlertDialog(
           title: Text(title),

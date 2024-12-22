@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class LargeButtonOption {
   IconData? icon;
   String label;
-  GestureTapCallback? onTap;
+  void Function(BuildContext)? onTap;
 
   /// 创建 [LargeButtonOption] 的构造函数。
   ///
@@ -20,14 +20,14 @@ class LargeButtonOption {
 class LargeButtonWidget extends StatelessWidget {
   final IconData? icon;
   final String label;
-  final GestureTapCallback? onTap;
+  final void Function(BuildContext)? onTap;
 
   LargeButtonWidget(this.icon, this.label, this.onTap, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () => onTap?.call(context),
       child: Container(
         padding: EdgeInsets.all(16),
         alignment: Alignment.center,

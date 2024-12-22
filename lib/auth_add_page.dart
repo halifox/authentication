@@ -21,32 +21,33 @@ class AuthAddPage extends StatelessWidget {
     LargeButtonOption(icon: Icons.format_list_numbered, label: "从其他应用导入", onTap: importFromApps),
   ];
 
-  void scanQrCode() {
+  void scanQrCode(BuildContext context) {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       Get.toNamed("/AuthScanPage");
     } else {
-      showPlatformSupportDialog();
+      showPlatformSupportDialog(context);
     }
   }
 
-  void uploadQrCode() {
+  void uploadQrCode(BuildContext context) {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       selectAndProcessQRCode();
     } else {
-      showPlatformSupportDialog();
+      showPlatformSupportDialog(context);
     }
   }
 
-  void enterKey() {
+  void enterKey(BuildContext context) {
     Get.toNamed("/AuthFromPage");
   }
 
-  void restoreBackup() {}
+  void restoreBackup(BuildContext context) {}
 
-  void importFromApps() {}
+  void importFromApps(BuildContext context) {}
 
-  void showPlatformSupportDialog() {
-    Get.generalDialog(
+  void showPlatformSupportDialog(BuildContext context) {
+    showGeneralDialog(
+      context: context,
       pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
         return AlertDialog(
           title: Text('提示'),
