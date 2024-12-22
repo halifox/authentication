@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:get/get.dart';
 import 'package:purity_auth/auth.dart';
@@ -144,12 +145,22 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
 
   /// 构建图标容器
   Widget buildIconContainer() {
+    var assetName = 'icons/${configuration.issuer.toLowerCase()}.svg';
     return Container(
       height: 48,
       width: 48,
       alignment: Alignment.center,
       decoration: BoxDecoration(color: Get.theme.colorScheme.primary, borderRadius: BorderRadius.circular(12)),
-      child: Icon(Icons.account_balance_sharp, size: 24, color: Get.theme.colorScheme.onPrimary),
+      // child: Icon(Icons.account_balance_sharp, size: 24, color: Get.theme.colorScheme.onPrimary),
+      child: SvgPicture.asset(
+        assetName,
+        width: 28,
+        height: 28,
+        colorFilter: ColorFilter.mode(Get.theme.colorScheme.onPrimary, BlendMode.srcIn),
+        placeholderBuilder: (context) {
+          return Icon(Icons.account_balance, size: 24, color: Get.theme.colorScheme.onPrimary);
+        },
+      ),
     );
   }
 
@@ -159,8 +170,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(configuration.issuer,
-              maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(height: 0, fontSize: 18, color: Get.theme.colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
+          Text(configuration.issuer, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(height: 0, fontSize: 18, color: Get.theme.colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
           SizedBox(height: 4),
           Text(configuration.account, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(height: 0, fontSize: 13, color: Get.theme.colorScheme.onPrimaryContainer.withAlpha(200))),
         ],
