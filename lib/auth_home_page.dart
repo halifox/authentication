@@ -30,38 +30,36 @@ class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: Obx(
-            () => SizedBox(
-              width: contentWidth,
-              child: Column(
-                children: [
-                  TopBar(
-                    context,
-                    "Purity Auth",
-                    leftIcon: Icons.settings,
-                    leftOnPressed: null,
-                    rightIcon: Icons.add,
-                    rightOnPressed: toAuthAddPage,
-                  ),
-                  Expanded(
-                    child: GridView.builder(
-                      physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: maxCrossAxisExtent,
-                        mainAxisExtent: 140,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                      ),
-                      itemCount: GetIt.I<AuthRepository>().authSnapshot.length,
-                      itemBuilder: (context, index) {
-                        AuthConfiguration configuration = GetIt.I<AuthRepository>().authSnapshot[index];
-                        return AuthenticationWidget(key: ObjectKey(configuration), authConfiguration: configuration);
-                      },
+          child: SizedBox(
+            width: contentWidth,
+            child: Column(
+              children: [
+                TopBar(
+                  context,
+                  "Purity Auth",
+                  leftIcon: Icons.settings,
+                  leftOnPressed: null,
+                  rightIcon: Icons.add,
+                  rightOnPressed: toAuthAddPage,
+                ),
+                Expanded(
+                  child: GridView.builder(
+                    physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: maxCrossAxisExtent,
+                      mainAxisExtent: 140,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 16,
                     ),
+                    itemCount: GetIt.I<AuthRepository>().authSnapshot.length,
+                    itemBuilder: (context, index) {
+                      AuthConfiguration configuration = GetIt.I<AuthRepository>().authSnapshot[index];
+                      return AuthenticationWidget(key: ObjectKey(configuration), authConfiguration: configuration);
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
