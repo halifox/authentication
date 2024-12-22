@@ -9,20 +9,34 @@ import 'package:purity_auth/otp.dart';
 import 'package:purity_auth/top_bar.dart';
 import 'package:purity_auth/window_size_controller.dart';
 
-class AuthFromPage extends StatelessWidget {
+class AuthFromPage extends StatefulWidget {
   AuthFromPage({super.key});
 
+  @override
+  State<AuthFromPage> createState() => _AuthFromPageState();
+}
+
+class _AuthFromPageState extends State<AuthFromPage> {
   final windowSizeController = Get.put(WindowSizeController());
 
-  final Rx<AuthConfiguration> rxConfiguration = Rx(Get.arguments ?? AuthConfiguration());
+  late final arguments = ModalRoute.of(context)?.settings.arguments as AuthConfiguration?;
+
+  late final Rx<AuthConfiguration> rxConfiguration = Rx(arguments ?? AuthConfiguration());
 
   AuthConfiguration get configuration => rxConfiguration.value;
+
   late final TextEditingController issuerController = TextEditingController(text: configuration.issuer);
+
   late final TextEditingController accountController = TextEditingController(text: configuration.account);
+
   late final TextEditingController secretController = TextEditingController(text: configuration.secret);
+
   late final TextEditingController pinController = TextEditingController(text: configuration.pin);
+
   late final TextEditingController digitsController = TextEditingController(text: configuration.digits.toString());
+
   late final TextEditingController periodController = TextEditingController(text: configuration.intervalSeconds.toString());
+
   late final TextEditingController counterController = TextEditingController(text: configuration.counter.toString());
 
   void onSave(BuildContext context) async {
@@ -37,13 +51,13 @@ class AuthFromPage extends StatelessWidget {
         ..counter = int.parse(counterController.text);
       await GetIt.I<AuthRepository>().upsert(configuration);
       Navigator.popUntil(context, (route) => route.settings.name == "/");
-      showAlertDialog(context,"结果", "添加成功");
+      showAlertDialog(context, "结果", "添加成功");
     } on ArgumentError catch (e) {
-      showAlertDialog(context,"参数错误", e.message);
+      showAlertDialog(context, "参数错误", e.message);
     } on FormatException catch (e) {
-      showAlertDialog(context,"格式错误", e.message);
+      showAlertDialog(context, "格式错误", e.message);
     } catch (e) {
-      showAlertDialog(context,"未知错误", e.toString());
+      showAlertDialog(context, "未知错误", e.toString());
       rethrow;
     }
   }
@@ -100,7 +114,7 @@ class AuthFromPage extends StatelessWidget {
                     context,
                     "输入提供的密钥",
                     rightIcon: Icons.save,
-                    rightOnPressed: (context)=>onSave.call(context),
+                    rightOnPressed: (context) => onSave.call(context),
                   ),
                   Expanded(
                     child: SingleChildScrollView(
