@@ -66,8 +66,8 @@ class _AuthScanPageState extends State<AuthScanPage> {
       try {
         final Barcode barcode = barcodes.first;
         final String rawValue = barcode.rawValue ?? "";
-        final AuthConfiguration configuration = AuthConfiguration.parse(rawValue);
-        await GetIt.I<AuthRepository>().upsert(configuration);
+        final AuthenticationConfig config = AuthenticationConfig.parse(rawValue);
+        await GetIt.I<AuthRepository>().upsert(config);
 
         _isScanningAllowed = false;
         Navigator.popUntil(context, (route) => route.settings.name == "/");

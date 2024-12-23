@@ -16,25 +16,25 @@ class AuthFromPage extends StatefulWidget {
 }
 
 class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver, WindowSizeStateMixin {
-  late final AuthConfiguration configuration = ModalRoute.of(context)?.settings.arguments as AuthConfiguration? ?? AuthConfiguration();
+  late final AuthenticationConfig config = ModalRoute.of(context)?.settings.arguments as AuthenticationConfig? ?? AuthenticationConfig();
 
-  late final TextEditingController issuerController = TextEditingController(text: configuration.issuer);
+  late final TextEditingController issuerController = TextEditingController(text: config.issuer);
 
-  late final TextEditingController accountController = TextEditingController(text: configuration.account);
+  late final TextEditingController accountController = TextEditingController(text: config.account);
 
-  late final TextEditingController secretController = TextEditingController(text: configuration.secret);
+  late final TextEditingController secretController = TextEditingController(text: config.secret);
 
-  late final TextEditingController pinController = TextEditingController(text: configuration.pin);
+  late final TextEditingController pinController = TextEditingController(text: config.pin);
 
-  late final TextEditingController digitsController = TextEditingController(text: configuration.digits.toString());
+  late final TextEditingController digitsController = TextEditingController(text: config.digits.toString());
 
-  late final TextEditingController periodController = TextEditingController(text: configuration.intervalSeconds.toString());
+  late final TextEditingController periodController = TextEditingController(text: config.intervalSeconds.toString());
 
-  late final TextEditingController counterController = TextEditingController(text: configuration.counter.toString());
+  late final TextEditingController counterController = TextEditingController(text: config.counter.toString());
 
   void onSave(BuildContext context) async {
     try {
-      configuration
+      config
         ..account = accountController.text
         ..issuer = issuerController.text
         ..secret = secretController.text
@@ -42,7 +42,7 @@ class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver
         ..digits = int.parse(digitsController.text)
         ..intervalSeconds = int.parse(periodController.text)
         ..counter = int.parse(counterController.text);
-      await GetIt.I<AuthRepository>().upsert(configuration);
+      await GetIt.I<AuthRepository>().upsert(config);
       Navigator.popUntil(context, (route) => route.settings.name == "/");
       showAlertDialog(context, "结果", "添加成功");
     } on ArgumentError catch (e) {
@@ -113,22 +113,22 @@ class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver
                     physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                     child: Column(
                       children: [
-                        buildDropdown<Type>("类型", configuration.type, typeLabels, (value) {
+                        buildDropdown<Type>("类型", config.type, typeLabels, (value) {
                           setState(() {
-                            configuration.type = value!;
+                            config.type = value!;
                           });
                         }),
                         buildTextField(issuerController, "发行方"),
                         buildTextField(accountController, "用户名"),
                         buildTextField(secretController, "密钥"),
-                        if (configuration.type == Type.totp || configuration.type == Type.hotp) buildDropdown<Algorithm>("算法", configuration.algorithm, algorithmLabels, (value) => configuration.algorithm = value!),
-                        if (configuration.type == Type.motp) buildTextField(pinController, "PIN码"),
-                        if (configuration.type == Type.totp || configuration.type == Type.hotp || configuration.type == Type.motp)
+                        if (config.type == Type.totp || config.type == Type.hotp) buildDropdown<Algorithm>("算法", config.algorithm, algorithmLabels, (value) => config.algorithm = value!),
+                        if (config.type == Type.motp) buildTextField(pinController, "PIN码"),
+                        if (config.type == Type.totp || config.type == Type.hotp || config.type == Type.motp)
                           Row(
                             children: [
                               Expanded(child: buildTextField(digitsController, "位数", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
-                              if (configuration.type == Type.totp || configuration.type == Type.motp) Expanded(child: buildTextField(periodController, "时间间隔(秒)", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
-                              if (configuration.type == Type.hotp) Expanded(child: buildTextField(counterController, "计数器", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
+                              if (config.type == Type.totp || config.type == Type.motp) Expanded(child: buildTextField(periodController, "时间间隔(秒)", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
+                              if (config.type == Type.hotp) Expanded(child: buildTextField(counterController, "计数器", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
                             ],
                           ),
                       ],

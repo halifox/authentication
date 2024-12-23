@@ -18,21 +18,21 @@ class AuthHomePage extends StatefulWidget {
 }
 
 class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver, WindowSizeStateMixin {
-  List<AuthConfiguration> configurations = [];
+  List<AuthenticationConfig> configs = [];
 
   void toAuthAddPage(BuildContext context) {
     Navigator.pushNamed(context, "/AuthAddPage");
   }
 
-  listener(List<AuthConfiguration> snapshot) {
+  listener(List<AuthenticationConfig> configs) {
     setState(() {
-      configurations = snapshot;
+      this.configs = configs;
     });
   }
 
   @override
   void initState() {
-    configurations = GetIt.I<AuthRepository>().snapshot;
+    configs = GetIt.I<AuthRepository>().snapshot;
     GetIt.I<AuthRepository>().addListener(listener);
     super.initState();
   }
@@ -71,10 +71,10 @@ class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver
                       mainAxisSpacing: 16,
                       crossAxisSpacing: 16,
                     ),
-                    itemCount: configurations.length,
+                    itemCount: configs.length,
                     itemBuilder: (context, index) {
-                      AuthConfiguration configuration = configurations[index];
-                      return AuthenticationWidget(key: ObjectKey(configuration), authConfiguration: configuration);
+                      AuthenticationConfig config = configs[index];
+                      return AuthenticationWidget(key: ObjectKey(config), config: config);
                     },
                   ),
                 ),

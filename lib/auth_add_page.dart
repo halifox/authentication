@@ -44,7 +44,6 @@ class AuthAddPage extends StatefulWidget {
 }
 
 class _AuthAddPageState extends State<AuthAddPage> with WidgetsBindingObserver, WindowSizeStateMixin {
-
   late final List<LargeButtonOption> options = [
     LargeButtonOption(icon: Icons.camera_enhance, label: "扫描二维码", onTap: scanQrCode),
     LargeButtonOption(icon: Icons.photo_library, label: "上传二维码", onTap: uploadQrCode),
@@ -88,8 +87,8 @@ class _AuthAddPageState extends State<AuthAddPage> with WidgetsBindingObserver, 
       try {
         final Barcode barcode = barcodes.first;
         final String rawValue = barcode.rawValue ?? "";
-        final AuthConfiguration configuration = AuthConfiguration.parse(rawValue);
-        await GetIt.I<AuthRepository>().upsert(configuration);
+        final AuthenticationConfig config = AuthenticationConfig.parse(rawValue);
+        await GetIt.I<AuthRepository>().upsert(config);
         return;
       } on ArgumentError catch (e) {
         showAlertDialog(context, "参数错误", e.message);

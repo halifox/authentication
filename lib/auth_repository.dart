@@ -5,32 +5,31 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:purity_auth/auth.dart';
 import 'package:purity_auth/encrypt_codec.dart';
-import 'package:purity_auth/otp.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:sembast_web/sembast_web.dart';
 
 abstract class AuthRepository {
-  List<AuthConfiguration> snapshot = [];
+  List<AuthenticationConfig> snapshot = [];
 
-  Future<List<AuthConfiguration>> selectAll();
+  Future<List<AuthenticationConfig>> selectAll();
 
-  Future<List<AuthConfiguration>> selectByIssuerAndAccount(String issuer, String account);
+  Future<List<AuthenticationConfig>> selectByIssuerAndAccount(String issuer, String account);
 
-  Future<String> insert(AuthConfiguration configuration);
+  Future<String> insert(AuthenticationConfig config);
 
-  Future<String> update(AuthConfiguration configuration);
+  Future<String> update(AuthenticationConfig config);
 
-  Future<String> upsert(AuthConfiguration configuration);
+  Future<String> upsert(AuthenticationConfig config);
 
-  Future<String?> delete(AuthConfiguration configuration);
+  Future<String?> delete(AuthenticationConfig config);
 
   void addListener(Listener listener);
 
   void removeListener(Listener listener);
 }
 
-typedef Listener = void Function(List<AuthConfiguration>);
+typedef Listener = void Function(List<AuthenticationConfig>);
 
 class AuthRepositoryImpl extends AuthRepository {
   final store = stringMapStoreFactory.store();
@@ -46,26 +45,26 @@ class AuthRepositoryImpl extends AuthRepository {
     final Database db = await _authDB;
     if (kDebugMode) {
       await store.delete(db);
-      upsert(AuthConfiguration(secret: "JQSR2VNH75AMLYRV"));
-      upsert(AuthConfiguration(secret: "JQSR2VNH75AMLYRV", type: Type.hotp));
+      upsert(AuthenticationConfig(secret: "JQSR2VNH75AMLYRV"));
+      upsert(AuthenticationConfig(secret: "JQSR2VNH75AMLYRV", type: Type.hotp));
     }
   }
 
   final List<Listener> _listeners = [];
 
   @override
-  void addListener(Listener a) {
-    _listeners.add(a);
+  void addListener(Listener listener) {
+    _listeners.add(listener);
   }
 
   @override
-  void removeListener(Listener a) {
-    _listeners.remove(a);
+  void removeListener(Listener listener) {
+    _listeners.remove(listener);
   }
 
-  void notifyListeners(List<AuthConfiguration> data) {
+  void notifyListeners(List<AuthenticationConfig> configs) {
     for (var listener in _listeners) {
-      listener(data);
+      listener(configs);
     }
   }
 
@@ -91,17 +90,17 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
-  Future<List<AuthConfiguration>> selectAll() async {
+  Future<List<AuthenticationConfig>> selectAll() async {
     final db = await _authDB;
     final records = await store.find(db);
     return records.map((e) {
-      final auth = AuthConfiguration.fromJson(e.value)..dbKey = e.key;
+      final auth = AuthenticationConfig.fromJson(e.value)..dbKey = e.key;
       return auth;
     }).toList();
   }
 
   @override
-  Future<List<AuthConfiguration>> selectByIssuerAndAccount(String issuer, String account) async {
+  Future<List<AuthenticationConfig>> selectByIssuerAndAccount(String issuer, String account) async {
     final db = await _authDB;
     final finder = Finder(
         filter: Filter.and([
@@ -109,41 +108,41 @@ class AuthRepositoryImpl extends AuthRepository {
       Filter.equals('account', account),
     ]));
     final records = await store.find(db, finder: finder);
-    return records.map((e) => AuthConfiguration.fromJson(e.value)..dbKey = e.key).toList();
+    return records.map((e) => AuthenticationConfig.fromJson(e.value)..dbKey = e.key).toList();
   }
 
   @override
-  Future<String> insert(AuthConfiguration configuration) async {
+  Future<String> insert(AuthenticationConfig config) async {
     final db = await _authDB;
-    if (configuration.isBase32Encoded && !AuthConfiguration.verifyBase32(configuration.secret)) {
+    if (config.isBase32Encoded && !AuthenticationConfig.verifyBase32(config.secret)) {
       throw ArgumentError("Invalid secret");
     }
-    if ((await selectByIssuerAndAccount(configuration.issuer, configuration.account)).isNotEmpty) {
+    if ((await selectByIssuerAndAccount(config.issuer, config.account)).isNotEmpty) {
       throw ArgumentError("label and issuer repeat on the db");
     }
-    return await store.add(db, AuthConfiguration.toJson(configuration));
+    return await store.add(db, AuthenticationConfig.toJson(config));
   }
 
   @override
-  Future<String> update(AuthConfiguration configuration) async {
+  Future<String> update(AuthenticationConfig config) async {
     final db = await _authDB;
-    final key = configuration.dbKey ?? (throw ArgumentError("Invalid dbKey is null"));
-    if (configuration.isBase32Encoded && !AuthConfiguration.verifyBase32(configuration.secret)) {
+    final key = config.dbKey ?? (throw ArgumentError("Invalid dbKey is null"));
+    if (config.isBase32Encoded && !AuthenticationConfig.verifyBase32(config.secret)) {
       throw ArgumentError("Invalid secret");
     }
-    await store.record(key).update(db, AuthConfiguration.toJson(configuration));
+    await store.record(key).update(db, AuthenticationConfig.toJson(config));
     return key;
   }
 
   @override
-  Future<String> upsert(AuthConfiguration configuration) async {
-    return configuration.dbKey != null ? await update(configuration) : await insert(configuration);
+  Future<String> upsert(AuthenticationConfig config) async {
+    return config.dbKey != null ? await update(config) : await insert(config);
   }
 
   @override
-  Future<String?> delete(AuthConfiguration configuration) async {
+  Future<String?> delete(AuthenticationConfig config) async {
     final db = await _authDB;
-    final key = configuration.dbKey ?? (throw ArgumentError("Invalid dbKey is null"));
+    final key = config.dbKey ?? (throw ArgumentError("Invalid dbKey is null"));
     return await store.record(key).delete(db);
   }
 }

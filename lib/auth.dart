@@ -24,7 +24,7 @@ enum Scheme {
 /// [counter] 计数器，适用于 HOTP，默认为 0。
 /// [pin] PIN，默认为空字符串。
 /// [isBase32Encoded] 指示是否为 Google 的实现，默认为 true。
-class AuthConfiguration {
+class AuthenticationConfig {
   Scheme scheme;
   Type type;
   String issuer;
@@ -41,7 +41,7 @@ class AuthConfiguration {
   //internal
   String? dbKey;
 
-  AuthConfiguration({
+  AuthenticationConfig({
     this.scheme = Scheme.otpauth,
     this.type = Type.totp,
     this.account = "",
@@ -57,21 +57,21 @@ class AuthConfiguration {
 
   /// 将 Auth 实例转换为 JSON 格式
   ///
-  /// [configuration] 要转换的 Auth 实例。
+  /// [config] 要转换的 Auth 实例。
   /// 返回一个包含 Auth 实例属性的 Map。
-  static Map<String, dynamic> toJson(AuthConfiguration configuration) {
+  static Map<String, dynamic> toJson(AuthenticationConfig config) {
     return {
-      'scheme': configuration.scheme.index,
-      'type': configuration.type.index,
-      'account': configuration.account,
-      'secret': configuration.secret,
-      'issuer': configuration.issuer,
-      'algorithm': configuration.algorithm.index,
-      'digits': configuration.digits,
-      'intervalSeconds': configuration.intervalSeconds,
-      'counter': configuration.counter,
-      'pin': configuration.pin,
-      'isBase32Encoded': configuration.isBase32Encoded,
+      'scheme': config.scheme.index,
+      'type': config.type.index,
+      'account': config.account,
+      'secret': config.secret,
+      'issuer': config.issuer,
+      'algorithm': config.algorithm.index,
+      'digits': config.digits,
+      'intervalSeconds': config.intervalSeconds,
+      'counter': config.counter,
+      'pin': config.pin,
+      'isBase32Encoded': config.isBase32Encoded,
     };
   }
 
@@ -79,8 +79,8 @@ class AuthConfiguration {
   ///
   /// [map] 包含 Auth 属性的 Map。
   /// 返回一个新的 Auth 实例。
-  factory AuthConfiguration.fromJson(Map<String, dynamic> map) {
-    return AuthConfiguration(
+  factory AuthenticationConfig.fromJson(Map<String, dynamic> map) {
+    return AuthenticationConfig(
       scheme: Scheme.values.elementAt(map['scheme']),
       type: Type.values.elementAt(map['type']),
       account: map['account'] as String,
@@ -146,7 +146,7 @@ class AuthConfiguration {
   //     period：可选参数，用于 totp 类型，表示 OTP 的有效时间段，默认是 30 秒。
   //     counter：用于 hotp 类型的计数器，指定当前的计数值。
 
-  static AuthConfiguration parse(String uriString) {
+  static AuthenticationConfig parse(String uriString) {
     Uri uri = Uri.parse(uriString);
 
     String? scheme = uri.scheme;
@@ -160,7 +160,7 @@ class AuthConfiguration {
     String period = uri.queryParameters['period'] ?? "30";
     String counter = uri.queryParameters['counter'] ?? "0";
 
-    return AuthConfiguration(
+    return AuthenticationConfig(
       scheme: parseScheme(scheme),
       type: parseType(type),
       account: parseAccount(label, issuer),

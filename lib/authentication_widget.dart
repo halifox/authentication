@@ -11,9 +11,9 @@ import 'package:purity_auth/otp.dart';
 
 /// 认证项小部件
 class AuthenticationWidget extends StatefulWidget {
-  final AuthConfiguration authConfiguration; // 认证对象
+  final AuthenticationConfig config; // 认证对象
 
-  const AuthenticationWidget({super.key, required this.authConfiguration});
+  const AuthenticationWidget({super.key, required this.config});
 
   @override
   State<AuthenticationWidget> createState() => _AuthenticationWidgetState();
@@ -21,7 +21,7 @@ class AuthenticationWidget extends StatefulWidget {
 
 /// 认证项的状态类
 class _AuthenticationWidgetState extends State<AuthenticationWidget> {
-  late final configuration = widget.authConfiguration;
+  late final configuration = widget.config;
   String authCode = "--------";
 
   Timer? timer;
