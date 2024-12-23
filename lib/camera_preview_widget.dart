@@ -9,14 +9,14 @@ import 'package:purity_auth/dialog.dart';
 
 /// 相机视图组件
 class CameraPreviewWidget extends StatefulWidget {
-  CameraPreviewWidget({
-    Key? key,
+  const CameraPreviewWidget({
+    super.key,
     required this.onImageCaptured,
     this.onCameraFeedReady,
     this.onDetectorViewModeChanged,
     this.onCameraLensDirectionChanged,
     this.initialCameraLensDirection = CameraLensDirection.back,
-  }) : super(key: key);
+  });
 
   /// 用于处理输入图像的回调函数
   final Function(InputImage inputImage) onImageCaptured;
@@ -38,7 +38,7 @@ class CameraPreviewWidget extends StatefulWidget {
 }
 
 class _CameraPreviewWidgetState extends State<CameraPreviewWidget> {
-  static List<CameraDescription> _availableCameras = [];
+  static List<CameraDescription> _availableCameras = <CameraDescription>[];
   CameraController? _cameraController;
   int _selectedCameraIndex = -1;
 
@@ -53,7 +53,7 @@ class _CameraPreviewWidgetState extends State<CameraPreviewWidget> {
     if (_availableCameras.isEmpty) {
       _availableCameras = await availableCameras();
     }
-    for (var i = 0; i < _availableCameras.length; i++) {
+    for (int i = 0; i < _availableCameras.length; i++) {
       if (_availableCameras[i].lensDirection == widget.initialCameraLensDirection) {
         _selectedCameraIndex = i;
         break;
@@ -80,7 +80,7 @@ class _CameraPreviewWidgetState extends State<CameraPreviewWidget> {
 
   /// 启动实时视频流
   Future<void> _startCameraFeed() async {
-    final camera = _availableCameras[_selectedCameraIndex];
+    final CameraDescription camera = _availableCameras[_selectedCameraIndex];
     _cameraController = CameraController(
       camera,
       ResolutionPreset.high,
@@ -98,13 +98,13 @@ class _CameraPreviewWidgetState extends State<CameraPreviewWidget> {
       setState(() {});
     }, onError: (e) {
       if (e is CameraException) {
-        if (e.code == "CameraAccessDenied") {
+        if (e.code == 'CameraAccessDenied') {
           _showPermissionAlert();
         } else {
           showAlertDialog(context, e.code, e.description);
         }
       } else {
-        showAlertDialog(context, "发生了一些意料之外的错误", "$e");
+        showAlertDialog(context, '发生了一些意料之外的错误', '$e');
       }
     });
   }
@@ -118,12 +118,12 @@ class _CameraPreviewWidgetState extends State<CameraPreviewWidget> {
 
   /// 处理相机捕获的图像
   void _processCameraImage(CameraImage image) {
-    final inputImage = _createInputImageFromCameraImage(image);
+    final InputImage? inputImage = _createInputImageFromCameraImage(image);
     if (inputImage == null) return;
     widget.onImageCaptured(inputImage);
   }
 
-  final _orientations = {
+  final Map<DeviceOrientation, int> _orientations = <DeviceOrientation, int>{
     DeviceOrientation.portraitUp: 0,
     DeviceOrientation.landscapeLeft: 90,
     DeviceOrientation.portraitDown: 180,
@@ -135,25 +135,25 @@ class _CameraPreviewWidgetState extends State<CameraPreviewWidget> {
   InputImage? _createInputImageFromCameraImage(CameraImage image) {
     if (_cameraController == null) return null;
 
-    final camera = _availableCameras[_selectedCameraIndex];
-    final sensorOrientation = camera.sensorOrientation;
+    final CameraDescription camera = _availableCameras[_selectedCameraIndex];
+    final int sensorOrientation = camera.sensorOrientation;
     InputImageRotation? rotation;
 
     if (Platform.isIOS) {
       rotation = InputImageRotationValue.fromRawValue(sensorOrientation);
     } else if (Platform.isAndroid) {
-      var rotationCompensation = _orientations[_cameraController!.value.deviceOrientation];
+      int? rotationCompensation = _orientations[_cameraController!.value.deviceOrientation];
       if (rotationCompensation == null) return null;
       rotationCompensation = (camera.lensDirection == CameraLensDirection.front) ? (sensorOrientation + rotationCompensation) % 360 : (sensorOrientation - rotationCompensation + 360) % 360;
       rotation = InputImageRotationValue.fromRawValue(rotationCompensation);
     }
     if (rotation == null) return null;
 
-    final format = InputImageFormatValue.fromRawValue(image.format.raw);
+    final InputImageFormat? format = InputImageFormatValue.fromRawValue(image.format.raw as int);
     if (format == null || (Platform.isAndroid && format != InputImageFormat.nv21) || (Platform.isIOS && format != InputImageFormat.bgra8888)) return null;
 
     if (image.planes.length != 1) return null;
-    final plane = image.planes.first;
+    final Plane plane = image.planes.first;
 
     return InputImage.fromBytes(
       bytes: plane.bytes,
@@ -171,21 +171,21 @@ class _CameraPreviewWidgetState extends State<CameraPreviewWidget> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) {
+      builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("权限不足"),
-          content: Text("需要相机权限"),
-          actions: [
+          title: const Text('权限不足'),
+          content: const Text('需要相机权限'),
+          actions: <Widget>[
             ElevatedButton(
-              onPressed: () => Navigator.popUntil(context, (route) => route.settings.name == "/AuthAddPage"),
-              child: Text("取消"),
+              onPressed: () => Navigator.popUntil(context, (Route route) => route.settings.name == '/AuthAddPage'),
+              child: const Text('取消'),
             ),
             FilledButton(
               onPressed: () {
-                Navigator.popUntil(context, (route) => route.settings.name == "/AuthAddPage");
+                Navigator.popUntil(context, (Route route) => route.settings.name == '/AuthAddPage');
                 openAppSettings();
               },
-              child: Text("申请相机权限"),
+              child: const Text('申请相机权限'),
             ),
           ],
         );

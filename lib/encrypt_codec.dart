@@ -7,11 +7,11 @@ import 'package:encrypt/encrypt.dart';
 // ignore: implementation_imports
 import 'package:sembast/src/api/v2/sembast.dart';
 
-var _random = Random.secure();
+Random _random = Random.secure();
 
 /// Random bytes generator
 Uint8List _randBytes(int length) {
-  return Uint8List.fromList(List<int>.generate(length, (i) => _random.nextInt(256)));
+  return Uint8List.fromList(List<int>.generate(length, (int i) => _random.nextInt(256)));
 }
 
 /// FOR DEMONSTRATION PURPOSES ONLY -- do not use in production as-is!
@@ -29,7 +29,7 @@ Uint8List _randBytes(int length) {
 ///
 /// It uses MD5 which generates a 16 bytes blob, size needed for Salsa20
 Uint8List _generateEncryptPassword(String password) {
-  var blob = Uint8List.fromList(md5.convert(utf8.encode(password)).bytes);
+  final Uint8List blob = Uint8List.fromList(md5.convert(utf8.encode(password)).bytes);
   assert(blob.length == 16);
   return blob;
 }
@@ -41,14 +41,14 @@ class _EncryptEncoder extends Converter<Object?, String> {
   _EncryptEncoder(this.salsa20);
 
   @override
-  String convert(dynamic input) {
+  String convert(Object? input) {
     // Generate random initial value
-    final iv = _randBytes(8);
-    final ivEncoded = base64.encode(iv);
+    final Uint8List iv = _randBytes(8);
+    final String ivEncoded = base64.encode(iv);
     assert(ivEncoded.length == 12);
 
     // Encode the input value
-    final encoded = Encrypter(salsa20).encrypt(json.encode(input), iv: IV(iv)).base64;
+    final String encoded = Encrypter(salsa20).encrypt(json.encode(input), iv: IV(iv)).base64;
 
     // Prepend the initial value
     return '$ivEncoded$encoded';
@@ -65,13 +65,13 @@ class _EncryptDecoder extends Converter<String, Object?> {
   dynamic convert(String input) {
     // Read the initial value that was prepended
     assert(input.length >= 12);
-    final iv = base64.decode(input.substring(0, 12));
+    final Uint8List iv = base64.decode(input.substring(0, 12));
 
     // Extract the real input
     input = input.substring(12);
 
     // Decode the input
-    var decoded = json.decode(Encrypter(salsa20).decrypt64(input, iv: IV(iv)));
+    final decoded = json.decode(Encrypter(salsa20).decrypt64(input, iv: IV(iv)));
     if (decoded is Map) {
       return decoded.cast<String, Object?>();
     }
@@ -85,7 +85,7 @@ class _EncryptCodec extends Codec<Object?, String> {
   late _EncryptDecoder _decoder;
 
   _EncryptCodec(Uint8List passwordBytes) {
-    var salsa20 = Salsa20(Key(passwordBytes));
+    final Salsa20 salsa20 = Salsa20(Key(passwordBytes));
     _encoder = _EncryptEncoder(salsa20);
     _decoder = _EncryptDecoder(salsa20);
   }
@@ -98,7 +98,7 @@ class _EncryptCodec extends Codec<Object?, String> {
 }
 
 /// Our plain text signature
-const _encryptCodecSignature = 'encrypt';
+const String _encryptCodecSignature = 'encrypt';
 
 /// Create a codec to use to open a database with encrypted stored data.
 ///

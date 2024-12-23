@@ -108,7 +108,7 @@ class OTP {
   static int _generateCode(String secret, int time, int length, crypto.Hash mac, int secretbytes, {bool isHOTP = false, bool isBase32 = false}) {
     length = (length > 0) ? length : 6;
 
-    var secretList = Uint8List.fromList(utf8.encode(secret));
+    Uint8List secretList = Uint8List.fromList(utf8.encode(secret));
     if (isBase32) {
       secretList = base32.base32.decode(secret.toUpperCase());
     }
@@ -119,14 +119,14 @@ class OTP {
       _showHOTPWarning(mac);
     }
 
-    final timebytes = _int2bytes(time);
+    final Uint8List timebytes = _int2bytes(time);
 
-    final hmac = crypto.Hmac(mac, secretList);
-    final digest = hmac.convert(timebytes).bytes;
+    final crypto.Hmac hmac = crypto.Hmac(mac, secretList);
+    final List<int> digest = hmac.convert(timebytes).bytes;
 
-    final offset = digest[digest.length - 1] & 0x0f;
+    final int offset = digest[digest.length - 1] & 0x0f;
 
-    final binary = ((digest[offset] & 0x7f) << 24) | ((digest[offset + 1] & 0xff) << 16) | ((digest[offset + 2] & 0xff) << 8) | (digest[offset + 3] & 0xff);
+    final int binary = ((digest[offset] & 0x7f) << 24) | ((digest[offset + 1] & 0xff) << 16) | ((digest[offset + 2] & 0xff) << 8) | (digest[offset + 3] & 0xff);
 
     return binary % pow(10, length) as int;
   }
@@ -135,14 +135,14 @@ class OTP {
   static String getInternalDigest(String secret, int counter, int length, crypto.Hash mac, {bool isGoogle = false}) {
     length = (length > 0) ? length : 6;
 
-    var secretList = Uint8List.fromList(utf8.encode(secret));
+    Uint8List secretList = Uint8List.fromList(utf8.encode(secret));
     if (isGoogle) {
       secretList = base32.base32.decode(secret);
     }
-    final timebytes = _int2bytes(counter);
+    final Uint8List timebytes = _int2bytes(counter);
 
-    final hmac = crypto.Hmac(mac, secretList);
-    final digest = hmac.convert(timebytes).bytes;
+    final crypto.Hmac hmac = crypto.Hmac(mac, secretList);
+    final List<int> digest = hmac.convert(timebytes).bytes;
 
     return _hexEncode(Uint8List.fromList(digest));
   }
@@ -155,8 +155,8 @@ class OTP {
       return false;
     }
 
-    var result = true;
-    for (var i = 0; i < code.length; i++) {
+    bool result = true;
+    for (int i = 0; i < code.length; i++) {
       // Keep result at the end otherwise Dart VM will shortcircuit on a result thats already false.
       result = (code[i] == othercode[i]) && result;
     }
@@ -165,10 +165,10 @@ class OTP {
 
   /// 生成 Base32 字符串格式的加密安全随机秘密。
   static String randomSecret() {
-    final rand = Random.secure();
-    final bytes = <int>[];
+    final Random rand = Random.secure();
+    final List<int> bytes = <int>[];
 
-    for (var i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
       bytes.add(rand.nextInt(256));
     }
 
@@ -184,14 +184,14 @@ class OTP {
     return intervalMilliseconds - (unixMilliseconds % intervalMilliseconds);
   }
 
-  static String _hexEncode(final Uint8List input) => [for (int i = 0; i < input.length; i++) input[i].toRadixString(16).padLeft(2, '0')].join();
+  static String _hexEncode(final Uint8List input) => <String>[for (int i = 0; i < input.length; i++) input[i].toRadixString(16).padLeft(2, '0')].join();
 
   static Uint8List _int2bytes(int long) {
     // we want to represent the input as a 8-bytes array
-    final byteArray = Uint8List(8);
+    final Uint8List byteArray = Uint8List(8);
 
-    for (var index = byteArray.length - 1; index >= 0; index--) {
-      final byte = long & 0xff;
+    for (int index = byteArray.length - 1; index >= 0; index--) {
+      final int byte = long & 0xff;
       byteArray[index] = byte;
       long = (long - byte) ~/ 256;
     }
@@ -205,8 +205,8 @@ class OTP {
     if (secret.length >= length) return secret;
     if (secret.isEmpty) return secret;
     // ignore: prefer_collection_literals
-    final newList = <int>[];
-    for (var i = 0; i * secret.length < length; i++) {
+    final List<int> newList = <int>[];
+    for (int i = 0; i * secret.length < length; i++) {
       newList.addAll(secret);
     }
 
@@ -219,13 +219,13 @@ class OTP {
     }
   }
 
-  static const HashFunctions = {
+  static const Map<Algorithm, crypto.Hash> HashFunctions = <Algorithm, crypto.Hash>{
     Algorithm.SHA256: crypto.sha256,
     Algorithm.SHA512: crypto.sha512,
     Algorithm.SHA1: crypto.sha1,
   };
 
-  static const ByteLengths = {
+  static const Map<Algorithm, int> ByteLengths = <Algorithm, int>{
     Algorithm.SHA256: 32,
     Algorithm.SHA512: 64,
     Algorithm.SHA1: 20,

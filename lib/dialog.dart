@@ -11,12 +11,12 @@ Future<int?> showAlertDialog(
     barrierDismissible: barrierDismissible,
     pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
       return AlertDialog(
-        title: Text(title ?? ""),
-        content: Text(message ?? ""),
-        actions: [
+        title: Text(title ?? ''),
+        content: Text(message ?? ''),
+        actions: <Widget>[
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
-            child: Text("确定"),
+            child: const Text('确定'),
           ),
         ],
       );

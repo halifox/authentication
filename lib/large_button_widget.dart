@@ -22,29 +22,29 @@ class LargeButtonWidget extends StatelessWidget {
   final String label;
   final void Function(BuildContext)? onTap;
 
-  LargeButtonWidget(this.icon, this.label, this.onTap, {super.key});
+  const LargeButtonWidget(this.icon, this.label, this.onTap, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => onTap?.call(context),
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         alignment: Alignment.center,
-        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: BorderRadius.all(Radius.circular(24))),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: const BorderRadius.all(Radius.circular(24))),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Container(
               height: 48,
               width: 48,
               alignment: Alignment.center,
-              decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.all(Radius.circular(12))),
+              decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: const BorderRadius.all(Radius.circular(12))),
               child: Icon(icon, size: 24, color: Theme.of(context).colorScheme.onPrimary),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Text(label, maxLines: 1, style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
           ],
         ),
       ),

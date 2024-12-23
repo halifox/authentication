@@ -11,17 +11,17 @@ import 'package:purity_auth/top_bar.dart';
 import 'package:purity_auth/window_size_controller.dart';
 
 class AuthHomePage extends StatefulWidget {
-  AuthHomePage({super.key});
+  const AuthHomePage({super.key});
 
   @override
   State<AuthHomePage> createState() => _AuthHomePageState();
 }
 
 class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver, WindowSizeStateMixin {
-  List<AuthenticationConfig> configs = [];
+  List<AuthenticationConfig> configs = <AuthenticationConfig>[];
 
   void toAuthAddPage(BuildContext context) {
-    Navigator.pushNamed(context, "/AuthAddPage");
+    Navigator.pushNamed(context, '/AuthAddPage');
   }
 
   listener(List<AuthenticationConfig> configs) {
@@ -52,10 +52,10 @@ class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver
           child: SizedBox(
             width: contentWidth,
             child: Column(
-              children: [
+              children: <Widget>[
                 TopBar(
                   context,
-                  "Purity Auth",
+                  'Purity Auth',
                   leftIcon: Icons.settings,
                   leftOnPressed: null,
                   rightIcon: Icons.add,
@@ -63,8 +63,8 @@ class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver
                 ),
                 Expanded(
                   child: GridView.builder(
-                    physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                       maxCrossAxisExtent: maxCrossAxisExtent,
                       mainAxisExtent: 140,
@@ -72,8 +72,8 @@ class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver
                       crossAxisSpacing: 16,
                     ),
                     itemCount: configs.length,
-                    itemBuilder: (context, index) {
-                      AuthenticationConfig config = configs[index];
+                    itemBuilder: (BuildContext context, int index) {
+                      final AuthenticationConfig config = configs[index];
                       return AuthenticationWidget(key: ObjectKey(config), config: config);
                     },
                   ),
@@ -86,7 +86,7 @@ class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver
     );
   }
 
-  void setSystemUIOverlayStyle(context) {
+  void setSystemUIOverlayStyle(BuildContext context) {
     if (!kIsWeb && Platform.isAndroid) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         systemNavigationBarColor: Theme.of(context).colorScheme.surface,

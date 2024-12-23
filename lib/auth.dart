@@ -53,19 +53,19 @@ class AuthenticationConfig {
   AuthenticationConfig({
     this.scheme = Scheme.otpauth,
     this.type = Type.totp,
-    this.account = "",
-    this.secret = "",
-    this.issuer = "",
+    this.account = '',
+    this.secret = '',
+    this.issuer = '',
     this.algorithm = Algorithm.SHA1,
     this.digits = 6,
     this.intervalSeconds = 30,
     this.counter = 0,
-    this.pin = "",
+    this.pin = '',
     this.isBase32Encoded = true,
   });
 
   static Map<String, dynamic> toJson(AuthenticationConfig config) {
-    return {
+    return <String, dynamic>{
       'scheme': config.scheme.index,
       'type': config.type.index,
       'account': config.account,
@@ -82,12 +82,12 @@ class AuthenticationConfig {
 
   factory AuthenticationConfig.fromJson(Map<String, dynamic> map) {
     return AuthenticationConfig(
-      scheme: Scheme.values.elementAt(map['scheme']),
-      type: Type.values.elementAt(map['type']),
+      scheme: Scheme.values.elementAt(map['scheme'] as int),
+      type: Type.values.elementAt(map['type'] as int),
       account: map['account'] as String,
       secret: map['secret'] as String,
       issuer: map['issuer'] as String,
-      algorithm: Algorithm.values.elementAt(map['algorithm']),
+      algorithm: Algorithm.values.elementAt(map['algorithm'] as int),
       digits: map['digits'] as int,
       intervalSeconds: map['intervalSeconds'] as int,
       counter: map['counter'] as int,
@@ -122,7 +122,7 @@ class AuthenticationConfig {
   static bool verifyBase32(String? input) {
     try {
       if (input == null || input.isEmpty) {
-        throw ArgumentError("Invalid secret");
+        throw ArgumentError('Invalid secret');
       }
       base32.decode(input);
       return true;
@@ -151,18 +151,18 @@ class AuthenticationConfig {
   ///     - `period`: 可选参数，适用于 `totp`，表示 OTP 有效时间周期，默认为 30 秒。
   ///     - `counter`: 可选参数，适用于 `hotp`，指定当前计数器值。
   static AuthenticationConfig parse(String uriString) {
-    Uri uri = Uri.parse(uriString);
+    final Uri uri = Uri.parse(uriString);
 
-    String? scheme = uri.scheme;
-    String? type = uri.host;
-    String? label = Uri.decodeFull(uri.path.substring(1));
-    String? issuer = uri.queryParameters['issuer'];
-    String? account = uri.queryParameters['account'];
-    String? algorithm = uri.queryParameters['algorithm'];
-    String? secret = uri.queryParameters['secret'];
-    String digits = uri.queryParameters['digits'] ?? "6";
-    String period = uri.queryParameters['period'] ?? "30";
-    String counter = uri.queryParameters['counter'] ?? "0";
+    final String scheme = uri.scheme;
+    final String type = uri.host;
+    final String label = Uri.decodeFull(uri.path.substring(1));
+    final String? issuer = uri.queryParameters['issuer'];
+    final String? account = uri.queryParameters['account'];
+    final String? algorithm = uri.queryParameters['algorithm'];
+    final String? secret = uri.queryParameters['secret'];
+    final String digits = uri.queryParameters['digits'] ?? '6';
+    final String period = uri.queryParameters['period'] ?? '30';
+    final String counter = uri.queryParameters['counter'] ?? '0';
 
     return AuthenticationConfig(
       scheme: parseScheme(scheme),
@@ -179,21 +179,21 @@ class AuthenticationConfig {
 
   static Scheme parseScheme(String? scheme) {
     switch (scheme?.toUpperCase()) {
-      case "OTPAUTH":
+      case 'OTPAUTH':
         return Scheme.otpauth;
       default:
-        throw ArgumentError("Invalid scheme: $scheme");
+        throw ArgumentError('Invalid scheme: $scheme');
     }
   }
 
   static Type parseType(String? type) {
     switch (type?.toUpperCase()) {
-      case "TOTP":
+      case 'TOTP':
         return Type.totp;
-      case "HOTP":
+      case 'HOTP':
         return Type.hotp;
       default:
-        throw ArgumentError("Invalid type: $type");
+        throw ArgumentError('Invalid type: $type');
     }
   }
 
@@ -201,7 +201,7 @@ class AuthenticationConfig {
     if (label.contains(':')) {
       return issuer ?? label.split(':')[0];
     } else {
-      return issuer ?? "未提供发行者";
+      return issuer ?? '未提供发行者';
     }
   }
 
@@ -217,20 +217,20 @@ class AuthenticationConfig {
     switch (algorithm?.toUpperCase()) {
       case null:
         return Algorithm.SHA1;
-      case "SHA1":
+      case 'SHA1':
         return Algorithm.SHA1;
-      case "SHA256":
+      case 'SHA256':
         return Algorithm.SHA256;
-      case "SHA512":
+      case 'SHA512':
         return Algorithm.SHA512;
       default:
-        throw ArgumentError("Invalid algorithm: $algorithm");
+        throw ArgumentError('Invalid algorithm: $algorithm');
     }
   }
 
   static String parseSecret(String? secret) {
     if (secret == null || !verifyBase32(secret)) {
-      throw ArgumentError("Invalid secret");
+      throw ArgumentError('Invalid secret');
     }
     return secret;
   }

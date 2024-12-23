@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
@@ -10,7 +11,7 @@ import 'package:sembast/sembast_io.dart';
 import 'package:sembast_web/sembast_web.dart';
 
 abstract class AuthRepository {
-  List<AuthenticationConfig> snapshot = [];
+  List<AuthenticationConfig> snapshot = <AuthenticationConfig>[];
 
   Future<List<AuthenticationConfig>> selectAll();
 
@@ -32,7 +33,7 @@ abstract class AuthRepository {
 typedef Listener = void Function(List<AuthenticationConfig>);
 
 class AuthRepositoryImpl extends AuthRepository {
-  final store = stringMapStoreFactory.store();
+  final StoreRef<String, Map<String, Object?>> store = stringMapStoreFactory.store();
   final Completer<Database> _authDBCompleter = Completer();
 
   Future<Database> get _authDB async => _authDBCompleter.future;
@@ -45,12 +46,12 @@ class AuthRepositoryImpl extends AuthRepository {
     final Database db = await _authDB;
     if (kDebugMode) {
       await store.delete(db);
-      upsert(AuthenticationConfig(secret: "JQSR2VNH75AMLYRV"));
-      upsert(AuthenticationConfig(secret: "JQSR2VNH75AMLYRV", type: Type.hotp));
+      upsert(AuthenticationConfig(secret: 'JQSR2VNH75AMLYRV'));
+      upsert(AuthenticationConfig(secret: 'JQSR2VNH75AMLYRV', type: Type.hotp));
     }
   }
 
-  final List<Listener> _listeners = [];
+  final List<Listener> _listeners = <Listener>[];
 
   @override
   void addListener(Listener listener) {
@@ -63,26 +64,26 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   void notifyListeners(List<AuthenticationConfig> configs) {
-    for (var listener in _listeners) {
+    for (Listener listener in _listeners) {
       listener(configs);
     }
   }
 
   Future<void> _initDatabase() async {
     if (kIsWeb) {
-      final db = await EncryptedDatabaseFactory(databaseFactory: databaseFactoryWeb, password: '99999').openDatabase('auth');
+      final Database db = await EncryptedDatabaseFactory(databaseFactory: databaseFactoryWeb, password: '99999').openDatabase('auth');
       _authDBCompleter.complete(db);
     } else {
-      final dir = await getApplicationDocumentsDirectory();
+      final Directory dir = await getApplicationDocumentsDirectory();
       await dir.create(recursive: true);
-      final path = join(dir.path, 'auth.db');
-      final db = await EncryptedDatabaseFactory(databaseFactory: databaseFactoryIo, password: '99999').openDatabase(path);
+      final String path = join(dir.path, 'auth.db');
+      final Database db = await EncryptedDatabaseFactory(databaseFactory: databaseFactoryIo, password: '99999').openDatabase(path);
       _authDBCompleter.complete(db);
     }
   }
 
   Future<void> _listenAuthDB() async {
-    final db = await _authDB;
+    final Database db = await _authDB;
     store.query().onSnapshot(db).listen((_) async {
       snapshot = await selectAll();
       notifyListeners(snapshot);
@@ -91,44 +92,44 @@ class AuthRepositoryImpl extends AuthRepository {
 
   @override
   Future<List<AuthenticationConfig>> selectAll() async {
-    final db = await _authDB;
-    final records = await store.find(db);
-    return records.map((e) {
-      final auth = AuthenticationConfig.fromJson(e.value)..key = e.key;
+    final Database db = await _authDB;
+    final List<RecordSnapshot<String, Map<String, Object?>>> records = await store.find(db);
+    return records.map((RecordSnapshot<String, Map<String, Object?>> e) {
+      final AuthenticationConfig auth = AuthenticationConfig.fromJson(e.value)..key = e.key;
       return auth;
     }).toList();
   }
 
   @override
   Future<List<AuthenticationConfig>> selectByIssuerAndAccount(String issuer, String account) async {
-    final db = await _authDB;
-    final finder = Finder(
-        filter: Filter.and([
+    final Database db = await _authDB;
+    final Finder finder = Finder(
+        filter: Filter.and(<Filter>[
       Filter.equals('issuer', issuer),
       Filter.equals('account', account),
     ]));
-    final records = await store.find(db, finder: finder);
-    return records.map((e) => AuthenticationConfig.fromJson(e.value)..key = e.key).toList();
+    final List<RecordSnapshot<String, Map<String, Object?>>> records = await store.find(db, finder: finder);
+    return records.map((RecordSnapshot<String, Map<String, Object?>> e) => AuthenticationConfig.fromJson(e.value)..key = e.key).toList();
   }
 
   @override
   Future<String> insert(AuthenticationConfig config) async {
-    final db = await _authDB;
+    final Database db = await _authDB;
     if (config.isBase32Encoded && !AuthenticationConfig.verifyBase32(config.secret)) {
-      throw ArgumentError("Invalid secret");
+      throw ArgumentError('Invalid secret');
     }
     if ((await selectByIssuerAndAccount(config.issuer, config.account)).isNotEmpty) {
-      throw ArgumentError("label and issuer repeat on the db");
+      throw ArgumentError('label and issuer repeat on the db');
     }
     return await store.add(db, AuthenticationConfig.toJson(config));
   }
 
   @override
   Future<String> update(AuthenticationConfig config) async {
-    final db = await _authDB;
-    final key = config.key ?? (throw ArgumentError("Invalid dbKey is null"));
+    final Database db = await _authDB;
+    final String key = config.key ?? (throw ArgumentError('Invalid dbKey is null'));
     if (config.isBase32Encoded && !AuthenticationConfig.verifyBase32(config.secret)) {
-      throw ArgumentError("Invalid secret");
+      throw ArgumentError('Invalid secret');
     }
     await store.record(key).update(db, AuthenticationConfig.toJson(config));
     return key;
@@ -141,8 +142,8 @@ class AuthRepositoryImpl extends AuthRepository {
 
   @override
   Future<String?> delete(AuthenticationConfig config) async {
-    final db = await _authDB;
-    final key = config.key ?? (throw ArgumentError("Invalid dbKey is null"));
+    final Database db = await _authDB;
+    final String key = config.key ?? (throw ArgumentError('Invalid dbKey is null'));
     return await store.record(key).delete(db);
   }
 }

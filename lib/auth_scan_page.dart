@@ -10,6 +10,8 @@ import 'package:purity_auth/top_bar.dart';
 
 /// 扫描条形码的页面
 class AuthScanPage extends StatefulWidget {
+  const AuthScanPage({super.key});
+
   @override
   _AuthScanPageState createState() => _AuthScanPageState();
 }
@@ -34,13 +36,13 @@ class _AuthScanPageState extends State<AuthScanPage> {
       body: SafeArea(
         child: Stack(
           alignment: Alignment.center,
-          children: [
+          children: <Widget>[
             CameraPreviewWidget(
-              onImageCaptured: (inputImage) => _processAndScanImage(context, inputImage),
+              onImageCaptured: (InputImage inputImage) => _processAndScanImage(context, inputImage),
               initialCameraLensDirection: _currentCameraLensDirection,
-              onCameraLensDirectionChanged: (newDirection) => setState(() => _currentCameraLensDirection = newDirection),
+              onCameraLensDirectionChanged: (CameraLensDirection newDirection) => setState(() => _currentCameraLensDirection = newDirection),
             ),
-            Align(alignment: Alignment.topCenter, child: TopBar(context, "扫描二维码")),
+            Align(alignment: Alignment.topCenter, child: TopBar(context, '扫描二维码')),
           ],
         ),
       ),
@@ -54,37 +56,37 @@ class _AuthScanPageState extends State<AuthScanPage> {
     if (!_isScanningAllowed || _isProcessing) return;
 
     _isProcessing = true;
-    final barcodes = await _barcodeScanner.processImage(inputImage);
+    final List<Barcode> barcodes = await _barcodeScanner.processImage(inputImage);
 
     if (barcodes.isNotEmpty) {
       if (barcodes.length > 1) {
-        showAlertDialog(context, "扫描结果", "识别到多个二维码");
+        showAlertDialog(context, '扫描结果', '识别到多个二维码');
         return;
       }
 
       try {
         final Barcode barcode = barcodes.first;
-        final String rawValue = barcode.rawValue ?? "";
+        final String rawValue = barcode.rawValue ?? '';
         final AuthenticationConfig config = AuthenticationConfig.parse(rawValue);
         await GetIt.I<AuthRepository>().upsert(config);
 
         _isScanningAllowed = false;
-        Navigator.popUntil(context, (route) => route.settings.name == "/");
-        showAlertDialog(context, "扫描结果", "添加成功");
+        Navigator.popUntil(context, (Route route) => route.settings.name == '/');
+        showAlertDialog(context, '扫描结果', '添加成功');
 
         return;
       } on ArgumentError catch (e) {
-        showAlertDialog(context, "参数错误", e.message);
+        showAlertDialog(context, '参数错误', e.message as String?);
         return;
       } on FormatException catch (e) {
-        showAlertDialog(context, "格式错误", e.message);
+        showAlertDialog(context, '格式错误', e.message);
         return;
       } catch (e) {
-        showAlertDialog(context, "未知错误", e.toString());
+        showAlertDialog(context, '未知错误', e.toString());
         return;
       }
     }
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     _isProcessing = false;
     if (mounted) setState(() {});
   }

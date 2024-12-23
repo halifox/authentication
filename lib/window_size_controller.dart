@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 mixin WindowSizeStateMixin<T extends StatefulWidget> on State<T> implements WidgetsBindingObserver {
-  final maxCrossAxisExtent = 500.0;
-  var contentWidth = 500.0;
+  final double maxCrossAxisExtent = 500.0;
+  double contentWidth = 500.0;
 
   @override
   void initState() {
@@ -19,9 +19,9 @@ mixin WindowSizeStateMixin<T extends StatefulWidget> on State<T> implements Widg
 
   @override
   void didChangeMetrics() {
-    final size = WidgetsBinding.instance.window.physicalSize;
-    final width = size.width;
-    final height = size.height;
+    final Size size = WidgetsBinding.instance.window.physicalSize;
+    final double width = size.width;
+    final double height = size.height;
 
     setState(() {
       if (width >= maxCrossAxisExtent * 3) {

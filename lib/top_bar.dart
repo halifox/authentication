@@ -27,13 +27,13 @@ Widget TopBar(
   void Function(BuildContext)? rightOnPressed = defaultRightOnPressed,
 }) {
   return Padding(
-    padding: EdgeInsets.all(16),
+    padding: const EdgeInsets.all(16),
     child: Row(
-      children: [
+      children: <Widget>[
         TopBarIconButton(context, leftIcon, () => leftOnPressed?.call(context)),
-        Spacer(),
+        const Spacer(),
         TopBarTitle(context, title),
-        Spacer(),
+        const Spacer(),
         TopBarIconButton(context, rightIcon, () => rightOnPressed?.call(context)),
       ],
     ),
@@ -71,11 +71,6 @@ Widget TopBarIconButton(
     replacement: TopBarIconButtonPlaceholder(),
     child: ElevatedButton(
       onPressed: onPressed,
-      child: Icon(
-        icon,
-        size: _TopBarIconSize,
-        color: Theme.of(context).colorScheme.onPrimaryContainer,
-      ),
       style: ElevatedButton.styleFrom(
         padding: EdgeInsets.zero,
         fixedSize: Size(_TopBarIconButtonSize, _TopBarIconButtonSize),
@@ -83,6 +78,11 @@ Widget TopBarIconButton(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
         ),
+      ),
+      child: Icon(
+        icon,
+        size: _TopBarIconSize,
+        color: Theme.of(context).colorScheme.onPrimaryContainer,
       ),
     ),
   );

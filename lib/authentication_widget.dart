@@ -21,15 +21,15 @@ class AuthenticationWidget extends StatefulWidget {
 
 /// 认证项的状态类
 class _AuthenticationWidgetState extends State<AuthenticationWidget> {
-  late final configuration = widget.config;
-  String authCode = "--------";
+  late final AuthenticationConfig configuration = widget.config;
+  String authCode = '--------';
 
   Timer? timer;
 
   @override
   void initState() {
     super.initState();
-    if ([Type.totp, Type.motp].contains(configuration.type)) {
+    if (<Type>[Type.totp, Type.motp].contains(configuration.type)) {
       startOtpTimer();
     } else {
       updateAuthCode();
@@ -37,7 +37,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   }
 
   startOtpTimer() {
-    var remainingMilliseconds = OTP.remainingMilliseconds(intervalMilliseconds: configuration.intervalSeconds * 1000);
+    final int remainingMilliseconds = OTP.remainingMilliseconds(intervalMilliseconds: configuration.intervalSeconds * 1000);
     timer = Timer(Duration(milliseconds: remainingMilliseconds), startOtpTimer);
     updateAuthCode();
   }
@@ -49,7 +49,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   }
 
   void onEdit() {
-    Navigator.pushNamed(context, "/AuthFromPage", arguments: configuration);
+    Navigator.pushNamed(context, '/AuthFromPage', arguments: configuration);
   }
 
   void onDelete() {
@@ -58,7 +58,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
 
   void copy() {
     Clipboard.setData(ClipboardData(text: authCode));
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('代码已复制'), duration: Duration(milliseconds: 1200)));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('代码已复制'), duration: Duration(milliseconds: 1200)));
   }
 
   @override
@@ -71,9 +71,9 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   Widget build(BuildContext context) {
     return SwipeActionCell(
       key: ObjectKey(configuration), // 唯一标识
-      trailingActions: [
-        buildSwipeAction("删除", onDelete),
-        buildSwipeAction("编辑", onEdit),
+      trailingActions: <SwipeAction>[
+        buildSwipeAction('删除', onDelete),
+        buildSwipeAction('编辑', onEdit),
       ],
       child: buildAuthCard(), // 构建认证卡片
     );
@@ -106,13 +106,13 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
     return GestureDetector(
       onTap: copy,
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         alignment: Alignment.center,
         decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: BorderRadius.circular(24)),
         child: Column(
-          children: [
+          children: <Widget>[
             buildTopRow(), // 顶部行
-            Spacer(),
+            const Spacer(),
             buildCodeRow(), // 代码行
           ],
         ),
@@ -124,11 +124,11 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   Widget buildTopRow() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
+      children: <Widget>[
         buildIconContainer(), // 图标容器
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
         buildAuthDetails(), // 认证信息
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
         buildActionButton(), // 动作按钮
       ],
     );
@@ -137,7 +137,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   /// 构建图标容器
   Widget buildIconContainer() {
     // var assetName = 'icons/${configuration.issuer.toLowerCase()}.svg';
-    var assetName = 'icons/apple.svg';
+    const String assetName = 'icons/apple.svg';
     return Container(
       height: 48,
       width: 48,
@@ -149,7 +149,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
         width: 28,
         height: 28,
         colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn),
-        placeholderBuilder: (context) {
+        placeholderBuilder: (BuildContext context) {
           return Icon(Icons.account_balance, size: 24, color: Theme.of(context).colorScheme.onPrimary);
         },
       ),
@@ -161,9 +161,9 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Text(configuration.issuer, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Text(configuration.account, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(height: 0, fontSize: 13, color: Theme.of(context).colorScheme.onPrimaryContainer.withAlpha(200))),
         ],
       ),
@@ -190,7 +190,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
         configuration.counter++;
         GetIt.I<AuthRepository>().update(configuration); // 更新认证
       },
-      icon: Icon(Icons.refresh),
+      icon: const Icon(Icons.refresh),
     );
   }
 
@@ -198,7 +198,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   Widget buildCodeRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: authCode.characters.map((char) => buildCodeItem(char)).toList(), // 显示每个代码项
+      children: authCode.characters.map((String char) => buildCodeItem(char)).toList(), // 显示每个代码项
     );
   }
 
@@ -215,7 +215,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
 }
 
 class CoreCircularProgressIndicator extends StatefulWidget {
-  CoreCircularProgressIndicator(this.intervalMilliseconds, {super.key});
+  const CoreCircularProgressIndicator(this.intervalMilliseconds, {super.key});
 
   final int intervalMilliseconds;
 
@@ -230,7 +230,7 @@ class _CoreCircularProgressIndicatorState extends State<CoreCircularProgressIndi
   @override
   void initState() {
     super.initState();
-    int remainingMilliseconds = OTP.remainingMilliseconds(intervalMilliseconds: widget.intervalMilliseconds);
+    final int remainingMilliseconds = OTP.remainingMilliseconds(intervalMilliseconds: widget.intervalMilliseconds);
     controller = AnimationController(duration: Duration(milliseconds: widget.intervalMilliseconds), vsync: this);
     animation = Tween<double>(begin: 1.0, end: 0.0).animate(controller);
     controller.value = 1 - remainingMilliseconds / widget.intervalMilliseconds;
@@ -247,7 +247,7 @@ class _CoreCircularProgressIndicatorState extends State<CoreCircularProgressIndi
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: animation,
-      builder: (context, child) {
+      builder: (BuildContext context, Widget? child) {
         return CircularProgressIndicator(value: animation.value, strokeCap: StrokeCap.round, strokeWidth: 5.5);
       },
     );
