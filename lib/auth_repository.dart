@@ -94,7 +94,7 @@ class AuthRepositoryImpl extends AuthRepository {
     final db = await _authDB;
     final records = await store.find(db);
     return records.map((e) {
-      final auth = AuthenticationConfig.fromJson(e.value)..dbKey = e.key;
+      final auth = AuthenticationConfig.fromJson(e.value)..key = e.key;
       return auth;
     }).toList();
   }
@@ -108,7 +108,7 @@ class AuthRepositoryImpl extends AuthRepository {
       Filter.equals('account', account),
     ]));
     final records = await store.find(db, finder: finder);
-    return records.map((e) => AuthenticationConfig.fromJson(e.value)..dbKey = e.key).toList();
+    return records.map((e) => AuthenticationConfig.fromJson(e.value)..key = e.key).toList();
   }
 
   @override
@@ -126,7 +126,7 @@ class AuthRepositoryImpl extends AuthRepository {
   @override
   Future<String> update(AuthenticationConfig config) async {
     final db = await _authDB;
-    final key = config.dbKey ?? (throw ArgumentError("Invalid dbKey is null"));
+    final key = config.key ?? (throw ArgumentError("Invalid dbKey is null"));
     if (config.isBase32Encoded && !AuthenticationConfig.verifyBase32(config.secret)) {
       throw ArgumentError("Invalid secret");
     }
@@ -136,13 +136,13 @@ class AuthRepositoryImpl extends AuthRepository {
 
   @override
   Future<String> upsert(AuthenticationConfig config) async {
-    return config.dbKey != null ? await update(config) : await insert(config);
+    return config.key != null ? await update(config) : await insert(config);
   }
 
   @override
   Future<String?> delete(AuthenticationConfig config) async {
     final db = await _authDB;
-    final key = config.dbKey ?? (throw ArgumentError("Invalid dbKey is null"));
+    final key = config.key ?? (throw ArgumentError("Invalid dbKey is null"));
     return await store.record(key).delete(db);
   }
 }

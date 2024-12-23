@@ -1,29 +1,38 @@
 import 'package:base32/base32.dart';
 import 'package:purity_auth/otp.dart';
 
-// 枚举定义认证类型
-enum Type {
-  totp, // 基于时间的一次性密码 (Time-based One-Time Password)
-  hotp, // 基于计数器的一次性密码 (HMAC-based One-Time Password)
-  motp,
-}
-
 enum Scheme {
   otpauth,
 }
 
-/// 创建一个 Auth 实例
+/// 认证类型枚举，用于定义不同的认证方式。
 ///
-/// [type] 认证类型，默认为 TOTP。
-/// [account] 标识符，通常是账户或应用的名称，不能为空。
-/// [secret] 密钥，用于生成一次性密码的基础密钥，不能为空。
-/// [issuer] 发行方，通常是认证服务提供商或应用的名称，不能为空。
-/// [algorithm] 哈希算法，默认为 SHA1。
-/// [digits] 生成的密码位数，默认为 6。
-/// [intervalSeconds] 周期，适用于 TOTP，默认为 30。
+/// 此枚举用于表示支持的认证类型：
+/// - [totp] 基于时间的一次性密码 (Time-based One-Time Password)
+/// - [hotp] 基于计数器的一次性密码 (HMAC-based One-Time Password)
+/// - [motp] 基于移动设备的一次性密码 (Mobile-based One-Time Password)
+
+enum Type {
+  totp,
+  hotp,
+  motp,
+}
+
+/// 认证配置类，用于创建认证实例并设置相关参数。
+///
+/// 此类用于配置并生成认证所需的各种参数，包括认证类型、密钥、哈希算法等。
+///
+/// [type] 认证类型，决定使用 TOTP 或 HOTP。默认为 TOTP。
+/// [account] 账户标识符，通常是账户名或应用名称，不能为空。
+/// [secret] 用于生成一次性密码的密钥，不能为空。
+/// [issuer] 认证发行方，通常是认证服务提供商或应用的名称，不能为空。
+/// [algorithm] 用于生成一次性密码的哈希算法，默认为 SHA1。
+/// [digits] 生成一次性密码的位数，默认为 6 位。
+/// [intervalSeconds] 密码生成周期，适用于 TOTP，默认为 30 秒。
 /// [counter] 计数器，适用于 HOTP，默认为 0。
-/// [pin] PIN，默认为空字符串。
-/// [isBase32Encoded] 指示是否为 Google 的实现，默认为 true。
+/// [pin] 用户设置的 PIN，默认为空字符串。
+/// [isBase32Encoded] 指示是否使用 Base32 编码，适用于 Google 实现，默认为 true。
+
 class AuthenticationConfig {
   Scheme scheme;
   Type type;
@@ -38,8 +47,8 @@ class AuthenticationConfig {
 
   bool isBase32Encoded;
 
-  //internal
-  String? dbKey;
+  // 内部生成的密钥，通常由系统自动处理
+  String? key;
 
   AuthenticationConfig({
     this.scheme = Scheme.otpauth,
@@ -55,10 +64,6 @@ class AuthenticationConfig {
     this.isBase32Encoded = true,
   });
 
-  /// 将 Auth 实例转换为 JSON 格式
-  ///
-  /// [config] 要转换的 Auth 实例。
-  /// 返回一个包含 Auth 实例属性的 Map。
   static Map<String, dynamic> toJson(AuthenticationConfig config) {
     return {
       'scheme': config.scheme.index,
@@ -75,10 +80,6 @@ class AuthenticationConfig {
     };
   }
 
-  /// 从 JSON 格式中创建一个 Auth 实例
-  ///
-  /// [map] 包含 Auth 属性的 Map。
-  /// 返回一个新的 Auth 实例。
   factory AuthenticationConfig.fromJson(Map<String, dynamic> map) {
     return AuthenticationConfig(
       scheme: Scheme.values.elementAt(map['scheme']),
@@ -109,10 +110,15 @@ class AuthenticationConfig {
     }
   }
 
-  /// 检查输入字符串是否为有效的 Base32 编码。
+  /// 验证输入字符串是否为有效的 Base32 编码。
   ///
-  /// [input] 要检查的字符串，可以为 null。
-  /// 返回一个布尔值，表示是否有效的 Base32 编码。
+  /// 该方法会检查提供的字符串是否符合 Base32 编码规则。
+  ///
+  /// [input] 要检查的字符串，可以为 null 或空字符串。
+  ///
+  /// 返回一个布尔值：
+  /// - 如果输入是有效的 Base32 编码，则返回 true。
+  /// - 否则返回 false。
   static bool verifyBase32(String? input) {
     try {
       if (input == null || input.isEmpty) {
@@ -125,27 +131,25 @@ class AuthenticationConfig {
     }
   }
 
-  /// 解析 URI 字符串。
+  /// 解析 URI 字符串并生成对应的认证配置实例。
   ///
-  /// [uriString] 要解析的 URI 字符串。
-  /// 返回创建的 Auth 实例。
-  // otpauth://: URI 协议，表示这是一个用于 OTP 的 URI。
-  //
-  // TYPE: OTP 类型，有两种：
-  //
-  //     totp：基于时间的一次性密码。
-  //     hotp：基于计数器的一次性密码。
-  //
-  // LABEL: 标记用户的账户信息，通常表示为 Issuer:AccountName，比如 example:alice@domain.com。: 之前的部分为发行者，之后为用户名。
-  //        如果 LABEL 中没有 :，那么它通常只包含账户名，而不指定发行者（Issuer）。在这种情况下，LABEL 会简单地表示用户名，而发行者可以通过其他方式指定，通常是在 PARAMETERS 中通过 issuer 参数来指定。
-  //
-  // PARAMETERS: 一系列参数，用于定义 OTP 的生成规则：
-  //     secret：必需参数，生成 OTP 的密钥，通常是 base32 编码的字符串。
-  //     algorithm：可选参数，指定哈希算法，默认是 SHA1，可以是 SHA256 或 SHA512。
-  //     digits：可选参数，表示 OTP 的位数，通常为 6 或 8，默认是 6。
-  //     period：可选参数，用于 totp 类型，表示 OTP 的有效时间段，默认是 30 秒。
-  //     counter：用于 hotp 类型的计数器，指定当前的计数值。
-
+  /// 该方法解析 OTP URI，并提取出相关参数以创建一个 [AuthenticationConfig] 实例。
+  ///
+  /// [uriString] 要解析的 URI 字符串，格式应符合 OTP URI 标准，例如 `otpauth://totp/example:alice@domain.com?secret=YOURSECRET&issuer=Example&algorithm=SHA1&digits=6&period=30`。
+  ///
+  /// 返回解析后的 [AuthenticationConfig] 实例，包含了所有相关的认证配置参数。
+  ///
+  /// URI 格式说明：
+  /// - **协议**: URI 协议标识符，通常为 `otpauth`，表示 OTP 认证。
+  /// - **类型 (TYPE)**: OTP 类型，通常为 `totp` 或 `hotp`。
+  /// - **标签 (LABEL)**: 用户账户信息，格式为 `Issuer:AccountName`，例如 `example:alice@domain.com`，其中 `Issuer` 为认证服务提供商，`AccountName` 为账户名。
+  ///     如果 LABEL 中没有 :，那么它通常只包含账户名，而不指定发行者（Issuer）。在这种情况下，LABEL 会简单地表示用户名，而发行者可以通过其他方式指定，通常是在 PARAMETERS 中通过 issuer 参数来指定。
+  /// - **参数 (PARAMETERS)**: 一系列查询参数，用于定义 OTP 生成规则：
+  ///     - `secret`: 生成 OTP 的密钥，必需参数，通常是 Base32 编码的字符串。
+  ///     - `algorithm`: 可选参数，指定哈希算法，默认为 `SHA1`，可以是 `SHA256` 或 `SHA512`。
+  ///     - `digits`: 可选参数，表示 OTP 位数，通常为 6 或 8，默认为 6。
+  ///     - `period`: 可选参数，适用于 `totp`，表示 OTP 有效时间周期，默认为 30 秒。
+  ///     - `counter`: 可选参数，适用于 `hotp`，指定当前计数器值。
   static AuthenticationConfig parse(String uriString) {
     Uri uri = Uri.parse(uriString);
 
