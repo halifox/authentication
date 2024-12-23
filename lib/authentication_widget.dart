@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
-import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:purity_auth/auth.dart';
 import 'package:purity_auth/auth_repository.dart';
@@ -21,41 +20,32 @@ class AuthenticationWidget extends StatefulWidget {
 }
 
 /// 认证项的状态类
-class _AuthenticationWidgetState extends State<AuthenticationWidget> with SingleTickerProviderStateMixin {
+class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   late final configuration = widget.authConfiguration;
-  final RxString authCode = RxString("--------"); // 存储认证代码
-  final RxDouble countdownValue = RxDouble(0.0); // 倒计时进度
-  Timer? updateTimer; // 更新定时器
-  AnimationController? animationController; // 动画控制器
+  String authCode = "--------";
+
+  Timer? timer;
 
   @override
   void initState() {
     super.initState();
-    // 根据认证类型初始化计时器和动画
     if ([AuthType.totp, AuthType.motp].contains(configuration.type)) {
-      animationController = AnimationController(duration: Duration(seconds: configuration.intervalSeconds), vsync: this)
-        ..addListener(() {
-          countdownValue.value = animationController?.value ?? 0; // 更新倒计时进度
-        });
-      updateTimer = Timer(Duration(seconds: OTP.remainingSeconds(intervalSeconds: configuration.intervalSeconds)), startUpdateTimer);
-      refreshCodeAndCountdown(); // 刷新代码和倒计时
+      startOtpTimer();
     } else {
-      authCode.value = configuration.generateCodeString(); // 计算代码
+      updateAuthCode();
     }
   }
 
-  /// 启动定时器以定期刷新代码和倒计时
-  void startUpdateTimer() {
-    updateTimer = Timer.periodic(Duration(seconds: configuration.intervalSeconds), (_) => refreshCodeAndCountdown());
-    refreshCodeAndCountdown(); // 刷新代码和倒计时
+  startOtpTimer() {
+    var remainingMilliseconds = OTP.remainingMilliseconds(intervalMilliseconds: configuration.intervalSeconds * 1000);
+    timer = Timer(Duration(milliseconds: remainingMilliseconds), startOtpTimer);
+    updateAuthCode();
   }
 
-  /// 刷新认证代码和倒计时进度
-  void refreshCodeAndCountdown() {
-    authCode.value = configuration.generateCodeString(); // 计算新的认证代码
-    var remainingTime = OTP.remainingSeconds(intervalSeconds: configuration.intervalSeconds); // 剩余时间
-    var remaining = remainingTime * 1.0 / configuration.intervalSeconds;
-    animationController?.forward(from: 1.0 - remaining); // 开始动画
+  updateAuthCode() {
+    setState(() {
+      authCode = configuration.generateCodeString();
+    });
   }
 
   void onEdit() {
@@ -68,8 +58,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
 
   @override
   void dispose() {
-    updateTimer?.cancel(); // 取消定时器
-    animationController?.dispose(); // 释放动画控制器
+    timer?.cancel();
     super.dispose();
   }
 
@@ -111,7 +100,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
   Widget buildAuthCard() {
     return GestureDetector(
       onTap: () {
-        Clipboard.setData(ClipboardData(text: authCode.value));
+        Clipboard.setData(ClipboardData(text: authCode));
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('代码已复制'), duration: Duration(milliseconds: 1200)));
       },
       child: Container(
@@ -145,7 +134,8 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
 
   /// 构建图标容器
   Widget buildIconContainer() {
-    var assetName = 'icons/${configuration.issuer.toLowerCase()}.svg';
+    // var assetName = 'icons/${configuration.issuer.toLowerCase()}.svg';
+    var assetName = 'icons/apple.svg';
     return Container(
       height: 48,
       width: 48,
@@ -185,16 +175,10 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
       width: 48,
       alignment: Alignment.center,
       child: switch (configuration.type) {
-        AuthType.totp => buildTotpProgress(),
+        AuthType.totp => CoreCircularProgressIndicator(configuration.intervalSeconds * 1000),
         AuthType.hotp => buildHotpNextButton(),
-        AuthType.motp => buildTotpProgress(),
+        AuthType.motp => CoreCircularProgressIndicator(configuration.intervalSeconds * 1000),
       },
-    );
-  }
-
-  Widget buildTotpProgress() {
-    return Obx(
-      () => CircularProgressIndicator(value: 1.0 - countdownValue.value, strokeCap: StrokeCap.round, strokeWidth: 5.5),
     );
   }
 
@@ -210,11 +194,9 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
 
   /// 构建代码行
   Widget buildCodeRow() {
-    return Obx(
-      () => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: authCode.value.characters.map((char) => buildCodeItem(char)).toList(), // 显示每个代码项
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: authCode.characters.map((char) => buildCodeItem(char)).toList(), // 显示每个代码项
     );
   }
 
@@ -226,6 +208,46 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> with Single
       alignment: Alignment.center,
       decoration: BoxDecoration(color: Theme.of(context).colorScheme.tertiary, borderRadius: BorderRadius.circular(14)),
       child: Text(char, style: TextStyle(height: 0, fontSize: 32, color: Theme.of(context).colorScheme.onTertiary, fontWeight: FontWeight.bold, fontFamily: 'GothamRnd')), // 代码字符
+    );
+  }
+}
+
+class CoreCircularProgressIndicator extends StatefulWidget {
+  CoreCircularProgressIndicator(this.intervalMilliseconds, {super.key});
+
+  final int intervalMilliseconds;
+
+  @override
+  State<CoreCircularProgressIndicator> createState() => _CoreCircularProgressIndicatorState();
+}
+
+class _CoreCircularProgressIndicatorState extends State<CoreCircularProgressIndicator> with SingleTickerProviderStateMixin {
+  late final AnimationController controller;
+  late final Animation<double> animation;
+
+  @override
+  void initState() {
+    super.initState();
+    int remainingMilliseconds = OTP.remainingMilliseconds(intervalMilliseconds: widget.intervalMilliseconds);
+    controller = AnimationController(duration: Duration(milliseconds: widget.intervalMilliseconds), vsync: this);
+    animation = Tween<double>(begin: 1.0, end: 0.0).animate(controller);
+    controller.value = 1 - remainingMilliseconds / widget.intervalMilliseconds;
+    controller.repeat();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) {
+        return CircularProgressIndicator(value: animation.value, strokeCap: StrokeCap.round, strokeWidth: 5.5);
+      },
     );
   }
 }
