@@ -23,3 +23,9 @@ Future<int?> showAlertDialog(
     },
   );
 }
+
+showDevDialog(
+  BuildContext context,
+) {
+  showAlertDialog(context, "提示", "正在开发中");
+}

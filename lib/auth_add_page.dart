@@ -85,9 +85,13 @@ class _AuthAddPageState extends State<AuthAddPage> with WidgetsBindingObserver, 
     Navigator.pushNamed(context, '/AuthFromPage');
   }
 
-  void restoreBackup(BuildContext context) {}
+  void restoreBackup(BuildContext context) {
+    showDevDialog(context);
+  }
 
-  void importFromApps(BuildContext context) {}
+  void importFromApps(BuildContext context) {
+    showDevDialog(context);
+  }
 
   @override
   Widget build(BuildContext context) {
