@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:purity_auth/auth_add_page.dart';
+import 'package:purity_auth/dialog.dart';
 
 /// 相机视图组件
 class CameraPreviewWidget extends StatefulWidget {

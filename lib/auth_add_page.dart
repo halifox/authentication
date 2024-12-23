@@ -5,36 +5,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
+import 'package:purity_auth/auth.dart';
+import 'package:purity_auth/auth_repository.dart';
+import 'package:purity_auth/dialog.dart';
 import 'package:purity_auth/large_button_widget.dart';
 import 'package:purity_auth/top_bar.dart';
 import 'package:purity_auth/window_size_controller.dart';
-
-import 'auth.dart';
-import 'auth_repository.dart';
-
-Future<int?> showAlertDialog(
-  BuildContext context,
-  String? title,
-  String? message, {
-  bool barrierDismissible = false,
-}) {
-  return showGeneralDialog(
-    context: context,
-    barrierDismissible: barrierDismissible,
-    pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
-      return AlertDialog(
-        title: Text(title ?? ""),
-        content: Text(message ?? ""),
-        actions: [
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("确定"),
-          ),
-        ],
-      );
-    },
-  );
-}
 
 class AuthAddPage extends StatefulWidget {
   AuthAddPage({super.key});

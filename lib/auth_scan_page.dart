@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:purity_auth/auth.dart';
-import 'package:purity_auth/auth_add_page.dart';
+import 'package:purity_auth/auth_repository.dart';
 import 'package:purity_auth/camera_preview_widget.dart';
+import 'package:purity_auth/dialog.dart';
 import 'package:purity_auth/top_bar.dart';
-
-import 'auth_repository.dart';
 
 /// 扫描条形码的页面
 class AuthScanPage extends StatefulWidget {
