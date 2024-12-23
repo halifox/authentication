@@ -5,12 +5,13 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:purity_auth/auth.dart';
 import 'package:purity_auth/encrypt_codec.dart';
+import 'package:purity_auth/otp.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:sembast_web/sembast_web.dart';
 
 abstract class AuthRepository {
-  final List<AuthConfiguration> authSnapshot = [];
+  List<AuthConfiguration> snapshot = [];
 
   Future<List<AuthConfiguration>> selectAll();
 
@@ -23,7 +24,13 @@ abstract class AuthRepository {
   Future<String> upsert(AuthConfiguration configuration);
 
   Future<String?> delete(AuthConfiguration configuration);
+
+  void addListener(Listener listener);
+
+  void removeListener(Listener listener);
 }
+
+typedef Listener = void Function(List<AuthConfiguration>);
 
 class AuthRepositoryImpl extends AuthRepository {
   final store = stringMapStoreFactory.store();
@@ -39,11 +46,26 @@ class AuthRepositoryImpl extends AuthRepository {
     final Database db = await _authDB;
     if (kDebugMode) {
       await store.delete(db);
+      upsert(AuthConfiguration(secret: "JQSR2VNH75AMLYRV"));
+      upsert(AuthConfiguration(secret: "JQSR2VNH75AMLYRV", type: AuthType.hotp));
     }
-    if (kDebugMode) {
-      for (int i = 0; i < 10; i++) {
-        upsert(AuthConfiguration.random());
-      }
+  }
+
+  final List<Listener> _listeners = [];
+
+  @override
+  void addListener(Listener a) {
+    _listeners.add(a);
+  }
+
+  @override
+  void removeListener(Listener a) {
+    _listeners.remove(a);
+  }
+
+  void notifyListeners(List<AuthConfiguration> data) {
+    for (var listener in _listeners) {
+      listener(data);
     }
   }
 
@@ -63,9 +85,8 @@ class AuthRepositoryImpl extends AuthRepository {
   Future<void> _listenAuthDB() async {
     final db = await _authDB;
     store.query().onSnapshot(db).listen((_) async {
-      final snapshot = await selectAll();
-      authSnapshot.clear();
-      authSnapshot.addAll(snapshot);
+      snapshot = await selectAll();
+      notifyListeners(snapshot);
     });
   }
 

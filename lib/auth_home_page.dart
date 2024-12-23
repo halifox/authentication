@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:purity_auth/auth.dart';
 import 'package:purity_auth/auth_repository.dart';
@@ -19,9 +18,29 @@ class AuthHomePage extends StatefulWidget {
 }
 
 class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver, WindowSizeStateMixin {
+  List<AuthConfiguration> configurations = [];
 
   void toAuthAddPage(BuildContext context) {
     Navigator.pushNamed(context, "/AuthAddPage");
+  }
+
+  listener(List<AuthConfiguration> snapshot) {
+    setState(() {
+      configurations = snapshot;
+    });
+  }
+
+  @override
+  void initState() {
+    configurations = GetIt.I<AuthRepository>().snapshot;
+    GetIt.I<AuthRepository>().addListener(listener);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    GetIt.I<AuthRepository>().removeListener(listener);
+    super.dispose();
   }
 
   @override
@@ -52,9 +71,9 @@ class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver
                       mainAxisSpacing: 16,
                       crossAxisSpacing: 16,
                     ),
-                    itemCount: GetIt.I<AuthRepository>().authSnapshot.length,
+                    itemCount: configurations.length,
                     itemBuilder: (context, index) {
-                      AuthConfiguration configuration = GetIt.I<AuthRepository>().authSnapshot[index];
+                      AuthConfiguration configuration = configurations[index];
                       return AuthenticationWidget(key: ObjectKey(configuration), authConfiguration: configuration);
                     },
                   ),

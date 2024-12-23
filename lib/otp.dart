@@ -175,13 +175,13 @@ class OTP {
     return base32.base32.encode(Uint8List.fromList(bytes));
   }
 
-  /// 有一种方法可以告诉您当前时间步窗口中还剩多少时间（以秒为单位）。 Interval 是您的 TOTP 函数间隔值（默认 = 30）
-  static int remainingSeconds({int intervalSeconds = 30, int? unixMilliseconds}) {
+  /// 当前时间步窗口中还剩多少时间（以毫秒为单位）
+  static int remainingMilliseconds({int intervalMilliseconds = 30 * 1000, int? unixMilliseconds}) {
     unixMilliseconds ??= DateTime.now().millisecondsSinceEpoch;
     if (unixMilliseconds < 0) {
       throw ArgumentError('unixSeconds must be non-negative.');
     }
-    return intervalSeconds - (((unixMilliseconds ~/ 1000).round()) % intervalSeconds).floor();
+    return intervalMilliseconds - (unixMilliseconds % intervalMilliseconds);
   }
 
   static String _hexEncode(final Uint8List input) => [for (int i = 0; i < input.length; i++) input[i].toRadixString(16).padLeft(2, '0')].join();
