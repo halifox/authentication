@@ -56,6 +56,11 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
     GetIt.I<AuthRepository>().delete(configuration);
   }
 
+  void copy() {
+    Clipboard.setData(ClipboardData(text: authCode));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('代码已复制'), duration: Duration(milliseconds: 1200)));
+  }
+
   @override
   void dispose() {
     timer?.cancel();
@@ -99,10 +104,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   /// 构建认证卡片
   Widget buildAuthCard() {
     return GestureDetector(
-      onTap: () {
-        Clipboard.setData(ClipboardData(text: authCode));
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('代码已复制'), duration: Duration(milliseconds: 1200)));
-      },
+      onTap: copy,
       child: Container(
         padding: EdgeInsets.all(16),
         alignment: Alignment.center,

@@ -106,7 +106,7 @@ class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver
                   context,
                   "输入提供的密钥",
                   rightIcon: Icons.save,
-                  rightOnPressed: (context) => onSave.call(context),
+                  rightOnPressed: onSave,
                 ),
                 Expanded(
                   child: SingleChildScrollView(
