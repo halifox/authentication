@@ -17,7 +17,6 @@ dependencies:
   encrypt: 5.0.3
   crypto: 3.0.5
   hashlib: 1.21.0
-  get: 4.6.6
   permission_handler: ^11.3.1
   camera: 0.10.6 # 不能更新 会无法nv21
   camera_android: 0.10.9+1 # 不能更新 会无法nv21
