@@ -42,16 +42,22 @@
 
 ## 📸 截图
 
-![](./screenshot/Screenshot_20241223_234144.webp)
-![](./screenshot/Screenshot_20241223_235556.webp)
-![](./screenshot/Screenshot_20241223_234637.webp)
-![](./screenshot/Screenshot_20241223_234156.webp)
-![](./screenshot/Screenshot_20241223_234309.webp)
-![](./screenshot/Screenshot_20241223_234202.webp)
-![](./screenshot/Screenshot_20241223_234214.webp)
-![](./screenshot/Screenshot_20241223_234238.webp)
-![](./screenshot/Screenshot_20241223_234629.webp)
-<br/><br/>
+<p float="center">
+   <img src="./screenshot/Screenshot_20241223_234144.webp" width="24%"/>
+   <img src="./screenshot/Screenshot_20241223_235556.webp" width="24%"/>
+   <img src="./screenshot/Screenshot_20241223_235027.webp" width="24%"/>
+   <img src="./screenshot/Screenshot_20241223_234156.webp" width="24%"/>
+</p>
+<p float="center">
+   <img src="./screenshot/Screenshot_20241223_234309.webp" width="24%"/>
+   <img src="./screenshot/Screenshot_20241223_234202.webp" width="24%"/>
+   <img src="./screenshot/Screenshot_20241223_234214.webp" width="24%"/>
+   <img src="./screenshot/Screenshot_20241223_234238.webp" width="24%"/>
+</p>
+<p float="center">
+   <img src="./screenshot/Screenshot_20241223_234629.webp" width="49%"/>
+   <img src="./screenshot/Screenshot_20241223_234637.webp" width="49%"/>
+</p>
 
 ---
 
