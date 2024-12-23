@@ -136,8 +136,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
 
   /// 构建图标容器
   Widget buildIconContainer() {
-    // var assetName = 'icons/${configuration.issuer.toLowerCase()}.svg';
-    const String assetName = 'icons/apple.svg';
+    String assetName = 'icons/${configuration.issuer.toLowerCase()}.svg';
     return Container(
       height: 48,
       width: 48,
