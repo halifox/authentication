@@ -29,7 +29,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   @override
   void initState() {
     super.initState();
-    if ([AuthType.totp, AuthType.motp].contains(configuration.type)) {
+    if ([Type.totp, Type.motp].contains(configuration.type)) {
       startOtpTimer();
     } else {
       updateAuthCode();
@@ -175,9 +175,9 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
       width: 48,
       alignment: Alignment.center,
       child: switch (configuration.type) {
-        AuthType.totp => CoreCircularProgressIndicator(configuration.intervalSeconds * 1000),
-        AuthType.hotp => buildHotpNextButton(),
-        AuthType.motp => CoreCircularProgressIndicator(configuration.intervalSeconds * 1000),
+        Type.totp => CoreCircularProgressIndicator(configuration.intervalSeconds * 1000),
+        Type.hotp => buildHotpNextButton(),
+        Type.motp => CoreCircularProgressIndicator(configuration.intervalSeconds * 1000),
       },
     );
   }

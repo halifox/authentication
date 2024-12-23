@@ -113,7 +113,7 @@ class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver
                     physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                     child: Column(
                       children: [
-                        buildDropdown<AuthType>("类型", configuration.type, typeLabels, (value) {
+                        buildDropdown<Type>("类型", configuration.type, typeLabels, (value) {
                           setState(() {
                             configuration.type = value!;
                           });
@@ -121,14 +121,14 @@ class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver
                         buildTextField(issuerController, "发行方"),
                         buildTextField(accountController, "用户名"),
                         buildTextField(secretController, "密钥"),
-                        if (configuration.type == AuthType.totp || configuration.type == AuthType.hotp) buildDropdown<Algorithm>("算法", configuration.algorithm, algorithmLabels, (value) => configuration.algorithm = value!),
-                        if (configuration.type == AuthType.motp) buildTextField(pinController, "PIN码"),
-                        if (configuration.type == AuthType.totp || configuration.type == AuthType.hotp || configuration.type == AuthType.motp)
+                        if (configuration.type == Type.totp || configuration.type == Type.hotp) buildDropdown<Algorithm>("算法", configuration.algorithm, algorithmLabels, (value) => configuration.algorithm = value!),
+                        if (configuration.type == Type.motp) buildTextField(pinController, "PIN码"),
+                        if (configuration.type == Type.totp || configuration.type == Type.hotp || configuration.type == Type.motp)
                           Row(
                             children: [
                               Expanded(child: buildTextField(digitsController, "位数", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
-                              if (configuration.type == AuthType.totp || configuration.type == AuthType.motp) Expanded(child: buildTextField(periodController, "时间间隔(秒)", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
-                              if (configuration.type == AuthType.hotp) Expanded(child: buildTextField(counterController, "计数器", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
+                              if (configuration.type == Type.totp || configuration.type == Type.motp) Expanded(child: buildTextField(periodController, "时间间隔(秒)", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
+                              if (configuration.type == Type.hotp) Expanded(child: buildTextField(counterController, "计数器", inputType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly])),
                             ],
                           ),
                       ],
@@ -143,10 +143,10 @@ class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver
     );
   }
 
-  final Map<AuthType, String> typeLabels = {
-    AuthType.totp: "基于时间 (TOTP)",
-    AuthType.hotp: "基于计数器 (HOTP)",
-    AuthType.motp: "Mobile-OTP (mOTP)",
+  final Map<Type, String> typeLabels = {
+    Type.totp: "基于时间 (TOTP)",
+    Type.hotp: "基于计数器 (HOTP)",
+    Type.motp: "Mobile-OTP (mOTP)",
   };
 
   final Map<Algorithm, String> algorithmLabels = {

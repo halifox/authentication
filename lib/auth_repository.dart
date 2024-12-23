@@ -47,7 +47,7 @@ class AuthRepositoryImpl extends AuthRepository {
     if (kDebugMode) {
       await store.delete(db);
       upsert(AuthConfiguration(secret: "JQSR2VNH75AMLYRV"));
-      upsert(AuthConfiguration(secret: "JQSR2VNH75AMLYRV", type: AuthType.hotp));
+      upsert(AuthConfiguration(secret: "JQSR2VNH75AMLYRV", type: Type.hotp));
     }
   }
 

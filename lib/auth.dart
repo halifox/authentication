@@ -1,13 +1,15 @@
-import 'dart:math';
-
 import 'package:base32/base32.dart';
 import 'package:purity_auth/otp.dart';
 
 // 枚举定义认证类型
-enum AuthType {
+enum Type {
   totp, // 基于时间的一次性密码 (Time-based One-Time Password)
   hotp, // 基于计数器的一次性密码 (HMAC-based One-Time Password)
   motp,
+}
+
+enum Scheme {
+  otpauth,
 }
 
 /// 创建一个 Auth 实例
@@ -23,7 +25,8 @@ enum AuthType {
 /// [pin] PIN，默认为空字符串。
 /// [isBase32Encoded] 指示是否为 Google 的实现，默认为 true。
 class AuthConfiguration {
-  AuthType type;
+  Scheme scheme;
+  Type type;
   String issuer;
   String account;
   String secret;
@@ -39,7 +42,8 @@ class AuthConfiguration {
   String? dbKey;
 
   AuthConfiguration({
-    this.type = AuthType.totp,
+    this.scheme = Scheme.otpauth,
+    this.type = Type.totp,
     this.account = "",
     this.secret = "",
     this.issuer = "",
@@ -57,6 +61,7 @@ class AuthConfiguration {
   /// 返回一个包含 Auth 实例属性的 Map。
   static Map<String, dynamic> toJson(AuthConfiguration configuration) {
     return {
+      'scheme': configuration.scheme.index,
       'type': configuration.type.index,
       'account': configuration.account,
       'secret': configuration.secret,
@@ -76,7 +81,8 @@ class AuthConfiguration {
   /// 返回一个新的 Auth 实例。
   factory AuthConfiguration.fromJson(Map<String, dynamic> map) {
     return AuthConfiguration(
-      type: AuthType.values.elementAt(map['type']),
+      scheme: Scheme.values.elementAt(map['scheme']),
+      type: Type.values.elementAt(map['type']),
       account: map['account'] as String,
       secret: map['secret'] as String,
       issuer: map['issuer'] as String,
@@ -89,32 +95,16 @@ class AuthConfiguration {
     );
   }
 
-  factory AuthConfiguration.random() {
-    var randomSecret = OTP.randomSecret();
-    return AuthConfiguration(
-      type: AuthType.values[Random.secure().nextInt(3)],
-      account: randomSecret,
-      secret: randomSecret,
-      issuer: randomSecret,
-      algorithm: Algorithm.values[Random.secure().nextInt(3)],
-      digits: [4, 5, 6, 7, 8][Random.secure().nextInt(4)],
-      intervalSeconds: 5 + Random.secure().nextInt(100),
-      counter: Random.secure().nextInt(100),
-      pin: "1234",
-      isBase32Encoded: true,
-    );
-  }
-
   /// 计算并生成当前的 OTP 密码
   ///
   /// 返回生成的 OTP 密码字符串。
   String generateCodeString() {
     switch (type) {
-      case AuthType.totp:
+      case Type.totp:
         return OTP.generateTOTPCodeString(secret: secret, digits: digits, intervalSeconds: intervalSeconds, algorithm: algorithm, isBase32: isBase32Encoded);
-      case AuthType.hotp:
+      case Type.hotp:
         return OTP.generateHOTPCodeString(secret: secret, counter: counter, digits: digits, algorithm: algorithm, isBase32: isBase32Encoded);
-      case AuthType.motp:
+      case Type.motp:
         return OTP.generateMOTPCodeString(secret: secret, pin: pin, intervalSeconds: intervalSeconds, digits: digits);
     }
   }
@@ -164,64 +154,63 @@ class AuthConfiguration {
     String? label = Uri.decodeFull(uri.path.substring(1));
     String? issuer = uri.queryParameters['issuer'];
     String? account = uri.queryParameters['account'];
-    String? strAlgorithm = uri.queryParameters['algorithm'];
+    String? algorithm = uri.queryParameters['algorithm'];
     String? secret = uri.queryParameters['secret'];
     String digits = uri.queryParameters['digits'] ?? "6";
     String period = uri.queryParameters['period'] ?? "30";
     String counter = uri.queryParameters['counter'] ?? "0";
 
-    _validateScheme(scheme);
-    AuthType authType = _getAuthType(type);
-
-    (issuer, account) = _parseLabel(label, issuer);
-    Algorithm algorithm = _getAlgorithm(strAlgorithm);
-
-    _validateSecret(secret);
-
     return AuthConfiguration(
-      type: authType,
-      account: account,
-      secret: secret!,
-      issuer: issuer,
-      algorithm: algorithm,
+      scheme: parseScheme(scheme),
+      type: parseType(type),
+      account: parseAccount(label, issuer),
+      secret: parseSecret(secret),
+      issuer: parseIssuer(label, issuer),
+      algorithm: parseAlgorithm(algorithm),
       digits: int.parse(digits),
       intervalSeconds: int.parse(period),
       counter: int.parse(counter),
     );
   }
 
-  static void _validateScheme(String? scheme) {
-    if (scheme != "otpauth") {
-      throw ArgumentError("Invalid scheme: $scheme");
+  static Scheme parseScheme(String? scheme) {
+    switch (scheme?.toUpperCase()) {
+      case "OTPAUTH":
+        return Scheme.otpauth;
+      default:
+        throw ArgumentError("Invalid scheme: $scheme");
     }
   }
 
-  static AuthType _getAuthType(String? type) {
+  static Type parseType(String? type) {
     switch (type?.toUpperCase()) {
       case "TOTP":
-        return AuthType.totp;
+        return Type.totp;
       case "HOTP":
-        return AuthType.hotp;
+        return Type.hotp;
       default:
         throw ArgumentError("Invalid type: $type");
     }
   }
 
-  static (String, String) _parseLabel(String label, String? issuer) {
+  static String parseIssuer(String label, String? issuer) {
     if (label.contains(':')) {
-      var split = label.split(':');
-      issuer ??= split[0];
-      var account = split[1];
-      return (issuer, account);
+      return issuer ?? label.split(':')[0];
     } else {
-      issuer ??= "未提供发行者";
-      var account = label;
-      return (issuer, account);
+      return issuer ?? "未提供发行者";
     }
   }
 
-  static Algorithm _getAlgorithm(String? strAlgorithm) {
-    switch (strAlgorithm?.toUpperCase()) {
+  static String parseAccount(String label, String? issuer) {
+    if (label.contains(':')) {
+      return label.split(':')[1];
+    } else {
+      return label;
+    }
+  }
+
+  static Algorithm parseAlgorithm(String? algorithm) {
+    switch (algorithm?.toUpperCase()) {
       case null:
         return Algorithm.SHA1;
       case "SHA1":
@@ -231,13 +220,14 @@ class AuthConfiguration {
       case "SHA512":
         return Algorithm.SHA512;
       default:
-        throw ArgumentError("Invalid algorithm: $strAlgorithm");
+        throw ArgumentError("Invalid algorithm: $algorithm");
     }
   }
 
-  static void _validateSecret(String? secret) {
+  static String parseSecret(String? secret) {
     if (secret == null || !verifyBase32(secret)) {
       throw ArgumentError("Invalid secret");
     }
+    return secret;
   }
 }
