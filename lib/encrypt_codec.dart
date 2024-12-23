@@ -147,4 +147,9 @@ class EncryptedDatabaseFactory implements DatabaseFactory {
     assert(codec == null);
     return databaseFactory.openDatabase(path, version: version, onVersionChanged: onVersionChanged, mode: mode, codec: this.codec);
   }
+
+  @override
+  Future<bool> databaseExists(String path) {
+    return databaseFactory.databaseExists(path);
+  }
 }
