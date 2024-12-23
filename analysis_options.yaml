@@ -1,28 +1,76 @@
-# This file configures the analyzer, which statically analyzes Dart code to
-# check for errors, warnings, and lints.
-#
-# The issues identified by the analyzer are surfaced in the UI of Dart-enabled
-# IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
-# invoked from the command line by running `flutter analyze`.
-
-# The following line activates a set of recommended lints for Flutter apps,
-# packages, and plugins designed to encourage good coding practices.
+# 通过引用其他 lint 规则来提升代码质量
 include: package:flutter_lints/flutter.yaml
 
 linter:
-  # The lint rules applied to this project can be customized in the
-  # section below to disable rules from the `package:flutter_lints/flutter.yaml`
-  # included above or to enable additional rules. A list of all available lints
-  # and their documentation is published at https://dart.dev/lints.
-  #
-  # Instead of disabling a lint rule for the entire project in the
-  # section below, it can also be suppressed for a single line of code
-  # or a specific dart file by using the `// ignore: name_of_lint` and
-  # `// ignore_for_file: name_of_lint` syntax on the line or in the file
-  # producing the lint.
   rules:
-    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+    # 代码风格和命名约定
+    always_specify_types: true         # 强制指定类型
+    always_use_package_imports: true   # 强制使用 package 导入
+    camel_case_types: true             # 强制类型名称采用驼峰命名
+    constant_identifier_names: true    # 强制常量采用全大写字母
+    library_prefixes: true             # 强制使用库前缀
+    non_constant_identifier_names: true  # 强制非常量标识符使用小写字母
+    prefer_final_fields: true          # 强制字段尽量声明为 final
+    prefer_single_quotes: true         # 强制使用单引号（'）定义字符串
+    prefer_typing_uninitialized_variables: true  # 强制未初始化的局部变量指定类型
+    prefer_collection_literals: true   # 强制使用集合字面量而非构造函数
+    avoid_var: true
 
-# Additional information about this file can be found at
-# https://dart.dev/guides/language/analysis-options
+    # 代码质量和可读性
+    avoid_print: true                  # 禁止使用 print
+    avoid_return_types_on_setters: true  # 禁止在 setter 中指定返回类型
+    prefer_is_empty: true              # 强制使用 .isEmpty 判断集合是否为空
+    prefer_for_elements_to_map_from_iterable: true  # 强制使用 Map.fromIterable
+    prefer_inlined_adds: true          # 强制使用 ..add() 链式调用
+    prefer_interpolation_to_concat: true  # 强制使用字符串插值
+    prefer_single_widget_per_file: true # 强制每个文件只包含一个顶级 widget
+    prefer_named_parameters: true       # 强制使用命名参数
+
+    # 性能优化
+    avoid_dynamic_calls: true          # 禁止动态调用
+    prefer_final_locals: true          # 强制局部变量声明为 final
+    prefer_is_not_empty: true          # 强制使用 .isNotEmpty 判断集合非空
+    prefer_conditional_expression: true  # 强制使用三元表达式替代 if-else
+
+    # 错误和异常
+    avoid_null_checks_in_equality_operators: true  # 禁止在 == 或 != 操作符中检查 null
+    prefer_throwing_null: true         # 优先使用 throw null
+    avoid_empty_else: true            # 禁止空的 else 语句块
+    avoid_catching_errors: true       # 禁止捕获所有类型的异常
+    throw_in_finally: true            # 禁止在 finally 块中抛出异常
+
+    # 异步编程
+    await_only_futures: true          # 强制 await 仅用于 Future 类型
+    prefer_async_await: true          # 强制使用 async/await 而非 .then() 链式调用
+
+    # 代码安全
+    avoid_bool_literals_in_conditional_expressions: true  # 禁止在条件表达式中使用 true 或 false 字面量
+    avoid_annotating_with_dynamic: true  # 禁止将 dynamic 注解类型
+    avoid_using_dynamic: true             # 禁止使用 dynamic 类型
+    avoid_null_in_if_null_operators: true # 避免在空合并运算符中使用 null
+
+    # 最佳实践
+    prefer_const_constructors: true     # 优先使用 const 构造函数
+    avoid_function_literals_in_foreach_calls: true  # 禁止在 forEach 中使用函数字面量
+    prefer_mixed_literal: true          # 推荐混合集合字面量
+
+    # 废弃的规则
+    deprecated_member_use: true         # 禁止使用废弃的成员
+    deprecated_consistency: true        # 禁止使用废弃的 API
+
+
+# 配置 analyzer 行为
+analyzer:
+  # 排除特定文件或目录
+  exclude:
+    - lib/generated/**  # 排除生成的代码
+    - test/**           # 排除测试文件
+    - build/**
+
+  # 配置某些规则的严重性
+  errors:
+    implicit_dynamic_type: error  # 将隐式动态类型错误设置为错误
+
+  language:
+    strict-casts: true  # 启用严格类型转换检查
+    strict-raw-types: true  # 启用严格的 dynamic 类型检查
