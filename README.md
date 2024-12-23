@@ -136,6 +136,13 @@ A4: 2FA 密码是基于时间的，每 30 秒更新一次。确保在验证码�
 - [elliotwutingfeng/motp](https://github.com/elliotwutingfeng/motp)
 - [stratumauth](https://github.com/stratumauth/app)
 - [simple-icons](https://github.com/simple-icons/simple-icons)
+- [sembast](https://pub.dev/packages/sembast)
+- [permission_handler](https://pub.dev/packages/permission_handler)
+- [google_mlkit_barcode_scanning](https://pub.dev/packages/google_mlkit_barcode_scanning)
+- [dynamic_color](https://pub.dev/packages/dynamic_color)
+- [flutter_swipe_action_cell](https://pub.dev/packages/flutter_swipe_action_cell)
+- [get_it](https://pub.dev/packages/get_it)
+
 
 ## 📢 法律声明
 
