@@ -19,12 +19,12 @@ class AuthAddPage extends StatefulWidget {
 }
 
 class _AuthAddPageState extends State<AuthAddPage> with WidgetsBindingObserver, WindowSizeStateMixin {
-  late final List<AuthAddButtonOption> options = <AuthAddButtonOption>[
-    AuthAddButtonOption(icon: Icons.camera_enhance, label: '扫描二维码', onTap: scanQrCode),
-    AuthAddButtonOption(icon: Icons.photo_library, label: '上传二维码', onTap: uploadQrCode),
-    AuthAddButtonOption(icon: Icons.edit, label: '输入提供的密钥', onTap: enterKey),
-    AuthAddButtonOption(icon: Icons.restore, label: '从备份中恢复', onTap: restoreBackup),
-    AuthAddButtonOption(icon: Icons.format_list_numbered, label: '从其他应用导入', onTap: importFromApps),
+  late final List<List<Object>> options = [
+    [Icons.camera_enhance, '扫描二维码', scanQrCode],
+    [Icons.photo_library, '上传二维码', uploadQrCode],
+    [Icons.edit, '输入提供的密钥', enterKey],
+    [Icons.restore, '从备份中恢复', restoreBackup],
+    [Icons.format_list_numbered, '从其他应用导入', importFromApps],
   ];
 
   void scanQrCode(BuildContext context) {
@@ -114,8 +114,12 @@ class _AuthAddPageState extends State<AuthAddPage> with WidgetsBindingObserver, 
                     ),
                     itemCount: options.length,
                     itemBuilder: (BuildContext context, int index) {
-                      final AuthAddButtonOption option = options[index];
-                      return buildAuthAddButton(option.icon, option.label, option.onTap);
+                      final List<Object> option = options[index];
+                      return _Button(
+                        option[0] as IconData?,
+                        option[1] as String,
+                        option[2] as void Function(BuildContext p1)?,
+                      );
                     },
                   ),
                 ),
@@ -126,14 +130,24 @@ class _AuthAddPageState extends State<AuthAddPage> with WidgetsBindingObserver, 
       ),
     );
   }
+}
 
-  Widget buildAuthAddButton(
-    IconData? icon,
-    String label,
-    void Function(BuildContext)? onTap,
-  ) {
+class _Button extends StatefulWidget {
+  _Button(this.icon, this.label, this.onTap, {super.key});
+
+  IconData? icon;
+  String label;
+  void Function(BuildContext)? onTap;
+
+  @override
+  State<_Button> createState() => _ButtonState();
+}
+
+class _ButtonState extends State<_Button> {
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => onTap?.call(context),
+      onTap: () => widget.onTap?.call(context),
       child: Container(
         padding: const EdgeInsets.all(16),
         alignment: Alignment.center,
@@ -146,31 +160,14 @@ class _AuthAddPageState extends State<AuthAddPage> with WidgetsBindingObserver, 
               width: 48,
               alignment: Alignment.center,
               decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: const BorderRadius.all(Radius.circular(12))),
-              child: Icon(icon, size: 24, color: Theme.of(context).colorScheme.onPrimary),
+              child: Icon(widget.icon, size: 24, color: Theme.of(context).colorScheme.onPrimary),
             ),
             const SizedBox(width: 16),
-            Text(label, maxLines: 1, style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
+            Text(widget.label, maxLines: 1, style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
             const SizedBox(width: 16),
           ],
         ),
       ),
     );
   }
-}
-
-class AuthAddButtonOption {
-  IconData? icon;
-  String label;
-  void Function(BuildContext)? onTap;
-
-  /// 创建 [AuthAddButtonOption] 的构造函数。
-  ///
-  /// [icon] 参数指定图标的字符串表示。
-  /// [label] 参数指定标签的字符串表示。
-  /// [onTap] 参数指定一个函数，该函数接受一个 [] 类型的参数，并返回 void，用于处理用户交互。
-  AuthAddButtonOption({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
 }
