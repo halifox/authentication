@@ -19,21 +19,16 @@ class AuthHomePage extends StatefulWidget {
 }
 
 class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver, WindowSizeStateMixin {
-  List<AuthenticationConfig> configs = <AuthenticationConfig>[];
-
   void toAuthAddPage(BuildContext context) {
     Navigator.pushNamed(context, '/AuthAddPage');
   }
 
   listener(List<AuthenticationConfig> configs) {
-    setState(() {
-      this.configs = configs;
-    });
+    setState(() {});
   }
 
   @override
   void initState() {
-    configs = GetIt.I<AuthRepository>().snapshot;
     GetIt.I<AuthRepository>().addListener(listener);
     super.initState();
   }
@@ -63,20 +58,25 @@ class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver
                   rightOnPressed: toAuthAddPage,
                 ),
                 Expanded(
-                  child: GridView.builder(
-                    physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: maxCrossAxisExtent,
-                      mainAxisExtent: 140,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 16,
+                  child: ScrollConfiguration(
+                    behavior: ScrollConfiguration.of(context).copyWith(
+                      scrollbars: false,
                     ),
-                    itemCount: configs.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final AuthenticationConfig config = configs[index];
-                      return AuthenticationWidget(key: ObjectKey(config), config: config);
-                    },
+                    child: GridView.builder(
+                      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: maxCrossAxisExtent,
+                        mainAxisExtent: 140,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 16,
+                      ),
+                      itemCount: GetIt.I<AuthRepository>().snapshot.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final AuthenticationConfig config = GetIt.I<AuthRepository>().snapshot[index];
+                        return AuthenticationWidget(key: ObjectKey(config), config: config);
+                      },
+                    ),
                   ),
                 ),
               ],
