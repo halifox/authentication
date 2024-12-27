@@ -53,7 +53,31 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   }
 
   void onDelete() {
-    GetIt.I<AuthRepository>().delete(configuration.key!);
+    showGeneralDialog(
+      context: context,
+      pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+        return AlertDialog(
+          title: Text("警告"),
+          content: Text("您即将删除当前的两步验证器。\n此操作将使您无法使用该验证器进行身份验证。\n请确保您已准备好其他身份验证方式以保障账户安全。"),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('取消'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                GetIt.I<AuthRepository>().delete(configuration.key!);
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+              child: const Text('删除'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void copy() {
