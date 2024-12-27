@@ -45,11 +45,13 @@ class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver
       config.verify();
       if (config.key == null) {
         await GetIt.I<AuthRepository>().insert(config);
+        Navigator.popUntil(context, (Route route) => route.settings.name == '/');
+        showAlertDialog(context, '结果', '添加成功');
       } else {
         await GetIt.I<AuthRepository>().update(config);
+        Navigator.popUntil(context, (Route route) => route.settings.name == '/');
+        showAlertDialog(context, '结果', '更新成功');
       }
-      Navigator.popUntil(context, (Route route) => route.settings.name == '/');
-      showAlertDialog(context, '结果', '添加成功');
     } on ArgumentError catch (e) {
       showAlertDialog(context, '参数错误', e.message as String?);
     } on FormatException catch (e) {
