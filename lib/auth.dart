@@ -62,11 +62,17 @@ class AuthenticationConfig {
     this.counter = 0,
     this.pin = '',
     this.isBase32Encoded = true,
+    bool isVerify = false,
   }) {
-    verify();
+    if (isVerify) {
+      verify();
+    }
   }
 
   verify() {
+    if (issuer.isEmpty) {
+      throw ArgumentError("发行方不得为空或空白。");
+    }
     if (type == Type.totp) {
       if (digits < 6 || digits > 10) {
         throw ArgumentError("对于 TOTP，位数必须介于 6 到 10 之间");
@@ -80,9 +86,22 @@ class AuthenticationConfig {
       if (digits < 6 || digits > 8) {
         throw ArgumentError("对于 HOTP，位数必须介于 6 到 8 之间");
       }
-      if (counter <= 0) {
-        throw ArgumentError("计数必须必须 > 0");
+      if (counter < 0) {
+        throw ArgumentError("计数必须必须 >= 0");
       }
+    }
+
+    if (type == Type.motp) {
+      if (digits < 6 || digits > 10) {
+        throw ArgumentError("对于 Mobile-OTP，位数必须介于 6 到 10 之间");
+      }
+      if (pin.isEmpty) {
+        throw ArgumentError("对于 Mobile-OTP，必须设置 pin 字段。");
+      }
+    }
+
+    if (isBase32Encoded && !AuthenticationConfig.verifyBase32(secret)) {
+      throw ArgumentError('对于 HOTP 和 TOTP，验证器密钥必须是不带空格的大写 base-32 字符串。它还可以包含“=”作为填充字符。');
     }
   }
 
