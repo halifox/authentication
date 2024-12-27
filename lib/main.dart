@@ -54,12 +54,12 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             brightness: Brightness.light,
             colorScheme: lightDynamic,
-            pageTransitionsTheme: pageTransitionsTheme,
+            // pageTransitionsTheme: pageTransitionsTheme,
           ),
           darkTheme: ThemeData(
             brightness: Brightness.dark,
             colorScheme: darkDynamic,
-            pageTransitionsTheme: pageTransitionsTheme,
+            // pageTransitionsTheme: pageTransitionsTheme,
           ),
           initialRoute: '/',
           routes: <String, WidgetBuilder>{
