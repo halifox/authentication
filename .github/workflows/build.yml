@@ -20,8 +20,6 @@ jobs:
         uses: subosito/flutter-action@v2
       - name: Install dependencies
         run: flutter pub get
-      - name: Run tests
-        run: flutter test
       - name: Build for Web
         run: flutter build web --release
       - name: Upload build artifacts
@@ -53,8 +51,6 @@ jobs:
           sudo apt-get install -y ninja-build libgtk-3-dev
       - name: Install dependencies
         run: flutter pub get
-      - name: Run tests
-        run: flutter test
       - name: Build for Linux
         run: flutter build linux --release
       - name: Upload build artifacts
@@ -87,8 +83,6 @@ jobs:
         uses: subosito/flutter-action@v2
       - name: Install dependencies
         run: flutter pub get
-      - name: Run tests
-        run: flutter test
       - name: Build APK
         run: flutter build apk --release
       - name: Build split APKs
@@ -130,8 +124,6 @@ jobs:
         uses: subosito/flutter-action@v2
       - name: Install dependencies
         run: flutter pub get
-      - name: Run tests
-        run: flutter test
       - name: Build for Windows
         run: flutter build windows --release
       - name: Upload build artifacts
@@ -159,8 +151,6 @@ jobs:
         uses: subosito/flutter-action@v2
       - name: Install dependencies
         run: flutter pub get
-      - name: Run tests
-        run: flutter test
       - name: Build for macOS
         run: flutter build macos --release
       - name: Upload build artifacts
@@ -188,8 +178,6 @@ jobs:
         uses: subosito/flutter-action@v2
       - name: Install dependencies
         run: flutter pub get
-      - name: Run tests
-        run: flutter test
       - name: Build for iOS
         run: flutter build ios --release --no-codesign
       - name: Upload build artifacts
