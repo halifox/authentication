@@ -18,7 +18,6 @@ class _AuthSettingsPageState extends State<AuthSettingsPage> with WidgetsBinding
     [prefs.biometricUnlock, '生物识别解锁'],
     [prefs.isShowCaptchaOnTap, '轻触显示验证码'],
     [prefs.isCopyCaptchaOnTap, '轻触复制验证码'],
-    [prefs.disableScreenshot, '禁止截图'],
   ];
 
   @override

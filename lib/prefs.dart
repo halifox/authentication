@@ -10,7 +10,6 @@ class Prefs {
   late Signal<bool> biometricUnlock = SignalSharedPreferences<bool>('biometricUnlock', false, sp);
   late Signal<bool> isShowCaptchaOnTap = SignalSharedPreferences<bool>('isShowCaptchaOnTap', false, sp);
   late Signal<bool> isCopyCaptchaOnTap = SignalSharedPreferences<bool>('isCopyCaptchaOnTap', true, sp);
-  late Signal<bool> disableScreenshot = SignalSharedPreferences<bool>('disableScreenshot', true, sp);
 
   void dispose() {}
 }
