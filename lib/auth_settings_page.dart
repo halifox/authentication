@@ -88,19 +88,21 @@ class _ButtonState extends State<_Button> {
           const SizedBox(width: 16),
           GestureDetector(
             onTap: () {
-              setState(() {
-                widget.enable.value = !widget.enable.value;
-              });
+              widget.enable.value = !widget.enable.value;
             },
-            child: Container(
-              height: 48,
-              width: 48,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: widget.enable.value ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.inversePrimary,
-                borderRadius: const BorderRadius.all(Radius.circular(12)),
-              ),
-              child: Icon(widget.enable.value ? Icons.done : Icons.close, size: 36, color: Theme.of(context).colorScheme.onPrimary),
+            child: Watch.builder(
+              builder: (context) {
+                return Container(
+                  height: 48,
+                  width: 48,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: widget.enable.value ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.inversePrimary,
+                    borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  ),
+                  child: Icon(widget.enable.value ? Icons.done : Icons.close, size: 36, color: Theme.of(context).colorScheme.onPrimary),
+                );
+              },
             ),
           ),
         ],
