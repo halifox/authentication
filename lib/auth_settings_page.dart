@@ -56,7 +56,7 @@ class _AuthSettingsPageState extends State<AuthSettingsPage> with WidgetsBinding
   }
 }
 
-class _Button extends StatefulWidget {
+class _Button extends StatelessWidget {
   const _Button(
     this.enable,
     this.label, {
@@ -66,11 +66,6 @@ class _Button extends StatefulWidget {
   final Signal<bool> enable;
   final String label;
 
-  @override
-  State<_Button> createState() => _ButtonState();
-}
-
-class _ButtonState extends State<_Button> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -82,12 +77,12 @@ class _ButtonState extends State<_Button> {
         children: <Widget>[
           const SizedBox(width: 12),
           Expanded(
-            child: Text(widget.label, maxLines: 1, style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
+            child: Text(label, maxLines: 1, style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
           ),
           const SizedBox(width: 16),
           GestureDetector(
             onTap: () {
-              widget.enable.value = !widget.enable.value;
+              enable.value = !enable.value;
             },
             child: Watch.builder(
               builder: (context) {
@@ -96,10 +91,10 @@ class _ButtonState extends State<_Button> {
                   width: 48,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: widget.enable.value ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.inversePrimary,
+                    color: enable.value ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.inversePrimary,
                     borderRadius: const BorderRadius.all(Radius.circular(12)),
                   ),
-                  child: Icon(widget.enable.value ? Icons.done : Icons.close, size: 36, color: Theme.of(context).colorScheme.onPrimary),
+                  child: Icon(enable.value ? Icons.done : Icons.close, size: 36, color: Theme.of(context).colorScheme.onPrimary),
                 );
               },
             ),
