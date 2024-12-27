@@ -9,10 +9,12 @@ import 'package:purity_auth/auth_home_page.dart';
 import 'package:purity_auth/auth_repository.dart';
 import 'package:purity_auth/auth_scan_page.dart';
 import 'package:purity_auth/auth_settings_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
+  GetIt.I.registerSingleton<SharedPreferences>(await SharedPreferences.getInstance());
   GetIt.I.registerSingleton<AuthRepository>(AuthRepositoryImpl());
   runApp(const MyApp());
 }

@@ -27,6 +27,7 @@ dependencies:
   talker_flutter: 4.5.3
   flutter_svg: 2.0.16
   get_it: 8.0.3
+  shared_preferences: 2.3.4
 dev_dependencies:
   flutter_test:
     sdk: flutter
