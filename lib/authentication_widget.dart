@@ -5,11 +5,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:get_it/get_it.dart';
-import 'package:purity_auth/prefs.dart';
 import 'package:purity_auth/auth.dart';
 import 'package:purity_auth/auth_repository.dart';
 import 'package:purity_auth/dialog.dart';
 import 'package:purity_auth/otp.dart';
+import 'package:purity_auth/prefs.dart';
 import 'package:signals_flutter/signals_core.dart';
 
 /// 认证项小部件
@@ -110,6 +110,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
     }
     if (prefs.isCopyCaptchaOnTap.value) {
       Clipboard.setData(ClipboardData(text: authCode));
+      ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('代码已复制'), duration: Duration(milliseconds: 1200)));
     }
   }
