@@ -42,6 +42,7 @@ class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver
         ..digits = int.parse(digitsController.text)
         ..intervalSeconds = int.parse(periodController.text)
         ..counter = int.parse(counterController.text);
+      config.verify();
       await GetIt.I<AuthRepository>().upsert(config);
       Navigator.popUntil(context, (Route route) => route.settings.name == '/');
       showAlertDialog(context, '结果', '添加成功');

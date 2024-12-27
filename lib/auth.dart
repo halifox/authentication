@@ -62,7 +62,29 @@ class AuthenticationConfig {
     this.counter = 0,
     this.pin = '',
     this.isBase32Encoded = true,
-  });
+  }) {
+    verify();
+  }
+
+  verify() {
+    if (type == Type.totp) {
+      if (digits < 6 || digits > 10) {
+        throw ArgumentError("对于 TOTP，位数必须介于 6 到 10 之间");
+      }
+      if (intervalSeconds <= 0) {
+        throw ArgumentError("时间间隔必须 > 0");
+      }
+    }
+
+    if (type == Type.hotp) {
+      if (digits < 6 || digits > 8) {
+        throw ArgumentError("对于 HOTP，位数必须介于 6 到 8 之间");
+      }
+      if (counter <= 0) {
+        throw ArgumentError("计数必须必须 > 0");
+      }
+    }
+  }
 
   static Map<String, dynamic> toJson(AuthenticationConfig config) {
     return <String, dynamic>{
