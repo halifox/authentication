@@ -128,16 +128,17 @@ class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver
                         buildTextField(issuerController, '发行方'),
                         buildTextField(accountController, '用户名'),
                         buildTextField(secretController, '密钥'),
-                        if (config.type == Type.totp || config.type == Type.hotp) buildDropdown<Algorithm>('算法', config.algorithm, algorithmLabels, (Algorithm? value) => config.algorithm = value!),
+                        if (config.type == Type.totp) buildDropdown<Algorithm>('算法', config.algorithm, algorithmLabels, (Algorithm? value) => config.algorithm = value!),
+                        if (config.type == Type.hotp) buildDropdown<Algorithm>('算法', config.algorithm, algorithmLabels, (Algorithm? value) => config.algorithm = value!),
                         if (config.type == Type.motp) buildTextField(pinController, 'PIN码'),
-                        if (config.type == Type.totp || config.type == Type.hotp || config.type == Type.motp)
-                          Row(
-                            children: <Widget>[
-                              Expanded(child: buildTextField(digitsController, '位数', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
-                              if (config.type == Type.totp || config.type == Type.motp) Expanded(child: buildTextField(periodController, '时间间隔(秒)', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
-                              if (config.type == Type.hotp) Expanded(child: buildTextField(counterController, '计数器', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
-                            ],
-                          ),
+                        Row(
+                          children: <Widget>[
+                            Expanded(child: buildTextField(digitsController, '位数', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
+                            if (config.type == Type.totp) Expanded(child: buildTextField(periodController, '时间间隔(秒)', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
+                            if (config.type == Type.hotp) Expanded(child: buildTextField(counterController, '计数器', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
+                            if (config.type == Type.motp) Expanded(child: buildTextField(periodController, '时间间隔(秒)', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
+                          ],
+                        ),
                       ],
                     ),
                   ),
