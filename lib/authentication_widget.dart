@@ -160,21 +160,22 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
 
   /// 构建图标容器
   Widget buildIconContainer() {
-    String assetName = 'icons/${configuration.issuer.toLowerCase()}.svg';
-    return Container(
-      height: 48,
-      width: 48,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(12)),
-      // child: Icon(Icons.account_balance_sharp, size: 24, color: Theme.of(context).colorScheme.onPrimary),
-      child: SvgPicture.asset(
-        assetName,
-        width: 28,
-        height: 28,
-        colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn),
-        placeholderBuilder: (BuildContext context) {
-          return Icon(Icons.account_balance, size: 24, color: Theme.of(context).colorScheme.onPrimary);
-        },
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+        height: 48,
+        width: 48,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(12)),
+        child: SvgPicture.asset(
+          configuration.icon ?? 'icons/${configuration.issuer.toLowerCase()}.svg',
+          width: 28,
+          height: 28,
+          colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn),
+          placeholderBuilder: (BuildContext context) {
+            return Icon(Icons.account_balance, size: 24, color: Theme.of(context).colorScheme.onPrimary);
+          },
+        ),
       ),
     );
   }

@@ -50,6 +50,8 @@ class AuthenticationConfig {
   // 内部生成的密钥，通常由系统自动处理
   String? key;
 
+  String? icon;
+
   AuthenticationConfig({
     this.scheme = Scheme.otpauth,
     this.type = Type.totp,
