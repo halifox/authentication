@@ -7,6 +7,7 @@ import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:get_it/get_it.dart';
 import 'package:purity_auth/auth.dart';
 import 'package:purity_auth/auth_repository.dart';
+import 'package:purity_auth/dialog.dart';
 import 'package:purity_auth/otp.dart';
 
 /// 认证项小部件
@@ -161,7 +162,9 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   /// 构建图标容器
   Widget buildIconContainer() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        showDevDialog(context);
+      },
       child: Container(
         height: 48,
         width: 48,
