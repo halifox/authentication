@@ -5,10 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:get_it/get_it.dart';
+import 'package:purity_auth/prefs.dart';
 import 'package:purity_auth/auth.dart';
 import 'package:purity_auth/auth_repository.dart';
 import 'package:purity_auth/dialog.dart';
 import 'package:purity_auth/otp.dart';
+import 'package:signals_flutter/signals_core.dart';
 
 /// 认证项小部件
 class AuthenticationWidget extends StatefulWidget {
@@ -22,14 +24,25 @@ class AuthenticationWidget extends StatefulWidget {
 
 /// 认证项的状态类
 class _AuthenticationWidgetState extends State<AuthenticationWidget> {
+  Prefs prefs = GetIt.I<Prefs>();
+
   late final AuthenticationConfig configuration = widget.config;
-  String authCode = '--------';
+  late String authCode = '--------';
+  late bool isShow = !prefs.isShowCaptchaOnTap.value;
 
   Timer? timer;
+  Timer? showCaptchaOnTapTimer;
 
   @override
   void initState() {
     super.initState();
+    effect(() {
+      setState(() {
+        isShow = !prefs.isShowCaptchaOnTap.value;
+      });
+      showCaptchaOnTapTimer?.cancel();
+    });
+
     if (<Type>[Type.totp, Type.motp].contains(configuration.type)) {
       startOtpTimer();
     } else {
@@ -81,9 +94,24 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
     );
   }
 
-  void copy() {
-    Clipboard.setData(ClipboardData(text: authCode));
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('代码已复制'), duration: Duration(milliseconds: 1200)));
+  void onTap() {
+    if (prefs.isShowCaptchaOnTap.value) {
+      setState(() {
+        isShow = !isShow;
+      });
+      showCaptchaOnTapTimer?.cancel();
+      showCaptchaOnTapTimer = Timer(const Duration(seconds: 10), () {
+        if (mounted) {
+          setState(() {
+            isShow = false;
+          });
+        }
+      });
+    }
+    if (prefs.isCopyCaptchaOnTap.value) {
+      Clipboard.setData(ClipboardData(text: authCode));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('代码已复制'), duration: Duration(milliseconds: 1200)));
+    }
   }
 
   @override
@@ -129,7 +157,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   /// 构建认证卡片
   Widget buildAuthCard() {
     return GestureDetector(
-      onTap: copy,
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         alignment: Alignment.center,
@@ -236,7 +264,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
       width: 40,
       alignment: Alignment.center,
       decoration: BoxDecoration(color: Theme.of(context).colorScheme.tertiary, borderRadius: BorderRadius.circular(14)),
-      child: Text(char, style: TextStyle(height: 0, fontSize: 32, color: Theme.of(context).colorScheme.onTertiary, fontWeight: FontWeight.bold, fontFamily: 'GothamRnd')), // 代码字符
+      child: Text(isShow ? char : '-', style: TextStyle(height: 0, fontSize: 32, color: Theme.of(context).colorScheme.onTertiary, fontWeight: FontWeight.bold, fontFamily: 'GothamRnd')), // 代码字符
     );
   }
 }
