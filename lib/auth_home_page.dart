@@ -7,7 +7,6 @@ import 'package:get_it/get_it.dart';
 import 'package:purity_auth/auth.dart';
 import 'package:purity_auth/auth_repository.dart';
 import 'package:purity_auth/authentication_widget.dart';
-import 'package:purity_auth/dialog.dart';
 import 'package:purity_auth/top_bar.dart';
 import 'package:purity_auth/window_size_controller.dart';
 
@@ -21,6 +20,10 @@ class AuthHomePage extends StatefulWidget {
 class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver, WindowSizeStateMixin {
   void toAuthAddPage(BuildContext context) {
     Navigator.pushNamed(context, '/AuthAddPage');
+  }
+
+  void toSettingsPage(BuildContext context) {
+    Navigator.pushNamed(context, '/AuthSettingsPage');
   }
 
   listener(List<AuthenticationConfig> configs) {
@@ -53,7 +56,7 @@ class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver
                   context,
                   'Purity Auth',
                   leftIcon: Icons.settings,
-                  leftOnPressed: showDevDialog,
+                  leftOnPressed: toSettingsPage,
                   rightIcon: Icons.add,
                   rightOnPressed: toAuthAddPage,
                 ),

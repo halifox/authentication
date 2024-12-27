@@ -8,6 +8,7 @@ import 'package:purity_auth/auth_from_page.dart';
 import 'package:purity_auth/auth_home_page.dart';
 import 'package:purity_auth/auth_repository.dart';
 import 'package:purity_auth/auth_scan_page.dart';
+import 'package:purity_auth/auth_settings_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
             '/AuthAddPage': (BuildContext context) => const AuthAddPage(),
             '/AuthScanPage': (BuildContext context) => const AuthScanPage(),
             '/AuthFromPage': (BuildContext context) => const AuthFromPage(),
+            '/AuthSettingsPage': (BuildContext context) => const AuthSettingsPage(),
           },
           navigatorObservers: <NavigatorObserver>[
             SwipeActionNavigatorObserver(),
