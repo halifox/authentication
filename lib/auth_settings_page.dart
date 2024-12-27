@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:purity_auth/prefs.dart';
 import 'package:purity_auth/top_bar.dart';
 import 'package:purity_auth/window_size_controller.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:signals_flutter/signals_flutter.dart';
 
 class AuthSettingsPage extends StatefulWidget {
   const AuthSettingsPage({super.key});
@@ -12,10 +13,12 @@ class AuthSettingsPage extends StatefulWidget {
 }
 
 class _AuthSettingsPageState extends State<AuthSettingsPage> with WidgetsBindingObserver, WindowSizeStateMixin {
-  final List<List<String>> options = [
-    ["biometricUnlock", '生物识别解锁'],
-    ["hideCaptcha", '隐藏验证码'],
-    ["disableScreenshot", '禁止截图'],
+  final Prefs prefs = GetIt.I<Prefs>();
+  late final List<List<dynamic>> options = [
+    [prefs.biometricUnlock, '生物识别解锁'],
+    [prefs.isShowCaptchaOnTap, '轻触显示验证码'],
+    [prefs.isCopyCaptchaOnTap, '轻触复制验证码'],
+    [prefs.disableScreenshot, '禁止截图'],
   ];
 
   @override
@@ -40,8 +43,8 @@ class _AuthSettingsPageState extends State<AuthSettingsPage> with WidgetsBinding
                     ),
                     itemCount: options.length,
                     itemBuilder: (BuildContext context, int index) {
-                      final List<String> option = options[index];
-                      return _Button(option[0], option[1]);
+                      final List<dynamic> option = options[index];
+                      return _Button(option[0] as Signal<bool>, option[1] as String, key: ObjectKey(option));
                     },
                   ),
                 ),
@@ -56,11 +59,12 @@ class _AuthSettingsPageState extends State<AuthSettingsPage> with WidgetsBinding
 
 class _Button extends StatefulWidget {
   const _Button(
-    this.spKey,
-    this.label,
-  );
+    this.enable,
+    this.label, {
+    super.key,
+  });
 
-  final String spKey;
+  final Signal<bool> enable;
   final String label;
 
   @override
@@ -68,15 +72,6 @@ class _Button extends StatefulWidget {
 }
 
 class _ButtonState extends State<_Button> {
-  final SharedPreferences prefs = GetIt.I.get<SharedPreferences>();
-
-  late bool enable = prefs.getBool(widget.spKey) ?? false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -94,19 +89,18 @@ class _ButtonState extends State<_Button> {
           GestureDetector(
             onTap: () {
               setState(() {
-                enable = !enable;
+                widget.enable.value = !widget.enable.value;
               });
-              prefs.setBool(widget.spKey, enable);
             },
             child: Container(
               height: 48,
               width: 48,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: enable ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.inversePrimary,
+                color: widget.enable.value ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.inversePrimary,
                 borderRadius: const BorderRadius.all(Radius.circular(12)),
               ),
-              child: Icon(enable ? Icons.done : Icons.close, size: 36, color: Theme.of(context).colorScheme.onPrimary),
+              child: Icon(widget.enable.value ? Icons.done : Icons.close, size: 36, color: Theme.of(context).colorScheme.onPrimary),
             ),
           ),
         ],
