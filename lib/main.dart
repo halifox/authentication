@@ -1,8 +1,10 @@
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swipe_action_cell/core/swipe_action_navigator_observer.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:get_it/get_it.dart';
+import 'package:purity_auth/prefs.dart';
 import 'package:purity_auth/auth_add_page.dart';
 import 'package:purity_auth/auth_from_page.dart';
 import 'package:purity_auth/auth_home_page.dart';
@@ -15,7 +17,17 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
   GetIt.I.registerSingleton<SharedPreferences>(await SharedPreferences.getInstance());
+  GetIt.I.registerSingleton<Prefs>(Prefs(sp: GetIt.I<SharedPreferences>()));
   GetIt.I.registerSingleton<AuthRepository>(AuthRepositoryImpl());
+
+  if (kDebugMode) {
+    // GetIt.I<SharedPreferences>().clear();
+    GetIt.I<SharedPreferences>().getKeys().forEach((key) {
+      final value = GetIt.I<SharedPreferences>().get(key);
+      print('$key:$value::${value.runtimeType}');
+    });
+  }
+
   runApp(const MyApp());
 }
 
