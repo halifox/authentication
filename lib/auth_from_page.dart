@@ -16,7 +16,7 @@ class AuthFromPage extends StatefulWidget {
 }
 
 class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver, WindowSizeStateMixin {
-  late final AuthenticationConfig config = ModalRoute.of(context)?.settings.arguments as AuthenticationConfig? ?? AuthenticationConfig();
+  late final AuthenticationConfig config = ModalRoute.of(context)?.settings.arguments as AuthenticationConfig? ?? AuthenticationConfig(isVerify: false);
 
   late final TextEditingController issuerController = TextEditingController(text: config.issuer);
 
@@ -43,7 +43,11 @@ class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver
         ..intervalSeconds = int.parse(periodController.text)
         ..counter = int.parse(counterController.text);
       config.verify();
-      await GetIt.I<AuthRepository>().upsert(config);
+      if (config.key == null) {
+        await GetIt.I<AuthRepository>().insert(config);
+      } else {
+        await GetIt.I<AuthRepository>().update(config);
+      }
       Navigator.popUntil(context, (Route route) => route.settings.name == '/');
       showAlertDialog(context, '结果', '添加成功');
     } on ArgumentError catch (e) {

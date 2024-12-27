@@ -19,11 +19,9 @@ abstract class AuthRepository {
 
   Future<String> insert(AuthenticationConfig config);
 
-  Future<String> update(AuthenticationConfig config);
+  Future<Map<String, Object?>?> update(AuthenticationConfig config);
 
-  Future<String> upsert(AuthenticationConfig config);
-
-  Future<String?> delete(AuthenticationConfig config);
+  Future<String?> delete(String key);
 
   void addListener(Listener listener);
 
@@ -46,13 +44,13 @@ class AuthRepositoryImpl extends AuthRepository {
     final Database db = await _authDB;
     if (kDebugMode) {
       await store.delete(db);
-      upsert(AuthenticationConfig(secret: OTP.randomSecret(), type: Type.totp, account: "user@github.com", issuer: "GitHub", intervalSeconds: 30));
-      upsert(AuthenticationConfig(secret: OTP.randomSecret(), type: Type.totp, account: "user@gmail.com", issuer: "Google", intervalSeconds: 30));
-      upsert(AuthenticationConfig(secret: OTP.randomSecret(), type: Type.totp, account: "user@icloud.com", issuer: "Apple", intervalSeconds: 40));
-      upsert(AuthenticationConfig(secret: OTP.randomSecret(), type: Type.totp, account: "user@dropbox.com", issuer: "Dropbox", intervalSeconds: 45));
-      upsert(AuthenticationConfig(secret: OTP.randomSecret(), type: Type.totp, account: "user@1dot1dot1dot1.com", issuer: "1dot1dot1dot1", intervalSeconds: 60));
-      upsert(AuthenticationConfig(secret: OTP.randomSecret(), type: Type.hotp, account: "user@aws.com", issuer: "Amazon", counter: 0));
-      upsert(AuthenticationConfig(secret: OTP.randomSecret(), type: Type.hotp, account: "user@ansible.com", issuer: "ansible", counter: 0));
+      insert(AuthenticationConfig(secret: OTP.randomSecret(), type: Type.totp, account: "user@github.com", issuer: "GitHub", intervalSeconds: 30));
+      insert(AuthenticationConfig(secret: OTP.randomSecret(), type: Type.totp, account: "user@gmail.com", issuer: "Google", intervalSeconds: 30));
+      insert(AuthenticationConfig(secret: OTP.randomSecret(), type: Type.totp, account: "user@icloud.com", issuer: "Apple", intervalSeconds: 40));
+      insert(AuthenticationConfig(secret: OTP.randomSecret(), type: Type.totp, account: "user@dropbox.com", issuer: "Dropbox", intervalSeconds: 45));
+      insert(AuthenticationConfig(secret: OTP.randomSecret(), type: Type.totp, account: "user@1dot1dot1dot1.com", issuer: "1dot1dot1dot1", intervalSeconds: 60));
+      insert(AuthenticationConfig(secret: OTP.randomSecret(), type: Type.hotp, account: "user@aws.com", issuer: "Amazon", counter: 0));
+      insert(AuthenticationConfig(secret: OTP.randomSecret(), type: Type.hotp, account: "user@ansible.com", issuer: "ansible", counter: 0));
     }
   }
 
@@ -75,6 +73,7 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   Future<void> _initDatabase() async {
+    //todo password
     if (kIsWeb) {
       final Database db = await EncryptedDatabaseFactory(databaseFactory: databaseFactoryWeb, password: '99999').openDatabase('auth');
       _authDBCompleter.complete(db);
@@ -120,35 +119,28 @@ class AuthRepositoryImpl extends AuthRepository {
   @override
   Future<String> insert(AuthenticationConfig config) async {
     final Database db = await _authDB;
-    if (config.isBase32Encoded && !AuthenticationConfig.verifyBase32(config.secret)) {
-      throw ArgumentError('Invalid secret');
-    }
-    if ((await selectByIssuerAndAccount(config.issuer, config.account)).isNotEmpty) {
-      throw ArgumentError('label and issuer repeat on the db');
+    final List<AuthenticationConfig> data = await selectByIssuerAndAccount(config.issuer, config.account);
+    if (data.isNotEmpty) {
+      throw ArgumentError("该数据已存在于数据库中");
     }
     return await store.add(db, AuthenticationConfig.toJson(config));
   }
 
   @override
-  Future<String> update(AuthenticationConfig config) async {
+  Future<Map<String, Object?>?> update(AuthenticationConfig config) async {
     final Database db = await _authDB;
-    final String key = config.key ?? (throw ArgumentError('Invalid dbKey is null'));
-    if (config.isBase32Encoded && !AuthenticationConfig.verifyBase32(config.secret)) {
-      throw ArgumentError('Invalid secret');
-    }
-    await store.record(key).update(db, AuthenticationConfig.toJson(config));
-    return key;
+    return await store.record(config.key!).update(db, AuthenticationConfig.toJson(config));
   }
 
   @override
-  Future<String> upsert(AuthenticationConfig config) async {
-    return config.key != null ? await update(config) : await insert(config);
-  }
-
-  @override
-  Future<String?> delete(AuthenticationConfig config) async {
+  Future<String?> delete(String key) async {
     final Database db = await _authDB;
-    final String key = config.key ?? (throw ArgumentError('Invalid dbKey is null'));
     return await store.record(key).delete(db);
   }
+}
+
+class DataAlreadyExistsError extends Error {
+  String key;
+
+  DataAlreadyExistsError(this.key);
 }

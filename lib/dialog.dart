@@ -4,6 +4,7 @@ Future<int?> showAlertDialog(
   BuildContext context,
   String? title,
   String? message, {
+  List<Widget>? actions,
   bool barrierDismissible = false,
 }) {
   return showGeneralDialog(
@@ -14,6 +15,7 @@ Future<int?> showAlertDialog(
         title: Text(title ?? ''),
         content: Text(message ?? ''),
         actions: <Widget>[
+          ...?actions,
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('确定'),

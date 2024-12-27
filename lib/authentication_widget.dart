@@ -53,7 +53,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   }
 
   void onDelete() {
-    GetIt.I<AuthRepository>().delete(configuration);
+    GetIt.I<AuthRepository>().delete(configuration.key!);
   }
 
   void copy() {

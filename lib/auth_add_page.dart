@@ -64,7 +64,7 @@ class _AuthAddPageState extends State<AuthAddPage> with WidgetsBindingObserver, 
         final Barcode barcode = barcodes.first;
         final String rawValue = barcode.rawValue ?? '';
         final AuthenticationConfig config = AuthenticationConfig.parse(rawValue);
-        await GetIt.I<AuthRepository>().upsert(config);
+        await GetIt.I<AuthRepository>().insert(config);
         return;
       } on ArgumentError catch (e) {
         showAlertDialog(context, '参数错误', e.message as String?);
