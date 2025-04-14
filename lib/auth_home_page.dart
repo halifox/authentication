@@ -46,45 +46,18 @@ class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver
   Widget build(BuildContext context) {
     setSystemUIOverlayStyle(context);
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SizedBox(
-            width: contentWidth,
-            child: Column(
-              children: <Widget>[
-                TopBar(
-                  context,
-                  'Purity Auth',
-                  leftIcon: Icons.settings,
-                  leftOnPressed: toSettingsPage,
-                  rightIcon: Icons.add,
-                  rightOnPressed: toAuthAddPage,
-                ),
-                Expanded(
-                  child: ScrollConfiguration(
-                    behavior: ScrollConfiguration.of(context).copyWith(
-                      scrollbars: false,
-                    ),
-                    child: GridView.builder(
-                      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: maxCrossAxisExtent,
-                        mainAxisExtent: 140,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                      ),
-                      itemCount: GetIt.I<AuthRepository>().snapshot.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final AuthenticationConfig config = GetIt.I<AuthRepository>().snapshot[index];
-                        return AuthenticationWidget(key: ObjectKey(config), config: config);
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+      appBar: TopBar(context, 'Purity Auth', leftIcon: Icons.settings, leftOnPressed: toSettingsPage, rightIcon: Icons.add, rightOnPressed: toAuthAddPage),
+      body: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+        child: GridView.builder(
+          physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 140),
+          itemCount: GetIt.I<AuthRepository>().snapshot.length,
+          itemBuilder: (BuildContext context, int index) {
+            final AuthenticationConfig config = GetIt.I<AuthRepository>().snapshot[index];
+            return AuthenticationWidget(key: ObjectKey(config.key), config: config);
+          },
         ),
       ),
     );
@@ -92,16 +65,18 @@ class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver
 
   void setSystemUIOverlayStyle(BuildContext context) {
     if (!kIsWeb && Platform.isAndroid) {
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        systemNavigationBarColor: Theme.of(context).colorScheme.surface,
-        systemNavigationBarDividerColor: Theme.of(context).colorScheme.surface,
-        systemNavigationBarIconBrightness: Theme.of(context).colorScheme.brightness,
-        // systemNavigationBarContrastEnforced: false,
-        statusBarColor: Colors.transparent,
-        statusBarBrightness: Theme.of(context).colorScheme.brightness,
-        statusBarIconBrightness: (Theme.of(context).colorScheme.brightness == Brightness.dark) ? Brightness.light : Brightness.dark, //MIUI的这个行为有异常
-        // systemStatusBarContrastEnforced: false,
-      ));
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          systemNavigationBarColor: Theme.of(context).colorScheme.surface,
+          systemNavigationBarDividerColor: Theme.of(context).colorScheme.surface,
+          systemNavigationBarIconBrightness: Theme.of(context).colorScheme.brightness,
+          // systemNavigationBarContrastEnforced: false,
+          statusBarColor: Colors.transparent,
+          statusBarBrightness: Theme.of(context).colorScheme.brightness,
+          statusBarIconBrightness: (Theme.of(context).colorScheme.brightness == Brightness.dark) ? Brightness.light : Brightness.dark, //MIUI的这个行为有异常
+          // systemStatusBarContrastEnforced: false,
+        ),
+      );
     }
   }
 }
