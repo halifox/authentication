@@ -1,143 +1,114 @@
-name: Flutter Build
-
 on:
   workflow_dispatch:
   push:
     tags:
       - '*'
-
-# 定义可重用的工作流
 jobs:
-  build_release:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-            target: web
-          - os: ubuntu-latest
-            target: linux
-          - os: ubuntu-latest
-            target: android
-          - os: windows-latest
-            target: windows
-          - os: macos-latest
-            target: macos
-          - os: macos-latest
-            target: ios
-
+  web:
+    runs-on: ubuntu-latest
     steps:
-      - name: Set up repository
-        uses: actions/checkout@v4
-
-      - name: Set up Java (for Android)
-        if: matrix.target == 'android'
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 获取完整历史，以便获取最新的提交哈希
+      - uses: subosito/flutter-action@v2
+      - run: flutter pub get
+      - run: flutter build web --release
+      - run: tar -czvf web.tar.gz -C build/web .
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: web.tar.gz
+          tag_name: ${{ github.ref_name || github.sha }}
+          name: Release ${{ github.ref_name || github.sha }}
+          draft: ${{ github.ref_name == '' }}
+          prerelease: false
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+      - run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build libgtk-3-dev
+      - run: flutter pub get
+      - run: flutter build linux --release
+      - run: tar -czvf linux-x64.tar.gz -C build/linux/x64/release/bundle .
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: linux-x64.tar.gz
+          tag_name: ${{ github.ref_name || github.sha }}
+          name: Release ${{ github.ref_name || github.sha }}
+          draft: ${{ github.ref_name == '' }}
+          prerelease: false
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@v2
+      - run: flutter pub get
+      - run: flutter build apk --target-platform android-arm64
+      - uses: softprops/action-gh-release@v2
         with:
-          channel: 'stable'
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Build web
-        if: matrix.target == 'web'
-        run: flutter build web --release
-        env:
-          BUILD_PATH: build/web
-
-      - name: Build Linux
-        if: matrix.target == 'linux'
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y ninja-build libgtk-3-dev
-          flutter build linux --release
-        env:
-          BUILD_PATH: build/linux/x64/release/bundle
-
-      - name: Build Windows
-        if: matrix.target == 'windows'
-        run: flutter build windows --release
-        env:
-          BUILD_PATH: build/windows/x64/runner/Release
-
-      - name: Build macOS
-        if: matrix.target == 'macos'
-        run: flutter build macos --release
-        env:
-          BUILD_PATH: build/macos/Build/Products/Release
-
-      - name: Build Android APK
-        if: matrix.target == 'android'
-        run: flutter build apk --release --split-per-abi
-        env:
-          BUILD_PATH: build/app/outputs/flutter-apk
-
-      - name: Build iOS
-        if: matrix.target == 'ios'
-        run: flutter build ios --release --no-codesign # 注意: 此处未处理代码签名
-        env:
-          BUILD_PATH: build/ios/iphoneos/Runner.app
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+          files: build\app\outputs\flutter-apk\app-arm64-v8a-release.apk
+          tag_name: ${{ github.ref_name || github.sha }}
+          name: Release ${{ github.ref_name || github.sha }}
+          draft: ${{ github.ref_name == '' }}
+          prerelease: false
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
         with:
-          name: ${{ matrix.target }}-build-${{ github.ref_name }}
-          path: ${{ env.BUILD_PATH }}
-        if: env.BUILD_PATH != ''
-
-      - name: Create release asset (Web)
-        if: matrix.target == 'web' && startsWith(github.ref, 'refs/tags/')
-        run: tar -czvf web-universal-${{ github.ref_name }}-release.tar.gz -C ${{ env.BUILD_PATH }} .
-        env:
-          ASSET_PATH: web-universal-${{ github.ref_name }}-release.tar.gz
-
-      - name: Create release asset (Linux)
-        if: matrix.target == 'linux' && startsWith(github.ref, 'refs/tags/')
-        run: tar -czvf linux-x86_64-${{ github.ref_name }}-release.tar.gz -C ${{ env.BUILD_PATH }} .
-        env:
-          ASSET_PATH: linux-x86_64-${{ github.ref_name }}-release.tar.gz
-
-      - name: Create release asset (Windows)
-        if: matrix.target == 'windows' && startsWith(github.ref, 'refs/tags/')
-        run: Compress-Archive -Path ${{ env.BUILD_PATH }}/* -DestinationPath windows-x86_64-${{ github.ref_name }}-release.zip
-        env:
-          ASSET_PATH: windows-x86_64-${{ github.ref_name }}-release.zip
-
-      - name: Create release asset (macOS)
-        if: matrix.target == 'macos' && startsWith(github.ref, 'refs/tags/')
-        run: |
-          APP_NAME=$(ls ${{ env.BUILD_PATH }}/*.app)
-          zip -r macos-universal-${{ github.ref_name }}-release.zip $APP_NAME
-        env:
-          ASSET_PATH: macos-universal-${{ github.ref_name }}-release.zip
-
-      - name: Create release asset (Android APK)
-        if: matrix.target == 'android' && startsWith(github.ref, 'refs/tags/')
-        run: |
-          mv ${{ env.BUILD_PATH }}/app-armeabi-v7a-release.apk app-armeabi-v7a-${{ github.ref_name }}-release.apk
-          mv ${{ env.BUILD_PATH }}/app-arm64-v8a-release.apk app-arm64-v8a-${{ github.ref_name }}-release.apk
-          mv ${{ env.BUILD_PATH }}/app-x86_64-release.apk app-x86_64-${{ github.ref_name }}-release.apk
-        env:
-          ASSET_PATH: ${{ env.BUILD_PATH }}/*.apk
-
-      - name: Create release asset (iOS)
-        if: matrix.target == 'ios' && startsWith(github.ref, 'refs/tags/')
-        run: zip -r ios-universal-${{ github.ref_name }}-release.zip ${{ env.BUILD_PATH }}
-        env:
-          ASSET_PATH: ios-universal-${{ github.ref_name }}-release.zip
-
-      - name: Publish release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+      - run: flutter pub get
+      - run: flutter build windows --release
+      - run: Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath windows-x64.zip
+      - uses: softprops/action-gh-release@v2
         with:
-          files: ${{ env.ASSET_PATH }}
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          draft: false
+          files: windows-x64.zip
+          tag_name: ${{ github.ref_name || github.sha }}
+          name: Release ${{ github.ref_name || github.sha }}
+          draft: ${{ github.ref_name == '' }}
+          prerelease: false
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+      - run: flutter pub get
+      - run: flutter build macos --release
+      - run: zip -r macos.zip build/macos/Build/Products/Release/*.app
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: macos.zip
+          tag_name: ${{ github.ref_name || github.sha }}
+          name: Release ${{ github.ref_name || github.sha }}
+          draft: ${{ github.ref_name == '' }}
+          prerelease: false
+  ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+      - run: flutter pub get
+      - run: flutter build ios --release --no-codesign
+      - run: zip -r ios.zip build/ios/iphoneos/*.app
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: ios.zip
+          tag_name: ${{ github.ref_name || github.sha }}
+          name: Release ${{ github.ref_name || github.sha }}
+          draft: ${{ github.ref_name == '' }}
           prerelease: false
