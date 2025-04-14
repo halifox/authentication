@@ -1,7 +1,7 @@
 name: purity_auth
 description: ""
 publish_to: 'none'
-version: 0.0.2
+version: 0.0.3
 environment:
   sdk: 3.7.2
 
