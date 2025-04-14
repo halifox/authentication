@@ -5,11 +5,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
-import 'package:purity_auth/auth.dart';
-import 'package:purity_auth/auth_repository.dart';
-import 'package:purity_auth/dialog.dart';
-import 'package:purity_auth/top_bar.dart';
-import 'package:purity_auth/window_size_controller.dart';
+import 'package:auth/auth.dart';
+import 'package:auth/auth_repository.dart';
+import 'package:auth/dialog.dart';
+import 'package:auth/top_bar.dart';
+import 'package:auth/window_size_controller.dart';
 
 class AuthAddPage extends StatefulWidget {
   const AuthAddPage({super.key});

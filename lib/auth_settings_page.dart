@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:purity_auth/prefs.dart';
-import 'package:purity_auth/top_bar.dart';
-import 'package:purity_auth/window_size_controller.dart';
+import 'package:auth/prefs.dart';
+import 'package:auth/top_bar.dart';
+import 'package:auth/window_size_controller.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
 class AuthSettingsPage extends StatefulWidget {

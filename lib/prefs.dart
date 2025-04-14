@@ -1,4 +1,4 @@
-import 'package:purity_auth/signal_shared_preferences.dart';
+import 'package:auth/signal_shared_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 

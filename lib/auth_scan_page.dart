@@ -6,10 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:purity_auth/auth.dart';
-import 'package:purity_auth/auth_repository.dart';
-import 'package:purity_auth/dialog.dart';
-import 'package:purity_auth/top_bar.dart';
+import 'package:auth/auth.dart';
+import 'package:auth/auth_repository.dart';
+import 'package:auth/dialog.dart';
+import 'package:auth/top_bar.dart';
 
 class AuthScanPage extends StatefulWidget {
   const AuthScanPage({super.key});

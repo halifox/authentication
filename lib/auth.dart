@@ -1,5 +1,5 @@
 import 'package:base32/base32.dart';
-import 'package:purity_auth/otp.dart';
+import 'package:auth/otp.dart';
 
 enum Scheme {
   otpauth,

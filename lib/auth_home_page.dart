@@ -4,11 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
-import 'package:purity_auth/auth.dart';
-import 'package:purity_auth/auth_repository.dart';
-import 'package:purity_auth/authentication_widget.dart';
-import 'package:purity_auth/top_bar.dart';
-import 'package:purity_auth/window_size_controller.dart';
+import 'package:auth/auth.dart';
+import 'package:auth/auth_repository.dart';
+import 'package:auth/authentication_widget.dart';
+import 'package:auth/top_bar.dart';
+import 'package:auth/window_size_controller.dart';
 
 class AuthHomePage extends StatefulWidget {
   const AuthHomePage({super.key});

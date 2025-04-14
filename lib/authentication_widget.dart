@@ -5,11 +5,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:get_it/get_it.dart';
-import 'package:purity_auth/auth.dart';
-import 'package:purity_auth/auth_repository.dart';
-import 'package:purity_auth/dialog.dart';
-import 'package:purity_auth/otp.dart';
-import 'package:purity_auth/prefs.dart';
+import 'package:auth/auth.dart';
+import 'package:auth/auth_repository.dart';
+import 'package:auth/dialog.dart';
+import 'package:auth/otp.dart';
+import 'package:auth/prefs.dart';
 import 'package:signals_flutter/signals_core.dart';
 
 /// 认证项小部件

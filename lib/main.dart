@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swipe_action_cell/core/swipe_action_navigator_observer.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:get_it/get_it.dart';
-import 'package:purity_auth/prefs.dart';
-import 'package:purity_auth/auth_add_page.dart';
-import 'package:purity_auth/auth_from_page.dart';
-import 'package:purity_auth/auth_home_page.dart';
-import 'package:purity_auth/auth_repository.dart';
-import 'package:purity_auth/auth_scan_page.dart';
-import 'package:purity_auth/auth_settings_page.dart';
+import 'package:auth/prefs.dart';
+import 'package:auth/auth_add_page.dart';
+import 'package:auth/auth_from_page.dart';
+import 'package:auth/auth_home_page.dart';
+import 'package:auth/auth_repository.dart';
+import 'package:auth/auth_scan_page.dart';
+import 'package:auth/auth_settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {

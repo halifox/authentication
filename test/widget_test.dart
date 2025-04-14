@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:purity_auth/main.dart';
+import 'package:auth/main.dart';
 
 void main() {
 

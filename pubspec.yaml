@@ -1,4 +1,4 @@
-name: purity_auth
+name: auth
 description: ""
 publish_to: 'none'
 version: 0.0.3
