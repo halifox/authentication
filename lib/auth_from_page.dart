@@ -67,14 +67,7 @@ class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: TextField(
         controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(
-            borderSide: BorderSide(),
-            borderRadius: BorderRadius.all(Radius.circular(14.0)),
-            gapPadding: 8.0,
-          ),
-        ),
+        decoration: InputDecoration(labelText: label, border: const OutlineInputBorder(borderSide: BorderSide(), borderRadius: BorderRadius.all(Radius.circular(14.0)), gapPadding: 8.0)),
         keyboardType: inputType,
         inputFormatters: inputFormatters,
       ),
@@ -85,14 +78,7 @@ class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: DropdownButtonFormField<T>(
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(
-            borderSide: BorderSide(),
-            borderRadius: BorderRadius.all(Radius.circular(14.0)),
-            gapPadding: 8.0,
-          ),
-        ),
+        decoration: InputDecoration(labelText: label, border: const OutlineInputBorder(borderSide: BorderSide(), borderRadius: BorderRadius.all(Radius.circular(14.0)), gapPadding: 8.0)),
         value: initialValue,
         onChanged: onChanged,
         items: options.entries.map((MapEntry<T, String> entry) => DropdownMenuItem<T>(value: entry.key, child: Text(entry.value))).toList(),
@@ -103,63 +89,40 @@ class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SizedBox(
-            width: contentWidth,
-            child: Column(
+      appBar: TopBar(context, '输入提供的密钥', rightIcon: Icons.save, rightOnPressed: onSave),
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        child: Column(
+          children: <Widget>[
+            buildDropdown<Type>('类型', config.type, typeLabels, (Type? value) {
+              setState(() {
+                config.type = value!;
+              });
+            }),
+            buildTextField(issuerController, '发行方'),
+            buildTextField(accountController, '用户名'),
+            buildTextField(secretController, '密钥'),
+            if (config.type == Type.totp) buildDropdown<Algorithm>('算法', config.algorithm, algorithmLabels, (Algorithm? value) => config.algorithm = value!),
+            if (config.type == Type.hotp) buildDropdown<Algorithm>('算法', config.algorithm, algorithmLabels, (Algorithm? value) => config.algorithm = value!),
+            if (config.type == Type.motp) buildTextField(pinController, 'PIN码'),
+            Row(
               children: <Widget>[
-                TopBar(
-                  context,
-                  '输入提供的密钥',
-                  rightIcon: Icons.save,
-                  rightOnPressed: onSave,
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                    child: Column(
-                      children: <Widget>[
-                        buildDropdown<Type>('类型', config.type, typeLabels, (Type? value) {
-                          setState(() {
-                            config.type = value!;
-                          });
-                        }),
-                        buildTextField(issuerController, '发行方'),
-                        buildTextField(accountController, '用户名'),
-                        buildTextField(secretController, '密钥'),
-                        if (config.type == Type.totp) buildDropdown<Algorithm>('算法', config.algorithm, algorithmLabels, (Algorithm? value) => config.algorithm = value!),
-                        if (config.type == Type.hotp) buildDropdown<Algorithm>('算法', config.algorithm, algorithmLabels, (Algorithm? value) => config.algorithm = value!),
-                        if (config.type == Type.motp) buildTextField(pinController, 'PIN码'),
-                        Row(
-                          children: <Widget>[
-                            Expanded(child: buildTextField(digitsController, '位数', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
-                            if (config.type == Type.totp) Expanded(child: buildTextField(periodController, '时间间隔(秒)', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
-                            if (config.type == Type.hotp) Expanded(child: buildTextField(counterController, '计数器', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
-                            if (config.type == Type.motp) Expanded(child: buildTextField(periodController, '时间间隔(秒)', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                Expanded(child: buildTextField(digitsController, '位数', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
+                if (config.type == Type.totp)
+                  Expanded(child: buildTextField(periodController, '时间间隔(秒)', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
+                if (config.type == Type.hotp)
+                  Expanded(child: buildTextField(counterController, '计数器', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
+                if (config.type == Type.motp)
+                  Expanded(child: buildTextField(periodController, '时间间隔(秒)', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
               ],
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 
-  final Map<Type, String> typeLabels = <Type, String>{
-    Type.totp: '基于时间 (TOTP)',
-    Type.hotp: '基于计数器 (HOTP)',
-    Type.motp: 'Mobile-OTP (mOTP)',
-  };
+  final Map<Type, String> typeLabels = <Type, String>{Type.totp: '基于时间 (TOTP)', Type.hotp: '基于计数器 (HOTP)', Type.motp: 'Mobile-OTP (mOTP)'};
 
-  final Map<Algorithm, String> algorithmLabels = <Algorithm, String>{
-    Algorithm.SHA1: 'SHA1',
-    Algorithm.SHA256: 'SHA256',
-    Algorithm.SHA512: 'SHA512',
-  };
+  final Map<Algorithm, String> algorithmLabels = <Algorithm, String>{Algorithm.SHA1: 'SHA1', Algorithm.SHA256: 'SHA256', Algorithm.SHA512: 'SHA512'};
 }

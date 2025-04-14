@@ -95,38 +95,16 @@ class _AuthAddPageState extends State<AuthAddPage> with WidgetsBindingObserver, 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SizedBox(
-            width: contentWidth,
-            child: Column(
-              children: <Widget>[
-                TopBar(context, '添加'),
-                Expanded(
-                  child: GridView.builder(
-                    physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: maxCrossAxisExtent,
-                      mainAxisExtent: 90,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 16,
-                    ),
-                    itemCount: options.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final List<Object> option = options[index];
-                      return _Button(
-                        option[0] as IconData?,
-                        option[1] as String,
-                        option[2] as void Function(BuildContext p1)?,
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+      appBar: TopBar(context, '添加'),
+      body: GridView.builder(
+        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 90),
+        itemCount: options.length,
+        itemBuilder: (BuildContext context, int index) {
+          final List<Object> option = options[index];
+          return _Button(option[0] as IconData?, option[1] as String, option[2] as void Function(BuildContext p1)?);
+        },
       ),
     );
   }

@@ -45,23 +45,10 @@ class _AuthScanPageState extends State<AuthScanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Stack(
-          alignment: Alignment.center,
-          children: <Widget>[
-            _cameraController == null ? Container() : CameraPreview(_cameraController!),
-            Align(
-                alignment: Alignment.topCenter,
-                child: TopBar(
-                  context,
-                  '扫描二维码',
-                  rightIcon: enableFlash ? Icons.flash_off : Icons.flash_on,
-                  rightOnPressed: flash,
-                )),
-          ],
-        ),
-      ),
+      appBar: TopBar(context, '扫描二维码', rightIcon: enableFlash ? Icons.flash_off : Icons.flash_on, rightOnPressed: flash),
+      body: _cameraController == null ? Center() : Center(child: CameraPreview(_cameraController!)),
     );
   }
 
@@ -126,31 +113,29 @@ class _AuthScanPageState extends State<AuthScanPage> {
   /// 启动实时视频流
   Future<void> _startCameraFeed() async {
     final CameraDescription camera = _availableCameras[_selectedCameraIndex];
-    _cameraController = CameraController(
-      camera,
-      ResolutionPreset.high,
-      enableAudio: false,
-      imageFormatGroup: Platform.isAndroid ? ImageFormatGroup.nv21 : ImageFormatGroup.bgra8888,
-    );
-    _cameraController?.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-      _cameraController?.startImageStream(_processCameraImage).then((_) {
-        setState(() => _currentCameraLensDirection = camera.lensDirection);
-      });
-      setState(() {});
-    }, onError: (e) {
-      if (e is CameraException) {
-        if (e.code == 'CameraAccessDenied') {
-          _showPermissionAlert();
-        } else {
-          showAlertDialog(context, e.code, e.description);
+    _cameraController = CameraController(camera, ResolutionPreset.high, enableAudio: false, imageFormatGroup: Platform.isAndroid ? ImageFormatGroup.nv21 : ImageFormatGroup.bgra8888);
+    _cameraController?.initialize().then(
+      (_) {
+        if (!mounted) {
+          return;
         }
-      } else {
-        showAlertDialog(context, '发生了一些意料之外的错误', '$e');
-      }
-    });
+        _cameraController?.startImageStream(_processCameraImage).then((_) {
+          setState(() => _currentCameraLensDirection = camera.lensDirection);
+        });
+        setState(() {});
+      },
+      onError: (e) {
+        if (e is CameraException) {
+          if (e.code == 'CameraAccessDenied') {
+            _showPermissionAlert();
+          } else {
+            showAlertDialog(context, e.code, e.description);
+          }
+        } else {
+          showAlertDialog(context, '发生了一些意料之外的错误', '$e');
+        }
+      },
+    );
   }
 
   /// 停止实时视频流并释放相机控制器
@@ -202,12 +187,7 @@ class _AuthScanPageState extends State<AuthScanPage> {
 
     return InputImage.fromBytes(
       bytes: plane.bytes,
-      metadata: InputImageMetadata(
-        size: Size(image.width.toDouble(), image.height.toDouble()),
-        rotation: rotation,
-        format: format,
-        bytesPerRow: plane.bytesPerRow,
-      ),
+      metadata: InputImageMetadata(size: Size(image.width.toDouble(), image.height.toDouble()), rotation: rotation, format: format, bytesPerRow: plane.bytesPerRow),
     );
   }
 
@@ -221,10 +201,7 @@ class _AuthScanPageState extends State<AuthScanPage> {
           title: const Text('权限不足'),
           content: const Text('需要相机权限'),
           actions: <Widget>[
-            ElevatedButton(
-              onPressed: () => Navigator.popUntil(context, (Route route) => route.settings.name == '/AuthAddPage'),
-              child: const Text('取消'),
-            ),
+            ElevatedButton(onPressed: () => Navigator.popUntil(context, (Route route) => route.settings.name == '/AuthAddPage'), child: const Text('取消')),
             FilledButton(
               onPressed: () {
                 Navigator.popUntil(context, (Route route) => route.settings.name == '/AuthAddPage');

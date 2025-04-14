@@ -23,45 +23,23 @@ class _AuthSettingsPageState extends State<AuthSettingsPage> with WidgetsBinding
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SizedBox(
-            width: contentWidth,
-            child: Column(
-              children: <Widget>[
-                TopBar(context, '设置'),
-                Expanded(
-                  child: GridView.builder(
-                    physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: maxCrossAxisExtent,
-                      mainAxisExtent: 90,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 16,
-                    ),
-                    itemCount: options.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final List<dynamic> option = options[index];
-                      return _Button(option[0] as Signal<bool>, option[1] as String, key: ObjectKey(option));
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+      appBar: TopBar(context, '设置'),
+      body: GridView.builder(
+        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 90),
+        itemCount: options.length,
+        itemBuilder: (BuildContext context, int index) {
+          final List<dynamic> option = options[index];
+          return _Button(option[0] as Signal<bool>, option[1] as String, key: ObjectKey(option));
+        },
       ),
     );
   }
 }
 
 class _Button extends StatelessWidget {
-  const _Button(
-    this.enable,
-    this.label, {
-    super.key,
-  });
+  const _Button(this.enable, this.label, {super.key});
 
   final Signal<bool> enable;
   final String label;
@@ -76,9 +54,7 @@ class _Button extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           const SizedBox(width: 12),
-          Expanded(
-            child: Text(label, maxLines: 1, style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
-          ),
+          Expanded(child: Text(label, maxLines: 1, style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold))),
           const SizedBox(width: 16),
           GestureDetector(
             onTap: () {

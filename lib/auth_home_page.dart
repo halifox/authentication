@@ -47,18 +47,15 @@ class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver
     setSystemUIOverlayStyle(context);
     return Scaffold(
       appBar: TopBar(context, 'Purity Auth', leftIcon: Icons.settings, leftOnPressed: toSettingsPage, rightIcon: Icons.add, rightOnPressed: toAuthAddPage),
-      body: ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-        child: GridView.builder(
-          physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 140),
-          itemCount: GetIt.I<AuthRepository>().snapshot.length,
-          itemBuilder: (BuildContext context, int index) {
-            final AuthenticationConfig config = GetIt.I<AuthRepository>().snapshot[index];
-            return AuthenticationWidget(key: ObjectKey(config.key), config: config);
-          },
-        ),
+      body: GridView.builder(
+        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 140),
+        itemCount: GetIt.I<AuthRepository>().snapshot.length,
+        itemBuilder: (BuildContext context, int index) {
+          final AuthenticationConfig config = GetIt.I<AuthRepository>().snapshot[index];
+          return AuthenticationWidget(key: ObjectKey(config.key), config: config);
+        },
       ),
     );
   }
