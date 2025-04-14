@@ -8,7 +8,6 @@ import 'package:auth/auth.dart';
 import 'package:auth/auth_repository.dart';
 import 'package:auth/authentication_widget.dart';
 import 'package:auth/top_bar.dart';
-import 'package:auth/window_size_controller.dart';
 
 class AuthHomePage extends StatefulWidget {
   const AuthHomePage({super.key});
@@ -17,7 +16,7 @@ class AuthHomePage extends StatefulWidget {
   State<AuthHomePage> createState() => _AuthHomePageState();
 }
 
-class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver, WindowSizeStateMixin {
+class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver {
   void toAuthAddPage(BuildContext context) {
     Navigator.pushNamed(context, '/AuthAddPage');
   }

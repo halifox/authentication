@@ -6,7 +6,6 @@ import 'package:auth/auth_repository.dart';
 import 'package:auth/dialog.dart';
 import 'package:auth/otp.dart';
 import 'package:auth/top_bar.dart';
-import 'package:auth/window_size_controller.dart';
 
 class AuthFromPage extends StatefulWidget {
   const AuthFromPage({super.key});
@@ -15,7 +14,7 @@ class AuthFromPage extends StatefulWidget {
   State<AuthFromPage> createState() => _AuthFromPageState();
 }
 
-class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver, WindowSizeStateMixin {
+class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver {
   late final AuthenticationConfig config = ModalRoute.of(context)?.settings.arguments as AuthenticationConfig? ?? AuthenticationConfig(isVerify: false);
 
   late final TextEditingController issuerController = TextEditingController(text: config.issuer);

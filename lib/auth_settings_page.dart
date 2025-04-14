@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:auth/prefs.dart';
 import 'package:auth/top_bar.dart';
-import 'package:auth/window_size_controller.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
 class AuthSettingsPage extends StatefulWidget {
@@ -12,7 +11,7 @@ class AuthSettingsPage extends StatefulWidget {
   State<AuthSettingsPage> createState() => _AuthSettingsPageState();
 }
 
-class _AuthSettingsPageState extends State<AuthSettingsPage> with WidgetsBindingObserver, WindowSizeStateMixin {
+class _AuthSettingsPageState extends State<AuthSettingsPage> with WidgetsBindingObserver {
   final Prefs prefs = GetIt.I<Prefs>();
   late final List<List<dynamic>> options = [
     [prefs.biometricUnlock, '生物识别解锁'],

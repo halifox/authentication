@@ -9,7 +9,6 @@ import 'package:auth/auth.dart';
 import 'package:auth/auth_repository.dart';
 import 'package:auth/dialog.dart';
 import 'package:auth/top_bar.dart';
-import 'package:auth/window_size_controller.dart';
 
 class AuthAddPage extends StatefulWidget {
   const AuthAddPage({super.key});
@@ -18,7 +17,7 @@ class AuthAddPage extends StatefulWidget {
   State<AuthAddPage> createState() => _AuthAddPageState();
 }
 
-class _AuthAddPageState extends State<AuthAddPage> with WidgetsBindingObserver, WindowSizeStateMixin {
+class _AuthAddPageState extends State<AuthAddPage> with WidgetsBindingObserver {
   late final List<List<Object>> options = [
     [Icons.camera_enhance, '扫描二维码', scanQrCode],
     [Icons.photo_library, '上传二维码', uploadQrCode],
