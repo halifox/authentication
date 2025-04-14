@@ -1,6 +1,6 @@
 {
-    "name": "purity_auth",
-    "short_name": "purity_auth",
+    "name": "auth",
+    "short_name": "auth",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

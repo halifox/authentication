@@ -1,4 +1,4 @@
-package com.example.purity_auth
+package com.purity.auth
 
 import io.flutter.embedding.android.FlutterActivity
 
