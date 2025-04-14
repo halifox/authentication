@@ -6,87 +6,51 @@ on:
     tags:
       - '*'
 
-
+# 定义可重用的工作流
 jobs:
-  web:
-    runs-on: ubuntu-latest
+  build_and_upload:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest] # 包含所有构建平台
+        target: [web, linux, windows, macos, android, ios]
+        exclude:
+          - os: windows-latest
+            target: linux
+          - os: windows-latest
+            target: macos
+          - os: windows-latest
+            target: ios
+          - os: ubuntu-latest
+            target: windows
+          - os: ubuntu-latest
+            target: macos
+          - os: ubuntu-latest
+            target: ios
+          - os: macos-latest
+            target: linux
+          - os: macos-latest
+            target: windows
+        include:
+          - os: ubuntu-latest
+            target: web
+          - os: ubuntu-latest
+            target: linux
+          - os: ubuntu-latest
+            target: android
+          - os: windows-latest
+            target: windows
+          - os: macos-latest
+            target: macos
+          - os: macos-latest
+            target: ios
+
     steps:
       - name: Set up repository
         uses: actions/checkout@v4
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Build web
-        run: flutter build web --release
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-build
-          path: build/web/
-
-      - name: Create ZIP of compiled files
-        run: tar -czvf web.tar.gz -C build/web .
-
-      - name: Publish release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: web.tar.gz
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-
-  linux:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up repository
-        uses: actions/checkout@v4
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y ninja-build libgtk-3-dev
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Build for Linux
-        run: flutter build linux --release
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-build
-          path: build/linux/x64/release/bundle/
-
-      - name: Create tar.gz archive
-        run: tar -czvf linux-x86_64.tar.gz -C build/linux/x64/release/bundle .
-
-      - name: Publish release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: linux-x86_64.tar.gz
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-  android:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up repository
-        uses: actions/checkout@v4
-
-      - name: Set up Java
+      - name: Set up Java (for Android)
+        if: matrix.target == 'android'
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -94,140 +58,104 @@ jobs:
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build APK
-        run: flutter build apk --release
+      - name: Build web
+        if: matrix.target == 'web'
+        run: flutter build web --release
+        env:
+          BUILD_PATH: build/web
 
-      - name: Build split APKs
-        run: flutter build apk --split-per-abi
-
-      - name: Build App Bundle
-        run: flutter build appbundle --release
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-build
-          path: build/app/outputs/
-
-      - name: Rename APKs and AABs
+      - name: Build Linux
+        if: matrix.target == 'linux'
         run: |
-          mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/app-universal-release.apk
-          mv build/app/outputs/bundle/release/app-release.aab build/app/outputs/bundle/release/app-universal-release.aab
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build libgtk-3-dev
+          flutter build linux --release
+        env:
+          BUILD_PATH: build/linux/x64/release/bundle
 
-      - name: Publish release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: |
-            build/app/outputs/flutter-apk/app-universal-release.apk
-            build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
-            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
-            build/app/outputs/flutter-apk/app-x86_64-release.apk
-            build/app/outputs/bundle/release/app-universal-release.aab
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-
-  windows:
-    runs-on: windows-latest
-    steps:
-      - name: Set up repository
-        uses: actions/checkout@v4
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Build for Windows
+      - name: Build Windows
+        if: matrix.target == 'windows'
         run: flutter build windows --release
+        env:
+          BUILD_PATH: build/windows/x64/runner/Release
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-build
-          path: build/windows/
-
-      - name: Zip compiled files
-        run: Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath windows-x86_64.zip
-
-      - name: Publish release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: windows-x86_64.zip
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-  macos:
-    runs-on: macos-latest
-    steps:
-      - name: Set up repository
-        uses: actions/checkout@v4
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Build for macOS
+      - name: Build macOS
+        if: matrix.target == 'macos'
         run: flutter build macos --release
+        env:
+          BUILD_PATH: build/macos/Build/Products/Release
+
+      - name: Build Android APK
+        if: matrix.target == 'android'
+        run: flutter build apk --release --split-per-abi
+        env:
+          BUILD_PATH: build/app/outputs/flutter-apk
+
+      - name: Build iOS
+        if: matrix.target == 'ios'
+        run: flutter build ios --release --no-codesign # 注意: 此处未处理代码签名
+        env:
+          BUILD_PATH: build/ios/iphoneos/Runner.app
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: macos-build
-          path: build/macos/
+          name: ${{ matrix.target }}-build-${{ github.ref_name }}
+          path: ${{ env.BUILD_PATH }}
+        if: env.BUILD_PATH != ''
 
-      - name: Zip compiled files
-        run: zip -r macos-universal-release.zip build/macos/Build/Products/Release/purity_nat_type_tester.app
+      - name: Create release asset (Web)
+        if: matrix.target == 'web' && startsWith(github.ref, 'refs/tags/')
+        run: tar -czvf web-${{ github.ref_name }}.tar.gz -C ${{ env.BUILD_PATH }} .
+        env:
+          ASSET_PATH: web-${{ github.ref_name }}.tar.gz
+
+      - name: Create release asset (Linux)
+        if: matrix.target == 'linux' && startsWith(github.ref, 'refs/tags/')
+        run: tar -czvf linux-x86_64-${{ github.ref_name }}.tar.gz -C ${{ env.BUILD_PATH }} .
+        env:
+          ASSET_PATH: linux-x86_64-${{ github.ref_name }}.tar.gz
+
+      - name: Create release asset (Windows)
+        if: matrix.target == 'windows' && startsWith(github.ref, 'refs/tags/')
+        run: Compress-Archive -Path ${{ env.BUILD_PATH }}/* -DestinationPath windows-x86_64-${{ github.ref_name }}.zip
+        env:
+          ASSET_PATH: windows-x86_64-${{ github.ref_name }}.zip
+
+      - name: Create release asset (macOS)
+        if: matrix.target == 'macos' && startsWith(github.ref, 'refs/tags/')
+        run: |
+          APP_NAME=$(ls ${{ env.BUILD_PATH }}/*.app)
+          zip -r macos-universal-${{ github.ref_name }}.zip $APP_NAME
+        env:
+          ASSET_PATH: macos-universal-${{ github.ref_name }}.zip
+
+      - name: Create release asset (Android APK)
+        if: matrix.target == 'android' && startsWith(github.ref, 'refs/tags/')
+        run: |
+          mv ${{ env.BUILD_PATH }}/app-armeabi-v7a-release.apk app-armeabi-v7a-${{ github.ref_name }}.apk
+          mv ${{ env.BUILD_PATH }}/app-arm64-v8a-release.apk app-arm64-v8a-${{ github.ref_name }}.apk
+          mv ${{ env.BUILD_PATH }}/app-x86_64-release.apk app-x86_64-${{ github.ref_name }}.apk
+        env:
+          ASSET_PATH: ${{ env.BUILD_PATH }}/*.apk
+
+      - name: Create release asset (iOS)
+        if: matrix.target == 'ios' && startsWith(github.ref, 'refs/tags/')
+        run: zip -r ios-universal-${{ github.ref_name }}.zip ${{ env.BUILD_PATH }}
+        env:
+          ASSET_PATH: ios-universal-${{ github.ref_name }}.zip
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: macos-universal-release.zip
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-  ios:
-    runs-on: macos-latest
-    steps:
-      - name: Set up repository
-        uses: actions/checkout@v4
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Build for iOS
-        run: flutter build ios --release --no-codesign
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-build
-          path: build/ios/
-
-      - name: Zip compiled files
-        run: zip -r ios-universal-release.zip build/ios/iphoneos/Runner.app
-
-      - name: Publish release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: ios-universal-release.zip
+          files: ${{ env.ASSET_PATH }}
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           draft: false
