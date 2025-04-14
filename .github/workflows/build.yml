@@ -17,9 +17,9 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           files: web.tar.gz
-          tag_name: ${{ github.ref_name || github.sha }}
-          name: Release ${{ github.ref_name || github.sha }}
-          draft: ${{ github.ref_name == '' }}
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          draft: false
           prerelease: false
   linux:
     runs-on: ubuntu-latest
@@ -37,9 +37,9 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           files: linux-x64.tar.gz
-          tag_name: ${{ github.ref_name || github.sha }}
-          name: Release ${{ github.ref_name || github.sha }}
-          draft: ${{ github.ref_name == '' }}
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          draft: false
           prerelease: false
   android:
     runs-on: ubuntu-latest
@@ -57,9 +57,9 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           files: build\app\outputs\flutter-apk\app-arm64-v8a-release.apk
-          tag_name: ${{ github.ref_name || github.sha }}
-          name: Release ${{ github.ref_name || github.sha }}
-          draft: ${{ github.ref_name == '' }}
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          draft: false
           prerelease: false
   windows:
     runs-on: windows-latest
@@ -74,9 +74,9 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           files: windows-x64.zip
-          tag_name: ${{ github.ref_name || github.sha }}
-          name: Release ${{ github.ref_name || github.sha }}
-          draft: ${{ github.ref_name == '' }}
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          draft: false
           prerelease: false
   macos:
     runs-on: macos-latest
@@ -91,9 +91,9 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           files: macos.zip
-          tag_name: ${{ github.ref_name || github.sha }}
-          name: Release ${{ github.ref_name || github.sha }}
-          draft: ${{ github.ref_name == '' }}
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          draft: false
           prerelease: false
   ios:
     runs-on: macos-latest
@@ -108,7 +108,7 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           files: ios.zip
-          tag_name: ${{ github.ref_name || github.sha }}
-          name: Release ${{ github.ref_name || github.sha }}
-          draft: ${{ github.ref_name == '' }}
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          draft: false
           prerelease: false
