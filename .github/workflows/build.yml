@@ -12,8 +12,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ] # 包含所有构建平台
-        target: [ web, linux, windows, macos, android, ios ]
         include:
           - os: ubuntu-latest
             target: web
