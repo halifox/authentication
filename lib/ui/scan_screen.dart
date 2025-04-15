@@ -3,11 +3,10 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get_it/get_it.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:auth/auth.dart';
-import 'package:auth/auth_repository.dart';
+import 'package:auth/repository.dart';
 import 'package:auth/dialog.dart';
 import 'package:auth/top_bar.dart';
 import 'package:sembast/sembast.dart';
@@ -71,7 +70,7 @@ class _ScanScreenState extends State<ScanScreen> {
       try {
         final Barcode barcode = barcodes.first;
         final String rawValue = barcode.rawValue ?? '';
-        final AuthenticationConfig config = AuthenticationConfig.parse(rawValue);
+        final AuthConfig config = AuthConfig.parse(rawValue);
         authStore.add(db, config.toJson());
 
         _isScanningAllowed = false;

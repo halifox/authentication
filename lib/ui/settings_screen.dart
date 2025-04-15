@@ -1,8 +1,7 @@
-import 'package:auth/auth_repository.dart';
+import 'package:auth/repository.dart';
 import 'package:flutter/material.dart';
 import 'package:auth/top_bar.dart';
 import 'package:sembast/sembast.dart';
-import 'package:signals_flutter/signals_flutter.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -29,7 +28,7 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
         itemCount: options.length,
         itemBuilder: (BuildContext context, int index) {
           final List<dynamic> option = options[index];
-          return _Button(option[0] as String, option[1] as String, key: ObjectKey(option));
+          return _Button(option[0] as String, option[1] as String);
         },
       ),
     );
@@ -37,7 +36,7 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
 }
 
 class _Button extends StatefulWidget {
-  const _Button(this.dbKey, this.label, {super.key});
+  const _Button(this.dbKey, this.label);
 
   final String dbKey;
   final String label;
@@ -49,12 +48,14 @@ class _Button extends StatefulWidget {
 class _ButtonState extends State<_Button> {
   bool enable = false;
 
+  initData() async {
+    enable = await settingsStore.record(widget.dbKey).get(db) as bool;
+    setState(() {});
+  }
+
   @override
   void initState() {
-    () async {
-      enable = await settingsStore.record(widget.dbKey).get(db) as bool;
-      setState(() {});
-    }();
+    initData();
 
     super.initState();
   }
@@ -78,19 +79,15 @@ class _ButtonState extends State<_Button> {
               });
               settingsStore.record(widget.dbKey).put(db, enable);
             },
-            child: Watch.builder(
-              builder: (context) {
-                return Container(
-                  height: 48,
-                  width: 48,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: enable ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.inversePrimary,
-                    borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  ),
-                  child: Icon(enable ? Icons.done : Icons.close, size: 36, color: Theme.of(context).colorScheme.onPrimary),
-                );
-              },
+            child: Container(
+              height: 48,
+              width: 48,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: enable ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.inversePrimary,
+                borderRadius: const BorderRadius.all(Radius.circular(12)),
+              ),
+              child: Icon(enable ? Icons.done : Icons.close, size: 36, color: Theme.of(context).colorScheme.onPrimary),
             ),
           ),
         ],

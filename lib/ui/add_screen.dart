@@ -3,10 +3,9 @@ import 'dart:io';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:auth/auth.dart';
-import 'package:auth/auth_repository.dart';
+import 'package:auth/repository.dart';
 import 'package:auth/dialog.dart';
 import 'package:auth/top_bar.dart';
 import 'package:sembast/sembast.dart';
@@ -62,7 +61,7 @@ class _AddScreenState extends State<AddScreen> with WidgetsBindingObserver {
       try {
         final Barcode barcode = barcodes.first;
         final String rawValue = barcode.rawValue ?? '';
-        final AuthenticationConfig config = AuthenticationConfig.parse(rawValue);
+        final AuthConfig config = AuthConfig.parse(rawValue);
         authStore.add(db, config.toJson());
         return;
       } on ArgumentError catch (e) {

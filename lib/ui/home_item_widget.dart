@@ -5,24 +5,24 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:auth/auth.dart';
-import 'package:auth/auth_repository.dart';
+import 'package:auth/repository.dart';
 import 'package:auth/dialog.dart';
 import 'package:auth/otp.dart';
 import 'package:sembast/sembast.dart';
 
 /// 认证项小部件
-class AuthenticationWidget extends StatefulWidget {
-  final AuthenticationConfig config;
+class HomeItemWidget extends StatefulWidget {
+  final AuthConfig config;
 
-  const AuthenticationWidget({super.key, required this.config});
+  const HomeItemWidget({super.key, required this.config});
 
   @override
-  State<AuthenticationWidget> createState() => _AuthenticationWidgetState();
+  State<HomeItemWidget> createState() => _HomeItemWidgetState();
 }
 
 /// 认证项的状态类
-class _AuthenticationWidgetState extends State<AuthenticationWidget> {
-  late final AuthenticationConfig configuration = widget.config;
+class _HomeItemWidgetState extends State<HomeItemWidget> {
+  late final AuthConfig config = widget.config;
   late String authCode = '--------';
   late bool biometricUnlock = false;
   late bool isShowCaptchaOnTap = false;
@@ -32,45 +32,59 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   Timer? timer;
   Timer? showCaptchaOnTapTimer;
 
-  a() async {
+  initData() async {
     biometricUnlock = await settingsStore.record('biometricUnlock').get(db) as bool;
     isShowCaptchaOnTap = await settingsStore.record('isShowCaptchaOnTap').get(db) as bool;
     isCopyCaptchaOnTap = await settingsStore.record('isCopyCaptchaOnTap').get(db) as bool;
-    setState(() {
-      isShow = !isShowCaptchaOnTap;
-    });
+    if (mounted) {
+      setState(() {
+        isShow = !isShowCaptchaOnTap;
+      });
+    }
+    showCaptchaOnTapTimer?.cancel();
   }
+
+  StreamSubscription? subscription;
 
   @override
   void initState() {
     super.initState();
-    a();
-    settingsStore.query().onSnapshot(db).listen((_) async {
-      a();
-      showCaptchaOnTapTimer?.cancel();
+    initData();
+    subscription = settingsStore.query().onSnapshot(db).listen((_) async {
+      initData();
     });
 
-    if (<Type>[Type.totp, Type.motp].contains(configuration.type)) {
-      startOtpTimer();
-    } else {
-      updateAuthCode();
+    switch (config.type) {
+      case Type.totp:
+      case Type.motp:
+        startOtpTimer();
+      case Type.hotp:
+        updateAuthCode();
     }
   }
 
+  @override
+  void dispose() {
+    unawaited(subscription?.cancel());
+    timer?.cancel();
+    showCaptchaOnTapTimer?.cancel();
+    super.dispose();
+  }
+
   startOtpTimer() {
-    final int remainingMilliseconds = OTP.remainingMilliseconds(intervalMilliseconds: configuration.intervalSeconds * 1000);
+    final int remainingMilliseconds = OTP.remainingMilliseconds(intervalMilliseconds: config.intervalSeconds * 1000);
     timer = Timer(Duration(milliseconds: remainingMilliseconds), startOtpTimer);
     updateAuthCode();
   }
 
   updateAuthCode() {
     setState(() {
-      authCode = configuration.generateCodeString();
+      authCode = config.generateCodeString();
     });
   }
 
   void onEdit() {
-    Navigator.pushNamed(context, '/AuthFromPage', arguments: configuration);
+    Navigator.pushNamed(context, '/AuthFromPage', arguments: config);
   }
 
   void onDelete() {
@@ -89,7 +103,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
             ),
             ElevatedButton(
               onPressed: () {
-                authStore.record(configuration.key!).delete(db);
+                authStore.record(config.key!).delete(db);
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
@@ -103,9 +117,11 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
 
   void onTap() {
     if (isShowCaptchaOnTap) {
-      setState(() {
-        isShow = !isShow;
-      });
+      if (mounted) {
+        setState(() {
+          isShow = !isShow;
+        });
+      }
       showCaptchaOnTapTimer?.cancel();
       showCaptchaOnTapTimer = Timer(const Duration(seconds: 10), () {
         if (mounted) {
@@ -123,15 +139,9 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   }
 
   @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return SwipeActionCell(
-      key: ObjectKey(configuration), // 唯一标识
+      key: ObjectKey(config), // 唯一标识
       trailingActions: <SwipeAction>[buildSwipeAction('删除', onDelete), buildSwipeAction('编辑', onEdit)],
       child: buildAuthCard(), // 构建认证卡片
     );
@@ -201,7 +211,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
         alignment: Alignment.center,
         decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(12)),
         child: SvgPicture.asset(
-          configuration.icon ?? 'icons/${configuration.issuer.toLowerCase()}.svg',
+          config.icon ?? 'icons/${config.issuer.toLowerCase()}.svg',
           width: 28,
           height: 28,
           colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn),
@@ -220,13 +230,13 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            configuration.issuer,
+            config.issuer,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
-          Text(configuration.account, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(height: 0, fontSize: 13, color: Theme.of(context).colorScheme.onPrimaryContainer.withAlpha(200))),
+          Text(config.account, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(height: 0, fontSize: 13, color: Theme.of(context).colorScheme.onPrimaryContainer.withAlpha(200))),
         ],
       ),
     );
@@ -238,10 +248,10 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
       height: 48,
       width: 48,
       alignment: Alignment.center,
-      child: switch (configuration.type) {
-        Type.totp => CoreCircularProgressIndicator(configuration.intervalSeconds * 1000),
+      child: switch (config.type) {
+        Type.totp => CoreCircularProgressIndicator(config.intervalSeconds * 1000),
         Type.hotp => buildHotpNextButton(),
-        Type.motp => CoreCircularProgressIndicator(configuration.intervalSeconds * 1000),
+        Type.motp => CoreCircularProgressIndicator(config.intervalSeconds * 1000),
       },
     );
   }
@@ -249,8 +259,8 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   Widget buildHotpNextButton() {
     return IconButton(
       onPressed: () {
-        configuration.counter++;
-        authStore.record(configuration.key!).update(db, configuration.toJson());
+        config.counter++;
+        authStore.record(config.key!).update(db, config.toJson());
       },
       icon: const Icon(Icons.refresh),
     );

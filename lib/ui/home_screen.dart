@@ -5,8 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:auth/auth.dart';
-import 'package:auth/auth_repository.dart';
-import 'package:auth/authentication_widget.dart';
+import 'package:auth/repository.dart';
+import 'package:auth/ui/home_item_widget.dart';
 import 'package:auth/top_bar.dart';
 import 'package:sembast/sembast.dart';
 
@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     Navigator.pushNamed(context, '/AuthSettingsPage');
   }
 
-  listener(List<AuthenticationConfig> configs) {
+  listener(List<AuthConfig> configs) {
     setState(() {});
   }
 
@@ -37,6 +37,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void initState() {
     subscription = authStore.query().onSnapshot(db).listen((_) async {
       data = await authStore.find(db);
+      print("onSnapshot");
+      print(data);
       setState(() {});
     });
     super.initState();
@@ -59,8 +61,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 140),
         itemCount: data.length,
         itemBuilder: (BuildContext context, int index) {
-          final AuthenticationConfig config = AuthenticationConfig.fromJson(data[index]);
-          return AuthenticationWidget(key: ObjectKey(config), config: config);
+          final AuthConfig config = AuthConfig.fromJson(data[index]);
+          return HomeItemWidget(key: ObjectKey(config), config: config);
         },
       ),
     );

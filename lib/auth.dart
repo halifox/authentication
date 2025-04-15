@@ -28,7 +28,7 @@ enum Type { totp, hotp, motp }
 /// [pin] 用户设置的 PIN，默认为空字符串。
 /// [isBase32Encoded] 指示是否使用 Base32 编码，适用于 Google 实现，默认为 true。
 
-class AuthenticationConfig {
+class AuthConfig {
   Scheme scheme;
   Type type;
   String issuer;
@@ -47,7 +47,7 @@ class AuthenticationConfig {
 
   String? icon;
 
-  AuthenticationConfig({
+  AuthConfig({
     this.scheme = Scheme.otpauth,
     this.type = Type.totp,
     this.account = '',
@@ -98,7 +98,7 @@ class AuthenticationConfig {
       }
     }
 
-    if (isBase32Encoded && !AuthenticationConfig.verifyBase32(secret)) {
+    if (isBase32Encoded && !AuthConfig.verifyBase32(secret)) {
       throw ArgumentError('对于 HOTP 和 TOTP，验证器密钥必须是不带空格的大写 base-32 字符串。它还可以包含“=”作为填充字符。');
     }
   }
@@ -120,8 +120,8 @@ class AuthenticationConfig {
   }
 
 
-  factory AuthenticationConfig.fromJson(RecordSnapshot<String, dynamic> map) {
-    return AuthenticationConfig(
+  factory AuthConfig.fromJson(RecordSnapshot<String, dynamic> map) {
+    return AuthConfig(
       scheme: Scheme.values.elementAt(map['scheme'] as int),
       type: Type.values.elementAt(map['type'] as int),
       account: map['account'] as String,
@@ -174,11 +174,11 @@ class AuthenticationConfig {
 
   /// 解析 URI 字符串并生成对应的认证配置实例。
   ///
-  /// 该方法解析 OTP URI，并提取出相关参数以创建一个 [AuthenticationConfig] 实例。
+  /// 该方法解析 OTP URI，并提取出相关参数以创建一个 [AuthConfig] 实例。
   ///
   /// [uriString] 要解析的 URI 字符串，格式应符合 OTP URI 标准，例如 `otpauth://totp/example:alice@domain.com?secret=YOURSECRET&issuer=Example&algorithm=SHA1&digits=6&period=30`。
   ///
-  /// 返回解析后的 [AuthenticationConfig] 实例，包含了所有相关的认证配置参数。
+  /// 返回解析后的 [AuthConfig] 实例，包含了所有相关的认证配置参数。
   ///
   /// URI 格式说明：
   /// - **协议**: URI 协议标识符，通常为 `otpauth`，表示 OTP 认证。
@@ -191,7 +191,7 @@ class AuthenticationConfig {
   ///     - `digits`: 可选参数，表示 OTP 位数，通常为 6 或 8，默认为 6。
   ///     - `period`: 可选参数，适用于 `totp`，表示 OTP 有效时间周期，默认为 30 秒。
   ///     - `counter`: 可选参数，适用于 `hotp`，指定当前计数器值。
-  static AuthenticationConfig parse(String uriString) {
+  static AuthConfig parse(String uriString) {
     final Uri uri = Uri.parse(uriString);
 
     final String scheme = uri.scheme;
@@ -205,7 +205,7 @@ class AuthenticationConfig {
     final String period = uri.queryParameters['period'] ?? '30';
     final String counter = uri.queryParameters['counter'] ?? '0';
 
-    return AuthenticationConfig(
+    return AuthConfig(
       scheme: parseScheme(scheme),
       type: parseType(type),
       account: parseAccount(label, issuer),

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get_it/get_it.dart';
 import 'package:auth/auth.dart';
-import 'package:auth/auth_repository.dart';
+import 'package:auth/repository.dart';
 import 'package:auth/dialog.dart';
 import 'package:auth/otp.dart';
 import 'package:auth/top_bar.dart';
@@ -16,7 +15,7 @@ class FromScreen extends StatefulWidget {
 }
 
 class _FromScreenState extends State<FromScreen> with WidgetsBindingObserver {
-  late final AuthenticationConfig config = ModalRoute.of(context)?.settings.arguments as AuthenticationConfig? ?? AuthenticationConfig(isVerify: false);
+  late final AuthConfig config = ModalRoute.of(context)?.settings.arguments as AuthConfig? ?? AuthConfig(isVerify: false);
 
   late final TextEditingController issuerController = TextEditingController(text: config.issuer);
 
