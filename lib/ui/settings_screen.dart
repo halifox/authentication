@@ -12,11 +12,10 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObserver {
-  final Prefs prefs = GetIt.I<Prefs>();
   late final List<List<dynamic>> options = [
-    [prefs.biometricUnlock, '生物识别解锁'],
-    [prefs.isShowCaptchaOnTap, '轻触显示验证码'],
-    [prefs.isCopyCaptchaOnTap, '轻触复制验证码'],
+    [Prefs.biometricUnlock, '生物识别解锁'],
+    [Prefs.isShowCaptchaOnTap, '轻触显示验证码'],
+    [Prefs.isCopyCaptchaOnTap, '轻触复制验证码'],
   ];
 
   @override

@@ -6,6 +6,7 @@ import 'package:auth/auth_repository.dart';
 import 'package:auth/dialog.dart';
 import 'package:auth/otp.dart';
 import 'package:auth/top_bar.dart';
+import 'package:sembast/sembast.dart';
 
 class FromScreen extends StatefulWidget {
   const FromScreen({super.key});
@@ -43,11 +44,11 @@ class _FromScreenState extends State<FromScreen> with WidgetsBindingObserver {
         ..counter = int.parse(counterController.text);
       config.verify();
       if (config.key == null) {
-        await GetIt.I<AuthRepository>().insert(config);
+        authStore.add(db, config.toJson());
         Navigator.popUntil(context, (Route route) => route.settings.name == '/');
         showAlertDialog(context, '结果', '添加成功');
       } else {
-        await GetIt.I<AuthRepository>().update(config);
+        authStore.record(config.key!).update(db, config.toJson());
         Navigator.popUntil(context, (Route route) => route.settings.name == '/');
         showAlertDialog(context, '结果', '更新成功');
       }

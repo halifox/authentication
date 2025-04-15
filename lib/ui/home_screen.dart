@@ -1,13 +1,14 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get_it/get_it.dart';
 import 'package:auth/auth.dart';
 import 'package:auth/auth_repository.dart';
 import 'package:auth/authentication_widget.dart';
 import 'package:auth/top_bar.dart';
+import 'package:sembast/sembast.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,15 +30,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     setState(() {});
   }
 
+  List<RecordSnapshot<String, dynamic>> data = [];
+  StreamSubscription? subscription;
+
   @override
   void initState() {
-    GetIt.I<AuthRepository>().addListener(listener);
+    subscription = authStore.query().onSnapshot(db).listen((_) async {
+      data = await authStore.find(db);
+      setState(() {});
+    });
     super.initState();
   }
 
   @override
   void dispose() {
-    GetIt.I<AuthRepository>().removeListener(listener);
+    unawaited(subscription?.cancel());
     super.dispose();
   }
 
@@ -50,10 +57,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         padding: const EdgeInsets.symmetric(horizontal: 16),
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 140),
-        itemCount: GetIt.I<AuthRepository>().snapshot.length,
+        itemCount: data.length,
         itemBuilder: (BuildContext context, int index) {
-          final AuthenticationConfig config = GetIt.I<AuthRepository>().snapshot[index];
-          return AuthenticationWidget(key: ObjectKey(config.key), config: config);
+          final AuthenticationConfig config = AuthenticationConfig.fromJson(data[index]);
+          return AuthenticationWidget(key: ObjectKey(config), config: config);
         },
       ),
     );

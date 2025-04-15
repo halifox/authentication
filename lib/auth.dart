@@ -1,9 +1,8 @@
 import 'package:base32/base32.dart';
 import 'package:auth/otp.dart';
+import 'package:sembast/sembast.dart';
 
-enum Scheme {
-  otpauth,
-}
+enum Scheme { otpauth }
 
 /// 认证类型枚举，用于定义不同的认证方式。
 ///
@@ -12,11 +11,7 @@ enum Scheme {
 /// - [hotp] 基于计数器的一次性密码 (HMAC-based One-Time Password)
 /// - [motp] 基于移动设备的一次性密码 (Mobile-based One-Time Password)
 
-enum Type {
-  totp,
-  hotp,
-  motp,
-}
+enum Type { totp, hotp, motp }
 
 /// 认证配置类，用于创建认证实例并设置相关参数。
 ///
@@ -64,6 +59,7 @@ class AuthenticationConfig {
     this.counter = 0,
     this.pin = '',
     this.isBase32Encoded = true,
+    this.key = null,
     bool isVerify = false,
   }) {
     if (isVerify) {
@@ -107,23 +103,24 @@ class AuthenticationConfig {
     }
   }
 
-  static Map<String, dynamic> toJson(AuthenticationConfig config) {
+   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      'scheme': config.scheme.index,
-      'type': config.type.index,
-      'account': config.account,
-      'secret': config.secret,
-      'issuer': config.issuer,
-      'algorithm': config.algorithm.index,
-      'digits': config.digits,
-      'intervalSeconds': config.intervalSeconds,
-      'counter': config.counter,
-      'pin': config.pin,
-      'isBase32Encoded': config.isBase32Encoded,
+      'scheme': scheme.index,
+      'type': type.index,
+      'account': account,
+      'secret': secret,
+      'issuer': issuer,
+      'algorithm': algorithm.index,
+      'digits': digits,
+      'intervalSeconds': intervalSeconds,
+      'counter': counter,
+      'pin': pin,
+      'isBase32Encoded': isBase32Encoded,
     };
   }
 
-  factory AuthenticationConfig.fromJson(Map<String, dynamic> map) {
+
+  factory AuthenticationConfig.fromJson(RecordSnapshot<String, dynamic> map) {
     return AuthenticationConfig(
       scheme: Scheme.values.elementAt(map['scheme'] as int),
       type: Type.values.elementAt(map['type'] as int),
@@ -136,6 +133,7 @@ class AuthenticationConfig {
       counter: map['counter'] as int,
       pin: map['pin'] as String,
       isBase32Encoded: map['isBase32Encoded'] as bool,
+      key: map.key,
     );
   }
 

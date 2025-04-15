@@ -9,6 +9,7 @@ import 'package:auth/auth.dart';
 import 'package:auth/auth_repository.dart';
 import 'package:auth/dialog.dart';
 import 'package:auth/top_bar.dart';
+import 'package:sembast/sembast.dart';
 
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});
@@ -18,7 +19,7 @@ class AddScreen extends StatefulWidget {
 }
 
 class _AddScreenState extends State<AddScreen> with WidgetsBindingObserver {
-  late final List<List<Object>> options = [
+  late final options = [
     [Icons.camera_enhance, '扫描二维码', scanQrCode],
     [Icons.photo_library, '上传二维码', uploadQrCode],
     [Icons.edit, '输入提供的密钥', enterKey],
@@ -26,7 +27,7 @@ class _AddScreenState extends State<AddScreen> with WidgetsBindingObserver {
     [Icons.format_list_numbered, '从其他应用导入', importFromApps],
   ];
 
-  void scanQrCode(BuildContext context) {
+   scanQrCode(BuildContext context) {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       Navigator.pushNamed(context, '/AuthScanPage');
     } else {
@@ -34,7 +35,7 @@ class _AddScreenState extends State<AddScreen> with WidgetsBindingObserver {
     }
   }
 
-  void uploadQrCode(BuildContext context) async {
+   uploadQrCode(BuildContext context) async {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       const XTypeGroup imageTypes = XTypeGroup(extensions: <String>['jpg', 'jpeg', 'png']);
       final XFile? selectedFile = await openFile(acceptedTypeGroups: <XTypeGroup>[imageTypes]);
@@ -62,7 +63,7 @@ class _AddScreenState extends State<AddScreen> with WidgetsBindingObserver {
         final Barcode barcode = barcodes.first;
         final String rawValue = barcode.rawValue ?? '';
         final AuthenticationConfig config = AuthenticationConfig.parse(rawValue);
-        await GetIt.I<AuthRepository>().insert(config);
+        authStore.add(db, config.toJson());
         return;
       } on ArgumentError catch (e) {
         showAlertDialog(context, '参数错误', e.message as String?);
@@ -79,15 +80,15 @@ class _AddScreenState extends State<AddScreen> with WidgetsBindingObserver {
     }
   }
 
-  void enterKey(BuildContext context) {
+   enterKey(BuildContext context) {
     Navigator.pushNamed(context, '/AuthFromPage');
   }
 
-  void restoreBackup(BuildContext context) {
+   restoreBackup(BuildContext context) {
     showDevDialog(context);
   }
 
-  void importFromApps(BuildContext context) {
+   importFromApps(BuildContext context) {
     showDevDialog(context);
   }
 

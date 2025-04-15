@@ -10,6 +10,7 @@ import 'package:auth/auth.dart';
 import 'package:auth/auth_repository.dart';
 import 'package:auth/dialog.dart';
 import 'package:auth/top_bar.dart';
+import 'package:sembast/sembast.dart';
 
 class ScanScreen extends StatefulWidget {
   const ScanScreen({super.key});
@@ -71,7 +72,7 @@ class _ScanScreenState extends State<ScanScreen> {
         final Barcode barcode = barcodes.first;
         final String rawValue = barcode.rawValue ?? '';
         final AuthenticationConfig config = AuthenticationConfig.parse(rawValue);
-        await GetIt.I<AuthRepository>().insert(config);
+        authStore.add(db, config.toJson());
 
         _isScanningAllowed = false;
         Navigator.popUntil(context, (Route route) => route.settings.name == '/');

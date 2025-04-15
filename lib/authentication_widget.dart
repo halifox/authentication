@@ -10,6 +10,7 @@ import 'package:auth/auth_repository.dart';
 import 'package:auth/dialog.dart';
 import 'package:auth/otp.dart';
 import 'package:auth/prefs.dart';
+import 'package:sembast/sembast.dart';
 import 'package:signals_flutter/signals_core.dart';
 
 /// 认证项小部件
@@ -24,11 +25,9 @@ class AuthenticationWidget extends StatefulWidget {
 
 /// 认证项的状态类
 class _AuthenticationWidgetState extends State<AuthenticationWidget> {
-  Prefs prefs = GetIt.I<Prefs>();
-
   late final AuthenticationConfig configuration = widget.config;
   late String authCode = '--------';
-  late bool isShow = !prefs.isShowCaptchaOnTap.value;
+  late bool isShow = !Prefs.isShowCaptchaOnTap.value;
 
   Timer? timer;
   Timer? showCaptchaOnTapTimer;
@@ -38,7 +37,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
     super.initState();
     effect(() {
       setState(() {
-        isShow = !prefs.isShowCaptchaOnTap.value;
+        isShow = !Prefs.isShowCaptchaOnTap.value;
       });
       showCaptchaOnTapTimer?.cancel();
     });
@@ -82,7 +81,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
             ),
             ElevatedButton(
               onPressed: () {
-                GetIt.I<AuthRepository>().delete(configuration.key!);
+                authStore.record(configuration.key!).delete(db);
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
@@ -95,7 +94,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   }
 
   void onTap() {
-    if (prefs.isShowCaptchaOnTap.value) {
+    if (Prefs.isShowCaptchaOnTap.value) {
       setState(() {
         isShow = !isShow;
       });
@@ -108,7 +107,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
         }
       });
     }
-    if (prefs.isCopyCaptchaOnTap.value) {
+    if (Prefs.isCopyCaptchaOnTap.value) {
       Clipboard.setData(ClipboardData(text: authCode));
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('代码已复制'), duration: Duration(milliseconds: 1200)));
@@ -125,10 +124,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   Widget build(BuildContext context) {
     return SwipeActionCell(
       key: ObjectKey(configuration), // 唯一标识
-      trailingActions: <SwipeAction>[
-        buildSwipeAction('删除', onDelete),
-        buildSwipeAction('编辑', onEdit),
-      ],
+      trailingActions: <SwipeAction>[buildSwipeAction('删除', onDelete), buildSwipeAction('编辑', onEdit)],
       child: buildAuthCard(), // 构建认证卡片
     );
   }
@@ -145,10 +141,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
           width: double.infinity,
           height: double.infinity,
           alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(24),
-          ),
+          decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: BorderRadius.circular(24)),
           child: Text(label), // 按钮标签
         ),
       ),
@@ -218,7 +211,12 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(configuration.issuer, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
+          Text(
+            configuration.issuer,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 4),
           Text(configuration.account, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(height: 0, fontSize: 13, color: Theme.of(context).colorScheme.onPrimaryContainer.withAlpha(200))),
         ],
@@ -244,7 +242,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
     return IconButton(
       onPressed: () {
         configuration.counter++;
-        GetIt.I<AuthRepository>().update(configuration); // 更新认证
+        authStore.record(configuration.key!).update(db, configuration.toJson());
       },
       icon: const Icon(Icons.refresh),
     );
