@@ -4,18 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
-import 'package:get_it/get_it.dart';
 import 'package:auth/auth.dart';
 import 'package:auth/auth_repository.dart';
 import 'package:auth/dialog.dart';
 import 'package:auth/otp.dart';
-import 'package:auth/prefs.dart';
 import 'package:sembast/sembast.dart';
-import 'package:signals_flutter/signals_core.dart';
 
 /// 认证项小部件
 class AuthenticationWidget extends StatefulWidget {
-  final AuthenticationConfig config; // 认证对象
+  final AuthenticationConfig config;
 
   const AuthenticationWidget({super.key, required this.config});
 
@@ -27,18 +24,29 @@ class AuthenticationWidget extends StatefulWidget {
 class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   late final AuthenticationConfig configuration = widget.config;
   late String authCode = '--------';
-  late bool isShow = !Prefs.isShowCaptchaOnTap.value;
+  late bool biometricUnlock = false;
+  late bool isShowCaptchaOnTap = false;
+  late bool isCopyCaptchaOnTap = false;
+  late bool isShow = false;
 
   Timer? timer;
   Timer? showCaptchaOnTapTimer;
 
+  a() async {
+    biometricUnlock = await settingsStore.record('biometricUnlock').get(db) as bool;
+    isShowCaptchaOnTap = await settingsStore.record('isShowCaptchaOnTap').get(db) as bool;
+    isCopyCaptchaOnTap = await settingsStore.record('isCopyCaptchaOnTap').get(db) as bool;
+    setState(() {
+      isShow = !isShowCaptchaOnTap;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    effect(() {
-      setState(() {
-        isShow = !Prefs.isShowCaptchaOnTap.value;
-      });
+    a();
+    settingsStore.query().onSnapshot(db).listen((_) async {
+      a();
       showCaptchaOnTapTimer?.cancel();
     });
 
@@ -94,7 +102,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
   }
 
   void onTap() {
-    if (Prefs.isShowCaptchaOnTap.value) {
+    if (isShowCaptchaOnTap) {
       setState(() {
         isShow = !isShow;
       });
@@ -107,7 +115,7 @@ class _AuthenticationWidgetState extends State<AuthenticationWidget> {
         }
       });
     }
-    if (Prefs.isCopyCaptchaOnTap.value) {
+    if (isCopyCaptchaOnTap) {
       Clipboard.setData(ClipboardData(text: authCode));
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('代码已复制'), duration: Duration(milliseconds: 1200)));

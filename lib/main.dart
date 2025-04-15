@@ -20,6 +20,10 @@ void main() async {
   await initDatabase();
   await initSharedPreferences();
 
+  await settingsStore.record('biometricUnlock').put(db, false);
+  await settingsStore.record('isShowCaptchaOnTap').put(db, false);
+  await settingsStore.record('isCopyCaptchaOnTap').put(db, false);
+
   if (kDebugMode) {
     await authStore.delete(db);
     await authStore.add(db, AuthenticationConfig(secret: OTP.randomSecret(), type: Type.totp, account: "user@github.com", issuer: "GitHub", intervalSeconds: 30).toJson());
@@ -53,14 +57,8 @@ class MyApp extends StatelessWidget {
           title: 'Purity Auth',
           debugShowCheckedModeBanner: false,
           themeMode: ThemeMode.system,
-          theme: ThemeData(
-            brightness: Brightness.light,
-            colorScheme: lightDynamic,
-          ),
-          darkTheme: ThemeData(
-            brightness: Brightness.dark,
-            colorScheme: darkDynamic,
-          ),
+          theme: ThemeData(brightness: Brightness.light, colorScheme: lightDynamic),
+          darkTheme: ThemeData(brightness: Brightness.dark, colorScheme: darkDynamic),
           initialRoute: '/',
           routes: <String, WidgetBuilder>{
             '/': (BuildContext context) => const HomeScreen(),

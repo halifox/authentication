@@ -14,11 +14,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 typedef Listener = void Function(List<AuthenticationConfig>);
 
-late final StoreRef<String, Map<String, Object?>> authStore;
+final StoreRef<String, Map<String, Object?>> authStore = stringMapStoreFactory.store();
+final StoreRef<String, Object?> settingsStore = StoreRef<String, Object?>('settings');
 late final Database db;
 
 initDatabase() async {
-  authStore = stringMapStoreFactory.store();
   if (kIsWeb) {
     db = await EncryptedDatabaseFactory(databaseFactory: databaseFactoryWeb, password: '99999').openDatabase('auth');
   } else {

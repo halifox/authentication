@@ -1,7 +1,7 @@
+import 'package:auth/auth_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-import 'package:auth/prefs.dart';
 import 'package:auth/top_bar.dart';
+import 'package:sembast/sembast.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -13,9 +13,9 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObserver {
   late final List<List<dynamic>> options = [
-    [Prefs.biometricUnlock, '生物识别解锁'],
-    [Prefs.isShowCaptchaOnTap, '轻触显示验证码'],
-    [Prefs.isCopyCaptchaOnTap, '轻触复制验证码'],
+    ['biometricUnlock', '生物识别解锁'],
+    ['isShowCaptchaOnTap', '轻触显示验证码'],
+    ['isCopyCaptchaOnTap', '轻触复制验证码'],
   ];
 
   @override
@@ -29,18 +29,35 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
         itemCount: options.length,
         itemBuilder: (BuildContext context, int index) {
           final List<dynamic> option = options[index];
-          return _Button(option[0] as Signal<bool>, option[1] as String, key: ObjectKey(option));
+          return _Button(option[0] as String, option[1] as String, key: ObjectKey(option));
         },
       ),
     );
   }
 }
 
-class _Button extends StatelessWidget {
-  const _Button(this.enable, this.label, {super.key});
+class _Button extends StatefulWidget {
+  const _Button(this.dbKey, this.label, {super.key});
 
-  final Signal<bool> enable;
+  final String dbKey;
   final String label;
+
+  @override
+  State<_Button> createState() => _ButtonState();
+}
+
+class _ButtonState extends State<_Button> {
+  bool enable = false;
+
+  @override
+  void initState() {
+    () async {
+      enable = await settingsStore.record(widget.dbKey).get(db) as bool;
+      setState(() {});
+    }();
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,11 +69,14 @@ class _Button extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           const SizedBox(width: 12),
-          Expanded(child: Text(label, maxLines: 1, style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold))),
+          Expanded(child: Text(widget.label, maxLines: 1, style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold))),
           const SizedBox(width: 16),
           GestureDetector(
             onTap: () {
-              enable.value = !enable.value;
+              setState(() {
+                enable = !enable;
+              });
+              settingsStore.record(widget.dbKey).put(db, enable);
             },
             child: Watch.builder(
               builder: (context) {
@@ -65,10 +85,10 @@ class _Button extends StatelessWidget {
                   width: 48,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: enable.value ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.inversePrimary,
+                    color: enable ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.inversePrimary,
                     borderRadius: const BorderRadius.all(Radius.circular(12)),
                   ),
-                  child: Icon(enable.value ? Icons.done : Icons.close, size: 36, color: Theme.of(context).colorScheme.onPrimary),
+                  child: Icon(enable ? Icons.done : Icons.close, size: 36, color: Theme.of(context).colorScheme.onPrimary),
                 );
               },
             ),
