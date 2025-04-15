@@ -10,14 +10,14 @@ import 'package:auth/auth_repository.dart';
 import 'package:auth/dialog.dart';
 import 'package:auth/top_bar.dart';
 
-class AuthAddPage extends StatefulWidget {
-  const AuthAddPage({super.key});
+class AddScreen extends StatefulWidget {
+  const AddScreen({super.key});
 
   @override
-  State<AuthAddPage> createState() => _AuthAddPageState();
+  State<AddScreen> createState() => _AddScreenState();
 }
 
-class _AuthAddPageState extends State<AuthAddPage> with WidgetsBindingObserver {
+class _AddScreenState extends State<AddScreen> with WidgetsBindingObserver {
   late final List<List<Object>> options = [
     [Icons.camera_enhance, '扫描二维码', scanQrCode],
     [Icons.photo_library, '上传二维码', uploadQrCode],

@@ -9,14 +9,14 @@ import 'package:auth/auth_repository.dart';
 import 'package:auth/authentication_widget.dart';
 import 'package:auth/top_bar.dart';
 
-class AuthHomePage extends StatefulWidget {
-  const AuthHomePage({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<AuthHomePage> createState() => _AuthHomePageState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _AuthHomePageState extends State<AuthHomePage> with WidgetsBindingObserver {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void toAuthAddPage(BuildContext context) {
     Navigator.pushNamed(context, '/AuthAddPage');
   }

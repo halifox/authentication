@@ -11,14 +11,14 @@ import 'package:auth/auth_repository.dart';
 import 'package:auth/dialog.dart';
 import 'package:auth/top_bar.dart';
 
-class AuthScanPage extends StatefulWidget {
-  const AuthScanPage({super.key});
+class ScanScreen extends StatefulWidget {
+  const ScanScreen({super.key});
 
   @override
-  _AuthScanPageState createState() => _AuthScanPageState();
+  _ScanScreenState createState() => _ScanScreenState();
 }
 
-class _AuthScanPageState extends State<AuthScanPage> {
+class _ScanScreenState extends State<ScanScreen> {
   final BarcodeScanner _barcodeScanner = BarcodeScanner();
   bool _isScanningAllowed = true;
   bool _isProcessing = false;

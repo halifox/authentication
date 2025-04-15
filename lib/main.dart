@@ -5,12 +5,12 @@ import 'package:flutter_swipe_action_cell/core/swipe_action_navigator_observer.d
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:get_it/get_it.dart';
 import 'package:auth/prefs.dart';
-import 'package:auth/auth_add_page.dart';
-import 'package:auth/auth_from_page.dart';
-import 'package:auth/auth_home_page.dart';
+import 'package:auth/ui/add_screen.dart';
+import 'package:auth/ui/from_screen.dart';
+import 'package:auth/ui/home_screen.dart';
 import 'package:auth/auth_repository.dart';
-import 'package:auth/auth_scan_page.dart';
-import 'package:auth/auth_settings_page.dart';
+import 'package:auth/ui/scan_screen.dart';
+import 'package:auth/ui/settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -63,11 +63,11 @@ class MyApp extends StatelessWidget {
           ),
           initialRoute: '/',
           routes: <String, WidgetBuilder>{
-            '/': (BuildContext context) => const AuthHomePage(),
-            '/AuthAddPage': (BuildContext context) => const AuthAddPage(),
-            '/AuthScanPage': (BuildContext context) => const AuthScanPage(),
-            '/AuthFromPage': (BuildContext context) => const AuthFromPage(),
-            '/AuthSettingsPage': (BuildContext context) => const AuthSettingsPage(),
+            '/': (BuildContext context) => const HomeScreen(),
+            '/AuthAddPage': (BuildContext context) => const AddScreen(),
+            '/AuthScanPage': (BuildContext context) => const ScanScreen(),
+            '/AuthFromPage': (BuildContext context) => const FromScreen(),
+            '/AuthSettingsPage': (BuildContext context) => const SettingsScreen(),
           },
           navigatorObservers: <NavigatorObserver>[
             SwipeActionNavigatorObserver(),

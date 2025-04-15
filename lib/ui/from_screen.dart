@@ -7,14 +7,14 @@ import 'package:auth/dialog.dart';
 import 'package:auth/otp.dart';
 import 'package:auth/top_bar.dart';
 
-class AuthFromPage extends StatefulWidget {
-  const AuthFromPage({super.key});
+class FromScreen extends StatefulWidget {
+  const FromScreen({super.key});
 
   @override
-  State<AuthFromPage> createState() => _AuthFromPageState();
+  State<FromScreen> createState() => _FromScreenState();
 }
 
-class _AuthFromPageState extends State<AuthFromPage> with WidgetsBindingObserver {
+class _FromScreenState extends State<FromScreen> with WidgetsBindingObserver {
   late final AuthenticationConfig config = ModalRoute.of(context)?.settings.arguments as AuthenticationConfig? ?? AuthenticationConfig(isVerify: false);
 
   late final TextEditingController issuerController = TextEditingController(text: config.issuer);

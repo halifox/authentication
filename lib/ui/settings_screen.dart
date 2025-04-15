@@ -4,14 +4,14 @@ import 'package:auth/prefs.dart';
 import 'package:auth/top_bar.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
-class AuthSettingsPage extends StatefulWidget {
-  const AuthSettingsPage({super.key});
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
 
   @override
-  State<AuthSettingsPage> createState() => _AuthSettingsPageState();
+  State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _AuthSettingsPageState extends State<AuthSettingsPage> with WidgetsBindingObserver {
+class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObserver {
   final Prefs prefs = GetIt.I<Prefs>();
   late final List<List<dynamic>> options = [
     [prefs.biometricUnlock, '生物识别解锁'],
