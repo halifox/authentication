@@ -18,9 +18,7 @@ final _random = () {
 
 /// Random bytes generator
 Uint8List _randBytes(int length) {
-  return Uint8List.fromList(
-    List<int>.generate(length, (i) => _random.nextInt(256)),
-  );
+  return Uint8List.fromList(List<int>.generate(length, (i) => _random.nextInt(256)));
 }
 
 /// FOR DEMONSTRATION PURPOSES ONLY -- do not use in production as-is!
@@ -57,8 +55,7 @@ class _EncryptEncoder extends Converter<Object?, String> {
     assert(ivEncoded.length == 12);
 
     // Encode the input value
-    final encoded =
-        Encrypter(salsa20).encrypt(json.encode(input), iv: IV(iv)).base64;
+    final encoded = Encrypter(salsa20).encrypt(json.encode(input), iv: IV(iv)).base64;
 
     // Prepend the initial value
     return '$ivEncoded$encoded';
@@ -131,47 +128,28 @@ const _encryptCodecSignature = 'encrypt';
 ///
 /// // ...your database is ready to use
 /// ```
-SembastCodec getEncryptSembastCodec({required String password}) => SembastCodec(
-  signature: _encryptCodecSignature,
-  codec: _EncryptCodec(_generateEncryptPassword(password)),
-);
+SembastCodec getEncryptSembastCodec({required String password}) => SembastCodec(signature: _encryptCodecSignature, codec: _EncryptCodec(_generateEncryptPassword(password)));
 
 /// Wrap a factory to always use the codec
 class EncryptedDatabaseFactory implements DatabaseFactory {
   final DatabaseFactory databaseFactory;
   late final SembastCodec codec;
 
-  EncryptedDatabaseFactory({
-    required this.databaseFactory,
-    required String password,
-  }) {
+  EncryptedDatabaseFactory({required this.databaseFactory, required String password}) {
     codec = getEncryptSembastCodec(password: password);
   }
 
   @override
-  Future<void> deleteDatabase(String path) =>
-      databaseFactory.deleteDatabase(path);
+  Future<void> deleteDatabase(String path) => databaseFactory.deleteDatabase(path);
 
   @override
   bool get hasStorage => databaseFactory.hasStorage;
 
   /// To use with codec, null
   @override
-  Future<Database> openDatabase(
-      String path, {
-        int? version,
-        OnVersionChangedFunction? onVersionChanged,
-        DatabaseMode? mode,
-        SembastCodec? codec,
-      }) {
+  Future<Database> openDatabase(String path, {int? version, OnVersionChangedFunction? onVersionChanged, DatabaseMode? mode, SembastCodec? codec}) {
     assert(codec == null);
-    return databaseFactory.openDatabase(
-      path,
-      version: version,
-      onVersionChanged: onVersionChanged,
-      mode: mode,
-      codec: this.codec,
-    );
+    return databaseFactory.openDatabase(path, version: version, onVersionChanged: onVersionChanged, mode: mode, codec: this.codec);
   }
 
   @override

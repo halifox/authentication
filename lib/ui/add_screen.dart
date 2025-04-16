@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:auth/library/io.dart' if (dart.library.html) 'package:auth/library/web.dart';
-
 import 'package:auth/auth.dart';
 import 'package:auth/dialog.dart';
+import 'package:auth/library/io.dart' if (dart.library.html) 'package:auth/library/web.dart';
 import 'package:auth/repository.dart';
 import 'package:auth/top_bar.dart';
 import 'package:file_selector/file_selector.dart';
@@ -21,7 +20,7 @@ class AddScreen extends StatefulWidget {
 }
 
 class _AddScreenState extends State<AddScreen> {
-  late final options = [
+  late var options = [
     [Icons.camera_enhance, '扫描二维码', scanQrCode],
     [Icons.photo_library, '上传二维码', uploadQrCode],
     [Icons.keyboard, '输入密钥', provideKey],
@@ -126,9 +125,9 @@ class _AddScreenState extends State<AddScreen> {
     return Scaffold(
       appBar: TopBar(context, '添加'),
       body: GridView.builder(
-        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 90),
+        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 90),
         itemCount: options.length,
         itemBuilder: (context, index) {
           var item = options[index];
@@ -156,22 +155,22 @@ class _HorizontalBarButtonState extends State<HorizontalBarButton> {
     return GestureDetector(
       onTap: () => widget.onTap?.call(context),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         alignment: Alignment.center,
-        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: const BorderRadius.all(Radius.circular(24))),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: BorderRadius.all(Radius.circular(24))),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
+          children: [
             Container(
               height: 48,
               width: 48,
               alignment: Alignment.center,
-              decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: const BorderRadius.all(Radius.circular(12))),
+              decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.all(Radius.circular(12))),
               child: Icon(widget.icon, size: 24, color: Theme.of(context).colorScheme.onPrimary),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Text(widget.label, maxLines: 1, style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
           ],
         ),
       ),

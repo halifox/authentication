@@ -14,7 +14,7 @@ Future<int?> showAlertDialog(context, title, message, {actions, barrierDismissib
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text('确定'),
+            child: Text('确定'),
           ),
         ],
       );

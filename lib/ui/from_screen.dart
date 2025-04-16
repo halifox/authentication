@@ -15,25 +15,25 @@ class FromScreen extends StatefulWidget {
 }
 
 class _FromScreenState extends State<FromScreen> {
-  late final AuthConfig config = ModalRoute.of(context)?.settings.arguments as AuthConfig? ?? AuthConfig();
+  late var config = ModalRoute.of(context)?.settings.arguments as AuthConfig? ?? AuthConfig();
 
-  late final TextEditingController issuerController = TextEditingController(text: config.issuer);
+  late var issuerController = TextEditingController(text: config.issuer);
 
-  late final TextEditingController accountController = TextEditingController(text: config.account);
+  late var accountController = TextEditingController(text: config.account);
 
-  late final TextEditingController secretController = TextEditingController(text: config.secret);
+  late var secretController = TextEditingController(text: config.secret);
 
-  late final TextEditingController pinController = TextEditingController(text: config.pin);
+  late var pinController = TextEditingController(text: config.pin);
 
-  late final TextEditingController digitsController = TextEditingController(text: config.digits.toString());
+  late var digitsController = TextEditingController(text: config.digits.toString());
 
-  late final TextEditingController periodController = TextEditingController(text: config.interval.toString());
+  late var periodController = TextEditingController(text: config.interval.toString());
 
-  late final TextEditingController counterController = TextEditingController(text: config.counter.toString());
+  late var counterController = TextEditingController(text: config.counter.toString());
 
-  final typeLabels = {'totp': '基于时间 (TOTP)', 'hotp': '基于计数器 (HOTP)', 'motp': 'Mobile-OTP (mOTP)'};
+  var typeLabels = {'totp': '基于时间 (TOTP)', 'hotp': '基于计数器 (HOTP)', 'motp': 'Mobile-OTP (mOTP)'};
 
-  final algorithmLabels = {'sha1': 'SHA1', 'sha256': 'SHA256', 'sha512': 'SHA512'};
+  var algorithmLabels = {'sha1': 'SHA1', 'sha256': 'SHA256', 'sha512': 'SHA512'};
 
   @override
   void initState() {
@@ -75,13 +75,13 @@ class _FromScreenState extends State<FromScreen> {
 
   Widget buildTextField(TextEditingController controller, String label, {TextInputType? inputType, List<TextInputFormatter>? inputFormatters, suffixIcon}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: TextField(
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          border: const OutlineInputBorder(borderSide: BorderSide(), borderRadius: BorderRadius.all(Radius.circular(14.0)), gapPadding: 8.0),
+          border: OutlineInputBorder(borderSide: BorderSide(), borderRadius: BorderRadius.all(Radius.circular(14.0)), gapPadding: 8.0),
           suffixIcon: suffixIcon,
         ),
         keyboardType: inputType,
@@ -92,9 +92,9 @@ class _FromScreenState extends State<FromScreen> {
 
   Widget buildDropdown<T>(String label, T initialValue, Map<T, String> options, void Function(T?) onChanged) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: DropdownButtonFormField<T>(
-        decoration: InputDecoration(labelText: label, border: const OutlineInputBorder(borderSide: BorderSide(), borderRadius: BorderRadius.all(Radius.circular(14.0)), gapPadding: 8.0)),
+        decoration: InputDecoration(labelText: label, border: OutlineInputBorder(borderSide: BorderSide(), borderRadius: BorderRadius.all(Radius.circular(14.0)), gapPadding: 8.0)),
         value: initialValue,
         onChanged: onChanged,
         items: options.entries.map((MapEntry<T, String> entry) => DropdownMenuItem<T>(value: entry.key, child: Text(entry.value))).toList(),
@@ -110,7 +110,7 @@ class _FromScreenState extends State<FromScreen> {
         height: double.infinity,
         width: double.infinity,
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           child: Column(
             children: [
               buildDropdown('类型', config.type, typeLabels, (value) {

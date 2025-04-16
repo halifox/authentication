@@ -43,12 +43,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: TopBar(context, 'Purity Auth', leftIcon: Icons.settings, leftOnPressed: toSettingsPage, rightIcon: Icons.add, rightOnPressed: toAuthAddPage),
       body: GridView.builder(
-        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 140),
+        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 140),
         itemCount: data.length,
         itemBuilder: (context, index) {
-          final AuthConfig config = AuthConfig.fromJson(data[index]);
+          var config = AuthConfig.fromJson(data[index]);
           return HomeItemWidget(key: ValueKey(config.key), config: config);
         },
       ),

@@ -11,7 +11,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  late final options = [
+  var options = [
     ['biometricUnlock', '生物识别解锁'],
     ['isShowCaptchaOnTap', '轻触显示验证码'],
     ['isCopyCaptchaOnTap', '轻触复制验证码'],
@@ -22,12 +22,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       appBar: TopBar(context, '设置'),
       body: GridView.builder(
-        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 90),
+        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 90),
         itemCount: options.length,
         itemBuilder: (context, index) {
-          final item = options[index];
+          var item = options[index];
           return HorizontalBarSelectionButton(item[0], item[1]);
         },
       ),
@@ -49,7 +49,7 @@ class _HorizontalBarSelectionButtonState extends State<HorizontalBarSelectionBut
   var enable = false;
 
   initData() async {
-    final settings = await settingsStore.record('settings').getSnapshot(db);
+    var settings = await settingsStore.record('settings').getSnapshot(db);
     if (settings == null) {
       return;
     }
@@ -68,15 +68,15 @@ class _HorizontalBarSelectionButtonState extends State<HorizontalBarSelectionBut
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       alignment: Alignment.center,
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: const BorderRadius.all(Radius.circular(24))),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: BorderRadius.all(Radius.circular(24))),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(child: Text(widget.label, maxLines: 1, style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold))),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           GestureDetector(
             onTap: () {
               setState(() {
@@ -88,10 +88,7 @@ class _HorizontalBarSelectionButtonState extends State<HorizontalBarSelectionBut
               height: 48,
               width: 48,
               alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: enable ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.inversePrimary,
-                borderRadius: const BorderRadius.all(Radius.circular(12)),
-              ),
+              decoration: BoxDecoration(color: enable ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.inversePrimary, borderRadius: BorderRadius.all(Radius.circular(12))),
               child: Icon(enable ? Icons.done : Icons.close, size: 36, color: Theme.of(context).colorScheme.onPrimary),
             ),
           ),

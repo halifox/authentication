@@ -21,7 +21,7 @@ class HomeItemWidget extends StatefulWidget {
 
 /// 认证项的状态类
 class _HomeItemWidgetState extends State<HomeItemWidget> {
-  late AuthConfig config = widget.config;
+  late var config = widget.config;
   var code = '--------';
   var biometricUnlock = false;
   var isShowCaptchaOnTap = false;
@@ -35,7 +35,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
   @override
   void initState() {
     settingsSubscription = settingsStore.query().onSnapshots(db).listen((data) async {
-      final settings = await settingsStore.record('settings').getSnapshot(db);
+      var settings = await settingsStore.record('settings').getSnapshot(db);
       if (settings == null) {
         return;
       }
@@ -51,7 +51,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
     authSubscription = authStore.record(config.key).onSnapshot(db).listen((data) {
       if (data == null) return;
       config = AuthConfig.fromJson(data);
-      final _ = switch (config.type) {
+      var _ = switch (config.type) {
         'totp' => startOtpTimer(),
         'motp' => startOtpTimer(),
         'hotp' => setState(() => code = config.generateCodeString()),
@@ -71,7 +71,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
   }
 
   startOtpTimer() {
-    final int remainingMilliseconds = OTP.remainingMilliseconds(intervalMilliseconds: config.interval * 1000);
+    var remainingMilliseconds = OTP.remainingMilliseconds(intervalMilliseconds: config.interval * 1000);
     optTimer = Timer(Duration(milliseconds: remainingMilliseconds), startOtpTimer);
     setState(() => code = config.generateCodeString());
   }
@@ -92,7 +92,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('取消'),
+              child: Text('取消'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -100,7 +100,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
-              child: const Text('删除'),
+              child: Text('删除'),
             ),
           ],
         );
@@ -114,7 +114,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
         isShow = !isShow;
       });
       tapTimer?.cancel();
-      tapTimer = Timer(const Duration(seconds: 10), () {
+      tapTimer = Timer(Duration(seconds: 10), () {
         setState(() {
           isShow = false;
         });
@@ -123,7 +123,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
     if (isCopyCaptchaOnTap) {
       Clipboard.setData(ClipboardData(text: code));
       ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('代码已复制'), duration: Duration(milliseconds: 1200)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('代码已复制'), duration: Duration(milliseconds: 1200)));
     }
   }
 
@@ -143,7 +143,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
       onTap: (handler) async => onTap(), // 执行操作
       color: Colors.transparent,
       content: Padding(
-        padding: const EdgeInsets.only(left: 12),
+        padding: EdgeInsets.only(left: 12),
         child: Container(
           width: double.infinity,
           height: double.infinity,
@@ -160,13 +160,13 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         alignment: Alignment.center,
         decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: BorderRadius.circular(24)),
         child: Column(
           children: <Widget>[
             buildTopRow(), // 顶部行
-            const Spacer(),
+            Spacer(),
             buildCodeRow(), // 代码行
           ],
         ),
@@ -180,9 +180,9 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         buildIconContainer(), // 图标容器
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
         buildAuthDetails(), // 认证信息
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
         buildActionButton(), // 动作按钮
       ],
     );
@@ -211,7 +211,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(config.account, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(height: 0, fontSize: 13, color: Theme.of(context).colorScheme.onPrimaryContainer.withAlpha(200))),
         ],
       ),
@@ -239,7 +239,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
         config.counter++;
         authStore.record(config.key).update(db, config.toJson());
       },
-      icon: const Icon(Icons.refresh),
+      icon: Icon(Icons.refresh),
     );
   }
 
@@ -273,17 +273,16 @@ class CoreCircularProgressIndicator extends StatefulWidget {
 }
 
 class _CoreCircularProgressIndicatorState extends State<CoreCircularProgressIndicator> with SingleTickerProviderStateMixin {
-  late final AnimationController controller;
-  late final Animation<double> animation;
+  late var remainingMilliseconds = OTP.remainingMilliseconds(intervalMilliseconds: widget.intervalMilliseconds);
+  late var controller =
+      AnimationController(duration: Duration(milliseconds: widget.intervalMilliseconds), vsync: this)
+        ..value = 1 - remainingMilliseconds / widget.intervalMilliseconds
+        ..repeat();
+  late var animation = Tween<double>(begin: 1.0, end: 0.0).animate(controller);
 
   @override
   void initState() {
     super.initState();
-    final int remainingMilliseconds = OTP.remainingMilliseconds(intervalMilliseconds: widget.intervalMilliseconds);
-    controller = AnimationController(duration: Duration(milliseconds: widget.intervalMilliseconds), vsync: this);
-    animation = Tween<double>(begin: 1.0, end: 0.0).animate(controller);
-    controller.value = 1 - remainingMilliseconds / widget.intervalMilliseconds;
-    controller.repeat();
   }
 
   @override

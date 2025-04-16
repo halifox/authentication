@@ -13,7 +13,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
   await initDatabase();
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -31,11 +31,11 @@ class MyApp extends StatelessWidget {
           darkTheme: ThemeData(brightness: Brightness.dark, colorScheme: darkDynamic),
           initialRoute: '/',
           routes: {
-            '/': (context) => const HomeScreen(),
-            '/add': (context) => const AddScreen(),
-            '/scan': (context) => const ScanScreen(),
-            '/from': (context) => const FromScreen(),
-            '/settings': (context) => const SettingsScreen(),
+            '/': (context) => HomeScreen(),
+            '/add': (context) => AddScreen(),
+            '/scan': (context) => ScanScreen(),
+            '/from': (context) => FromScreen(),
+            '/settings': (context) => SettingsScreen(),
           },
           navigatorObservers: [SwipeActionNavigatorObserver()],
         );

@@ -6,16 +6,16 @@ void defaultLeftOnPressed(context) {
 
 PreferredSize TopBar(context, title, {leftIcon = Icons.arrow_back, leftOnPressed = defaultLeftOnPressed, rightIcon, rightOnPressed}) {
   return PreferredSize(
-    preferredSize: const Size.fromHeight(100),
+    preferredSize: Size.fromHeight(100),
     child: SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Row(
           children: <Widget>[
             TopBarIconButton(context, leftIcon, () => leftOnPressed?.call(context)),
-            const Spacer(),
+            Spacer(),
             Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
-            const Spacer(),
+            Spacer(),
             TopBarIconButton(context, rightIcon, () => rightOnPressed?.call(context)),
           ],
         ),
@@ -31,12 +31,12 @@ PreferredSize TopBar(context, title, {leftIcon = Icons.arrow_back, leftOnPressed
 Widget TopBarIconButton(context, icon, onPressed) {
   return Visibility(
     visible: icon != null,
-    replacement: const SizedBox(width: 64, height: 64),
+    replacement: SizedBox(width: 64, height: 64),
     child: ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         padding: EdgeInsets.zero,
-        fixedSize: const Size(64, 64),
+        fixedSize: Size(64, 64),
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       ),

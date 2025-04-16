@@ -19,14 +19,14 @@ class ScanScreen extends StatefulWidget {
 }
 
 class _ScanScreenState extends State<ScanScreen> {
-  final BarcodeScanner _barcodeScanner = BarcodeScanner();
-  bool _isScanningAllowed = true;
-  bool _isProcessing = false;
-  CameraLensDirection _currentCameraLensDirection = CameraLensDirection.back;
+  var _barcodeScanner = BarcodeScanner();
+  var _isScanningAllowed = true;
+  var _isProcessing = false;
+  var _currentCameraLensDirection = CameraLensDirection.back;
 
   static List<CameraDescription> _availableCameras = <CameraDescription>[];
-  CameraController? _cameraController;
-  int _selectedCameraIndex = -1;
+  var _cameraController;
+  var _selectedCameraIndex = -1;
 
   @override
   void initState() {
@@ -59,7 +59,7 @@ class _ScanScreenState extends State<ScanScreen> {
     if (!_isScanningAllowed || _isProcessing) return;
 
     _isProcessing = true;
-    final List<Barcode> barcodes = await _barcodeScanner.processImage(inputImage);
+    var barcodes = await _barcodeScanner.processImage(inputImage);
 
     if (barcodes.isNotEmpty) {
       if (barcodes.length > 1) {
@@ -68,9 +68,9 @@ class _ScanScreenState extends State<ScanScreen> {
       }
 
       try {
-        final Barcode barcode = barcodes.first;
-        final String rawValue = barcode.rawValue ?? '';
-        final AuthConfig config = AuthConfig.parse(rawValue);
+        var barcode = barcodes.first;
+        var rawValue = barcode.rawValue ?? '';
+        var config = AuthConfig.parse(rawValue);
         authStore.add(db, config.toJson());
 
         _isScanningAllowed = false;
@@ -89,7 +89,7 @@ class _ScanScreenState extends State<ScanScreen> {
         return;
       }
     }
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(Duration(seconds: 1));
     _isProcessing = false;
     if (mounted) setState(() {});
   }
@@ -112,7 +112,7 @@ class _ScanScreenState extends State<ScanScreen> {
 
   /// 启动实时视频流
   Future<void> _startCameraFeed() async {
-    final CameraDescription camera = _availableCameras[_selectedCameraIndex];
+    var camera = _availableCameras[_selectedCameraIndex];
     _cameraController = CameraController(camera, ResolutionPreset.high, enableAudio: false, imageFormatGroup: Platform.isAndroid ? ImageFormatGroup.nv21 : ImageFormatGroup.bgra8888);
     _cameraController?.initialize().then(
       (_) {
@@ -147,26 +147,21 @@ class _ScanScreenState extends State<ScanScreen> {
 
   /// 处理相机捕获的图像
   void _processCameraImage(CameraImage image) {
-    final InputImage? inputImage = _createInputImageFromCameraImage(image);
+    var inputImage = _createInputImageFromCameraImage(image);
     if (inputImage == null) return;
     // widget.onImageCaptured(inputImage);
     _processAndScanImage(context, inputImage);
   }
 
-  final Map<DeviceOrientation, int> _orientations = <DeviceOrientation, int>{
-    DeviceOrientation.portraitUp: 0,
-    DeviceOrientation.landscapeLeft: 90,
-    DeviceOrientation.portraitDown: 180,
-    DeviceOrientation.landscapeRight: 270,
-  };
+  var _orientations = <DeviceOrientation, int>{DeviceOrientation.portraitUp: 0, DeviceOrientation.landscapeLeft: 90, DeviceOrientation.portraitDown: 180, DeviceOrientation.landscapeRight: 270};
 
   /// 从相机图像生成输入图像
   /// 返回生成的输入图像，如果无法生成则返回 null
   InputImage? _createInputImageFromCameraImage(CameraImage image) {
     if (_cameraController == null) return null;
 
-    final CameraDescription camera = _availableCameras[_selectedCameraIndex];
-    final int sensorOrientation = camera.sensorOrientation;
+    var camera = _availableCameras[_selectedCameraIndex];
+    var sensorOrientation = camera.sensorOrientation;
     InputImageRotation? rotation;
 
     if (Platform.isIOS) {
@@ -179,11 +174,11 @@ class _ScanScreenState extends State<ScanScreen> {
     }
     if (rotation == null) return null;
 
-    final InputImageFormat? format = InputImageFormatValue.fromRawValue(image.format.raw as int);
+    var format = InputImageFormatValue.fromRawValue(image.format.raw as int);
     if (format == null || (Platform.isAndroid && format != InputImageFormat.nv21) || (Platform.isIOS && format != InputImageFormat.bgra8888)) return null;
 
     if (image.planes.length != 1) return null;
-    final Plane plane = image.planes.first;
+    var plane = image.planes.first;
 
     return InputImage.fromBytes(
       bytes: plane.bytes,
@@ -198,16 +193,16 @@ class _ScanScreenState extends State<ScanScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('权限不足'),
-          content: const Text('需要相机权限'),
-          actions: <Widget>[
-            ElevatedButton(onPressed: () => Navigator.popUntil(context, (Route route) => route.settings.name == '/add'), child: const Text('取消')),
+          title: Text('权限不足'),
+          content: Text('需要相机权限'),
+          actions: [
+            ElevatedButton(onPressed: () => Navigator.popUntil(context, (Route route) => route.settings.name == '/add'), child: Text('取消')),
             FilledButton(
               onPressed: () {
                 Navigator.popUntil(context, (Route route) => route.settings.name == '/add');
                 openAppSettings();
               },
-              child: const Text('申请相机权限'),
+              child: Text('申请相机权限'),
             ),
           ],
         );

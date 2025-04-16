@@ -180,18 +180,18 @@ class AuthConfig {
   ///     - `period`: 可选参数，适用于 `totp`，表示 OTP 有效时间周期，默认为 30 秒。
   ///     - `counter`: 可选参数，适用于 `hotp`，指定当前计数器值。
   static AuthConfig parse(String uriString) {
-    final Uri uri = Uri.parse(uriString);
+    var uri = Uri.parse(uriString);
 
-    final String scheme = uri.scheme;
-    final String type = uri.host;
-    final String label = Uri.decodeFull(uri.path.substring(1));
-    final String issuer = uri.queryParameters['issuer'] ?? 'unknown';
-    final String account = uri.queryParameters['account'] ?? 'unknown';
-    final String algorithm = uri.queryParameters['algorithm'] ?? 'sha1';
-    final String secret = uri.queryParameters['secret']!;
-    final String digits = uri.queryParameters['digits'] ?? '6';
-    final String period = uri.queryParameters['period'] ?? '30';
-    final String counter = uri.queryParameters['counter'] ?? '0';
+    var scheme = uri.scheme;
+    var type = uri.host;
+    var label = Uri.decodeFull(uri.path.substring(1));
+    var issuer = uri.queryParameters['issuer'] ?? 'unknown';
+    var account = uri.queryParameters['account'] ?? 'unknown';
+    var algorithm = uri.queryParameters['algorithm'] ?? 'sha1';
+    var secret = uri.queryParameters['secret']!;
+    var digits = uri.queryParameters['digits'] ?? '6';
+    var period = uri.queryParameters['period'] ?? '30';
+    var counter = uri.queryParameters['counter'] ?? '0';
 
     return AuthConfig(
       scheme: scheme,

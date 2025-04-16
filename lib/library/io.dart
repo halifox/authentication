@@ -8,7 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 createBackupImpl(context, json, filename) async {
   var file;
   if (Platform.isAndroid && false) {
-    final status = await Permission.storage.request();
+    var status = await Permission.storage.request();
     if (!status.isGranted) throw Exception("Storage permission denied");
     file = File('/storage/emulated/0/Download/$filename');
   } else {

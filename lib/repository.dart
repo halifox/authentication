@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:auth/auth.dart';
 import 'package:auth/encrypt_codec.dart';
 import 'package:auth/otp.dart';
@@ -11,9 +9,9 @@ import 'package:sembast_web/sembast_web.dart';
 
 typedef Listener = void Function(List<AuthConfig>);
 
-final StoreRef<String, Map<String, Object?>> authStore = stringMapStoreFactory.store();
-final StoreRef<String, Map<String, Object?>> settingsStore = stringMapStoreFactory.store('settings');
-late final Database db;
+var authStore = stringMapStoreFactory.store();
+var settingsStore = stringMapStoreFactory.store('settings');
+late Database db;
 
 initDatabase() async {
   var codec;
@@ -25,7 +23,7 @@ initDatabase() async {
   if (kIsWeb) {
     db = await databaseFactoryWeb.openDatabase(path, codec: codec);
   } else {
-    final Directory dir = await getApplicationDocumentsDirectory();
+    var dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
     db = await databaseFactoryIo.openDatabase(join(dir.path, path), codec: codec);
   }
