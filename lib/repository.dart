@@ -16,21 +16,18 @@ final StoreRef<String, Map<String, Object?>> settingsStore = stringMapStoreFacto
 late final Database db;
 
 initDatabase() async {
+  var codec;
+  var path = 'auth.debug.db';
+  if (kReleaseMode) {
+    codec = getEncryptSembastCodec(password: '99999');
+    path = 'auth.db';
+  }
   if (kIsWeb) {
-    if (kDebugMode) {
-      db = await databaseFactoryWeb.openDatabase('auth');
-    } else {
-      db = await EncryptedDatabaseFactory(databaseFactory: databaseFactoryWeb, password: '99999').openDatabase('auth');
-    }
+    db = await databaseFactoryWeb.openDatabase(path, codec: codec);
   } else {
     final Directory dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
-    final String path = join(dir.path, 'auth');
-    if (kDebugMode) {
-      db = await databaseFactoryIo.openDatabase(path);
-    } else {
-      db = await EncryptedDatabaseFactory(databaseFactory: databaseFactoryIo, password: '99999').openDatabase(path);
-    }
+    db = await databaseFactoryIo.openDatabase(join(dir.path, path), codec: codec);
   }
   if (kDebugMode) {
     await settingsStore.delete(db);
