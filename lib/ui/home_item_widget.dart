@@ -53,15 +53,12 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
     authSubscription = authStore.record(config.key).onSnapshot(db).listen((data) {
       if (data == null) return;
       config = AuthConfig.fromJson(data);
-      switch (config.type) {
-        case Type.totp:
-        case Type.motp:
-          startOtpTimer();
-        case Type.hotp:
-          setState(() {
-            code = config.generateCodeString();
-          });
-      }
+      final _ = switch (config.type) {
+        'totp' => startOtpTimer(),
+        'motp' => startOtpTimer(),
+        'hotp' => setState(() => code = config.generateCodeString()),
+        String() => throw UnimplementedError(),
+      };
     });
     super.initState();
   }
@@ -76,11 +73,9 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
   }
 
   startOtpTimer() {
-    final int remainingMilliseconds = OTP.remainingMilliseconds(intervalMilliseconds: config.intervalSeconds * 1000);
+    final int remainingMilliseconds = OTP.remainingMilliseconds(intervalMilliseconds: config.interval * 1000);
     optTimer = Timer(Duration(milliseconds: remainingMilliseconds), startOtpTimer);
-    setState(() {
-      code = config.generateCodeString();
-    });
+    setState(() => code = config.generateCodeString());
   }
 
   onEdit() {
@@ -237,9 +232,10 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
       width: 48,
       alignment: Alignment.center,
       child: switch (config.type) {
-        Type.totp => CoreCircularProgressIndicator(config.intervalSeconds * 1000),
-        Type.hotp => buildHotpNextButton(),
-        Type.motp => CoreCircularProgressIndicator(config.intervalSeconds * 1000),
+        'totp' => CoreCircularProgressIndicator(config.interval * 1000),
+        'hotp' => buildHotpNextButton(),
+        'motp' => CoreCircularProgressIndicator(config.interval * 1000),
+        String() => throw UnimplementedError(),
       },
     );
   }

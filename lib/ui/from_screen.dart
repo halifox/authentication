@@ -1,6 +1,5 @@
 import 'package:auth/auth.dart';
 import 'package:auth/dialog.dart';
-import 'package:auth/otp.dart';
 import 'package:auth/repository.dart';
 import 'package:auth/top_bar.dart';
 import 'package:flutter/material.dart';
@@ -28,13 +27,13 @@ class _FromScreenState extends State<FromScreen> {
 
   late final TextEditingController digitsController = TextEditingController(text: config.digits.toString());
 
-  late final TextEditingController periodController = TextEditingController(text: config.intervalSeconds.toString());
+  late final TextEditingController periodController = TextEditingController(text: config.interval.toString());
 
   late final TextEditingController counterController = TextEditingController(text: config.counter.toString());
 
-  final Map<Type, String> typeLabels = <Type, String>{Type.totp: '基于时间 (TOTP)', Type.hotp: '基于计数器 (HOTP)', Type.motp: 'Mobile-OTP (mOTP)'};
+  final typeLabels = {'totp': '基于时间 (TOTP)', 'hotp': '基于计数器 (HOTP)', 'motp': 'Mobile-OTP (mOTP)'};
 
-  final Map<Algorithm, String> algorithmLabels = <Algorithm, String>{Algorithm.SHA1: 'SHA1', Algorithm.SHA256: 'SHA256', Algorithm.SHA512: 'SHA512'};
+  final algorithmLabels = {'sha1': 'SHA1', 'sha256': 'SHA256', 'sha512': 'SHA512'};
 
   @override
   void initState() {
@@ -54,7 +53,7 @@ class _FromScreenState extends State<FromScreen> {
         ..secret = secretController.text
         ..pin = pinController.text
         ..digits = int.parse(digitsController.text)
-        ..intervalSeconds = int.parse(periodController.text)
+        ..interval = int.parse(periodController.text)
         ..counter = int.parse(counterController.text);
       config.verify();
       if (config.key.isEmpty) {
@@ -74,7 +73,7 @@ class _FromScreenState extends State<FromScreen> {
     }
   }
 
-  Widget buildTextField(TextEditingController controller, String label, {TextInputType? inputType, List<TextInputFormatter>? inputFormatters}) {
+  Widget buildTextField(TextEditingController controller, String label, {TextInputType? inputType, List<TextInputFormatter>? inputFormatters, suffixIcon}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: TextField(
@@ -111,7 +110,7 @@ class _FromScreenState extends State<FromScreen> {
         physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         child: Column(
           children: <Widget>[
-            buildDropdown<Type>('类型', config.type, typeLabels, (Type? value) {
+            buildDropdown('类型', config.type, typeLabels, (value) {
               setState(() {
                 config.type = value!;
               });
@@ -119,18 +118,24 @@ class _FromScreenState extends State<FromScreen> {
             buildTextField(issuerController, '发行方', suffixIcon: DySvgWidget(issuerController)),
             buildTextField(accountController, '用户名'),
             buildTextField(secretController, '密钥'),
-            if (config.type == Type.totp) buildDropdown<Algorithm>('算法', config.algorithm, algorithmLabels, (Algorithm? value) => config.algorithm = value!),
-            if (config.type == Type.hotp) buildDropdown<Algorithm>('算法', config.algorithm, algorithmLabels, (Algorithm? value) => config.algorithm = value!),
-            if (config.type == Type.motp) buildTextField(pinController, 'PIN码'),
+            switch (config.type) {
+              'totp' => buildDropdown('算法', config.algorithm, algorithmLabels, (value) => config.algorithm = value as String),
+              'hotp' => buildDropdown('算法', config.algorithm, algorithmLabels, (value) => config.algorithm = value as String),
+              'motp' => buildTextField(pinController, 'PIN码'),
+              String() => throw UnimplementedError(),
+            },
+
             Row(
               children: <Widget>[
                 Expanded(child: buildTextField(digitsController, '位数', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
-                if (config.type == Type.totp)
-                  Expanded(child: buildTextField(periodController, '时间间隔(秒)', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
-                if (config.type == Type.hotp)
-                  Expanded(child: buildTextField(counterController, '计数器', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
-                if (config.type == Type.motp)
-                  Expanded(child: buildTextField(periodController, '时间间隔(秒)', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
+                Expanded(
+                  child: switch (config.type) {
+                    'totp' => buildTextField(periodController, '时间间隔(秒)', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]),
+                    'hotp' => buildTextField(counterController, '计数器', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]),
+                    'motp' => buildTextField(periodController, '时间间隔(秒)', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]),
+                    String() => throw UnimplementedError(),
+                  },
+                ),
               ],
             ),
           ],

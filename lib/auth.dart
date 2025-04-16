@@ -1,8 +1,7 @@
 import 'package:auth/otp.dart';
 import 'package:base32/base32.dart';
+import 'package:flutter/services.dart';
 import 'package:sembast/sembast.dart';
-
-enum Scheme { otpauth }
 
 /// 认证类型枚举，用于定义不同的认证方式。
 ///
@@ -10,8 +9,6 @@ enum Scheme { otpauth }
 /// - [totp] 基于时间的一次性密码 (Time-based One-Time Password)
 /// - [hotp] 基于计数器的一次性密码 (HMAC-based One-Time Password)
 /// - [motp] 基于移动设备的一次性密码 (Mobile-based One-Time Password)
-
-enum Type { totp, hotp, motp }
 
 /// 认证配置类，用于创建认证实例并设置相关参数。
 ///
@@ -23,115 +20,114 @@ enum Type { totp, hotp, motp }
 /// [issuer] 认证发行方，通常是认证服务提供商或应用的名称，不能为空。
 /// [algorithm] 用于生成一次性密码的哈希算法，默认为 SHA1。
 /// [digits] 生成一次性密码的位数，默认为 6 位。
-/// [intervalSeconds] 密码生成周期，适用于 TOTP，默认为 30 秒。
+/// [interval] 密码生成周期，适用于 TOTP，默认为 30 秒。
 /// [counter] 计数器，适用于 HOTP，默认为 0。
 /// [pin] 用户设置的 PIN，默认为空字符串。
-/// [isBase32Encoded] 指示是否使用 Base32 编码，适用于 Google 实现，默认为 true。
+/// [isBase32] 指示是否使用 Base32 编码，适用于 Google 实现，默认为 true。
 
 class AuthConfig {
-  Scheme scheme;
-  Type type;
+  String scheme;
+  String type;
   String issuer;
   String account;
   String secret;
-  Algorithm algorithm;
+  String algorithm;
   int digits;
-  int intervalSeconds;
+  int interval;
   int counter;
   String pin;
-
-  bool isBase32Encoded;
-
-  // 内部生成的密钥，通常由系统自动处理
+  bool isBase32;
+  String icon;
+  //neglect
   String key;
 
-  String? icon;
-
   AuthConfig({
-    this.scheme = Scheme.otpauth,
-    this.type = Type.totp,
+    this.scheme = 'otpauth',
+    this.type = 'totp',
+    this.issuer = '',
     this.account = '',
     this.secret = '',
-    this.issuer = '',
-    this.algorithm = Algorithm.SHA1,
+    this.algorithm = 'sha1',
     this.digits = 6,
-    this.intervalSeconds = 30,
+    this.interval = 30,
     this.counter = 0,
     this.pin = '',
-    this.isBase32Encoded = true,
+    this.isBase32 = true,
+    this.icon = 'icons/passkey.svg',
     this.key = '',
-    bool isVerify = false,
   }) {
-    if (isVerify) {
-      verify();
-    }
+    rootBundle
+        .load('icons/${issuer.toLowerCase()}.svg')
+        .then((_) {
+          icon = 'icons/${issuer.toLowerCase()}.svg';
+        })
+        .catchError((_) {});
   }
 
   verify() {
     if (issuer.isEmpty) {
       throw ArgumentError("发行方不得为空或空白。");
     }
-    if (type == Type.totp) {
-      if (digits < 6 || digits > 10) {
-        throw ArgumentError("对于 TOTP，位数必须介于 6 到 10 之间");
-      }
-      if (intervalSeconds <= 0) {
-        throw ArgumentError("时间间隔必须 > 0");
-      }
-    }
+    switch (type) {
+      case 'totp':
+        if (digits < 6 || digits > 10) {
+          throw ArgumentError("对于 TOTP，位数必须介于 6 到 10 之间");
+        }
+        if (interval <= 0) {
+          throw ArgumentError("时间间隔必须 > 0");
+        }
+      case 'hotp':
+        if (digits < 6 || digits > 8) {
+          throw ArgumentError("对于 HOTP，位数必须介于 6 到 8 之间");
+        }
+        if (counter < 0) {
+          throw ArgumentError("计数必须必须 >= 0");
+        }
 
-    if (type == Type.hotp) {
-      if (digits < 6 || digits > 8) {
-        throw ArgumentError("对于 HOTP，位数必须介于 6 到 8 之间");
-      }
-      if (counter < 0) {
-        throw ArgumentError("计数必须必须 >= 0");
-      }
+      case 'motp':
+        if (digits < 6 || digits > 10) {
+          throw ArgumentError("对于 Mobile-OTP，位数必须介于 6 到 10 之间");
+        }
+        if (pin.isEmpty) {
+          throw ArgumentError("对于 Mobile-OTP，必须设置 pin 字段。");
+        }
     }
-
-    if (type == Type.motp) {
-      if (digits < 6 || digits > 10) {
-        throw ArgumentError("对于 Mobile-OTP，位数必须介于 6 到 10 之间");
-      }
-      if (pin.isEmpty) {
-        throw ArgumentError("对于 Mobile-OTP，必须设置 pin 字段。");
-      }
-    }
-
-    if (isBase32Encoded && !AuthConfig.verifyBase32(secret)) {
+    if (isBase32 && !AuthConfig.verifyBase32(secret)) {
       throw ArgumentError('对于 HOTP 和 TOTP，验证器密钥必须是不带空格的大写 base-32 字符串。它还可以包含“=”作为填充字符。');
     }
   }
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      'scheme': scheme.index,
-      'type': type.index,
+      'scheme': scheme,
+      'type': type,
+      'issuer': issuer,
       'account': account,
       'secret': secret,
-      'issuer': issuer,
-      'algorithm': algorithm.index,
+      'algorithm': algorithm,
       'digits': digits,
-      'intervalSeconds': intervalSeconds,
+      'interval': interval,
       'counter': counter,
       'pin': pin,
-      'isBase32Encoded': isBase32Encoded,
+      'isBase32': isBase32,
+      'icon': icon,
     };
   }
 
   factory AuthConfig.fromJson(RecordSnapshot<String, dynamic> map) {
     return AuthConfig(
-      scheme: Scheme.values.elementAt(map['scheme'] as int),
-      type: Type.values.elementAt(map['type'] as int),
+      scheme: map['scheme'] as String,
+      type: map['type'] as String,
+      issuer: map['issuer'] as String,
       account: map['account'] as String,
       secret: map['secret'] as String,
-      issuer: map['issuer'] as String,
-      algorithm: Algorithm.values.elementAt(map['algorithm'] as int),
+      algorithm: map['algorithm'] as String,
       digits: map['digits'] as int,
-      intervalSeconds: map['intervalSeconds'] as int,
+      interval: map['interval'] as int,
       counter: map['counter'] as int,
       pin: map['pin'] as String,
-      isBase32Encoded: map['isBase32Encoded'] as bool,
+      isBase32: map['isBase32'] as bool,
+      icon: map['icon'] as String,
       key: map.key,
     );
   }
@@ -140,14 +136,12 @@ class AuthConfig {
   ///
   /// 返回生成的 OTP 密码字符串。
   String generateCodeString() {
-    switch (type) {
-      case Type.totp:
-        return OTP.generateTOTPCodeString(secret: secret, digits: digits, intervalSeconds: intervalSeconds, algorithm: algorithm, isBase32: isBase32Encoded);
-      case Type.hotp:
-        return OTP.generateHOTPCodeString(secret: secret, counter: counter, digits: digits, algorithm: algorithm, isBase32: isBase32Encoded);
-      case Type.motp:
-        return OTP.generateMOTPCodeString(secret: secret, pin: pin, intervalSeconds: intervalSeconds, digits: digits);
-    }
+    return switch (type) {
+      'totp' => OTP.generateTOTPCodeString(secret: secret, digits: digits, algorithm: parseAlgorithm(algorithm), intervalSeconds: interval, isBase32: isBase32),
+      'hotp' => OTP.generateHOTPCodeString(secret: secret, digits: digits, algorithm: parseAlgorithm(algorithm), counter: counter, isBase32: isBase32),
+      'motp' => OTP.generateMOTPCodeString(secret: secret, digits: digits, intervalSeconds: interval, pin: pin),
+      String() => throw UnimplementedError(),
+    };
   }
 
   /// 验证输入字符串是否为有效的 Base32 编码。
@@ -196,45 +190,25 @@ class AuthConfig {
     final String scheme = uri.scheme;
     final String type = uri.host;
     final String label = Uri.decodeFull(uri.path.substring(1));
-    final String? issuer = uri.queryParameters['issuer'];
-    final String? account = uri.queryParameters['account'];
-    final String? algorithm = uri.queryParameters['algorithm'];
-    final String? secret = uri.queryParameters['secret'];
+    final String issuer = uri.queryParameters['issuer'] ?? 'unknown';
+    final String account = uri.queryParameters['account'] ?? 'unknown';
+    final String algorithm = uri.queryParameters['algorithm'] ?? 'sha1';
+    final String secret = uri.queryParameters['secret']!;
     final String digits = uri.queryParameters['digits'] ?? '6';
     final String period = uri.queryParameters['period'] ?? '30';
     final String counter = uri.queryParameters['counter'] ?? '0';
 
     return AuthConfig(
-      scheme: parseScheme(scheme),
-      type: parseType(type),
+      scheme: scheme,
+      type: type,
       account: parseAccount(label, issuer),
-      secret: parseSecret(secret),
+      secret: checkSecret(secret),
       issuer: parseIssuer(label, issuer),
-      algorithm: parseAlgorithm(algorithm),
+      algorithm: algorithm,
       digits: int.parse(digits),
-      intervalSeconds: int.parse(period),
+      interval: int.parse(period),
       counter: int.parse(counter),
     );
-  }
-
-  static Scheme parseScheme(String? scheme) {
-    switch (scheme?.toUpperCase()) {
-      case 'OTPAUTH':
-        return Scheme.otpauth;
-      default:
-        throw ArgumentError('Invalid scheme: $scheme');
-    }
-  }
-
-  static Type parseType(String? type) {
-    switch (type?.toUpperCase()) {
-      case 'TOTP':
-        return Type.totp;
-      case 'HOTP':
-        return Type.hotp;
-      default:
-        throw ArgumentError('Invalid type: $type');
-    }
   }
 
   static String parseIssuer(String label, String? issuer) {
@@ -253,22 +227,20 @@ class AuthConfig {
     }
   }
 
-  static Algorithm parseAlgorithm(String? algorithm) {
-    switch (algorithm?.toUpperCase()) {
-      case null:
+  static Algorithm parseAlgorithm(String algorithm) {
+    switch (algorithm.toLowerCase()) {
+      case 'sha1':
         return Algorithm.SHA1;
-      case 'SHA1':
-        return Algorithm.SHA1;
-      case 'SHA256':
+      case 'sha256':
         return Algorithm.SHA256;
-      case 'SHA512':
+      case 'sha512':
         return Algorithm.SHA512;
       default:
         throw ArgumentError('Invalid algorithm: $algorithm');
     }
   }
 
-  static String parseSecret(String? secret) {
+  static String checkSecret(String? secret) {
     if (secret == null || !verifyBase32(secret)) {
       throw ArgumentError('Invalid secret');
     }
