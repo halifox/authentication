@@ -5,6 +5,7 @@ import 'package:auth/repository.dart';
 import 'package:auth/top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:sembast/sembast.dart';
 
 class FromScreen extends StatefulWidget {
@@ -82,6 +83,7 @@ class _FromScreenState extends State<FromScreen> {
           labelText: label,
           floatingLabelBehavior: FloatingLabelBehavior.always,
           border: const OutlineInputBorder(borderSide: BorderSide(), borderRadius: BorderRadius.all(Radius.circular(14.0)), gapPadding: 8.0),
+          suffixIcon: suffixIcon,
         ),
         keyboardType: inputType,
         inputFormatters: inputFormatters,
@@ -114,7 +116,7 @@ class _FromScreenState extends State<FromScreen> {
                 config.type = value!;
               });
             }),
-            buildTextField(issuerController, '发行方'),
+            buildTextField(issuerController, '发行方', suffixIcon: DySvgWidget(issuerController)),
             buildTextField(accountController, '用户名'),
             buildTextField(secretController, '密钥'),
             if (config.type == Type.totp) buildDropdown<Algorithm>('算法', config.algorithm, algorithmLabels, (Algorithm? value) => config.algorithm = value!),
@@ -133,6 +135,64 @@ class _FromScreenState extends State<FromScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class DySvgWidget extends StatefulWidget {
+  final TextEditingController controller;
+
+  const DySvgWidget(this.controller, {super.key});
+
+  @override
+  State<DySvgWidget> createState() => _DySvgWidgetState();
+}
+
+class _DySvgWidgetState extends State<DySvgWidget> {
+  var icon = '';
+  late var listener = () async {
+    icon = 'icons/${widget.controller.text.toLowerCase()}.svg';
+    if (!await assetExists(icon)) {
+      icon = 'icons/passkey.svg';
+    }
+    setState(() {});
+  };
+
+  @override
+  void initState() {
+    listener.call();
+    widget.controller.addListener(listener);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(listener);
+    super.dispose();
+  }
+
+  Future<bool> assetExists(String assetPath) async {
+    try {
+      await rootBundle.load(assetPath);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        showDevDialog(context);
+      },
+      child: Container(
+        height: 48,
+        width: 48,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(14)),
+        child: SvgPicture.asset(icon, width: 28, height: 28, colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn)),
       ),
     );
   }

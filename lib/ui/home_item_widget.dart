@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:auth/auth.dart';
-import 'package:auth/dialog.dart';
 import 'package:auth/otp.dart';
 import 'package:auth/repository.dart';
 import 'package:flutter/material.dart';
@@ -198,24 +197,16 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
 
   /// 构建图标容器
   Widget buildIconContainer() {
-    return GestureDetector(
-      onTap: () {
-        showDevDialog(context);
-      },
-      child: Container(
-        height: 48,
-        width: 48,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(12)),
-        child: SvgPicture.asset(
-          config.icon ?? 'icons/${config.issuer.toLowerCase()}.svg',
-          width: 28,
-          height: 28,
-          colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn),
-          placeholderBuilder: (BuildContext context) {
-            return Icon(Icons.account_balance, size: 24, color: Theme.of(context).colorScheme.onPrimary);
-          },
-        ),
+    return Container(
+      height: 48,
+      width: 48,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(12)),
+      child: SvgPicture.asset(
+        config.icon ?? 'icons/${config.issuer.toLowerCase()}.svg',
+        width: 28,
+        height: 28,
+        colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn),
       ),
     );
   }
