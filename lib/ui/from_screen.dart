@@ -115,7 +115,7 @@ class _FromScreenState extends State<FromScreen> {
                 config.type = value!;
               });
             }),
-            buildTextField(issuerController, '发行方', suffixIcon: DySvgWidget(issuerController)),
+            buildTextField(issuerController, '发行方', suffixIcon: DySvgWidget(issuerController, (icon) => config.icon = icon)),
             buildTextField(accountController, '用户名'),
             buildTextField(secretController, '密钥'),
             switch (config.type) {
@@ -147,8 +147,9 @@ class _FromScreenState extends State<FromScreen> {
 
 class DySvgWidget extends StatefulWidget {
   final TextEditingController controller;
+  final Function(String) onIconChange;
 
-  const DySvgWidget(this.controller, {super.key});
+  const DySvgWidget(this.controller, this.onIconChange, {super.key});
 
   @override
   State<DySvgWidget> createState() => _DySvgWidgetState();
@@ -161,6 +162,7 @@ class _DySvgWidgetState extends State<DySvgWidget> {
     if (!await assetExists(icon)) {
       icon = 'icons/passkey.svg';
     }
+    widget.onIconChange.call(icon);
     setState(() {});
   };
 
@@ -189,9 +191,7 @@ class _DySvgWidgetState extends State<DySvgWidget> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        showDevDialog(context);
-      },
+      onTap: () {},
       child: Container(
         height: 48,
         width: 48,

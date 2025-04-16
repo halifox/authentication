@@ -197,7 +197,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
       width: 48,
       alignment: Alignment.center,
       decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(12)),
-      child: SvgPicture.asset(config.icon ?? 'icons/passkey.svg', width: 28, height: 28, colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn)),
+      child: SvgPicture.asset(config.icon, width: 28, height: 28, colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn)),
     );
   }
 

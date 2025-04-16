@@ -36,7 +36,7 @@ class AuthConfig {
   int counter;
   String pin;
   bool isBase32;
-  String? icon;
+  String icon;
 
   //neglect
   String key;
@@ -53,7 +53,7 @@ class AuthConfig {
     this.counter = 0,
     this.pin = '',
     this.isBase32 = true,
-    this.icon = null,
+    this.icon = 'icons/passkey.svg',
     this.key = '',
   });
 
@@ -121,7 +121,7 @@ class AuthConfig {
       counter: map['counter'] as int,
       pin: map['pin'] as String,
       isBase32: map['isBase32'] as bool,
-      icon: map['icon'] as String?,
+      icon: map['icon'] as String,
     );
   }
 
