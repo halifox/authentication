@@ -87,7 +87,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
   }
 
   onEdit() {
-    Navigator.pushNamed(context, '/AuthFromPage', arguments: config);
+    Navigator.pushNamed(context, '/from', arguments: config);
   }
 
   onDelete() {

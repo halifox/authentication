@@ -21,9 +21,9 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     return DynamicColorBuilder(
-      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+      builder: (lightDynamic, darkDynamic) {
         return MaterialApp(
           title: 'Purity Auth',
           debugShowCheckedModeBanner: false,
@@ -31,14 +31,14 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(brightness: Brightness.light, colorScheme: lightDynamic),
           darkTheme: ThemeData(brightness: Brightness.dark, colorScheme: darkDynamic),
           initialRoute: '/',
-          routes: <String, WidgetBuilder>{
-            '/': (BuildContext context) => const HomeScreen(),
-            '/AuthAddPage': (BuildContext context) => const AddScreen(),
-            '/AuthScanPage': (BuildContext context) => const ScanScreen(),
-            '/AuthFromPage': (BuildContext context) => const FromScreen(),
-            '/AuthSettingsPage': (BuildContext context) => const SettingsScreen(),
+          routes: {
+            '/': (context) => const HomeScreen(),
+            '/add': (context) => const AddScreen(),
+            '/scan': (context) => const ScanScreen(),
+            '/from': (context) => const FromScreen(),
+            '/settings': (context) => const SettingsScreen(),
           },
-          navigatorObservers: <NavigatorObserver>[SwipeActionNavigatorObserver()],
+          navigatorObservers: [SwipeActionNavigatorObserver()],
         );
       },
     );

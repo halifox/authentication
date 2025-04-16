@@ -17,9 +17,9 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
-  List<RecordSnapshot<String, dynamic>> data = [];
-  StreamSubscription? subscription;
+class _HomeScreenState extends State<HomeScreen> {
+  var data = [];
+  var subscription;
 
   @override
   void initState() {
@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     setSystemUIOverlayStyle(context);
     return Scaffold(
       appBar: TopBar(context, 'Purity Auth', leftIcon: Icons.settings, leftOnPressed: toSettingsPage, rightIcon: Icons.add, rightOnPressed: toAuthAddPage),
@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 140),
         itemCount: data.length,
-        itemBuilder: (BuildContext context, int index) {
+        itemBuilder: (context, index) {
           final AuthConfig config = AuthConfig.fromJson(data[index]);
           return HomeItemWidget(key: ValueKey(config.key), config: config);
         },
@@ -75,10 +75,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void toAuthAddPage(BuildContext context) {
-    Navigator.pushNamed(context, '/AuthAddPage');
+    Navigator.pushNamed(context, '/add');
   }
 
   void toSettingsPage(BuildContext context) {
-    Navigator.pushNamed(context, '/AuthSettingsPage');
+    Navigator.pushNamed(context, '/settings');
   }
 }

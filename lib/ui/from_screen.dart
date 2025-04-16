@@ -14,8 +14,8 @@ class FromScreen extends StatefulWidget {
   State<FromScreen> createState() => _FromScreenState();
 }
 
-class _FromScreenState extends State<FromScreen> with WidgetsBindingObserver {
-  late final AuthConfig config = ModalRoute.of(context)?.settings.arguments as AuthConfig? ?? AuthConfig(isVerify: false);
+class _FromScreenState extends State<FromScreen> {
+  late final AuthConfig config = ModalRoute.of(context)?.settings.arguments as AuthConfig? ?? AuthConfig();
 
   late final TextEditingController issuerController = TextEditingController(text: config.issuer);
 
@@ -31,6 +31,21 @@ class _FromScreenState extends State<FromScreen> with WidgetsBindingObserver {
 
   late final TextEditingController counterController = TextEditingController(text: config.counter.toString());
 
+  final Map<Type, String> typeLabels = <Type, String>{Type.totp: '基于时间 (TOTP)', Type.hotp: '基于计数器 (HOTP)', Type.motp: 'Mobile-OTP (mOTP)'};
+
+  final Map<Algorithm, String> algorithmLabels = <Algorithm, String>{Algorithm.SHA1: 'SHA1', Algorithm.SHA256: 'SHA256', Algorithm.SHA512: 'SHA512'};
+
+  @override
+  void initState() {
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   void onSave(BuildContext context) async {
     try {
       config
@@ -44,13 +59,11 @@ class _FromScreenState extends State<FromScreen> with WidgetsBindingObserver {
       config.verify();
       if (config.key.isEmpty) {
         authStore.add(db, config.toJson());
-        Navigator.popUntil(context, (route) => route.settings.name == '/');
-        showAlertDialog(context, '结果', '添加成功');
       } else {
         authStore.record(config.key).update(db, config.toJson());
-        Navigator.popUntil(context, (route) => route.settings.name == '/');
-        showAlertDialog(context, '结果', '更新成功');
       }
+      Navigator.popUntil(context, (route) => route.settings.name == '/');
+      showAlertDialog(context, '结果', '更新成功');
     } on ArgumentError catch (e) {
       showAlertDialog(context, '参数错误', e.message as String?);
     } on FormatException catch (e) {
@@ -120,8 +133,4 @@ class _FromScreenState extends State<FromScreen> with WidgetsBindingObserver {
       ),
     );
   }
-
-  final Map<Type, String> typeLabels = <Type, String>{Type.totp: '基于时间 (TOTP)', Type.hotp: '基于计数器 (HOTP)', Type.motp: 'Mobile-OTP (mOTP)'};
-
-  final Map<Algorithm, String> algorithmLabels = <Algorithm, String>{Algorithm.SHA1: 'SHA1', Algorithm.SHA256: 'SHA256', Algorithm.SHA512: 'SHA512'};
 }

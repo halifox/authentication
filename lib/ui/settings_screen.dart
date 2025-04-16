@@ -10,15 +10,15 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObserver {
-  late final List<List<dynamic>> options = [
+class _SettingsScreenState extends State<SettingsScreen> {
+  late final options = [
     ['biometricUnlock', '生物识别解锁'],
     ['isShowCaptchaOnTap', '轻触显示验证码'],
     ['isCopyCaptchaOnTap', '轻触复制验证码'],
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     return Scaffold(
       appBar: TopBar(context, '设置'),
       body: GridView.builder(
@@ -26,35 +26,36 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
         padding: const EdgeInsets.symmetric(horizontal: 16),
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 90),
         itemCount: options.length,
-        itemBuilder: (BuildContext context, int index) {
-          final List<dynamic> option = options[index];
-          return _Button(option[0] as String, option[1] as String);
+        itemBuilder: (context, index) {
+          final item = options[index];
+          return HorizontalBarSelectionButton(item[0], item[1]);
         },
       ),
     );
   }
 }
 
-class _Button extends StatefulWidget {
-  const _Button(this.dbKey, this.label);
+class HorizontalBarSelectionButton extends StatefulWidget {
+  const HorizontalBarSelectionButton(this.dbKey, this.label, {super.key});
 
-  final String dbKey;
-  final String label;
+  final dbKey;
+  final label;
 
   @override
-  State<_Button> createState() => _ButtonState();
+  State<HorizontalBarSelectionButton> createState() => _HorizontalBarSelectionButtonState();
 }
 
-class _ButtonState extends State<_Button> {
-  bool enable = false;
+class _HorizontalBarSelectionButtonState extends State<HorizontalBarSelectionButton> {
+  var enable = false;
 
   initData() async {
     final settings = await settingsStore.record('settings').getSnapshot(db);
     if (settings == null) {
       return;
     }
-    enable = settings[widget.dbKey] as bool;
-    setState(() {});
+    setState(() {
+      enable = settings[widget.dbKey] as bool;
+    });
   }
 
   @override
@@ -81,7 +82,6 @@ class _ButtonState extends State<_Button> {
               setState(() {
                 enable = !enable;
               });
-              // settingsStore.record(widget.dbKey).put(db, enable);
               settingsStore.record('settings').update(db, {widget.dbKey: enable});
             },
             child: Container(

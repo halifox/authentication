@@ -1,17 +1,10 @@
 import 'package:flutter/material.dart';
 
-void defaultLeftOnPressed(BuildContext context) {
+void defaultLeftOnPressed(context) {
   Navigator.pop(context);
 }
 
-PreferredSize TopBar(
-  BuildContext context,
-  String title, {
-  IconData? leftIcon = Icons.arrow_back,
-  void Function(BuildContext)? leftOnPressed = defaultLeftOnPressed,
-  IconData? rightIcon,
-  void Function(BuildContext)? rightOnPressed,
-}) {
+PreferredSize TopBar(context, title, {leftIcon = Icons.arrow_back, leftOnPressed = defaultLeftOnPressed, rightIcon, rightOnPressed}) {
   return PreferredSize(
     preferredSize: const Size.fromHeight(100),
     child: SafeArea(
@@ -35,7 +28,7 @@ PreferredSize TopBar(
 /// [icon] 图标，类型为 [IconData?]。
 /// [onPressed] 点击回调，类型为 [VoidCallback?]。
 /// 返回值为图标按钮的 [Widget] 组件。
-Widget TopBarIconButton(BuildContext context, IconData? icon, VoidCallback? onPressed) {
+Widget TopBarIconButton(context, icon, onPressed) {
   return Visibility(
     visible: icon != null,
     replacement: const SizedBox(width: 64, height: 64),

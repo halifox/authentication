@@ -201,10 +201,10 @@ class _ScanScreenState extends State<ScanScreen> {
           title: const Text('权限不足'),
           content: const Text('需要相机权限'),
           actions: <Widget>[
-            ElevatedButton(onPressed: () => Navigator.popUntil(context, (Route route) => route.settings.name == '/AuthAddPage'), child: const Text('取消')),
+            ElevatedButton(onPressed: () => Navigator.popUntil(context, (Route route) => route.settings.name == '/add'), child: const Text('取消')),
             FilledButton(
               onPressed: () {
-                Navigator.popUntil(context, (Route route) => route.settings.name == '/AuthAddPage');
+                Navigator.popUntil(context, (Route route) => route.settings.name == '/add');
                 openAppSettings();
               },
               child: const Text('申请相机权限'),

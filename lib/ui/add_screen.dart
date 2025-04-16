@@ -17,7 +17,7 @@ class AddScreen extends StatefulWidget {
   State<AddScreen> createState() => _AddScreenState();
 }
 
-class _AddScreenState extends State<AddScreen> with WidgetsBindingObserver {
+class _AddScreenState extends State<AddScreen> {
   late final options = [
     [Icons.camera_enhance, '扫描二维码', scanQrCode],
     [Icons.photo_library, '上传二维码', uploadQrCode],
@@ -26,15 +26,15 @@ class _AddScreenState extends State<AddScreen> with WidgetsBindingObserver {
     [Icons.format_list_numbered, '从其他应用导入', importFromApps],
   ];
 
-   scanQrCode(BuildContext context) {
+  scanQrCode(context) {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
-      Navigator.pushNamed(context, '/AuthScanPage');
+      Navigator.pushNamed(context, '/scan');
     } else {
       showAlertDialog(context, '提示', '该功能当前仅支持 Android 和 iOS 平台。');
     }
   }
 
-   uploadQrCode(BuildContext context) async {
+  uploadQrCode(context) async {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       const XTypeGroup imageTypes = XTypeGroup(extensions: <String>['jpg', 'jpeg', 'png']);
       final XFile? selectedFile = await openFile(acceptedTypeGroups: <XTypeGroup>[imageTypes]);
@@ -79,20 +79,20 @@ class _AddScreenState extends State<AddScreen> with WidgetsBindingObserver {
     }
   }
 
-   enterKey(BuildContext context) {
-    Navigator.pushNamed(context, '/AuthFromPage');
+  enterKey(context) {
+    Navigator.pushNamed(context, '/from');
   }
 
-   restoreBackup(BuildContext context) {
+  restoreBackup(context) {
     showDevDialog(context);
   }
 
-   importFromApps(BuildContext context) {
+  importFromApps(context) {
     showDevDialog(context);
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     return Scaffold(
       appBar: TopBar(context, '添加'),
       body: GridView.builder(
@@ -100,27 +100,27 @@ class _AddScreenState extends State<AddScreen> with WidgetsBindingObserver {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 90),
         itemCount: options.length,
-        itemBuilder: (BuildContext context, int index) {
-          final List<Object> option = options[index];
-          return _Button(option[0] as IconData?, option[1] as String, option[2] as void Function(BuildContext p1)?);
+        itemBuilder: (context, index) {
+          final item = options[index];
+          return HorizontalBarButton(item[0], item[1], item[2]);
         },
       ),
     );
   }
 }
 
-class _Button extends StatefulWidget {
-  _Button(this.icon, this.label, this.onTap, {super.key});
+class HorizontalBarButton extends StatefulWidget {
+  const HorizontalBarButton(this.icon, this.label, this.onTap, {super.key});
 
-  IconData? icon;
-  String label;
-  void Function(BuildContext)? onTap;
+  final icon;
+  final label;
+  final onTap;
 
   @override
-  State<_Button> createState() => _ButtonState();
+  State<HorizontalBarButton> createState() => _HorizontalBarButtonState();
 }
 
-class _ButtonState extends State<_Button> {
+class _HorizontalBarButtonState extends State<HorizontalBarButton> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
