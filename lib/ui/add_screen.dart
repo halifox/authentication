@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:auth/library/io.dart' if (dart.library.html) 'package:auth/library/web.dart.dart';
+import 'package:auth/library/io.dart' if (dart.library.html) 'package:auth/library/web.dart';
 
 import 'package:auth/auth.dart';
 import 'package:auth/dialog.dart';
