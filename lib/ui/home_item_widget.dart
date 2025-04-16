@@ -23,17 +23,15 @@ class HomeItemWidget extends StatefulWidget {
 /// 认证项的状态类
 class _HomeItemWidgetState extends State<HomeItemWidget> {
   late AuthConfig config = widget.config;
-  late String authCode = '--------';
-  late bool biometricUnlock = false;
-  late bool isShowCaptchaOnTap = false;
-  late bool isCopyCaptchaOnTap = false;
-  late bool isShow = false;
-
-  Timer? timer;
-  Timer? showCaptchaOnTapTimer;
-
-  StreamSubscription? settingsSubscription;
-  StreamSubscription? authSubscription;
+  var code = '--------';
+  var biometricUnlock = false;
+  var isShowCaptchaOnTap = false;
+  var isCopyCaptchaOnTap = false;
+  var isShow = false;
+  var optTimer;
+  var tapTimer;
+  var settingsSubscription;
+  var authSubscription;
 
   @override
   void initState() {
@@ -50,7 +48,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
           isShow = !isShowCaptchaOnTap;
         });
       }
-      showCaptchaOnTapTimer?.cancel();
+      tapTimer?.cancel();
     });
 
     authSubscription = authStore.record(config.key).onSnapshot(db).listen((data) {
@@ -62,7 +60,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
           startOtpTimer();
         case Type.hotp:
           setState(() {
-            authCode = config.generateCodeString();
+            code = config.generateCodeString();
           });
       }
     });
@@ -73,16 +71,16 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
   void dispose() {
     unawaited(settingsSubscription?.cancel());
     unawaited(authSubscription?.cancel());
-    timer?.cancel();
-    showCaptchaOnTapTimer?.cancel();
+    optTimer?.cancel();
+    tapTimer?.cancel();
     super.dispose();
   }
 
   startOtpTimer() {
     final int remainingMilliseconds = OTP.remainingMilliseconds(intervalMilliseconds: config.intervalSeconds * 1000);
-    timer = Timer(Duration(milliseconds: remainingMilliseconds), startOtpTimer);
+    optTimer = Timer(Duration(milliseconds: remainingMilliseconds), startOtpTimer);
     setState(() {
-      authCode = config.generateCodeString();
+      code = config.generateCodeString();
     });
   }
 
@@ -93,11 +91,11 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
   onDelete() {
     showGeneralDialog(
       context: context,
-      pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+      pageBuilder: (context, animation, secondaryAnimation) {
         return AlertDialog(
           title: Text("警告"),
           content: Text("您即将删除当前的两步验证器。\n此操作将使您无法使用该验证器进行身份验证。\n请确保您已准备好其他身份验证方式以保障账户安全。"),
-          actions: <Widget>[
+          actions: [
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
@@ -123,15 +121,15 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
       setState(() {
         isShow = !isShow;
       });
-      showCaptchaOnTapTimer?.cancel();
-      showCaptchaOnTapTimer = Timer(const Duration(seconds: 10), () {
+      tapTimer?.cancel();
+      tapTimer = Timer(const Duration(seconds: 10), () {
         setState(() {
           isShow = false;
         });
       });
     }
     if (isCopyCaptchaOnTap) {
-      Clipboard.setData(ClipboardData(text: authCode));
+      Clipboard.setData(ClipboardData(text: code));
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('代码已复制'), duration: Duration(milliseconds: 1200)));
     }
@@ -188,7 +186,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
   Widget buildTopRow() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
+      children: [
         buildIconContainer(), // 图标容器
         const SizedBox(width: 16),
         buildAuthDetails(), // 认证信息
@@ -227,7 +225,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
+        children: [
           Text(
             config.issuer,
             maxLines: 1,
@@ -269,7 +267,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
   Widget buildCodeRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: authCode.characters.map((String char) => buildCodeItem(char)).toList(), // 显示每个代码项
+      children: code.characters.map((String char) => buildCodeItem(char)).toList(), // 显示每个代码项
     );
   }
 
