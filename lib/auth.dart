@@ -1,6 +1,5 @@
 import 'package:auth/otp.dart';
 import 'package:base32/base32.dart';
-import 'package:flutter/services.dart';
 import 'package:sembast/sembast.dart';
 
 /// 认证类型枚举，用于定义不同的认证方式。
@@ -37,7 +36,8 @@ class AuthConfig {
   int counter;
   String pin;
   bool isBase32;
-  String icon;
+  String? icon;
+
   //neglect
   String key;
 
@@ -53,16 +53,9 @@ class AuthConfig {
     this.counter = 0,
     this.pin = '',
     this.isBase32 = true,
-    this.icon = 'icons/passkey.svg',
+    this.icon = null,
     this.key = '',
-  }) {
-    rootBundle
-        .load('icons/${issuer.toLowerCase()}.svg')
-        .then((_) {
-          icon = 'icons/${issuer.toLowerCase()}.svg';
-        })
-        .catchError((_) {});
-  }
+  });
 
   verify() {
     if (issuer.isEmpty) {
@@ -116,6 +109,7 @@ class AuthConfig {
 
   factory AuthConfig.fromJson(RecordSnapshot<String, dynamic> map) {
     return AuthConfig(
+      key: map.key,
       scheme: map['scheme'] as String,
       type: map['type'] as String,
       issuer: map['issuer'] as String,
@@ -127,8 +121,7 @@ class AuthConfig {
       counter: map['counter'] as int,
       pin: map['pin'] as String,
       isBase32: map['isBase32'] as bool,
-      icon: map['icon'] as String,
-      key: map.key,
+      icon: map['icon'] as String?,
     );
   }
 
