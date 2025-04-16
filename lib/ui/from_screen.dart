@@ -106,39 +106,43 @@ class _FromScreenState extends State<FromScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: TopBar(context, '输入提供的密钥', rightIcon: Icons.save, rightOnPressed: onSave),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        child: Column(
-          children: [
-            buildDropdown('类型', config.type, typeLabels, (value) {
-              setState(() {
-                config.type = value!;
-              });
-            }),
-            buildTextField(issuerController, '发行方', suffixIcon: DySvgWidget(issuerController, (icon) => config.icon = icon)),
-            buildTextField(accountController, '用户名'),
-            buildTextField(secretController, '密钥'),
-            switch (config.type) {
-              'totp' => buildDropdown('算法', config.algorithm, algorithmLabels, (value) => config.algorithm = value as String),
-              'hotp' => buildDropdown('算法', config.algorithm, algorithmLabels, (value) => config.algorithm = value as String),
-              'motp' => buildTextField(pinController, 'PIN码'),
-              String() => throw UnimplementedError(),
-            },
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          child: Column(
+            children: [
+              buildDropdown('类型', config.type, typeLabels, (value) {
+                setState(() {
+                  config.type = value!;
+                });
+              }),
+              buildTextField(issuerController, '发行方', suffixIcon: DySvgWidget(issuerController, (icon) => config.icon = icon)),
+              buildTextField(accountController, '用户名'),
+              buildTextField(secretController, '密钥'),
+              switch (config.type) {
+                'totp' => buildDropdown('算法', config.algorithm, algorithmLabels, (value) => config.algorithm = value as String),
+                'hotp' => buildDropdown('算法', config.algorithm, algorithmLabels, (value) => config.algorithm = value as String),
+                'motp' => buildTextField(pinController, 'PIN码'),
+                String() => throw UnimplementedError(),
+              },
 
-            Row(
-              children: <Widget>[
-                Expanded(child: buildTextField(digitsController, '位数', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
-                Expanded(
-                  child: switch (config.type) {
-                    'totp' => buildTextField(periodController, '时间间隔(秒)', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]),
-                    'hotp' => buildTextField(counterController, '计数器', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]),
-                    'motp' => buildTextField(periodController, '时间间隔(秒)', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]),
-                    String() => throw UnimplementedError(),
-                  },
-                ),
-              ],
-            ),
-          ],
+              Row(
+                children: <Widget>[
+                  Expanded(child: buildTextField(digitsController, '位数', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
+                  Expanded(
+                    child: switch (config.type) {
+                      'totp' => buildTextField(periodController, '时间间隔(秒)', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]),
+                      'hotp' => buildTextField(counterController, '计数器', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]),
+                      'motp' => buildTextField(periodController, '时间间隔(秒)', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]),
+                      String() => throw UnimplementedError(),
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
