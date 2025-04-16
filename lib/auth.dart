@@ -55,7 +55,9 @@ class AuthConfig {
     this.isBase32 = true,
     this.icon = 'icons/passkey.svg',
     this.key = '',
-  });
+  }) {
+    icon = 'icons/${issuer.toLowerCase()}.svg';
+  }
 
   verify() {
     if (issuer.isEmpty) {

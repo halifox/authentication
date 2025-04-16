@@ -109,7 +109,7 @@ class _FromScreenState extends State<FromScreen> {
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         child: Column(
-          children: <Widget>[
+          children: [
             buildDropdown('类型', config.type, typeLabels, (value) {
               setState(() {
                 config.type = value!;
