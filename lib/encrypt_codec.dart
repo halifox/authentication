@@ -7,11 +7,20 @@ import 'package:encrypt/encrypt.dart';
 // ignore: implementation_imports
 import 'package:sembast/src/api/v2/sembast.dart';
 
-Random _random = Random.secure();
+final _random = () {
+  try {
+    // Try secure
+    return Random.secure();
+  } catch (_) {
+    return Random();
+  }
+}();
 
 /// Random bytes generator
 Uint8List _randBytes(int length) {
-  return Uint8List.fromList(List<int>.generate(length, (int i) => _random.nextInt(256)));
+  return Uint8List.fromList(
+    List<int>.generate(length, (i) => _random.nextInt(256)),
+  );
 }
 
 /// FOR DEMONSTRATION PURPOSES ONLY -- do not use in production as-is!
@@ -29,7 +38,7 @@ Uint8List _randBytes(int length) {
 ///
 /// It uses MD5 which generates a 16 bytes blob, size needed for Salsa20
 Uint8List _generateEncryptPassword(String password) {
-  final Uint8List blob = Uint8List.fromList(md5.convert(utf8.encode(password)).bytes);
+  var blob = Uint8List.fromList(md5.convert(utf8.encode(password)).bytes);
   assert(blob.length == 16);
   return blob;
 }
@@ -41,14 +50,15 @@ class _EncryptEncoder extends Converter<Object?, String> {
   _EncryptEncoder(this.salsa20);
 
   @override
-  String convert(Object? input) {
+  String convert(dynamic input) {
     // Generate random initial value
-    final Uint8List iv = _randBytes(8);
-    final String ivEncoded = base64.encode(iv);
+    final iv = _randBytes(8);
+    final ivEncoded = base64.encode(iv);
     assert(ivEncoded.length == 12);
 
     // Encode the input value
-    final String encoded = Encrypter(salsa20).encrypt(json.encode(input), iv: IV(iv)).base64;
+    final encoded =
+        Encrypter(salsa20).encrypt(json.encode(input), iv: IV(iv)).base64;
 
     // Prepend the initial value
     return '$ivEncoded$encoded';
@@ -65,13 +75,13 @@ class _EncryptDecoder extends Converter<String, Object?> {
   dynamic convert(String input) {
     // Read the initial value that was prepended
     assert(input.length >= 12);
-    final Uint8List iv = base64.decode(input.substring(0, 12));
+    final iv = base64.decode(input.substring(0, 12));
 
     // Extract the real input
     input = input.substring(12);
 
     // Decode the input
-    final decoded = json.decode(Encrypter(salsa20).decrypt64(input, iv: IV(iv)));
+    var decoded = json.decode(Encrypter(salsa20).decrypt64(input, iv: IV(iv)));
     if (decoded is Map) {
       return decoded.cast<String, Object?>();
     }
@@ -85,7 +95,7 @@ class _EncryptCodec extends Codec<Object?, String> {
   late _EncryptDecoder _decoder;
 
   _EncryptCodec(Uint8List passwordBytes) {
-    final Salsa20 salsa20 = Salsa20(Key(passwordBytes));
+    var salsa20 = Salsa20(Key(passwordBytes));
     _encoder = _EncryptEncoder(salsa20);
     _decoder = _EncryptDecoder(salsa20);
   }
@@ -98,7 +108,7 @@ class _EncryptCodec extends Codec<Object?, String> {
 }
 
 /// Our plain text signature
-const String _encryptCodecSignature = 'encrypt';
+const _encryptCodecSignature = 'encrypt';
 
 /// Create a codec to use to open a database with encrypted stored data.
 ///
@@ -121,28 +131,47 @@ const String _encryptCodecSignature = 'encrypt';
 ///
 /// // ...your database is ready to use
 /// ```
-SembastCodec getEncryptSembastCodec({required String password}) => SembastCodec(signature: _encryptCodecSignature, codec: _EncryptCodec(_generateEncryptPassword(password)));
+SembastCodec getEncryptSembastCodec({required String password}) => SembastCodec(
+  signature: _encryptCodecSignature,
+  codec: _EncryptCodec(_generateEncryptPassword(password)),
+);
 
 /// Wrap a factory to always use the codec
 class EncryptedDatabaseFactory implements DatabaseFactory {
   final DatabaseFactory databaseFactory;
   late final SembastCodec codec;
 
-  EncryptedDatabaseFactory({required this.databaseFactory, required String password}) {
+  EncryptedDatabaseFactory({
+    required this.databaseFactory,
+    required String password,
+  }) {
     codec = getEncryptSembastCodec(password: password);
   }
 
   @override
-  Future<void> deleteDatabase(String path) => databaseFactory.deleteDatabase(path);
+  Future<void> deleteDatabase(String path) =>
+      databaseFactory.deleteDatabase(path);
 
   @override
   bool get hasStorage => databaseFactory.hasStorage;
 
   /// To use with codec, null
   @override
-  Future<Database> openDatabase(String path, {int? version, OnVersionChangedFunction? onVersionChanged, DatabaseMode? mode, SembastCodec? codec}) {
+  Future<Database> openDatabase(
+      String path, {
+        int? version,
+        OnVersionChangedFunction? onVersionChanged,
+        DatabaseMode? mode,
+        SembastCodec? codec,
+      }) {
     assert(codec == null);
-    return databaseFactory.openDatabase(path, version: version, onVersionChanged: onVersionChanged, mode: mode, codec: this.codec);
+    return databaseFactory.openDatabase(
+      path,
+      version: version,
+      onVersionChanged: onVersionChanged,
+      mode: mode,
+      codec: this.codec,
+    );
   }
 
   @override
