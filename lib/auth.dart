@@ -196,7 +196,7 @@ class AuthConfig {
     return AuthConfig(
       scheme: scheme,
       type: type,
-      account: parseAccount(label, issuer),
+      account: parseAccount(label, account),
       secret: checkSecret(secret),
       issuer: parseIssuer(label, issuer),
       algorithm: algorithm,
