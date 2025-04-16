@@ -44,11 +44,11 @@ class _FromScreenState extends State<FromScreen> with WidgetsBindingObserver {
       config.verify();
       if (config.key.isEmpty) {
         authStore.add(db, config.toJson());
-        Navigator.popUntil(context, (Route route) => route.settings.name == '/');
+        Navigator.popUntil(context, (route) => route.settings.name == '/');
         showAlertDialog(context, '结果', '添加成功');
       } else {
         authStore.record(config.key).update(db, config.toJson());
-        Navigator.popUntil(context, (Route route) => route.settings.name == '/');
+        Navigator.popUntil(context, (route) => route.settings.name == '/');
         showAlertDialog(context, '结果', '更新成功');
       }
     } on ArgumentError catch (e) {
