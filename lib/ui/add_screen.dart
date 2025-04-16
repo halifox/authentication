@@ -41,15 +41,15 @@ class _AddScreenState extends State<AddScreen> {
   uploadQrCode(context) async {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       const XTypeGroup imageTypes = XTypeGroup(extensions: <String>['jpg', 'jpeg', 'png']);
-      final XFile? selectedFile = await openFile(acceptedTypeGroups: <XTypeGroup>[imageTypes]);
+      var selectedFile = await openFile(acceptedTypeGroups: <XTypeGroup>[imageTypes]);
 
       if (selectedFile == null) {
         return;
       }
 
-      final InputImage inputImage = InputImage.fromFilePath(selectedFile.path);
-      final BarcodeScanner barcodeScanner = BarcodeScanner(formats: <BarcodeFormat>[BarcodeFormat.qrCode]);
-      final List<Barcode> barcodes = await barcodeScanner.processImage(inputImage);
+      var inputImage = InputImage.fromFilePath(selectedFile.path);
+      var barcodeScanner = BarcodeScanner(formats: <BarcodeFormat>[BarcodeFormat.qrCode]);
+      var barcodes = await barcodeScanner.processImage(inputImage);
 
       //todo 这里弹出一个新的窗口 用于确认扫描结果 如果扫描到多个 可以手动选择
       if (barcodes.isEmpty) {
@@ -62,9 +62,9 @@ class _AddScreenState extends State<AddScreen> {
       }
 
       try {
-        final Barcode barcode = barcodes.first;
-        final String rawValue = barcode.rawValue ?? '';
-        final AuthConfig config = AuthConfig.parse(rawValue);
+        var barcode = barcodes.first;
+        var rawValue = barcode.rawValue ?? '';
+        var config = AuthConfig.parse(rawValue);
         authStore.add(db, config.toJson());
         return;
       } on ArgumentError catch (e) {
@@ -88,7 +88,7 @@ class _AddScreenState extends State<AddScreen> {
 
   restoreBackup(context) async {
     const XTypeGroup imageTypes = XTypeGroup(extensions: <String>['pa']);
-    final XFile? selectedFile = await openFile(acceptedTypeGroups: <XTypeGroup>[imageTypes]);
+    var selectedFile = await openFile(acceptedTypeGroups: <XTypeGroup>[imageTypes]);
     if (selectedFile == null) {
       return;
     }
@@ -100,8 +100,16 @@ class _AddScreenState extends State<AddScreen> {
     showAlertDialog(context, "导入成功", "导入完成");
   }
 
+  String generateFileNameWithTime(String prefix, String extension) {
+    var now = DateTime.now();
+    var formatted = '${now.year}${_twoDigits(now.month)}${_twoDigits(now.day)}_${_twoDigits(now.hour)}${_twoDigits(now.minute)}${_twoDigits(now.second)}';
+    return '$prefix\_$formatted.$extension';
+  }
+
+  String _twoDigits(int n) => n.toString().padLeft(2, '0');
+
   backup(context) async {
-    var filename = 'backup-${DateTime.now().millisecondsSinceEpoch}.pa';
+    var filename = generateFileNameWithTime('backup', 'pa');
     var records = await authStore.find(db);
     var data =
         records.map((e) {
@@ -111,18 +119,18 @@ class _AddScreenState extends State<AddScreen> {
         }).toList();
     var json = jsonEncode(data);
     if (kIsWeb) {
-      final bytes = utf8.encode(json);
-      final blob = html.Blob([Uint8List.fromList(bytes)]);
-      final url = html.Url.createObjectUrlFromBlob(blob);
+      var bytes = utf8.encode(json);
+      var blob = html.Blob([Uint8List.fromList(bytes)]);
+      var url = html.Url.createObjectUrlFromBlob(blob);
       html.AnchorElement(href: url)
         ..setAttribute("download", filename)
         ..click();
       html.Url.revokeObjectUrl(url);
       showAlertDialog(context, "导出成功", "文件位置:查看浏览器下载记录");
     } else {
-      final Directory dir = await getApplicationDocumentsDirectory();
+      var dir = await getApplicationDocumentsDirectory();
       await dir.create(recursive: true);
-      final String path = join(dir.path, filename);
+      var path = join(dir.path, filename);
       var file = File(path);
       await file.writeAsString(json);
       showAlertDialog(context, "导出成功", "文件位置:${path}");
@@ -139,7 +147,7 @@ class _AddScreenState extends State<AddScreen> {
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 90),
         itemCount: options.length,
         itemBuilder: (context, index) {
-          final item = options[index];
+          var item = options[index];
           return HorizontalBarButton(item[0], item[1], item[2]);
         },
       ),
