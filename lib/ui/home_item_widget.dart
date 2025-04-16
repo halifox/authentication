@@ -42,11 +42,9 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
       biometricUnlock = settings['biometricUnlock'] as bool;
       isShowCaptchaOnTap = settings['isShowCaptchaOnTap'] as bool;
       isCopyCaptchaOnTap = settings['isCopyCaptchaOnTap'] as bool;
-      if (mounted) {
-        setState(() {
-          isShow = !isShowCaptchaOnTap;
-        });
-      }
+      setState(() {
+        isShow = !isShowCaptchaOnTap;
+      });
       tapTimer?.cancel();
     });
 

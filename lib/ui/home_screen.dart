@@ -24,11 +24,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     subscription = authStore.query().onSnapshots(db).listen((data) async {
-      if (mounted) {
-        setState(() {
-          this.data = data;
-        });
-      }
+      setState(() {
+        this.data = data;
+      });
     });
     super.initState();
   }
