@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:html' as html;
 import 'dart:io';
 
 import 'package:auth/auth.dart';
@@ -8,6 +10,8 @@ import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
 
 class AddScreen extends StatefulWidget {
@@ -21,9 +25,9 @@ class _AddScreenState extends State<AddScreen> {
   late final options = [
     [Icons.camera_enhance, '扫描二维码', scanQrCode],
     [Icons.photo_library, '上传二维码', uploadQrCode],
-    [Icons.edit, '输入提供的密钥', enterKey],
-    [Icons.restore, '从备份中恢复', restoreBackup],
-    [Icons.format_list_numbered, '从其他应用导入', importFromApps],
+    [Icons.keyboard, '输入提供的密钥', enterKey],
+    [Icons.file_upload_outlined, '导入', restoreBackup],
+    [Icons.file_download_outlined, '导出', backup],
   ];
 
   scanQrCode(context) {
@@ -40,7 +44,6 @@ class _AddScreenState extends State<AddScreen> {
       final XFile? selectedFile = await openFile(acceptedTypeGroups: <XTypeGroup>[imageTypes]);
 
       if (selectedFile == null) {
-        showAlertDialog(context, '上传二维码', '未选择图片');
         return;
       }
 
@@ -83,12 +86,42 @@ class _AddScreenState extends State<AddScreen> {
     Navigator.pushNamed(context, '/from');
   }
 
-  restoreBackup(context) {
-    showDevDialog(context);
+  restoreBackup(context) async {
+    const XTypeGroup imageTypes = XTypeGroup(extensions: <String>['pa']);
+    final XFile? selectedFile = await openFile(acceptedTypeGroups: <XTypeGroup>[imageTypes]);
+    if (selectedFile == null) {
+      return;
+    }
+    var json = await selectedFile.readAsString();
+    var data = jsonDecode(json) as List;
+    for (var item in data) {
+      authStore.add(db, item);
+    }
+    showAlertDialog(context, "导入成功", "导入完成 ${data.length} 条");
   }
 
-  importFromApps(context) {
-    showDevDialog(context);
+  backup(context) async {
+    var filename = 'backup-${DateTime.now().millisecondsSinceEpoch}.pa';
+    var records = await authStore.find(db);
+    var data = records.values.toList();
+    var json = jsonEncode(data);
+    if (kIsWeb) {
+      final bytes = utf8.encode(json);
+      final blob = html.Blob([Uint8List.fromList(bytes)]);
+      final url = html.Url.createObjectUrlFromBlob(blob);
+      html.AnchorElement(href: url)
+        ..setAttribute("download", filename)
+        ..click();
+      html.Url.revokeObjectUrl(url);
+      showAlertDialog(context, "导出成功", "文件位置:查看浏览器下载记录");
+    } else {
+      final Directory dir = await getApplicationDocumentsDirectory();
+      await dir.create(recursive: true);
+      final String path = join(dir.path, filename);
+      var file = File(path);
+      await file.writeAsString(json);
+      showAlertDialog(context, "导出成功", "文件位置:${path}");
+    }
   }
 
   @override
