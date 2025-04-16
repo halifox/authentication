@@ -1,13 +1,13 @@
 import 'dart:async';
 
+import 'package:auth/auth.dart';
+import 'package:auth/dialog.dart';
+import 'package:auth/otp.dart';
+import 'package:auth/repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
-import 'package:auth/auth.dart';
-import 'package:auth/repository.dart';
-import 'package:auth/dialog.dart';
-import 'package:auth/otp.dart';
 import 'package:sembast/sembast.dart';
 
 /// 认证项小部件

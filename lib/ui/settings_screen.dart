@@ -1,6 +1,6 @@
 import 'package:auth/repository.dart';
-import 'package:flutter/material.dart';
 import 'package:auth/top_bar.dart';
+import 'package:flutter/material.dart';
 import 'package:sembast/sembast.dart';
 
 class SettingsScreen extends StatefulWidget {

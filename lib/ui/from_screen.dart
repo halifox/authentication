@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:auth/auth.dart';
-import 'package:auth/repository.dart';
 import 'package:auth/dialog.dart';
 import 'package:auth/otp.dart';
+import 'package:auth/repository.dart';
 import 'package:auth/top_bar.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sembast/sembast.dart';
 
 class FromScreen extends StatefulWidget {
@@ -37,7 +37,6 @@ class _FromScreenState extends State<FromScreen> {
 
   @override
   void initState() {
-
     super.initState();
   }
 

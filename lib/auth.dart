@@ -1,5 +1,5 @@
-import 'package:base32/base32.dart';
 import 'package:auth/otp.dart';
+import 'package:base32/base32.dart';
 import 'package:sembast/sembast.dart';
 
 enum Scheme { otpauth }
@@ -103,7 +103,7 @@ class AuthConfig {
     }
   }
 
-   Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'scheme': scheme.index,
       'type': type.index,
@@ -118,7 +118,6 @@ class AuthConfig {
       'isBase32Encoded': isBase32Encoded,
     };
   }
-
 
   factory AuthConfig.fromJson(RecordSnapshot<String, dynamic> map) {
     return AuthConfig(

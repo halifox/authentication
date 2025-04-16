@@ -121,10 +121,7 @@ const String _encryptCodecSignature = 'encrypt';
 ///
 /// // ...your database is ready to use
 /// ```
-SembastCodec getEncryptSembastCodec({required String password}) => SembastCodec(
-      signature: _encryptCodecSignature,
-      codec: _EncryptCodec(_generateEncryptPassword(password)),
-    );
+SembastCodec getEncryptSembastCodec({required String password}) => SembastCodec(signature: _encryptCodecSignature, codec: _EncryptCodec(_generateEncryptPassword(password)));
 
 /// Wrap a factory to always use the codec
 class EncryptedDatabaseFactory implements DatabaseFactory {

@@ -1,14 +1,13 @@
-import 'package:dynamic_color/dynamic_color.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_swipe_action_cell/core/swipe_action_navigator_observer.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:auth/repository.dart';
 import 'package:auth/ui/add_screen.dart';
 import 'package:auth/ui/from_screen.dart';
 import 'package:auth/ui/home_screen.dart';
-import 'package:auth/repository.dart';
 import 'package:auth/ui/scan_screen.dart';
 import 'package:auth/ui/settings_screen.dart';
+import 'package:dynamic_color/dynamic_color.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_swipe_action_cell/core/swipe_action_navigator_observer.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,13 +1,13 @@
 import 'dart:io';
 
+import 'package:auth/auth.dart';
+import 'package:auth/dialog.dart';
+import 'package:auth/repository.dart';
+import 'package:auth/top_bar.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
-import 'package:auth/auth.dart';
-import 'package:auth/repository.dart';
-import 'package:auth/dialog.dart';
-import 'package:auth/top_bar.dart';
 import 'package:sembast/sembast.dart';
 
 class AddScreen extends StatefulWidget {

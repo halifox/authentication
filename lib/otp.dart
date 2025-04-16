@@ -19,14 +19,7 @@ class OTP {
   /// 以毫秒为单位获取当前时间，转换为秒并按间隔除以在间隔的每次迭代中获取代码。间隔 1 与将时间传递到 HOTPCode 函数中相同。
   ///
   /// 用于更改提供的代码长度（默认 6）、间隔（默认 30）和哈希算法（默认 SHA256）的可选参数。这些设置默认为 RFC 标准，但可以更改。如果字符串不是 Base32 机密，则抛出 FormatException。
-  static int generateTOTPCode({
-    required String secret,
-    int? unixMilliseconds,
-    int digits = 6,
-    int intervalSeconds = 30,
-    Algorithm algorithm = Algorithm.SHA256,
-    bool isBase32 = false,
-  }) {
+  static int generateTOTPCode({required String secret, int? unixMilliseconds, int digits = 6, int intervalSeconds = 30, Algorithm algorithm = Algorithm.SHA256, bool isBase32 = false}) {
     unixMilliseconds ??= DateTime.now().millisecondsSinceEpoch;
     if (intervalSeconds < 1) {
       throw ArgumentError('intervalSeconds must be positive.');
@@ -46,14 +39,7 @@ class OTP {
   /// 以毫秒为单位获取当前时间，转换为秒并按间隔除以在间隔的每次迭代中获取代码。间隔 1 与将时间传递到 HOTPCode 函数中相同。
   ///
   /// 用于更改提供的代码长度（默认 6）、间隔（默认 30）和哈希算法（默认 SHA256）的可选参数。这些设置默认为 RFC 标准，但可以更改。如果字符串不是 Base32 机密，则抛出 FormatException。
-  static String generateTOTPCodeString({
-    required String secret,
-    int? unixMilliseconds,
-    int digits = 6,
-    int intervalSeconds = 30,
-    Algorithm algorithm = Algorithm.SHA256,
-    bool isBase32 = false,
-  }) {
+  static String generateTOTPCodeString({required String secret, int? unixMilliseconds, int digits = 6, int intervalSeconds = 30, Algorithm algorithm = Algorithm.SHA256, bool isBase32 = false}) {
     return '${generateTOTPCode(secret: secret, unixMilliseconds: unixMilliseconds, digits: digits, intervalSeconds: intervalSeconds, algorithm: algorithm, isBase32: isBase32)}'.padLeft(digits, '0');
   }
 
@@ -61,13 +47,7 @@ class OTP {
   ///
   /// This function does not increment for you.
   /// 用于更改提供的代码长度（默认 6）和散列算法（默认 SHA1）的可选参数 这些设置默认为 RFC 标准，但可以更改。如果字符串不是 Base32 机密，则抛出 FormatException。
-  static int generateHOTPCode({
-    required String secret,
-    required int counter,
-    int digits = 6,
-    Algorithm algorithm = Algorithm.SHA1,
-    bool isBase32 = false,
-  }) {
+  static int generateHOTPCode({required String secret, required int counter, int digits = 6, Algorithm algorithm = Algorithm.SHA1, bool isBase32 = false}) {
     return _generateCode(secret, counter, digits, getHashFunction(algorithm), getByteLength(algorithm), isHOTP: true, isBase32: isBase32);
   }
 
@@ -75,23 +55,11 @@ class OTP {
   ///
   /// This function does not increment for you.
   /// 用于更改提供的代码长度（默认 6）和散列算法（默认 SHA1）的可选参数 这些设置默认为 RFC 标准，但可以更改。如果字符串不是 Base32 机密，则抛出 FormatException。
-  static String generateHOTPCodeString({
-    required String secret,
-    required int counter,
-    int digits = 6,
-    Algorithm algorithm = Algorithm.SHA1,
-    bool isBase32 = false,
-  }) {
+  static String generateHOTPCodeString({required String secret, required int counter, int digits = 6, Algorithm algorithm = Algorithm.SHA1, bool isBase32 = false}) {
     return '${generateHOTPCode(secret: secret, counter: counter, digits: digits, algorithm: algorithm, isBase32: isBase32)}'.padLeft(digits, '0');
   }
 
-  static String generateMOTPCodeString({
-    required String secret,
-    required String pin,
-    int intervalSeconds = 10,
-    int digits = 6,
-    int? unixMilliseconds,
-  }) {
+  static String generateMOTPCodeString({required String secret, required String pin, int intervalSeconds = 10, int digits = 6, int? unixMilliseconds}) {
     unixMilliseconds ??= DateTime.now().millisecondsSinceEpoch;
     if (intervalSeconds < 1) {
       throw ArgumentError('intervalSeconds must be positive.');
@@ -219,17 +187,9 @@ class OTP {
     }
   }
 
-  static const Map<Algorithm, crypto.Hash> HashFunctions = <Algorithm, crypto.Hash>{
-    Algorithm.SHA256: crypto.sha256,
-    Algorithm.SHA512: crypto.sha512,
-    Algorithm.SHA1: crypto.sha1,
-  };
+  static const Map<Algorithm, crypto.Hash> HashFunctions = <Algorithm, crypto.Hash>{Algorithm.SHA256: crypto.sha256, Algorithm.SHA512: crypto.sha512, Algorithm.SHA1: crypto.sha1};
 
-  static const Map<Algorithm, int> ByteLengths = <Algorithm, int>{
-    Algorithm.SHA256: 32,
-    Algorithm.SHA512: 64,
-    Algorithm.SHA1: 20,
-  };
+  static const Map<Algorithm, int> ByteLengths = <Algorithm, int>{Algorithm.SHA256: 32, Algorithm.SHA512: 64, Algorithm.SHA1: 20};
 
   ///获取指定算法的 Hash 函数
   static crypto.Hash getHashFunction(Algorithm algorithm) {
@@ -243,8 +203,4 @@ class OTP {
 }
 
 /// 用于生成一次性密码代码的哈希算法
-enum Algorithm {
-  SHA1,
-  SHA256,
-  SHA512,
-}
+enum Algorithm { SHA1, SHA256, SHA512 }

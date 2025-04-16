@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:auth/auth.dart';
+import 'package:auth/repository.dart';
+import 'package:auth/top_bar.dart';
+import 'package:auth/ui/home_item_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:auth/auth.dart';
-import 'package:auth/repository.dart';
-import 'package:auth/ui/home_item_widget.dart';
-import 'package:auth/top_bar.dart';
 import 'package:sembast/sembast.dart';
 
 class HomeScreen extends StatefulWidget {
