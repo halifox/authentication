@@ -95,15 +95,20 @@ class _AddScreenState extends State<AddScreen> {
     var json = await selectedFile.readAsString();
     var data = jsonDecode(json) as List;
     for (var item in data) {
-      authStore.add(db, item);
+      authStore.record(item['key']).put(db, item);
     }
-    showAlertDialog(context, "导入成功", "导入完成 ${data.length} 条");
+    showAlertDialog(context, "导入成功", "导入完成");
   }
 
   backup(context) async {
     var filename = 'backup-${DateTime.now().millisecondsSinceEpoch}.pa';
     var records = await authStore.find(db);
-    var data = records.values.toList();
+    var data =
+        records.map((e) {
+          var map = Map.from(e.value);
+          map['key'] = e.key;
+          return map;
+        }).toList();
     var json = jsonEncode(data);
     if (kIsWeb) {
       final bytes = utf8.encode(json);
