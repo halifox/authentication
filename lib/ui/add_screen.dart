@@ -60,7 +60,7 @@ class _AddScreenState extends State<AddScreen> {
         showAlertDialog(context, '提示', '该功能当前仅支持 Android 和 iOS 平台。');
       }
     } on ArgumentError catch (e) {
-      showAlertDialog(context, '参数错误', e.message as String?);
+      showAlertDialog(context, '参数错误', e.message);
       return;
     } on FormatException catch (e) {
       showAlertDialog(context, '格式错误', e.message);
