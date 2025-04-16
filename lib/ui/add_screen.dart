@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'dart:html' as html;
 import 'dart:io';
+
+import 'package:auth/library/io.dart' if (dart.library.html) 'package:auth/library/web.dart.dart';
 
 import 'package:auth/auth.dart';
 import 'package:auth/dialog.dart';
@@ -10,8 +11,6 @@ import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
 
 class AddScreen extends StatefulWidget {
@@ -50,7 +49,7 @@ class _AddScreenState extends State<AddScreen> {
           return;
         }
         var inputImage = InputImage.fromFilePath(selectedFile.path);
-        var barcodeScanner = BarcodeScanner(formats: <BarcodeFormat>[BarcodeFormat.qrCode]);
+        var barcodeScanner = BarcodeScanner(formats: [BarcodeFormat.qrCode]);
         var barcodes = await barcodeScanner.processImage(inputImage);
         var barcode = barcodes[0];
         var rawValue = barcode.rawValue ?? '';
@@ -108,23 +107,7 @@ class _AddScreenState extends State<AddScreen> {
             return map;
           }).toList();
       var json = jsonEncode(data);
-      if (kIsWeb) {
-        var bytes = utf8.encode(json);
-        var blob = html.Blob([Uint8List.fromList(bytes)]);
-        var url = html.Url.createObjectUrlFromBlob(blob);
-        html.AnchorElement(href: url)
-          ..setAttribute("download", filename)
-          ..click();
-        html.Url.revokeObjectUrl(url);
-        showAlertDialog(context, "导出成功", "文件位置:查看浏览器下载记录");
-      } else {
-        var dir = await getApplicationDocumentsDirectory();
-        await dir.create(recursive: true);
-        var path = join(dir.path, filename);
-        var file = File(path);
-        await file.writeAsString(json);
-        showAlertDialog(context, "导出成功", "文件位置:${path}");
-      }
+      await createBackupImpl(context, json, filename);
     } catch (e) {
       showAlertDialog(context, '错误', e.toString());
     }
