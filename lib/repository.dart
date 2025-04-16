@@ -12,25 +12,28 @@ import 'package:sembast_web/sembast_web.dart';
 typedef Listener = void Function(List<AuthConfig>);
 
 final StoreRef<String, Map<String, Object?>> authStore = stringMapStoreFactory.store();
-final StoreRef<String, Object?> settingsStore = StoreRef<String, Object?>('settings');
+final StoreRef<String, Map<String, Object?>> settingsStore = stringMapStoreFactory.store('settings');
 late final Database db;
 
 initDatabase() async {
   if (kIsWeb) {
-    db = await EncryptedDatabaseFactory(databaseFactory: databaseFactoryWeb, password: '99999').openDatabase('auth');
+    if (kDebugMode) {
+      db = await databaseFactoryWeb.openDatabase('auth');
+    } else {
+      db = await EncryptedDatabaseFactory(databaseFactory: databaseFactoryWeb, password: '99999').openDatabase('auth');
+    }
   } else {
     final Directory dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
     final String path = join(dir.path, 'auth');
-    // db = await EncryptedDatabaseFactory(databaseFactory: databaseFactoryIo, password: '99999').openDatabase(path);
-    db = await databaseFactoryIo.openDatabase(path);
+    if (kDebugMode) {
+      db = await databaseFactoryIo.openDatabase(path);
+    } else {
+      db = await EncryptedDatabaseFactory(databaseFactory: databaseFactoryIo, password: '99999').openDatabase(path);
+    }
   }
-
-  await settingsStore.record('biometricUnlock').put(db, false, ifNotExists: true);
-  await settingsStore.record('isShowCaptchaOnTap').put(db, false, ifNotExists: true);
-  await settingsStore.record('isCopyCaptchaOnTap').put(db, false, ifNotExists: true);
-
   if (kDebugMode) {
+    await settingsStore.delete(db);
     await authStore.delete(db);
     await authStore.add(db, AuthConfig(secret: OTP.randomSecret(), type: Type.totp, account: "user@github.com", issuer: "GitHub", intervalSeconds: 30).toJson());
     await authStore.add(db, AuthConfig(secret: OTP.randomSecret(), type: Type.totp, account: "user@gmail.com", issuer: "Google", intervalSeconds: 30).toJson());
@@ -40,4 +43,5 @@ initDatabase() async {
     await authStore.add(db, AuthConfig(secret: OTP.randomSecret(), type: Type.hotp, account: "user@aws.com", issuer: "Amazon", counter: 0).toJson());
     await authStore.add(db, AuthConfig(secret: OTP.randomSecret(), type: Type.hotp, account: "user@ansible.com", issuer: "ansible", counter: 0).toJson());
   }
+  await settingsStore.record('settings').put(db, {'biometricUnlock': false, 'isShowCaptchaOnTap': false, 'isCopyCaptchaOnTap': true}, ifNotExists: true);
 }

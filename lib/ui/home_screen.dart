@@ -18,28 +18,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
-  void toAuthAddPage(BuildContext context) {
-    Navigator.pushNamed(context, '/AuthAddPage');
-  }
-
-  void toSettingsPage(BuildContext context) {
-    Navigator.pushNamed(context, '/AuthSettingsPage');
-  }
-
-  listener(List<AuthConfig> configs) {
-    setState(() {});
-  }
-
   List<RecordSnapshot<String, dynamic>> data = [];
   StreamSubscription? subscription;
 
   @override
   void initState() {
-    subscription = authStore.query().onSnapshot(db).listen((_) async {
-      data = await authStore.find(db);
-      print("onSnapshot");
-      print(data);
-      setState(() {});
+    subscription = authStore.query().onSnapshots(db).listen((data) async {
+      if (mounted) {
+        setState(() {
+          this.data = data;
+        });
+      }
     });
     super.initState();
   }
@@ -62,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         itemCount: data.length,
         itemBuilder: (BuildContext context, int index) {
           final AuthConfig config = AuthConfig.fromJson(data[index]);
-          return HomeItemWidget(key: ObjectKey(config), config: config);
+          return HomeItemWidget(key: ValueKey(config.key), config: config);
         },
       ),
     );
@@ -83,5 +72,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         ),
       );
     }
+  }
+
+  void toAuthAddPage(BuildContext context) {
+    Navigator.pushNamed(context, '/AuthAddPage');
+  }
+
+  void toSettingsPage(BuildContext context) {
+    Navigator.pushNamed(context, '/AuthSettingsPage');
   }
 }

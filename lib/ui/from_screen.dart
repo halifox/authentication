@@ -42,12 +42,12 @@ class _FromScreenState extends State<FromScreen> with WidgetsBindingObserver {
         ..intervalSeconds = int.parse(periodController.text)
         ..counter = int.parse(counterController.text);
       config.verify();
-      if (config.key == null) {
+      if (config.key.isEmpty) {
         authStore.add(db, config.toJson());
         Navigator.popUntil(context, (Route route) => route.settings.name == '/');
         showAlertDialog(context, '结果', '添加成功');
       } else {
-        authStore.record(config.key!).update(db, config.toJson());
+        authStore.record(config.key).update(db, config.toJson());
         Navigator.popUntil(context, (Route route) => route.settings.name == '/');
         showAlertDialog(context, '结果', '更新成功');
       }

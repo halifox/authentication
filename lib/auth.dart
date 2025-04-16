@@ -43,7 +43,7 @@ class AuthConfig {
   bool isBase32Encoded;
 
   // 内部生成的密钥，通常由系统自动处理
-  String? key;
+  String key;
 
   String? icon;
 
@@ -59,7 +59,7 @@ class AuthConfig {
     this.counter = 0,
     this.pin = '',
     this.isBase32Encoded = true,
-    this.key = null,
+    this.key = '',
     bool isVerify = false,
   }) {
     if (isVerify) {

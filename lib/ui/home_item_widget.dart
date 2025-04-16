@@ -22,7 +22,7 @@ class HomeItemWidget extends StatefulWidget {
 
 /// 认证项的状态类
 class _HomeItemWidgetState extends State<HomeItemWidget> {
-  late final AuthConfig config = widget.config;
+  late AuthConfig config = widget.config;
   late String authCode = '--------';
   late bool biometricUnlock = false;
   late bool isShowCaptchaOnTap = false;
@@ -32,40 +32,47 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
   Timer? timer;
   Timer? showCaptchaOnTapTimer;
 
-  initData() async {
-    biometricUnlock = await settingsStore.record('biometricUnlock').get(db) as bool;
-    isShowCaptchaOnTap = await settingsStore.record('isShowCaptchaOnTap').get(db) as bool;
-    isCopyCaptchaOnTap = await settingsStore.record('isCopyCaptchaOnTap').get(db) as bool;
-    if (mounted) {
-      setState(() {
-        isShow = !isShowCaptchaOnTap;
-      });
-    }
-    showCaptchaOnTapTimer?.cancel();
-  }
-
-  StreamSubscription? subscription;
+  StreamSubscription? settingsSubscription;
+  StreamSubscription? authSubscription;
 
   @override
   void initState() {
-    super.initState();
-    initData();
-    subscription = settingsStore.query().onSnapshot(db).listen((_) async {
-      initData();
+    settingsSubscription = settingsStore.query().onSnapshots(db).listen((data) async {
+      final settings = await settingsStore.record('settings').getSnapshot(db);
+      if (settings == null) {
+        return;
+      }
+      biometricUnlock = settings['biometricUnlock'] as bool;
+      isShowCaptchaOnTap = settings['isShowCaptchaOnTap'] as bool;
+      isCopyCaptchaOnTap = settings['isCopyCaptchaOnTap'] as bool;
+      if (mounted) {
+        setState(() {
+          isShow = !isShowCaptchaOnTap;
+        });
+      }
+      showCaptchaOnTapTimer?.cancel();
     });
 
-    switch (config.type) {
-      case Type.totp:
-      case Type.motp:
-        startOtpTimer();
-      case Type.hotp:
-        updateAuthCode();
-    }
+    authSubscription = authStore.record(config.key).onSnapshot(db).listen((data) {
+      if (data == null) return;
+      config = AuthConfig.fromJson(data);
+      switch (config.type) {
+        case Type.totp:
+        case Type.motp:
+          startOtpTimer();
+        case Type.hotp:
+          setState(() {
+            authCode = config.generateCodeString();
+          });
+      }
+    });
+    super.initState();
   }
 
   @override
   void dispose() {
-    unawaited(subscription?.cancel());
+    unawaited(settingsSubscription?.cancel());
+    unawaited(authSubscription?.cancel());
     timer?.cancel();
     showCaptchaOnTapTimer?.cancel();
     super.dispose();
@@ -74,20 +81,16 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
   startOtpTimer() {
     final int remainingMilliseconds = OTP.remainingMilliseconds(intervalMilliseconds: config.intervalSeconds * 1000);
     timer = Timer(Duration(milliseconds: remainingMilliseconds), startOtpTimer);
-    updateAuthCode();
-  }
-
-  updateAuthCode() {
     setState(() {
       authCode = config.generateCodeString();
     });
   }
 
-  void onEdit() {
+  onEdit() {
     Navigator.pushNamed(context, '/AuthFromPage', arguments: config);
   }
 
-  void onDelete() {
+  onDelete() {
     showGeneralDialog(
       context: context,
       pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
@@ -103,7 +106,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
             ),
             ElevatedButton(
               onPressed: () {
-                authStore.record(config.key!).delete(db);
+                authStore.record(config.key).delete(db);
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
@@ -115,20 +118,16 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
     );
   }
 
-  void onTap() {
+  onTap() {
     if (isShowCaptchaOnTap) {
-      if (mounted) {
-        setState(() {
-          isShow = !isShow;
-        });
-      }
+      setState(() {
+        isShow = !isShow;
+      });
       showCaptchaOnTapTimer?.cancel();
       showCaptchaOnTapTimer = Timer(const Duration(seconds: 10), () {
-        if (mounted) {
-          setState(() {
-            isShow = false;
-          });
-        }
+        setState(() {
+          isShow = false;
+        });
       });
     }
     if (isCopyCaptchaOnTap) {
@@ -260,7 +259,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
     return IconButton(
       onPressed: () {
         config.counter++;
-        authStore.record(config.key!).update(db, config.toJson());
+        authStore.record(config.key).update(db, config.toJson());
       },
       icon: const Icon(Icons.refresh),
     );

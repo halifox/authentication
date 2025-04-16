@@ -49,7 +49,11 @@ class _ButtonState extends State<_Button> {
   bool enable = false;
 
   initData() async {
-    enable = await settingsStore.record(widget.dbKey).get(db) as bool;
+    final settings = await settingsStore.record('settings').getSnapshot(db);
+    if (settings == null) {
+      return;
+    }
+    enable = settings[widget.dbKey] as bool;
     setState(() {});
   }
 
@@ -77,7 +81,8 @@ class _ButtonState extends State<_Button> {
               setState(() {
                 enable = !enable;
               });
-              settingsStore.record(widget.dbKey).put(db, enable);
+              // settingsStore.record(widget.dbKey).put(db, enable);
+              settingsStore.record('settings').update(db, {widget.dbKey: enable});
             },
             child: Container(
               height: 48,
