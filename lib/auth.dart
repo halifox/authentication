@@ -223,16 +223,12 @@ class AuthConfig {
   }
 
   static Algorithm parseAlgorithm(String algorithm) {
-    switch (algorithm.toLowerCase()) {
-      case 'sha1':
-        return Algorithm.SHA1;
-      case 'sha256':
-        return Algorithm.SHA256;
-      case 'sha512':
-        return Algorithm.SHA512;
-      default:
-        throw ArgumentError('Invalid algorithm: $algorithm');
-    }
+    return switch (algorithm.toLowerCase()) {
+      'sha1' => Algorithm.SHA1,
+      'sha256' => Algorithm.SHA256,
+      'sha512' => Algorithm.SHA512,
+      String() => throw UnimplementedError(),
+    };
   }
 
   static String checkSecret(String? secret) {
