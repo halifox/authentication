@@ -21,21 +21,36 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(context) {
+    final pageTransitionsTheme = PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      },
+    );
     return DynamicColorBuilder(
       builder: (lightDynamic, darkDynamic) {
         return MaterialApp(
           title: 'Purity Auth',
           debugShowCheckedModeBanner: false,
           themeMode: ThemeMode.system,
-          theme: ThemeData(brightness: Brightness.light, colorScheme: lightDynamic),
-          darkTheme: ThemeData(brightness: Brightness.dark, colorScheme: darkDynamic),
+          theme: ThemeData(
+            brightness: Brightness.light,
+            colorScheme: lightDynamic,
+            pageTransitionsTheme: pageTransitionsTheme,
+          ),
+          darkTheme: ThemeData(
+            brightness: Brightness.dark,
+            colorScheme: darkDynamic,
+            pageTransitionsTheme: pageTransitionsTheme,
+          ),
           initialRoute: '/',
           routes: {
-            '/': (context) => HomeScreen(),
-            '/add': (context) => AddScreen(),
-            '/scan': (context) => ScanScreen(),
-            '/from': (context) => FromScreen(),
-            '/settings': (context) => SettingsScreen(),
+            '/': (BuildContext context) => HomeScreen(),
+            '/add': (BuildContext context) => AddScreen(),
+            '/scan': (BuildContext context) => ScanScreen(),
+            '/from': (BuildContext context) => FromScreen(),
+            '/settings': (BuildContext context) => SettingsScreen(),
+            '/icons': (BuildContext context) => IconsChooseScreen(),
           },
           navigatorObservers: [SwipeActionNavigatorObserver()],
         );

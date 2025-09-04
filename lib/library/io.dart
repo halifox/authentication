@@ -3,14 +3,13 @@ import 'dart:io';
 import 'package:auth/dialog.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 createBackupImpl(context, json, filename) async {
   var file;
   if (Platform.isAndroid && false) {
-    var status = await Permission.storage.request();
-    if (!status.isGranted) throw Exception("Storage permission denied");
-    file = File('/storage/emulated/0/Download/$filename');
+    // var status = await Permission.storage.request();
+    // if (!status.isGranted) throw Exception("Storage permission denied");
+    // file = File('/storage/emulated/0/Download/$filename');
   } else {
     var dir = await getDownloadsDirectory();
     if (dir == null) return;

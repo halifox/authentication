@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:auth/auth.dart';
 import 'package:auth/dialog.dart';
 import 'package:auth/repository.dart';
@@ -17,23 +19,8 @@ class FromScreen extends StatefulWidget {
 class _FromScreenState extends State<FromScreen> {
   late var config = ModalRoute.of(context)?.settings.arguments as AuthConfig? ?? AuthConfig();
 
-  late var issuerController = TextEditingController(text: config.issuer);
-
-  late var accountController = TextEditingController(text: config.account);
-
-  late var secretController = TextEditingController(text: config.secret);
-
-  late var pinController = TextEditingController(text: config.pin);
-
-  late var digitsController = TextEditingController(text: config.digits.toString());
-
-  late var periodController = TextEditingController(text: config.interval.toString());
-
-  late var counterController = TextEditingController(text: config.counter.toString());
-
-  var typeLabels = {'totp': '基于时间 (TOTP)', 'hotp': '基于计数器 (HOTP)', 'motp': 'Mobile-OTP (mOTP)'};
-
-  var algorithmLabels = {'sha1': 'SHA1', 'sha256': 'SHA256', 'sha512': 'SHA512'};
+  final typeLabels = {'totp': '基于时间 (TOTP)', 'hotp': '基于计数器 (HOTP)', 'motp': 'Mobile-OTP (mOTP)'};
+  final algorithmLabels = {'sha1': 'SHA1', 'sha256': 'SHA256', 'sha512': 'SHA512'};
 
   @override
   void initState() {
@@ -46,102 +33,234 @@ class _FromScreenState extends State<FromScreen> {
   }
 
   void onSave(BuildContext context) async {
-    try {
-      config
-        ..account = accountController.text
-        ..issuer = issuerController.text
-        ..secret = secretController.text
-        ..pin = pinController.text
-        ..digits = int.parse(digitsController.text)
-        ..interval = int.parse(periodController.text)
-        ..counter = int.parse(counterController.text);
-      config.verify();
-      if (config.key.isEmpty) {
-        authStore.add(db, config.toJson());
-      } else {
-        authStore.record(config.key).update(db, config.toJson());
+    final bool verify = config.verify();
+    if (!verify) {
+      showAlertDialog(context, '提示', '参数异常，请确认来源是否正确。');
+      return;
+    }
+    if (config.key.isEmpty) {
+      final int count = await authStore.count(
+        db,
+        filter: Filter.and([
+          Filter.equals('account', config.account),
+          Filter.equals('issuer', config.issuer),
+        ]),
+      );
+      if (count > 0) {
+        showOverwriteDialog(context, config);
+        return;
       }
-      Navigator.popUntil(context, (route) => route.settings.name == '/');
-      showAlertDialog(context, '结果', '更新成功');
-    } on ArgumentError catch (e) {
-      showAlertDialog(context, '参数错误', e.message as String?);
-    } on FormatException catch (e) {
-      showAlertDialog(context, '格式错误', e.message);
-    } catch (e) {
-      showAlertDialog(context, '未知错误', e.toString());
-      rethrow;
+      await authStore.add(db, config.toJson());
+      Navigator.popUntil(context, ModalRoute.withName('/'));
+      await showAlertDialog(context, '提示', '添加成功');
+    } else {
+      authStore.record(config.key).update(db, config.toJson());
+      Navigator.popUntil(context, ModalRoute.withName('/'));
+      await showAlertDialog(context, '提示', '更新成功');
     }
   }
 
-  Widget buildTextField(TextEditingController controller, String label, {TextInputType? inputType, List<TextInputFormatter>? inputFormatters, suffixIcon}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          border: OutlineInputBorder(borderSide: BorderSide(), borderRadius: BorderRadius.all(Radius.circular(14.0)), gapPadding: 8.0),
-          suffixIcon: suffixIcon,
+  Widget buildDigitsOnlyTextField(int initValue, Function(int) onChanged, String label) {
+    return buildTextField(
+      initValue.toString(),
+      (value) => onChanged(int.parse(value)),
+      label,
+      inputType: TextInputType.number,
+      inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+    );
+  }
+
+  Widget buildTextField(
+    String initValue,
+    Function(String) onChanged,
+    String label, {
+    TextInputType? inputType,
+    List<TextInputFormatter>? inputFormatters,
+    suffixIcon,
+  }) {
+    return TextField(
+      key: ValueKey(label),
+      controller: TextEditingController(text: initValue),
+      onChanged: (value) {
+        onChanged(value);
+      },
+      decoration: InputDecoration(
+        labelText: label,
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        border: OutlineInputBorder(
+          borderSide: BorderSide(),
+          borderRadius: BorderRadius.all(Radius.circular(14.0)),
+          gapPadding: 8.0,
         ),
-        keyboardType: inputType,
-        inputFormatters: inputFormatters,
+        suffixIcon: suffixIcon,
+      ),
+      keyboardType: inputType,
+      inputFormatters: inputFormatters,
+    );
+  }
+
+  bool _obscureText = true; // 是否隐藏密码
+  Widget buildPasswordTextField(String initValue, Function(String) onChanged, String label) {
+    return TextField(
+      key: ValueKey(label),
+      controller: TextEditingController(text: initValue),
+      onChanged: (value) {
+        onChanged(value);
+      },
+      obscureText: _obscureText,
+      decoration: InputDecoration(
+        labelText: label,
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        border: OutlineInputBorder(
+          borderSide: BorderSide(),
+          borderRadius: BorderRadius.all(Radius.circular(14.0)),
+          gapPadding: 8.0,
+        ),
+        suffixIcon: IconButton(
+          icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
+          onPressed: () {
+            setState(() {
+              _obscureText = !_obscureText; // 切换显示/隐藏
+            });
+          },
+        ),
       ),
     );
   }
 
-  Widget buildDropdown<T>(String label, T initialValue, Map<T, String> options, void Function(T?) onChanged) {
+  Widget buildDropdown<T>(
+    String label,
+    T initialValue,
+    Map<T, String> options,
+    void Function(T) onChanged,
+  ) {
+    return DropdownMenuFormField<T>(
+      width: double.infinity,
+      label: Text(label),
+      initialSelection: initialValue,
+      dropdownMenuEntries: options.entries
+          .map(
+            (MapEntry<T, String> entry) => DropdownMenuEntry(value: entry.key, label: entry.value),
+          )
+          .toList(),
+      inputDecorationTheme: const InputDecorationTheme(
+        border: OutlineInputBorder(
+          borderSide: BorderSide(),
+          borderRadius: BorderRadius.all(Radius.circular(14.0)),
+          gapPadding: 8.0,
+        ),
+      ),
+      onSelected: (value) {
+        setState(() {
+          if (value != null) {
+            onChanged(value);
+          }
+        });
+      },
+    );
+  }
+
+  Widget buildIcon(String icon, void Function(String) onChange) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: DropdownButtonFormField<T>(
-        decoration: InputDecoration(labelText: label, border: OutlineInputBorder(borderSide: BorderSide(), borderRadius: BorderRadius.all(Radius.circular(14.0)), gapPadding: 8.0)),
-        value: initialValue,
-        onChanged: onChanged,
-        items: options.entries.map((MapEntry<T, String> entry) => DropdownMenuItem<T>(value: entry.key, child: Text(entry.value))).toList(),
+      padding: const EdgeInsets.all(6.0),
+      child: GestureDetector(
+        onTap: () async {
+          final icon = await Navigator.pushNamed(context, '/icons');
+          if (icon != null) {
+            onChange(icon as String);
+          }
+        },
+        child: Container(
+          height: 44,
+          width: 44,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: SvgPicture.asset(
+            icon,
+            width: 28,
+            height: 28,
+            colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn),
+          ),
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    print(config.toJson());
     return Scaffold(
       appBar: TopBar(context, '输入提供的密钥', rightIcon: Icons.save, rightOnPressed: onSave),
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
+      body: SizedBox.expand(
         child: SingleChildScrollView(
           physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-          child: Column(
-            children: [
-              buildDropdown('类型', config.type, typeLabels, (value) {
-                setState(() {
-                  config.type = value!;
-                });
-              }),
-              buildTextField(issuerController, '发行方', suffixIcon: DySvgWidget(issuerController, (icon) => config.icon = icon)),
-              buildTextField(accountController, '用户名'),
-              buildTextField(secretController, '密钥'),
-              switch (config.type) {
-                'totp' => buildDropdown('算法', config.algorithm, algorithmLabels, (value) => config.algorithm = value as String),
-                'hotp' => buildDropdown('算法', config.algorithm, algorithmLabels, (value) => config.algorithm = value as String),
-                'motp' => buildTextField(pinController, 'PIN码'),
-                String() => throw UnimplementedError(),
-              },
-
-              Row(
-                children: <Widget>[
-                  Expanded(child: buildTextField(digitsController, '位数', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly])),
-                  Expanded(
-                    child: switch (config.type) {
-                      'totp' => buildTextField(periodController, '时间间隔(秒)', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]),
-                      'hotp' => buildTextField(counterController, '计数器', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]),
-                      'motp' => buildTextField(periodController, '时间间隔(秒)', inputType: TextInputType.number, inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]),
-                      String() => throw UnimplementedError(),
-                    },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: Column(
+              spacing: 16,
+              children: [
+                buildDropdown('类型', config.type, typeLabels, (value) => config.type = value),
+                buildTextField(
+                  config.issuer,
+                  (it) => config.issuer = it,
+                  '发行方',
+                  suffixIcon: buildIcon(config.icon, (icon) => config.icon = icon),
+                ),
+                buildTextField(config.account, (it) => config.account = it, '用户名'),
+                buildPasswordTextField(config.secret, (it) => config.secret = it, '密钥'),
+                switch (config.type.toLowerCase()) {
+                  'totp' => buildDropdown(
+                    '算法',
+                    config.algorithm,
+                    algorithmLabels,
+                    (value) => config.algorithm = value,
                   ),
-                ],
-              ),
-            ],
+                  'hotp' => buildDropdown(
+                    '算法',
+                    config.algorithm,
+                    algorithmLabels,
+                    (value) => config.algorithm = value,
+                  ),
+                  'motp' => buildTextField(config.pin, (it) => config.pin = it, 'PIN码'),
+                  String() => throw UnimplementedError(),
+                },
+                Row(
+                  spacing: 16,
+                  children: <Widget>[
+                    Expanded(
+                      child: buildDigitsOnlyTextField(
+                        config.digits,
+                        (it) => config.digits = it,
+                        '位数',
+                      ),
+                    ),
+                    Expanded(
+                      child: switch (config.type.toLowerCase()) {
+                        'totp' => buildDigitsOnlyTextField(
+                          config.interval,
+                          (it) => config.interval = it,
+                          '时间间隔(秒)',
+                        ),
+                        'hotp' => buildDigitsOnlyTextField(
+                          config.counter,
+                          (it) => config.counter = it,
+                          '计数器',
+                        ),
+                        'motp' => buildDigitsOnlyTextField(
+                          config.interval,
+                          (it) => config.interval = it,
+                          '时间间隔(秒)',
+                        ),
+                        String() => throw UnimplementedError(),
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -149,59 +268,100 @@ class _FromScreenState extends State<FromScreen> {
   }
 }
 
-class DySvgWidget extends StatefulWidget {
-  final TextEditingController controller;
-  final Function(String) onIconChange;
-
-  const DySvgWidget(this.controller, this.onIconChange, {super.key});
+class IconsChooseScreen extends StatefulWidget {
+  const IconsChooseScreen({super.key});
 
   @override
-  State<DySvgWidget> createState() => _DySvgWidgetState();
+  State<IconsChooseScreen> createState() => _IconsChooseScreenState();
 }
 
-class _DySvgWidgetState extends State<DySvgWidget> {
-  var icon = '';
-  late var listener = () async {
-    icon = 'icons/${widget.controller.text.toLowerCase()}.svg';
-    if (!await assetExists(icon)) {
-      icon = 'icons/passkey.svg';
-    }
-    widget.onIconChange.call(icon);
-    setState(() {});
-  };
+class _IconsChooseScreenState extends State<IconsChooseScreen> {
+  var iconList = <String>[];
+  final textEditingController = TextEditingController();
+
+  loadIcons() async {
+    final jsonString = await rootBundle.loadString('assets/icons.json');
+    final List<dynamic> jsonList = jsonDecode(jsonString);
+    setState(() {
+      iconList = jsonList.cast<String>();
+    });
+  }
 
   @override
   void initState() {
-    listener.call();
-    widget.controller.addListener(listener);
+    loadIcons();
     super.initState();
   }
 
   @override
-  void dispose() {
-    widget.controller.removeListener(listener);
-    super.dispose();
-  }
-
-  Future<bool> assetExists(String assetPath) async {
-    try {
-      await rootBundle.load(assetPath);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {},
-      child: Container(
-        height: 48,
-        width: 48,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(14)),
-        child: SvgPicture.asset(icon, width: 28, height: 28, colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn)),
+    return Scaffold(
+      appBar: TopBar(context, '选择图标'),
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: TextField(
+              controller: textEditingController,
+              onChanged: (value) async {
+                setState(() {
+                  iconList = iconList.where((element) => element.contains(value)).toList();
+                });
+              },
+              decoration: InputDecoration(
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(),
+                  borderRadius: BorderRadius.all(Radius.circular(14.0)),
+                  gapPadding: 8.0,
+                ),
+                prefixIcon: Icon(Icons.search),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Scrollbar(
+              interactive: true,
+              thumbVisibility: true,
+              thickness: 12,
+              radius: Radius.circular(12),
+              child: GridView.builder(
+                physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 60,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                ),
+                itemCount: iconList.length,
+                itemBuilder: (context, index) {
+                  var icon = iconList[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context, "assets/icons/${icon}");
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: SvgPicture.asset(
+                        "assets/icons/${icon}",
+                        width: 28,
+                        height: 28,
+                        colorFilter: ColorFilter.mode(
+                          Theme.of(context).colorScheme.onPrimary,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

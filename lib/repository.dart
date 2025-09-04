@@ -30,13 +30,13 @@ initDatabase() async {
   if (kDebugMode) {
     await settingsStore.delete(db);
     await authStore.delete(db);
-    await authStore.add(db, AuthConfig(secret: OTP.randomSecret(), type: 'totp', account: "user@github.com", issuer: "GitHub", interval: 30).toJson());
-    await authStore.add(db, AuthConfig(secret: OTP.randomSecret(), type: 'totp', account: "user@gmail.com", issuer: "Google", interval: 30).toJson());
-    await authStore.add(db, AuthConfig(secret: OTP.randomSecret(), type: 'totp', account: "user@icloud.com", issuer: "Apple", interval: 40).toJson());
-    await authStore.add(db, AuthConfig(secret: OTP.randomSecret(), type: 'totp', account: "user@dropbox.com", issuer: "Dropbox", interval: 45).toJson());
-    await authStore.add(db, AuthConfig(secret: OTP.randomSecret(), type: 'totp', account: "user@1dot1dot1dot1.com", issuer: "1dot1dot1dot1", interval: 60).toJson());
-    await authStore.add(db, AuthConfig(secret: OTP.randomSecret(), type: 'hotp', account: "user@aws.com", issuer: "Amazon", counter: 0).toJson());
-    await authStore.add(db, AuthConfig(secret: OTP.randomSecret(), type: 'hotp', account: "user@ansible.com", issuer: "ansible", counter: 0).toJson());
+    // await authStore.add(db, AuthConfig(secret: OTP.randomSecret(), type: 'totp', account: "user@github.com", issuer: "GitHub", interval: 30).toJson());
+    // await authStore.add(db, AuthConfig(secret: OTP.randomSecret(), type: 'totp', account: "user@gmail.com", issuer: "Google", interval: 30).toJson());
+    // await authStore.add(db, AuthConfig(secret: OTP.randomSecret(), type: 'totp', account: "user@icloud.com", issuer: "Apple", interval: 40).toJson());
+    // await authStore.add(db, AuthConfig(secret: OTP.randomSecret(), type: 'totp', account: "user@dropbox.com", issuer: "Dropbox", interval: 45).toJson());
+    // await authStore.add(db, AuthConfig(secret: OTP.randomSecret(), type: 'totp', account: "user@1dot1dot1dot1.com", issuer: "1dot1dot1dot1", interval: 60).toJson());
+    // await authStore.add(db, AuthConfig(secret: OTP.randomSecret(), type: 'hotp', account: "user@aws.com", issuer: "Amazon", counter: 0).toJson());
+    // await authStore.add(db, AuthConfig(secret: OTP.randomSecret(), type: 'hotp', account: "user@ansible.com", issuer: "ansible", counter: 0).toJson());
   }
   await settingsStore.record('settings').put(db, {'biometricUnlock': false, 'isShowCaptchaOnTap': false, 'isCopyCaptchaOnTap': true}, ifNotExists: true);
 }

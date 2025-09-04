@@ -18,8 +18,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  var data = [];
-  var subscription;
+  List data = [];
+  late StreamSubscription? subscription;
 
   @override
   void initState() {
@@ -41,11 +41,23 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(context) {
     setSystemUIOverlayStyle(context);
     return Scaffold(
-      appBar: TopBar(context, 'Purity Auth', leftIcon: Icons.settings, leftOnPressed: toSettingsPage, rightIcon: Icons.add, rightOnPressed: toAuthAddPage),
+      appBar: TopBar(
+        context,
+        'Purity Auth',
+        leftIcon: Icons.settings,
+        leftOnPressed: toSettingsPage,
+        rightIcon: Icons.add,
+        rightOnPressed: toAuthAddPage,
+      ),
       body: GridView.builder(
         physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         padding: EdgeInsets.symmetric(horizontal: 16),
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 140),
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 700,
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 16,
+          mainAxisExtent: 140,
+        ),
         itemCount: data.length,
         itemBuilder: (context, index) {
           var config = AuthConfig.fromJson(data[index]);
@@ -65,7 +77,9 @@ class _HomeScreenState extends State<HomeScreen> {
           // systemNavigationBarContrastEnforced: false,
           statusBarColor: Colors.transparent,
           statusBarBrightness: Theme.of(context).colorScheme.brightness,
-          statusBarIconBrightness: (Theme.of(context).colorScheme.brightness == Brightness.dark) ? Brightness.light : Brightness.dark, //MIUI的这个行为有异常
+          statusBarIconBrightness: (Theme.of(context).colorScheme.brightness == Brightness.dark)
+              ? Brightness.light
+              : Brightness.dark, //MIUI的这个行为有异常
           // systemStatusBarContrastEnforced: false,
         ),
       );

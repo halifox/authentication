@@ -53,42 +53,73 @@ class AuthConfig {
     this.counter = 0,
     this.pin = '',
     this.isBase32 = true,
-    this.icon = 'icons/passkey.svg',
+    this.icon = 'assets/icons/passkey.svg',
     this.key = '',
-  }) {
-    icon = 'icons/${issuer.toLowerCase()}.svg';
+  });
+
+  bool verify() {
+    try {
+      verifyThrow();
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
-  verify() {
+  verifyThrow() {
+    scheme = switch (scheme.toLowerCase()) {
+      'otpauth' => scheme,
+      String() => throw ArgumentError(),
+    };
+
+    type = switch (type.toLowerCase()) {
+      'totp' => type,
+      'hotp' => type,
+      'motp' => type,
+      String() => throw ArgumentError(),
+    };
+
     if (issuer.isEmpty) {
-      throw ArgumentError("发行方不得为空或空白。");
+      throw ArgumentError();
     }
-    switch (type) {
+
+    if (account.isEmpty) {
+      throw ArgumentError();
+    }
+
+    algorithm = switch (algorithm.toLowerCase()) {
+      'sha1' => algorithm,
+      'sha256' => algorithm,
+      'sha512' => algorithm,
+      String() => throw ArgumentError(),
+    };
+
+    switch (type.toLowerCase()) {
       case 'totp':
-        if (digits < 6 || digits > 10) {
-          throw ArgumentError("对于 TOTP，位数必须介于 6 到 10 之间");
+        if (digits < 6 || digits > 8) {
+          throw ArgumentError();
         }
         if (interval <= 0) {
-          throw ArgumentError("时间间隔必须 > 0");
+          throw ArgumentError();
         }
       case 'hotp':
         if (digits < 6 || digits > 8) {
-          throw ArgumentError("对于 HOTP，位数必须介于 6 到 8 之间");
+          throw ArgumentError();
         }
         if (counter < 0) {
-          throw ArgumentError("计数必须必须 >= 0");
+          throw ArgumentError();
         }
 
       case 'motp':
-        if (digits < 6 || digits > 10) {
-          throw ArgumentError("对于 Mobile-OTP，位数必须介于 6 到 10 之间");
+        if (digits == 6) {
+          throw ArgumentError();
         }
         if (pin.isEmpty) {
-          throw ArgumentError("对于 Mobile-OTP，必须设置 pin 字段。");
+          throw ArgumentError();
         }
     }
     if (isBase32 && !AuthConfig.verifyBase32(secret)) {
-      throw ArgumentError('对于 HOTP 和 TOTP，验证器密钥必须是不带空格的大写 base-32 字符串。它还可以包含“=”作为填充字符。');
+      throw ArgumentError();
     }
   }
 
@@ -132,9 +163,26 @@ class AuthConfig {
   /// 返回生成的 OTP 密码字符串。
   String generateCodeString() {
     return switch (type) {
-      'totp' => OTP.generateTOTPCodeString(secret: secret, digits: digits, algorithm: parseAlgorithm(algorithm), intervalSeconds: interval, isBase32: isBase32),
-      'hotp' => OTP.generateHOTPCodeString(secret: secret, digits: digits, algorithm: parseAlgorithm(algorithm), counter: counter, isBase32: isBase32),
-      'motp' => OTP.generateMOTPCodeString(secret: secret, digits: digits, intervalSeconds: interval, pin: pin),
+      'totp' => OTP.generateTOTPCodeString(
+        secret: secret,
+        digits: digits,
+        algorithm: parseAlgorithm(algorithm),
+        intervalSeconds: interval,
+        isBase32: isBase32,
+      ),
+      'hotp' => OTP.generateHOTPCodeString(
+        secret: secret,
+        digits: digits,
+        algorithm: parseAlgorithm(algorithm),
+        counter: counter,
+        isBase32: isBase32,
+      ),
+      'motp' => OTP.generateMOTPCodeString(
+        secret: secret,
+        digits: digits,
+        intervalSeconds: interval,
+        pin: pin,
+      ),
       String() => throw UnimplementedError(),
     };
   }
@@ -180,24 +228,23 @@ class AuthConfig {
   ///     - `period`: 可选参数，适用于 `totp`，表示 OTP 有效时间周期，默认为 30 秒。
   ///     - `counter`: 可选参数，适用于 `hotp`，指定当前计数器值。
   static AuthConfig parse(String uriString) {
-    var uri = Uri.parse(uriString);
-
-    var scheme = uri.scheme;
-    var type = uri.host;
-    var label = Uri.decodeFull(uri.path.substring(1));
-    var issuer = uri.queryParameters['issuer'] ?? 'unknown';
-    var account = uri.queryParameters['account'] ?? 'unknown';
-    var algorithm = uri.queryParameters['algorithm'] ?? 'sha1';
-    var secret = uri.queryParameters['secret']!;
-    var digits = uri.queryParameters['digits'] ?? '6';
-    var period = uri.queryParameters['period'] ?? '30';
-    var counter = uri.queryParameters['counter'] ?? '0';
+    final uri = Uri.parse(uriString);
+    final scheme = uri.scheme;
+    final type = uri.host;
+    final label = Uri.decodeFull(uri.path.substring(1));
+    final issuer = uri.queryParameters['issuer'];
+    final account = uri.queryParameters['account'];
+    final algorithm = uri.queryParameters['algorithm'] ?? 'sha1';
+    final secret = uri.queryParameters['secret']!;
+    final digits = uri.queryParameters['digits'] ?? '6';
+    final period = uri.queryParameters['period'] ?? '30';
+    final counter = uri.queryParameters['counter'] ?? '0';
 
     return AuthConfig(
       scheme: scheme,
       type: type,
       account: parseAccount(label, account),
-      secret: checkSecret(secret),
+      secret: secret,
       issuer: parseIssuer(label, issuer),
       algorithm: algorithm,
       digits: int.parse(digits),
@@ -238,3 +285,7 @@ class AuthConfig {
     return secret;
   }
 }
+
+class ErrorArgumentError extends ArgumentError {}
+
+class WarnArgumentError extends ArgumentError {}
