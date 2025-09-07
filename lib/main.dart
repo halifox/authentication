@@ -13,18 +13,22 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
   await initDatabase();
-  runApp(MyApp());
+  runApp(AuthApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class AuthApp extends StatelessWidget {
+  const AuthApp({super.key});
 
   @override
   Widget build(context) {
     final pageTransitionsTheme = PageTransitionsTheme(
       builders: {
         TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.fuchsia: CupertinoPageTransitionsBuilder(),
         TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
       },
     );
     return DynamicColorBuilder(
@@ -33,16 +37,8 @@ class MyApp extends StatelessWidget {
           title: 'Purity Auth',
           debugShowCheckedModeBanner: false,
           themeMode: ThemeMode.system,
-          theme: ThemeData(
-            brightness: Brightness.light,
-            colorScheme: lightDynamic,
-            pageTransitionsTheme: pageTransitionsTheme,
-          ),
-          darkTheme: ThemeData(
-            brightness: Brightness.dark,
-            colorScheme: darkDynamic,
-            pageTransitionsTheme: pageTransitionsTheme,
-          ),
+          theme: ThemeData(brightness: Brightness.light, colorScheme: lightDynamic, pageTransitionsTheme: pageTransitionsTheme),
+          darkTheme: ThemeData(brightness: Brightness.dark, colorScheme: darkDynamic, pageTransitionsTheme: pageTransitionsTheme),
           initialRoute: '/',
           routes: {
             '/': (BuildContext context) => HomeScreen(),

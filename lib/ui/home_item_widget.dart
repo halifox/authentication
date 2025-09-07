@@ -72,7 +72,7 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
 
   startOtpTimer() {
     var remainingMilliseconds = OTP.remainingMilliseconds(
-      intervalMilliseconds: config.interval * 1000,
+      intervalMilliseconds: config.period * 1000,
     );
     optTimer = Timer(Duration(milliseconds: remainingMilliseconds), startOtpTimer);
     setState(() => code = config.generateCodeString());
@@ -260,9 +260,9 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
       width: 48,
       alignment: Alignment.center,
       child: switch (config.type) {
-        'totp' => CoreCircularProgressIndicator(config.interval * 1000),
+        'totp' => CoreCircularProgressIndicator(config.period * 1000),
         'hotp' => buildHotpNextButton(),
-        'motp' => CoreCircularProgressIndicator(config.interval * 1000),
+        'motp' => CoreCircularProgressIndicator(config.period * 1000),
         String() => throw UnimplementedError(),
       },
     );

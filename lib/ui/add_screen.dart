@@ -1,14 +1,14 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:auth/auth.dart';
-import 'package:auth/dialog.dart';
-import 'package:auth/library/io.dart' if (dart.library.html) 'package:auth/library/web.dart';
 import 'package:auth/repository.dart';
 import 'package:auth/top_bar.dart';
+import 'package:auth/ui/result_screen.dart';
 import 'package:file_selector/file_selector.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:sembast/sembast.dart';
 
@@ -27,28 +27,31 @@ class AddScreen extends StatelessWidget {
     AddScreenOption(Icons.camera_enhance, '扫描二维码', scan),
     AddScreenOption(Icons.photo_library, '上传二维码', upload),
     AddScreenOption(Icons.keyboard, '输入密钥', enter),
-    AddScreenOption(Icons.file_upload_outlined, '恢复备份', restore),
-    AddScreenOption(Icons.file_download_outlined, '创建备份', backup),
+    AddScreenOption(Icons.file_upload_outlined, '从剪贴板导入', restore),
+    AddScreenOption(Icons.file_download_outlined, '导出到剪贴板', backup),
   ];
 
   void scan(BuildContext context) async {
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) {
-      showAlertDialog(context, '提示', '该功能当前仅支持 Android 和 iOS 平台。');
+      showCupertinoModalPopup(
+        context: context,
+        builder: (ctx) => ResultScreen(state: 0, title: '提示', message: '该功能当前仅支持 Android 和 iOS 平台。'),
+      );
       return;
     }
-
-    final BarcodeCapture? barcodeCapture =
-        await Navigator.pushNamed(context, '/scan') as BarcodeCapture?;
+    final BarcodeCapture? barcodeCapture = await Navigator.pushNamed(context, '/scan') as BarcodeCapture?;
     handleScannedBarcodes(context, barcodeCapture?.barcodes);
   }
 
   void upload(BuildContext context) async {
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) {
-      showAlertDialog(context, '提示', '该功能当前仅支持 Android 和 iOS 平台。');
+      showCupertinoModalPopup(
+        context: context,
+        builder: (ctx) => ResultScreen(state: 0, title: '提示', message: '该功能当前仅支持 Android 和 iOS 平台。'),
+      );
       return;
     }
-
-    var selectedFile = await openFile(
+    final XFile? selectedFile = await openFile(
       acceptedTypeGroups: [
         XTypeGroup(extensions: ['jpg', 'jpeg', 'png']),
       ],
@@ -66,50 +69,61 @@ class AddScreen extends StatelessWidget {
   }
 
   void restore(BuildContext context) async {
-    try {
-      var selectedFile = await openFile(
-        acceptedTypeGroups: [
-          XTypeGroup(extensions: <String>['pa']),
-        ],
+    final ClipboardData? clipboardData = await Clipboard.getData('text/plain');
+    if (clipboardData == null) {
+      showCupertinoModalPopup(
+        context: context,
+        builder: (ctx) => ResultScreen(state: 0, title: "导入失败", message: "无法获取剪贴板数据"),
       );
-      if (selectedFile == null) {
-        return;
-      }
-      var json = await selectedFile.readAsString();
-      var list = jsonDecode(json) as List;
-      for (var item in list) {
-        authStore.record(item['key']).put(db, item);
-      }
-      showAlertDialog(context, "导入成功", "导入完成");
-    } catch (e) {
-      showAlertDialog(context, '错误', e.toString());
+      return;
     }
-  }
-
-  backup(context) async {
-    try {
-      var filename = generateFileNameWithTime('backup', 'pa');
-      var records = await authStore.find(db);
-      var data = records.map((e) {
-        var map = Map.from(e.value);
-        map['key'] = e.key;
-        return map;
-      }).toList();
-      var json = jsonEncode(data);
-      await createBackupImpl(context, json, filename);
-    } catch (e) {
-      showAlertDialog(context, '错误', e.toString());
+    final String? text = clipboardData.text;
+    if (text == null) {
+      showCupertinoModalPopup(
+        context: context,
+        builder: (ctx) => ResultScreen(state: 0, title: "导入失败", message: "无法获取剪贴板数据"),
+      );
+      return;
     }
+
+    List<String> optUrls = text.split("\n");
+    for (String optUrl in optUrls) {
+      final AuthConfig config = AuthConfig.parse(optUrl);
+      final bool verify = config.verify();
+      if (!verify) {
+        continue;
+      }
+      final int count = await authStore.count(
+        db,
+        filter: Filter.and([Filter.equals('account', config.account), Filter.equals('issuer', config.issuer)]),
+      );
+      if (count > 0) {
+        await authStore.update(
+          db,
+          config.toJson(),
+          finder: Finder(
+            filter: Filter.and([Filter.equals('account', config.account), Filter.equals('issuer', config.issuer)]),
+          ),
+        );
+      } else {
+        await authStore.add(db, config.toJson());
+      }
+    }
+    showCupertinoModalPopup(
+      context: context,
+      builder: (ctx) => ResultScreen(state: 1, title: "导入成功", message: "共导入${optUrls.length}条数据"),
+    );
   }
 
-  String generateFileNameWithTime(String prefix, String extension) {
-    var now = DateTime.now();
-    var formatted =
-        '${now.year}${_twoDigits(now.month)}${_twoDigits(now.day)}_${_twoDigits(now.hour)}${_twoDigits(now.minute)}${_twoDigits(now.second)}';
-    return '$prefix\_$formatted.$extension';
+  void backup(context) async {
+    final List<RecordSnapshot<String, Map<String, Object?>>> records = await authStore.find(db);
+    final String optUrls = records.map((e) => AuthConfig.fromJson(e).toOtpUri()).join("\n");
+    Clipboard.setData(ClipboardData(text: optUrls));
+    showCupertinoModalPopup(
+      context: context,
+      builder: (ctx) => ResultScreen(state: 1, title: "导出成功", message: "共导出${records.length}条数据到剪贴板"),
+    );
   }
-
-  String _twoDigits(int n) => n.toString().padLeft(2, '0');
 
   void handleScannedBarcodes(BuildContext context, List<Barcode>? barcodes) async {
     if (barcodes == null || barcodes.isEmpty) {
@@ -124,22 +138,45 @@ class AddScreen extends StatelessWidget {
     final AuthConfig config = AuthConfig.parse(uriString);
     final bool verify = config.verify();
     if (!verify) {
-      showAlertDialog(context, '提示', '暂不支持此类型的二维码链接，请确认来源是否正确。');
+      showCupertinoModalPopup(
+        context: context,
+        builder: (ctx) => ResultScreen(state: 0, title: '提示', message: '暂不支持此类型的二维码链接，请确认来源是否正确。'),
+      );
       return;
     }
     final int count = await authStore.count(
       db,
-      filter: Filter.and([
-        Filter.equals('account', config.account),
-        Filter.equals('issuer', config.issuer),
-      ]),
+      filter: Filter.and([Filter.equals('account', config.account), Filter.equals('issuer', config.issuer)]),
     );
     if (count > 0) {
-      showOverwriteDialog(context, config);
+      final bool? result = await showCupertinoModalPopup<bool?>(
+        context: context,
+        builder: (ctx) => ResultScreen(
+          state: 0,
+          title: '警告',
+          message: '令牌${config.issuer}:${config.account}已经存在,是否覆盖它',
+          falseButtonVisible: true,
+        ),
+      );
+      if (result == null) {
+        return;
+      }
+      if (result) {
+        await authStore.update(
+          db,
+          config.toJson(),
+          finder: Finder(
+            filter: Filter.and([Filter.equals('account', config.account), Filter.equals('issuer', config.issuer)]),
+          ),
+        );
+      }
       return;
     }
     await authStore.add(db, config.toJson());
-    await showAlertDialog(context, '提示', '添加成功');
+    showCupertinoModalPopup(
+      context: context,
+      builder: (ctx) => ResultScreen(state: 1, title: '提示', message: '添加成功'),
+    );
   }
 
   @override

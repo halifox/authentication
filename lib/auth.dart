@@ -19,7 +19,7 @@ import 'package:sembast/sembast.dart';
 /// [issuer] 认证发行方，通常是认证服务提供商或应用的名称，不能为空。
 /// [algorithm] 用于生成一次性密码的哈希算法，默认为 SHA1。
 /// [digits] 生成一次性密码的位数，默认为 6 位。
-/// [interval] 密码生成周期，适用于 TOTP，默认为 30 秒。
+/// [period] 密码生成周期，适用于 TOTP，默认为 30 秒。
 /// [counter] 计数器，适用于 HOTP，默认为 0。
 /// [pin] 用户设置的 PIN，默认为空字符串。
 /// [isBase32] 指示是否使用 Base32 编码，适用于 Google 实现，默认为 true。
@@ -32,10 +32,9 @@ class AuthConfig {
   String secret;
   String algorithm;
   int digits;
-  int interval;
+  int period;
   int counter;
   String pin;
-  bool isBase32;
   String icon;
 
   //neglect
@@ -49,10 +48,9 @@ class AuthConfig {
     this.secret = '',
     this.algorithm = 'sha1',
     this.digits = 6,
-    this.interval = 30,
+    this.period = 30,
     this.counter = 0,
     this.pin = '',
-    this.isBase32 = true,
     this.icon = 'assets/icons/passkey.svg',
     this.key = '',
   });
@@ -99,7 +97,7 @@ class AuthConfig {
         if (digits < 6 || digits > 8) {
           throw ArgumentError();
         }
-        if (interval <= 0) {
+        if (period <= 0) {
           throw ArgumentError();
         }
       case 'hotp':
@@ -118,26 +116,13 @@ class AuthConfig {
           throw ArgumentError();
         }
     }
-    if (isBase32 && !AuthConfig.verifyBase32(secret)) {
+    if (!verifyBase32(secret)) {
       throw ArgumentError();
     }
   }
 
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'scheme': scheme,
-      'type': type,
-      'issuer': issuer,
-      'account': account,
-      'secret': secret,
-      'algorithm': algorithm,
-      'digits': digits,
-      'interval': interval,
-      'counter': counter,
-      'pin': pin,
-      'isBase32': isBase32,
-      'icon': icon,
-    };
+    return <String, dynamic>{'scheme': scheme, 'type': type, 'issuer': issuer, 'account': account, 'secret': secret, 'algorithm': algorithm, 'digits': digits, 'interval': period, 'counter': counter, 'pin': pin, 'icon': icon};
   }
 
   factory AuthConfig.fromJson(RecordSnapshot<String, dynamic> map) {
@@ -150,10 +135,9 @@ class AuthConfig {
       secret: map['secret'] as String,
       algorithm: map['algorithm'] as String,
       digits: map['digits'] as int,
-      interval: map['interval'] as int,
+      period: map['interval'] as int,
       counter: map['counter'] as int,
       pin: map['pin'] as String,
-      isBase32: map['isBase32'] as bool,
       icon: map['icon'] as String,
     );
   }
@@ -163,26 +147,9 @@ class AuthConfig {
   /// 返回生成的 OTP 密码字符串。
   String generateCodeString() {
     return switch (type) {
-      'totp' => OTP.generateTOTPCodeString(
-        secret: secret,
-        digits: digits,
-        algorithm: parseAlgorithm(algorithm),
-        intervalSeconds: interval,
-        isBase32: isBase32,
-      ),
-      'hotp' => OTP.generateHOTPCodeString(
-        secret: secret,
-        digits: digits,
-        algorithm: parseAlgorithm(algorithm),
-        counter: counter,
-        isBase32: isBase32,
-      ),
-      'motp' => OTP.generateMOTPCodeString(
-        secret: secret,
-        digits: digits,
-        intervalSeconds: interval,
-        pin: pin,
-      ),
+      'totp' => OTP.generateTOTPCodeString(secret: secret, digits: digits, algorithm: parseAlgorithm(algorithm), intervalSeconds: period, isBase32: true),
+      'hotp' => OTP.generateHOTPCodeString(secret: secret, digits: digits, algorithm: parseAlgorithm(algorithm), counter: counter, isBase32: true),
+      'motp' => OTP.generateMOTPCodeString(secret: secret, digits: digits, intervalSeconds: period, pin: pin),
       String() => throw UnimplementedError(),
     };
   }
@@ -227,6 +194,16 @@ class AuthConfig {
   ///     - `digits`: 可选参数，表示 OTP 位数，通常为 6 或 8，默认为 6。
   ///     - `period`: 可选参数，适用于 `totp`，表示 OTP 有效时间周期，默认为 30 秒。
   ///     - `counter`: 可选参数，适用于 `hotp`，指定当前计数器值。
+  ///
+  String toOtpUri() {
+    return switch (type.toLowerCase()) {
+      'totp' => '${scheme.toLowerCase()}://${type.toLowerCase()}/${issuer}:${account}?secret=${secret.toUpperCase()}&issuer=${issuer}&algorithm=${algorithm.toLowerCase()}&digits=${digits}&period=${period}',
+      'hotp' => '${scheme.toLowerCase()}://${type.toLowerCase()}/${issuer}:${account}?secret=${secret.toUpperCase()}&issuer=${issuer}&algorithm=${algorithm.toLowerCase()}&digits=${digits}&counter=${counter}',
+      'motp' => '${scheme.toLowerCase()}://${type.toLowerCase()}/${issuer}:${account}?secret=${secret.toUpperCase()}&issuer=${issuer}&digits=${digits}&period=${period}&pin=${pin}',
+      String() => throw UnimplementedError(),
+    };
+  }
+
   static AuthConfig parse(String uriString) {
     final uri = Uri.parse(uriString);
     final scheme = uri.scheme;
@@ -248,16 +225,20 @@ class AuthConfig {
       issuer: parseIssuer(label, issuer),
       algorithm: algorithm,
       digits: int.parse(digits),
-      interval: int.parse(period),
+      period: int.parse(period),
       counter: int.parse(counter),
     );
   }
 
+  /// 客户端的优先级
+  /// 如果 LABEL 和 PARAMETERS 都提供了 issuer，客户端会 优先使用 PARAMETERS 中的 issuer 作为官方 issuer（用于识别服务商、生成显示名称等）。
+  /// LABEL 中的 issuer 仅作为备选显示用，不会覆盖 PARAMETERS 中的 issuer。
+  /// 如果 PARAMETERS 中没有 issuer，客户端会尝试从 LABEL 中提取（通过 Issuer:AccountName 形式解析）。
   static String parseIssuer(String label, String? issuer) {
     if (label.contains(':')) {
       return issuer ?? label.split(':')[0];
     } else {
-      return issuer ?? '未提供发行者';
+      return issuer ?? '';
     }
   }
 
@@ -285,7 +266,3 @@ class AuthConfig {
     return secret;
   }
 }
-
-class ErrorArgumentError extends ArgumentError {}
-
-class WarnArgumentError extends ArgumentError {}

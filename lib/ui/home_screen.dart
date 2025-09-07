@@ -5,6 +5,8 @@ import 'package:auth/auth.dart';
 import 'package:auth/repository.dart';
 import 'package:auth/top_bar.dart';
 import 'package:auth/ui/home_item_widget.dart';
+import 'package:auth/ui/route.dart' as route;
+import 'package:auth/ui/settings_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -91,6 +93,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void toSettingsPage(BuildContext context) {
-    Navigator.pushNamed(context, '/settings');
+    // Navigator.pushNamed(context, '/settings');
+
+    Navigator.of(context).push(route.CupertinoPageRoute(builder: (c) => SettingsScreen()));
   }
 }

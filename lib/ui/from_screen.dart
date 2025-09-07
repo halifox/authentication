@@ -1,9 +1,10 @@
 import 'dart:convert';
 
 import 'package:auth/auth.dart';
-import 'package:auth/dialog.dart';
 import 'package:auth/repository.dart';
 import 'package:auth/top_bar.dart';
+import 'package:auth/ui/result_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -35,28 +36,54 @@ class _FromScreenState extends State<FromScreen> {
   void onSave(BuildContext context) async {
     final bool verify = config.verify();
     if (!verify) {
-      showAlertDialog(context, '提示', '参数异常，请确认来源是否正确。');
+      showCupertinoModalPopup(
+        context: context,
+        builder: (ctx) => ResultScreen(state: 0, title: '提示', message: '参数异常，请确认来源是否正确。'),
+      );
       return;
     }
     if (config.key.isEmpty) {
       final int count = await authStore.count(
         db,
-        filter: Filter.and([
-          Filter.equals('account', config.account),
-          Filter.equals('issuer', config.issuer),
-        ]),
+        filter: Filter.and([Filter.equals('account', config.account), Filter.equals('issuer', config.issuer)]),
       );
       if (count > 0) {
-        showOverwriteDialog(context, config);
+        final bool? result = await showCupertinoModalPopup<bool?>(
+          context: context,
+          builder: (ctx) => ResultScreen(
+            state: 0,
+            title: '警告',
+            message: '令牌${config.issuer}:${config.account}已经存在,是否覆盖它',
+            falseButtonVisible: true,
+          ),
+        );
+        if (result == null) {
+          return;
+        }
+        if (result) {
+          await authStore.update(
+            db,
+            config.toJson(),
+            finder: Finder(
+              filter: Filter.and([Filter.equals('account', config.account), Filter.equals('issuer', config.issuer)]),
+            ),
+          );
+        }
         return;
       }
       await authStore.add(db, config.toJson());
       Navigator.popUntil(context, ModalRoute.withName('/'));
-      await showAlertDialog(context, '提示', '添加成功');
+      showCupertinoModalPopup(
+        context: context,
+        builder: (ctx) => ResultScreen(state: 1, title: '提示', message: '添加成功'),
+      );
     } else {
       authStore.record(config.key).update(db, config.toJson());
       Navigator.popUntil(context, ModalRoute.withName('/'));
-      await showAlertDialog(context, '提示', '更新成功');
+      showCupertinoModalPopup(
+        context: context,
+        builder: (ctx) => ResultScreen(state: 1, title: '提示', message: '更新成功'),
+      );
     }
   }
 
@@ -128,20 +155,13 @@ class _FromScreenState extends State<FromScreen> {
     );
   }
 
-  Widget buildDropdown<T>(
-    String label,
-    T initialValue,
-    Map<T, String> options,
-    void Function(T) onChanged,
-  ) {
+  Widget buildDropdown<T>(String label, T initialValue, Map<T, String> options, void Function(T) onChanged) {
     return DropdownMenuFormField<T>(
       width: double.infinity,
       label: Text(label),
       initialSelection: initialValue,
       dropdownMenuEntries: options.entries
-          .map(
-            (MapEntry<T, String> entry) => DropdownMenuEntry(value: entry.key, label: entry.value),
-          )
+          .map((MapEntry<T, String> entry) => DropdownMenuEntry(value: entry.key, label: entry.value))
           .toList(),
       inputDecorationTheme: const InputDecorationTheme(
         border: OutlineInputBorder(
@@ -212,48 +232,20 @@ class _FromScreenState extends State<FromScreen> {
                 buildTextField(config.account, (it) => config.account = it, '用户名'),
                 buildPasswordTextField(config.secret, (it) => config.secret = it, '密钥'),
                 switch (config.type.toLowerCase()) {
-                  'totp' => buildDropdown(
-                    '算法',
-                    config.algorithm,
-                    algorithmLabels,
-                    (value) => config.algorithm = value,
-                  ),
-                  'hotp' => buildDropdown(
-                    '算法',
-                    config.algorithm,
-                    algorithmLabels,
-                    (value) => config.algorithm = value,
-                  ),
+                  'totp' => buildDropdown('算法', config.algorithm, algorithmLabels, (value) => config.algorithm = value),
+                  'hotp' => buildDropdown('算法', config.algorithm, algorithmLabels, (value) => config.algorithm = value),
                   'motp' => buildTextField(config.pin, (it) => config.pin = it, 'PIN码'),
                   String() => throw UnimplementedError(),
                 },
                 Row(
                   spacing: 16,
                   children: <Widget>[
-                    Expanded(
-                      child: buildDigitsOnlyTextField(
-                        config.digits,
-                        (it) => config.digits = it,
-                        '位数',
-                      ),
-                    ),
+                    Expanded(child: buildDigitsOnlyTextField(config.digits, (it) => config.digits = it, '位数')),
                     Expanded(
                       child: switch (config.type.toLowerCase()) {
-                        'totp' => buildDigitsOnlyTextField(
-                          config.interval,
-                          (it) => config.interval = it,
-                          '时间间隔(秒)',
-                        ),
-                        'hotp' => buildDigitsOnlyTextField(
-                          config.counter,
-                          (it) => config.counter = it,
-                          '计数器',
-                        ),
-                        'motp' => buildDigitsOnlyTextField(
-                          config.interval,
-                          (it) => config.interval = it,
-                          '时间间隔(秒)',
-                        ),
+                        'totp' => buildDigitsOnlyTextField(config.period, (it) => config.period = it, '时间间隔(秒)'),
+                        'hotp' => buildDigitsOnlyTextField(config.counter, (it) => config.counter = it, '计数器'),
+                        'motp' => buildDigitsOnlyTextField(config.period, (it) => config.period = it, '时间间隔(秒)'),
                         String() => throw UnimplementedError(),
                       },
                     ),
@@ -350,10 +342,7 @@ class _IconsChooseScreenState extends State<IconsChooseScreen> {
                         "assets/icons/${icon}",
                         width: 28,
                         height: 28,
-                        colorFilter: ColorFilter.mode(
-                          Theme.of(context).colorScheme.onPrimary,
-                          BlendMode.srcIn,
-                        ),
+                        colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn),
                       ),
                     ),
                   );

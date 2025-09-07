@@ -12,7 +12,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   var options = [
-    ['biometricUnlock', '生物识别解锁'],
+    // ['biometricUnlock', '生物识别解锁'],
     ['isShowCaptchaOnTap', '轻触显示验证码'],
     ['isCopyCaptchaOnTap', '轻触复制验证码'],
   ];
