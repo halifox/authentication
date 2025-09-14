@@ -21,8 +21,148 @@ linter:
   # `// ignore_for_file: name_of_lint` syntax on the line or in the file
   # producing the lint.
   rules:
-    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+    # ========== 代码风格规则 ==========
+    prefer_single_quotes: true                    # 优先使用单引号而不是双引号
+    prefer_const_constructors: true               # 优先使用const构造函数来提高性能
+    prefer_const_constructors_in_immutables: true # 在不可变类中优先使用const构造函数
+    prefer_const_literals_to_create_immutables: true # 优先使用const字面量创建不可变对象
+    prefer_const_declarations: true               # 优先使用const声明
+    prefer_final_fields: true                     # 优先使用final字段
+    prefer_final_locals: true                     # 优先使用final局部变量
+    prefer_final_in_for_each: true                # 在forEach循环中优先使用final变量
+    prefer_typing_uninitialized_variables: true   # 为未初始化的变量添加类型注解
+    prefer_collection_literals: true              # 优先使用集合字面量语法
+    prefer_expression_function_bodies: false      # 优先使用表达式函数体而不是块函数体 (已禁用)
+    prefer_relative_imports: true                 # 优先使用相对导入
+    sort_constructors_first: true                 # 构造函数声明应该放在非构造函数声明之前
+    sort_unnamed_constructors_first: true         # 未命名构造函数应该放在命名构造函数之前
+    
+    # ========== 代码质量规则 ==========
+    avoid_print: true                             # 避免在生产代码中使用print语句
+    avoid_unnecessary_containers: true            # 避免不必要的Container包装
+    avoid_unused_constructor_parameters: true     # 避免未使用的构造函数参数
+    avoid_web_libraries_in_flutter: true          # 避免在Flutter中使用Web专用库
+    avoid_empty_else: true                        # 避免空的else语句
+    avoid_function_literals_in_foreach_calls: true # 避免在forEach调用中使用函数字面量
+    avoid_renaming_method_parameters: true        # 避免重命名方法参数
+    avoid_returning_null_for_future: true         # 避免为Future返回null
+    avoid_returning_null_for_void: true           # 避免为void返回null
+    avoid_single_cascade_in_expression_statements: true # 避免在表达式语句中使用单个级联
+    avoid_types_as_parameter_names: true          # 避免使用类型作为参数名
+    avoid_void_async: true                        # 避免async函数返回void
+    
+    # ========== 资源管理规则 ==========
+    cancel_subscriptions: true                    # 取消订阅以避免内存泄漏
+    close_sinks: true                             # 关闭StreamSink以避免内存泄漏
+    
+    # ========== 注释和文档规则 ==========
+    comment_references: true                      # 注释中的引用应该是可见的
+    slash_for_doc_comments: true                  # 文档注释应该使用///而不是/**
+    provide_deprecation_message: true             # 为废弃的API提供废弃消息
+    
+    # ========== 控制流规则 ==========
+    control_flow_in_finally: true                 # 避免在finally块中使用控制流语句
+    empty_catches: true                           # 避免空的catch块
+    empty_statements: true                        # 避免空语句
+    invariant_booleans: true                      # 避免在条件表达式中使用不变的布尔值
+    literal_only_boolean_expressions: true        # 避免仅包含字面量的布尔表达式
+    
+    # ========== 类型安全规则 ==========
+    iterable_contains_unrelated_type: true        # 避免在Iterable.contains中使用不相关的类型
+    list_remove_unrelated_type: true              # 避免在List.remove中使用不相关的类型
+    unrelated_type_equality_checks: true          # 避免不相关类型的相等性检查
+    hash_and_equals: true                         # 如果重写hashCode，也应该重写operator==
+    
+    # ========== 字符串和集合规则 ==========
+    no_adjacent_strings_in_list: true             # 避免在列表中使用相邻的字符串
+    no_duplicate_case_values: true                # 避免在switch语句中重复的case值
+    prefer_adjacent_string_concatenation: true    # 优先使用相邻字符串连接
+    prefer_interpolation_to_compose_strings: true # 优先使用字符串插值而不是字符串组合
+    prefer_spread_collections: true               # 优先使用展开集合语法
+    unnecessary_string_escapes: true              # 避免不必要的字符串转义
+    unnecessary_string_interpolations: true       # 避免不必要的字符串插值
+    use_string_buffers: true                      # 在循环中构建字符串时使用StringBuffer
+    
+    # ========== 性能优化规则 ==========
+    prefer_contains: true                         # 优先使用contains()而不是indexOf() != -1
+    prefer_for_elements_to_map_fromIterable: true # 优先使用for元素而不是map().toList()
+    prefer_iterable_whereType: true               # 优先使用whereType而不是where().cast()
+    prefer_null_aware_method_calls: true          # 优先使用空安全的方法调用
+    prefer_inlined_adds: true                     # 优先使用内联的add操作
+    use_full_hex_values_for_flutter_colors: true  # 使用完整的十六进制值表示Flutter颜色
+    
+    # ========== 函数和方法规则 ==========
+    prefer_function_declarations_over_variables: true # 优先使用函数声明而不是函数变量
+    prefer_if_elements_to_conditional_expressions: true # 优先使用if元素而不是条件表达式
+    prefer_if_null_operators: true                # 优先使用??操作符
+    prefer_initializing_formals: true             # 优先使用初始化形式参数
+    prefer_void_to_null: true                     # 优先使用void而不是null
+    use_function_type_syntax_for_parameters: true # 优先使用函数类型语法作为参数
+    use_if_null_to_convert_nulls_to_bools: true   # 使用??操作符将null转换为布尔值
+    use_is_even_rather_than_modulo: true          # 使用isEven而不是% 2 == 0
+    use_rethrow_when_possible: true               # 优先使用rethrow而不是throw e
+    use_setters_to_change_properties: true        # 使用setter来更改属性
+    use_super_parameters: true                    # 使用super参数语法
+    
+    # ========== 异步编程规则 ==========
+    unawaited_futures: true                       # 检查未等待的Future
+    unnecessary_await_in_return: true             # 避免在return语句中不必要的await
+    
+    # ========== 字符串插值规则 ==========
+    unnecessary_brace_in_string_interps: true     # 避免字符串插值中不必要的大括号
+    
+    # ========== 不必要代码规则 ==========
+    unnecessary_const: true                       # 避免不必要的const关键字
+    unnecessary_getters_setters: true             # 避免不必要的getter和setter
+    unnecessary_lambdas: true                     # 避免不必要的lambda表达式
+    unnecessary_new: true                         # 避免不必要的new关键字
+    unnecessary_null_aware_assignments: true      # 避免不必要的空安全赋值
+    unnecessary_null_checks: true                 # 避免不必要的null检查
+    unnecessary_null_in_if_null_operators: true   # 避免在??操作符中不必要的null
+    unnecessary_nullable_for_final_variable_declarations: true # 避免final变量声明中不必要的可空类型
+    unnecessary_overrides: true                   # 避免不必要的重写
+    unnecessary_parenthesis: true                 # 避免不必要的括号
+    unnecessary_raw_strings: true                 # 避免不必要的原始字符串
+    unnecessary_this: true                        # 避免不必要的this关键字
+    
+    # ========== Flutter特定规则 ==========
+    no_logic_in_create_state: true                # 避免在createState中有逻辑
+    use_build_context_synchronously: true         # 安全使用BuildContext，避免在异步操作后使用
+    use_decorated_box: true                       # 优先使用DecoratedBox而不是Container来装饰
+    use_key_in_widget_constructors: true          # 为公共Widget构造函数添加key参数
+    use_late_for_private_fields_and_variables: true # 对私有字段和变量使用late关键字
+    sized_box_for_whitespace: true                # 使用SizedBox而不是Container来创建空白空间
+    sort_child_properties_last: true              # 将child属性放在最后
+    
+    # ========== 断言和测试规则 ==========
+    prefer_asserts_in_initializer_lists: true     # 优先在初始化列表中使用断言
+    prefer_asserts_with_message: true             # 为断言添加消息
+    use_test_throws_matchers: true                # 在测试中使用throwsMatcher
+    
+    # ========== 类型注解规则 ==========
+    type_annotate_public_apis: true               # 为公共API添加类型注解
+    type_init_formals: true                       # 为初始化形式参数添加类型注解
+    
+    # ========== 条件赋值规则 ==========
+    prefer_conditional_assignment: true           # 优先使用条件赋值
+    
+    # ========== 常量命名规则 ==========
+    use_named_constants: true                     # 使用命名常量而不是魔法数字
+    
+    # ========== 原始字符串规则 ==========
+    use_raw_strings: true                         # 在包含转义字符的字符串中使用原始字符串
+    
+    # ========== 类型转换规则 ==========
+    use_to_and_as_if_applicable: true             # 在适用时使用to和as方法
+    
+    # ========== 正则表达式规则 ==========
+    valid_regexps: true                           # 确保正则表达式有效
+    
+    # ========== 空值检查规则 ==========
+    void_checks: true                             # 避免void类型的检查
+    
+    # ========== 递归规则 ==========
+    recursive_getters: true                       # 避免递归getter
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

@@ -1,16 +1,18 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:auth/auth.dart';
-import 'package:auth/repository.dart';
-import 'package:auth/top_bar.dart';
-import 'package:auth/ui/home_item_widget.dart';
-import 'package:auth/ui/route.dart' as route;
-import 'package:auth/ui/settings_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sembast/sembast.dart';
+
+import '../l10n/app_localizations.dart';
+import '../repository/auth.dart';
+import '../repository/repository.dart';
+import 'auth_item_widget.dart';
+import 'route.dart' as route;
+import 'settings_screen.dart';
+import 'top_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -40,21 +42,22 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
     setSystemUIOverlayStyle(context);
+
     return Scaffold(
       appBar: TopBar(
         context,
-        'Purity Auth',
+        AppLocalizations.of(context)!.appTitle,
         leftIcon: Icons.settings,
         leftOnPressed: toSettingsPage,
         rightIcon: Icons.add,
         rightOnPressed: toAuthAddPage,
       ),
       body: GridView.builder(
-        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 700,
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
@@ -62,8 +65,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         itemCount: data.length,
         itemBuilder: (context, index) {
-          var config = AuthConfig.fromJson(data[index]);
-          return HomeItemWidget(key: ValueKey(config.key), config: config);
+          final config = AuthConfig.fromJson(data[index]);
+          return AuthItemWidget(key: ValueKey(config.key), config: config);
         },
       ),
     );
@@ -95,6 +98,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void toSettingsPage(BuildContext context) {
     // Navigator.pushNamed(context, '/settings');
 
-    Navigator.of(context).push(route.CupertinoPageRoute(builder: (c) => SettingsScreen()));
+    Navigator.of(context).push(route.CupertinoPageRoute(builder: (c) => const SettingsScreen()));
   }
 }

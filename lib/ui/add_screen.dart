@@ -1,9 +1,5 @@
 import 'dart:io';
 
-import 'package:auth/auth.dart';
-import 'package:auth/repository.dart';
-import 'package:auth/top_bar.dart';
-import 'package:auth/ui/result_screen.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -11,6 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:sembast/sembast.dart';
+
+import '../l10n/app_localizations.dart';
+import '../repository/auth.dart';
+import '../repository/repository.dart';
+import 'result_screen.dart';
+import 'top_bar.dart';
 
 class AddScreenOption {
   AddScreenOption(this.icon, this.label, this.onTap);
@@ -20,22 +22,35 @@ class AddScreenOption {
   final void Function(BuildContext context) onTap;
 }
 
-class AddScreen extends StatelessWidget {
-  final MobileScannerController controller = MobileScannerController();
+class AddScreen extends StatefulWidget {
+  const AddScreen({super.key});
 
-  late final List<AddScreenOption> options = [
-    AddScreenOption(Icons.camera_enhance, '扫描二维码', scan),
-    AddScreenOption(Icons.photo_library, '上传二维码', upload),
-    AddScreenOption(Icons.keyboard, '输入密钥', enter),
-    AddScreenOption(Icons.file_upload_outlined, '从剪贴板导入', restore),
-    AddScreenOption(Icons.file_download_outlined, '导出到剪贴板', backup),
-  ];
+  @override
+  State<AddScreen> createState() => _AddScreenState();
+}
 
-  void scan(BuildContext context) async {
+class _AddScreenState extends State<AddScreen> {
+  late final MobileScannerController controller = MobileScannerController();
+
+  List<AddScreenOption> get options {
+    return [
+      AddScreenOption(Icons.camera_enhance, AppLocalizations.of(context)!.scanQRCode, scan),
+      AddScreenOption(Icons.photo_library, AppLocalizations.of(context)!.uploadQRCode, upload),
+      AddScreenOption(Icons.keyboard, AppLocalizations.of(context)!.enterKey, enter),
+      AddScreenOption(Icons.file_upload_outlined, AppLocalizations.of(context)!.importFromClipboard, restore),
+      AddScreenOption(Icons.file_download_outlined, AppLocalizations.of(context)!.exportToClipboard, backup),
+    ];
+  }
+
+  Future<void> scan(BuildContext context) async {
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) {
       showCupertinoModalPopup(
         context: context,
-        builder: (ctx) => ResultScreen(state: 0, title: '提示', message: '该功能当前仅支持 Android 和 iOS 平台。'),
+        builder: (ctx) => ResultScreen(
+          state: 0,
+          title: AppLocalizations.of(context)!.tip,
+          message: AppLocalizations.of(context)!.platformNotSupported,
+        ),
       );
       return;
     }
@@ -43,17 +58,21 @@ class AddScreen extends StatelessWidget {
     handleScannedBarcodes(context, barcodeCapture?.barcodes);
   }
 
-  void upload(BuildContext context) async {
+  Future<void> upload(BuildContext context) async {
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) {
       showCupertinoModalPopup(
         context: context,
-        builder: (ctx) => ResultScreen(state: 0, title: '提示', message: '该功能当前仅支持 Android 和 iOS 平台。'),
+        builder: (ctx) => ResultScreen(
+          state: 0,
+          title: AppLocalizations.of(context)!.tip,
+          message: AppLocalizations.of(context)!.platformNotSupported,
+        ),
       );
       return;
     }
     final XFile? selectedFile = await openFile(
       acceptedTypeGroups: [
-        XTypeGroup(extensions: ['jpg', 'jpeg', 'png']),
+        const XTypeGroup(extensions: ['jpg', 'jpeg', 'png']),
       ],
     );
     if (selectedFile == null) {
@@ -64,16 +83,20 @@ class AddScreen extends StatelessWidget {
     handleScannedBarcodes(context, barcodeCapture?.barcodes);
   }
 
-  void enter(BuildContext context) async {
+  Future<void> enter(BuildContext context) async {
     Navigator.pushNamed(context, '/from');
   }
 
-  void restore(BuildContext context) async {
+  Future<void> restore(BuildContext context) async {
     final ClipboardData? clipboardData = await Clipboard.getData('text/plain');
     if (clipboardData == null) {
       showCupertinoModalPopup(
         context: context,
-        builder: (ctx) => ResultScreen(state: 0, title: "导入失败", message: "无法获取剪贴板数据"),
+        builder: (ctx) => ResultScreen(
+          state: 0,
+          title: AppLocalizations.of(context)!.importFailed,
+          message: AppLocalizations.of(context)!.cannotGetClipboardData,
+        ),
       );
       return;
     }
@@ -81,15 +104,19 @@ class AddScreen extends StatelessWidget {
     if (text == null) {
       showCupertinoModalPopup(
         context: context,
-        builder: (ctx) => ResultScreen(state: 0, title: "导入失败", message: "无法获取剪贴板数据"),
+        builder: (ctx) => ResultScreen(
+          state: 0,
+          title: AppLocalizations.of(context)!.importFailed,
+          message: AppLocalizations.of(context)!.cannotGetClipboardData,
+        ),
       );
       return;
     }
 
-    List<String> optUrls = text.split("\n");
-    for (String optUrl in optUrls) {
+    final List<String> optUrls = text.split('\n');
+    for (final String optUrl in optUrls) {
       final AuthConfig config = AuthConfig.parse(optUrl);
-      final bool verify = config.verify();
+      final bool verify = config.verify(context);
       if (!verify) {
         continue;
       }
@@ -111,21 +138,29 @@ class AddScreen extends StatelessWidget {
     }
     showCupertinoModalPopup(
       context: context,
-      builder: (ctx) => ResultScreen(state: 1, title: "导入成功", message: "共导入${optUrls.length}条数据"),
+      builder: (ctx) => ResultScreen(
+        state: 1,
+        title: AppLocalizations.of(context)!.importSuccess,
+        message: AppLocalizations.of(context)!.importedCount(optUrls.length),
+      ),
     );
   }
 
-  void backup(context) async {
+  Future<void> backup(context) async {
     final List<RecordSnapshot<String, Map<String, Object?>>> records = await authStore.find(db);
-    final String optUrls = records.map((e) => AuthConfig.fromJson(e).toOtpUri()).join("\n");
+    final String optUrls = records.map((e) => AuthConfig.fromJson(e).toOtpUri()).join('\n');
     Clipboard.setData(ClipboardData(text: optUrls));
     showCupertinoModalPopup(
       context: context,
-      builder: (ctx) => ResultScreen(state: 1, title: "导出成功", message: "共导出${records.length}条数据到剪贴板"),
+      builder: (ctx) => ResultScreen(
+        state: 1,
+        title: AppLocalizations.of(context)!.exportSuccess,
+        message: AppLocalizations.of(context)!.exportedCount(records.length),
+      ),
     );
   }
 
-  void handleScannedBarcodes(BuildContext context, List<Barcode>? barcodes) async {
+  Future<void> handleScannedBarcodes(BuildContext context, List<Barcode>? barcodes) async {
     if (barcodes == null || barcodes.isEmpty) {
       return;
     }
@@ -136,11 +171,15 @@ class AddScreen extends StatelessWidget {
     }
     Navigator.popUntil(context, ModalRoute.withName('/'));
     final AuthConfig config = AuthConfig.parse(uriString);
-    final bool verify = config.verify();
+    final bool verify = config.verify(context);
     if (!verify) {
       showCupertinoModalPopup(
         context: context,
-        builder: (ctx) => ResultScreen(state: 0, title: '提示', message: '暂不支持此类型的二维码链接，请确认来源是否正确。'),
+        builder: (ctx) => ResultScreen(
+          state: 0,
+          title: AppLocalizations.of(context)!.tip,
+          message: AppLocalizations.of(context)!.unsupportedQRCode,
+        ),
       );
       return;
     }
@@ -153,8 +192,8 @@ class AddScreen extends StatelessWidget {
         context: context,
         builder: (ctx) => ResultScreen(
           state: 0,
-          title: '警告',
-          message: '令牌${config.issuer}:${config.account}已经存在,是否覆盖它',
+          title: AppLocalizations.of(context)!.warning,
+          message: AppLocalizations.of(context)!.tokenExists(config.issuer, config.account),
           falseButtonVisible: true,
         ),
       );
@@ -173,20 +212,25 @@ class AddScreen extends StatelessWidget {
       return;
     }
     await authStore.add(db, config.toJson());
+
     showCupertinoModalPopup(
       context: context,
-      builder: (ctx) => ResultScreen(state: 1, title: '提示', message: '添加成功'),
+      builder: (ctx) => ResultScreen(
+        state: 1,
+        title: AppLocalizations.of(context)!.tip,
+        message: AppLocalizations.of(context)!.addSuccess,
+      ),
     );
   }
 
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TopBar(context, '添加'),
+      appBar: TopBar(context, AppLocalizations.of(context)!.add),
       body: GridView.builder(
-        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 700,
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
@@ -210,44 +254,42 @@ class HorizontalBarButton extends StatelessWidget {
   final void Function(BuildContext context) onTap;
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => onTap.call(context),
-      child: Container(
-        padding: EdgeInsets.all(16),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          borderRadius: BorderRadius.all(Radius.circular(24)),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              height: 48,
-              width: 48,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                borderRadius: BorderRadius.all(Radius.circular(12)),
-              ),
-              child: Icon(icon, size: 24, color: Theme.of(context).colorScheme.onPrimary),
-            ),
-            SizedBox(width: 16),
-            Text(
-              label,
-              maxLines: 1,
-              style: TextStyle(
-                height: 0,
-                fontSize: 18,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(width: 16),
-          ],
-        ),
+  Widget build(BuildContext context) => GestureDetector(
+    onTap: () => onTap.call(context),
+    child: Container(
+      padding: const EdgeInsets.all(16),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        borderRadius: const BorderRadius.all(Radius.circular(24)),
       ),
-    );
-  }
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            height: 48,
+            width: 48,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              borderRadius: const BorderRadius.all(Radius.circular(12)),
+            ),
+            child: Icon(icon, size: 24, color: Theme.of(context).colorScheme.onPrimary),
+          ),
+          const SizedBox(width: 16),
+          Text(
+            label,
+            maxLines: 1,
+            style: TextStyle(
+              height: 0,
+              fontSize: 18,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(width: 16),
+        ],
+      ),
+    ),
+  );
 }

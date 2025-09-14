@@ -1,6 +1,9 @@
-import 'package:auth/otp.dart';
 import 'package:base32/base32.dart';
 import 'package:sembast/sembast.dart';
+import 'package:flutter/widgets.dart';
+
+import '../l10n/app_localizations.dart';
+import 'otp.dart';
 
 /// 认证类型枚举，用于定义不同的认证方式。
 ///
@@ -25,21 +28,6 @@ import 'package:sembast/sembast.dart';
 /// [isBase32] 指示是否使用 Base32 编码，适用于 Google 实现，默认为 true。
 
 class AuthConfig {
-  String scheme;
-  String type;
-  String issuer;
-  String account;
-  String secret;
-  String algorithm;
-  int digits;
-  int period;
-  int counter;
-  String pin;
-  String icon;
-
-  //neglect
-  String key;
-
   AuthConfig({
     this.scheme = 'otpauth',
     this.type = 'totp',
@@ -55,104 +43,151 @@ class AuthConfig {
     this.key = '',
   });
 
-  bool verify() {
+  factory AuthConfig.fromJson(RecordSnapshot<String, dynamic> map) => AuthConfig(
+    key: map.key,
+    scheme: map['scheme'] as String,
+    type: map['type'] as String,
+    issuer: map['issuer'] as String,
+    account: map['account'] as String,
+    secret: map['secret'] as String,
+    algorithm: map['algorithm'] as String,
+    digits: map['digits'] as int,
+    period: map['interval'] as int,
+    counter: map['counter'] as int,
+    pin: map['pin'] as String,
+    icon: map['icon'] as String,
+  );
+  String scheme;
+  String type;
+  String issuer;
+  String account;
+  String secret;
+  String algorithm;
+  int digits;
+  int period;
+  int counter;
+  String pin;
+  String icon;
+
+  //neglect
+  String key;
+
+  AuthConfig clone() => AuthConfig(
+    scheme: scheme,
+    type: type,
+    issuer: issuer,
+    account: account,
+    secret: secret,
+    algorithm: algorithm,
+    digits: digits,
+    period: period,
+    counter: counter,
+    pin: pin,
+    icon: icon,
+    key: key,
+  );
+
+  bool verify(BuildContext context) {
     try {
-      verifyThrow();
+      verifyThrow(context);
       return true;
     } catch (e) {
       return false;
     }
   }
 
-  verifyThrow() {
+  void verifyThrow(BuildContext context) {
     scheme = switch (scheme.toLowerCase()) {
       'otpauth' => scheme,
-      String() => throw ArgumentError(),
+      String() => throw ArgumentError(AppLocalizations.of(context)!.invalidScheme),
     };
 
     type = switch (type.toLowerCase()) {
       'totp' => type,
       'hotp' => type,
       'motp' => type,
-      String() => throw ArgumentError(),
+      String() => throw ArgumentError(AppLocalizations.of(context)!.invalidType),
     };
 
     if (issuer.isEmpty) {
-      throw ArgumentError();
+      throw ArgumentError(AppLocalizations.of(context)!.issuerCannotBeEmpty);
     }
 
     if (account.isEmpty) {
-      throw ArgumentError();
+      throw ArgumentError(AppLocalizations.of(context)!.accountCannotBeEmpty);
     }
 
     algorithm = switch (algorithm.toLowerCase()) {
       'sha1' => algorithm,
       'sha256' => algorithm,
       'sha512' => algorithm,
-      String() => throw ArgumentError(),
+      String() => throw ArgumentError(AppLocalizations.of(context)!.invalidAlgorithm),
     };
 
     switch (type.toLowerCase()) {
       case 'totp':
         if (digits < 6 || digits > 8) {
-          throw ArgumentError();
+          throw ArgumentError(AppLocalizations.of(context)!.invalidDigits);
         }
         if (period <= 0) {
-          throw ArgumentError();
+          throw ArgumentError(AppLocalizations.of(context)!.invalidPeriod);
         }
       case 'hotp':
         if (digits < 6 || digits > 8) {
-          throw ArgumentError();
+          throw ArgumentError(AppLocalizations.of(context)!.invalidDigits);
         }
         if (counter < 0) {
-          throw ArgumentError();
+          throw ArgumentError(AppLocalizations.of(context)!.invalidCounter);
         }
 
       case 'motp':
         if (digits == 6) {
-          throw ArgumentError();
+          throw ArgumentError(AppLocalizations.of(context)!.invalidDigits);
         }
         if (pin.isEmpty) {
-          throw ArgumentError();
+          throw ArgumentError(AppLocalizations.of(context)!.invalidPin);
         }
     }
-    if (!verifyBase32(secret)) {
-      throw ArgumentError();
+    if (!verifyBase32(secret, context)) {
+      throw ArgumentError(AppLocalizations.of(context)!.invalidSecretKey);
     }
   }
 
-  Map<String, dynamic> toJson() {
-    return <String, dynamic>{'scheme': scheme, 'type': type, 'issuer': issuer, 'account': account, 'secret': secret, 'algorithm': algorithm, 'digits': digits, 'interval': period, 'counter': counter, 'pin': pin, 'icon': icon};
-  }
-
-  factory AuthConfig.fromJson(RecordSnapshot<String, dynamic> map) {
-    return AuthConfig(
-      key: map.key,
-      scheme: map['scheme'] as String,
-      type: map['type'] as String,
-      issuer: map['issuer'] as String,
-      account: map['account'] as String,
-      secret: map['secret'] as String,
-      algorithm: map['algorithm'] as String,
-      digits: map['digits'] as int,
-      period: map['interval'] as int,
-      counter: map['counter'] as int,
-      pin: map['pin'] as String,
-      icon: map['icon'] as String,
-    );
-  }
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'scheme': scheme,
+    'type': type,
+    'issuer': issuer,
+    'account': account,
+    'secret': secret,
+    'algorithm': algorithm,
+    'digits': digits,
+    'interval': period,
+    'counter': counter,
+    'pin': pin,
+    'icon': icon,
+  };
 
   /// 计算并生成当前的 OTP 密码
   ///
   /// 返回生成的 OTP 密码字符串。
-  String generateCodeString() {
-    return switch (type) {
-      'totp' => OTP.generateTOTPCodeString(secret: secret, digits: digits, algorithm: parseAlgorithm(algorithm), intervalSeconds: period, isBase32: true),
-      'hotp' => OTP.generateHOTPCodeString(secret: secret, digits: digits, algorithm: parseAlgorithm(algorithm), counter: counter, isBase32: true),
-      'motp' => OTP.generateMOTPCodeString(secret: secret, digits: digits, intervalSeconds: period, pin: pin),
-      String() => throw UnimplementedError(),
-    };
-  }
+  String generateCodeString() => switch (type) {
+    'totp' => OTP.generateTOTPCodeString(
+      secret: secret,
+      digits: digits,
+      algorithm: parseAlgorithm(algorithm),
+      intervalSeconds: period,
+      isBase32: true,
+    ),
+    'hotp' => OTP.generateHOTPCodeString(
+      secret: secret,
+      digits: digits,
+      algorithm: parseAlgorithm(algorithm),
+      counter: counter,
+      isBase32: true,
+    ),
+    'motp' => OTP.generateMOTPCodeString(secret: secret, digits: digits, intervalSeconds: period, pin: pin),
+    String() => throw UnimplementedError(),
+  };
 
   /// 验证输入字符串是否为有效的 Base32 编码。
   ///
@@ -163,10 +198,10 @@ class AuthConfig {
   /// 返回一个布尔值：
   /// - 如果输入是有效的 Base32 编码，则返回 true。
   /// - 否则返回 false。
-  static bool verifyBase32(String? input) {
+  static bool verifyBase32(String? input, BuildContext context) {
     try {
       if (input == null || input.isEmpty) {
-        throw ArgumentError('Invalid secret');
+        throw ArgumentError(AppLocalizations.of(context)!.invalidSecretKey);
       }
       base32.decode(input);
       return true;
@@ -195,14 +230,15 @@ class AuthConfig {
   ///     - `period`: 可选参数，适用于 `totp`，表示 OTP 有效时间周期，默认为 30 秒。
   ///     - `counter`: 可选参数，适用于 `hotp`，指定当前计数器值。
   ///
-  String toOtpUri() {
-    return switch (type.toLowerCase()) {
-      'totp' => '${scheme.toLowerCase()}://${type.toLowerCase()}/${issuer}:${account}?secret=${secret.toUpperCase()}&issuer=${issuer}&algorithm=${algorithm.toLowerCase()}&digits=${digits}&period=${period}',
-      'hotp' => '${scheme.toLowerCase()}://${type.toLowerCase()}/${issuer}:${account}?secret=${secret.toUpperCase()}&issuer=${issuer}&algorithm=${algorithm.toLowerCase()}&digits=${digits}&counter=${counter}',
-      'motp' => '${scheme.toLowerCase()}://${type.toLowerCase()}/${issuer}:${account}?secret=${secret.toUpperCase()}&issuer=${issuer}&digits=${digits}&period=${period}&pin=${pin}',
-      String() => throw UnimplementedError(),
-    };
-  }
+  String toOtpUri() => switch (type.toLowerCase()) {
+    'totp' =>
+      '${scheme.toLowerCase()}://${type.toLowerCase()}/$issuer:$account?secret=${secret.toUpperCase()}&issuer=$issuer&algorithm=${algorithm.toLowerCase()}&digits=$digits&period=$period',
+    'hotp' =>
+      '${scheme.toLowerCase()}://${type.toLowerCase()}/$issuer:$account?secret=${secret.toUpperCase()}&issuer=$issuer&algorithm=${algorithm.toLowerCase()}&digits=$digits&counter=$counter',
+    'motp' =>
+      '${scheme.toLowerCase()}://${type.toLowerCase()}/$issuer:$account?secret=${secret.toUpperCase()}&issuer=$issuer&digits=$digits&period=$period&pin=$pin',
+    String() => throw UnimplementedError(),
+  };
 
   static AuthConfig parse(String uriString) {
     final uri = Uri.parse(uriString);
@@ -250,18 +286,16 @@ class AuthConfig {
     }
   }
 
-  static Algorithm parseAlgorithm(String algorithm) {
-    return switch (algorithm.toLowerCase()) {
-      'sha1' => Algorithm.SHA1,
-      'sha256' => Algorithm.SHA256,
-      'sha512' => Algorithm.SHA512,
-      String() => throw UnimplementedError(),
-    };
-  }
+  static Algorithm parseAlgorithm(String algorithm) => switch (algorithm.toLowerCase()) {
+    'sha1' => Algorithm.SHA1,
+    'sha256' => Algorithm.SHA256,
+    'sha512' => Algorithm.SHA512,
+    String() => throw UnimplementedError(),
+  };
 
-  static String checkSecret(String? secret) {
-    if (secret == null || !verifyBase32(secret)) {
-      throw ArgumentError('Invalid secret');
+  static String checkSecret(String? secret, BuildContext context) {
+    if (secret == null || !verifyBase32(secret, context)) {
+      throw ArgumentError(AppLocalizations.of(context)!.invalidSecretKey);
     }
     return secret;
   }

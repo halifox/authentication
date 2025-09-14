@@ -1,6 +1,8 @@
-import 'package:auth/top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+
+import '../l10n/app_localizations.dart';
+import 'top_bar.dart';
 
 class ScanScreen extends StatefulWidget {
   const ScanScreen({super.key});
@@ -32,7 +34,7 @@ class _ScanScreenState extends State<ScanScreen> {
     return Scaffold(
       appBar: TopBar(
         context,
-        '扫描',
+        AppLocalizations.of(context)!.scan,
         rightIcon: controller.torchEnabled ? Icons.flash_off : Icons.flash_on,
         rightOnPressed: (context) async => controller.toggleTorch(),
       ),

@@ -24,7 +24,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/rendering.dart';
 
-
 const double _kBackGestureWidth = 20.0;
 const double _kMinFlingVelocity = 1.0; // Screen widths per second.
 
@@ -56,22 +55,13 @@ const Color kCupertinoModalBarrierColor = CupertinoDynamicColor.withBrightness(
 const Duration _kModalPopupTransitionDuration = Duration(milliseconds: 335);
 
 // Offset from offscreen to the right to fully on screen.
-final Animatable<Offset> _kRightMiddleTween = Tween<Offset>(
-  begin: const Offset(-1.0, 0.0),
-  end: Offset.zero,
-);
+final Animatable<Offset> _kRightMiddleTween = Tween<Offset>(begin: const Offset(-1.0, 0.0), end: Offset.zero);
 
 // Offset from fully on screen to 1/3 offscreen to the left.
-final Animatable<Offset> _kMiddleLeftTween = Tween<Offset>(
-  begin: Offset.zero,
-  end: const Offset(1.0 / 3.0, 0.0),
-);
+final Animatable<Offset> _kMiddleLeftTween = Tween<Offset>(begin: Offset.zero, end: const Offset(1.0 / 3.0, 0.0));
 
 // Offset from offscreen below to fully on screen.
-final Animatable<Offset> _kBottomUpTween = Tween<Offset>(
-  begin: const Offset(0.0, 1.0),
-  end: Offset.zero,
-);
+final Animatable<Offset> _kBottomUpTween = Tween<Offset>(begin: const Offset(0.0, 1.0), end: Offset.zero);
 
 /// A mixin that replaces the entire screen with an iOS transition for a
 /// [PageRoute].
@@ -120,10 +110,7 @@ mixin CupertinoRouteTransitionMixin<T> on PageRoute<T> {
   ///  * [ValueListenableBuilder], which can be used to listen and rebuild
   ///    widgets based on a ValueListenable.
   ValueListenable<String?> get previousTitle {
-    assert(
-    _previousTitle != null,
-    'Cannot read the previousTitle for a route that has not yet been installed',
-    );
+    assert(_previousTitle != null, 'Cannot read the previousTitle for a route that has not yet been installed');
     return _previousTitle!;
   }
 
@@ -135,9 +122,7 @@ mixin CupertinoRouteTransitionMixin<T> on PageRoute<T> {
 
   @override
   void didChangePrevious(Route<dynamic>? previousRoute) {
-    final String? previousTitleString = previousRoute is CupertinoRouteTransitionMixin
-        ? previousRoute.title
-        : null;
+    final String? previousTitleString = previousRoute is CupertinoRouteTransitionMixin ? previousRoute.title : null;
     if (_previousTitle == null) {
       _previousTitle = ValueNotifier<String?>(previousTitleString);
     } else {
@@ -163,14 +148,12 @@ mixin CupertinoRouteTransitionMixin<T> on PageRoute<T> {
   @override
   bool canTransitionTo(TransitionRoute<dynamic> nextRoute) {
     // Don't perform outgoing animation if the next route is a fullscreen dialog.
-    final bool nextRouteIsNotFullscreen =
-        (nextRoute is! PageRoute<T>) || !nextRoute.fullscreenDialog;
+    final bool nextRouteIsNotFullscreen = (nextRoute is! PageRoute<T>) || !nextRoute.fullscreenDialog;
 
     // If the next route has a delegated transition, then this route is able to
     // use that delegated transition to smoothly sync with the next route's
     // transition.
-    final bool nextRouteHasDelegatedTransition =
-        nextRoute is ModalRoute<T> && nextRoute.delegatedTransition != null;
+    final bool nextRouteHasDelegatedTransition = nextRoute is ModalRoute<T> && nextRoute.delegatedTransition != null;
 
     // Otherwise if the next route has the same route transition mixin as this
     // one, then this route will already be synced with its transition.
@@ -185,11 +168,7 @@ mixin CupertinoRouteTransitionMixin<T> on PageRoute<T> {
   }
 
   @override
-  Widget buildPage(
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      ) {
+  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
     final Widget child = buildContent(context);
     return Semantics(scopesRoute: true, explicitChildNodes: true, child: child);
   }
@@ -223,12 +202,12 @@ mixin CupertinoRouteTransitionMixin<T> on PageRoute<T> {
   ///  * [CupertinoPageTransitionsBuilder], which uses this method to define a
   ///    [PageTransitionsBuilder] for the [PageTransitionsTheme].
   static Widget buildPageTransitions<T>(
-      PageRoute<T> route,
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      Widget child,
-      ) {
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
     // Check if the route has an animation that's currently participating
     // in a back swipe gesture.
     //
@@ -258,11 +237,11 @@ mixin CupertinoRouteTransitionMixin<T> on PageRoute<T> {
 
   @override
   Widget buildTransitions(
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      Widget child,
-      ) {
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
     return buildPageTransitions<T>(this, context, animation, secondaryAnimation, child);
   }
 }
@@ -312,8 +291,7 @@ class CupertinoPageRoute<T> extends PageRoute<T> with CupertinoRouteTransitionMi
   }
 
   @override
-  DelegatedTransitionBuilder? get delegatedTransition =>
-      CupertinoPageTransition.delegatedTransition;
+  DelegatedTransitionBuilder? get delegatedTransition => CupertinoPageTransition.delegatedTransition;
 
   /// Builds the primary contents of the route.
   final WidgetBuilder builder;
@@ -337,7 +315,7 @@ class CupertinoPageRoute<T> extends PageRoute<T> with CupertinoRouteTransitionMi
 // the content is up to date after page updates.
 class _PageBasedCupertinoPageRoute<T> extends PageRoute<T> with CupertinoRouteTransitionMixin<T> {
   _PageBasedCupertinoPageRoute({required CupertinoPage<T> page, super.allowSnapshotting = true})
-      : super(settings: page) {
+    : super(settings: page) {
     assert(opaque);
   }
 
@@ -451,12 +429,12 @@ class CupertinoPageTransition extends StatefulWidget {
   ///
   /// {@macro flutter.widgets.delegatedTransition}
   static Widget? delegatedTransition(
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      bool allowSnapshotting,
-      Widget? child,
-      ) {
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    bool allowSnapshotting,
+    Widget? child,
+  ) {
     final CurvedAnimation animation = CurvedAnimation(
       parent: secondaryAnimation,
       curve: Curves.linearToEaseOut,
@@ -482,14 +460,19 @@ class CupertinoPageTransition extends StatefulWidget {
 class _CupertinoPageTransitionState extends State<CupertinoPageTransition> {
   // When this page is coming in to cover another page.
   late Animation<Offset> _primaryPositionAnimation;
+
   // When this page is becoming covered by another page.
   late Animation<Offset> _secondaryPositionAnimation;
+
   // Shadow of page which is coming in to cover another page.
   late Animation<Decoration> _primaryShadowAnimation;
+
   // Curve of primary page which is coming in to cover another page.
   CurvedAnimation? _primaryPositionCurve;
+
   // Curve of secondary page which is becoming covered by another page.
   CurvedAnimation? _secondaryPositionCurve;
+
   // Curve of primary page's shadow.
   CurvedAnimation? _primaryShadowCurve;
 
@@ -537,17 +520,10 @@ class _CupertinoPageTransitionState extends State<CupertinoPageTransition> {
         curve: Curves.linearToEaseOut,
         reverseCurve: Curves.easeInToLinear,
       );
-      _primaryShadowCurve = CurvedAnimation(
-        parent: widget.primaryRouteAnimation,
-        curve: Curves.linearToEaseOut,
-      );
+      _primaryShadowCurve = CurvedAnimation(parent: widget.primaryRouteAnimation, curve: Curves.linearToEaseOut);
     }
-    _primaryPositionAnimation = (_primaryPositionCurve ?? widget.primaryRouteAnimation).drive(
-      _kRightMiddleTween,
-    );
-    _secondaryPositionAnimation = (_secondaryPositionCurve ?? widget.secondaryRouteAnimation).drive(
-      _kMiddleLeftTween,
-    );
+    _primaryPositionAnimation = (_primaryPositionCurve ?? widget.primaryRouteAnimation).drive(_kRightMiddleTween);
+    _secondaryPositionAnimation = (_secondaryPositionCurve ?? widget.secondaryRouteAnimation).drive(_kMiddleLeftTween);
     _primaryShadowAnimation = (_primaryShadowCurve ?? widget.primaryRouteAnimation).drive(
       _CupertinoEdgeShadowDecoration.kTween,
     );
@@ -601,8 +577,7 @@ class CupertinoFullscreenDialogTransition extends StatefulWidget {
   final Widget child;
 
   @override
-  State<CupertinoFullscreenDialogTransition> createState() =>
-      _CupertinoFullscreenDialogTransitionState();
+  State<CupertinoFullscreenDialogTransition> createState() => _CupertinoFullscreenDialogTransitionState();
 }
 
 class _CupertinoFullscreenDialogTransitionState extends State<CupertinoFullscreenDialogTransition> {
@@ -658,12 +633,12 @@ class _CupertinoFullscreenDialogTransitionState extends State<CupertinoFullscree
     )).drive(_kBottomUpTween);
     _secondaryPositionAnimation =
         (widget.linearTransition
-            ? widget.secondaryRouteAnimation
-            : _secondaryPositionCurve = CurvedAnimation(
-          parent: widget.secondaryRouteAnimation,
-          curve: Curves.linearToEaseOut,
-          reverseCurve: Curves.easeInToLinear,
-        ))
+                ? widget.secondaryRouteAnimation
+                : _secondaryPositionCurve = CurvedAnimation(
+                    parent: widget.secondaryRouteAnimation,
+                    curve: Curves.linearToEaseOut,
+                    reverseCurve: Curves.easeInToLinear,
+                  ))
             .drive(_kMiddleLeftTween);
   }
 
@@ -749,17 +724,13 @@ class _CupertinoBackGestureDetectorState<T> extends State<_CupertinoBackGestureD
   void _handleDragUpdate(DragUpdateDetails details) {
     assert(mounted);
     assert(_backGestureController != null);
-    _backGestureController!.dragUpdate(
-      _convertToLogical(details.primaryDelta! / context.size!.width),
-    );
+    _backGestureController!.dragUpdate(_convertToLogical(details.primaryDelta! / context.size!.width));
   }
 
   void _handleDragEnd(DragEndDetails details) {
     assert(mounted);
     assert(_backGestureController != null);
-    _backGestureController!.dragEnd(
-      _convertToLogical(details.velocity.pixelsPerSecond.dx / context.size!.width),
-    );
+    _backGestureController!.dragEnd(_convertToLogical(details.velocity.pixelsPerSecond.dx / context.size!.width));
     _backGestureController = null;
   }
 
@@ -872,11 +843,7 @@ class _CupertinoBackGestureController<T> {
     }
 
     if (animateForward) {
-      controller.animateTo(
-        1.0,
-        duration: _kDroppedSwipePageAnimationDuration,
-        curve: animationCurve,
-      );
+      controller.animateTo(1.0, duration: _kDroppedSwipePageAnimationDuration, curve: animationCurve);
     } else {
       if (isCurrent) {
         // This route is destined to pop at this point. Reuse navigator's pop.
@@ -885,11 +852,7 @@ class _CupertinoBackGestureController<T> {
 
       // The popping may have finished inline if already at the target destination.
       if (controller.isAnimating) {
-        controller.animateBack(
-          0.0,
-          duration: _kDroppedSwipePageAnimationDuration,
-          curve: animationCurve,
-        );
+        controller.animateBack(0.0, duration: _kDroppedSwipePageAnimationDuration, curve: animationCurve);
       }
     }
 
@@ -953,10 +916,10 @@ class _CupertinoEdgeShadowDecoration extends Decoration {
   //
   //  * [Decoration.lerp].
   static _CupertinoEdgeShadowDecoration? lerp(
-      _CupertinoEdgeShadowDecoration? a,
-      _CupertinoEdgeShadowDecoration? b,
-      double t,
-      ) {
+    _CupertinoEdgeShadowDecoration? a,
+    _CupertinoEdgeShadowDecoration? b,
+    double t,
+  ) {
     if (identical(a, b)) {
       return a;
     }
@@ -964,15 +927,15 @@ class _CupertinoEdgeShadowDecoration extends Decoration {
       return b!._colors == null
           ? b
           : _CupertinoEdgeShadowDecoration._(
-        b._colors!.map<Color>((Color color) => Color.lerp(null, color, t)!).toList(),
-      );
+              b._colors!.map<Color>((Color color) => Color.lerp(null, color, t)!).toList(),
+            );
     }
     if (b == null) {
       return a._colors == null
           ? a
           : _CupertinoEdgeShadowDecoration._(
-        a._colors.map<Color>((Color color) => Color.lerp(null, color, 1.0 - t)!).toList(),
-      );
+              a._colors.map<Color>((Color color) => Color.lerp(null, color, 1.0 - t)!).toList(),
+            );
     }
     assert(b._colors != null || a._colors != null);
     // If it ever becomes necessary, we could allow decorations with different
@@ -1025,7 +988,7 @@ class _CupertinoEdgeShadowDecoration extends Decoration {
 /// A [BoxPainter] used to draw the page transition shadow using gradients.
 class _CupertinoEdgeShadowPainter extends BoxPainter {
   _CupertinoEdgeShadowPainter(this._decoration, super.onChanged)
-      : assert(_decoration._colors == null || _decoration._colors.length > 1);
+    : assert(_decoration._colors == null || _decoration._colors.length > 1);
 
   final _CupertinoEdgeShadowDecoration _decoration;
 
@@ -1077,11 +1040,7 @@ class _CupertinoEdgeShadowPainter extends BoxPainter {
         bandColorIndex += 1;
       }
       final Paint paint = Paint()
-        ..color = Color.lerp(
-          colors[bandColorIndex],
-          colors[bandColorIndex + 1],
-          (dx % bandWidth) / bandWidth,
-        )!;
+        ..color = Color.lerp(colors[bandColorIndex], colors[bandColorIndex + 1], (dx % bandWidth) / bandWidth)!;
       final double x = start + shadowDirection * dx;
       canvas.drawRect(Rect.fromLTWH(x - 1.0, offset.dy, 1.0, shadowHeight), paint);
     }
@@ -1160,7 +1119,7 @@ class CupertinoModalPopupRoute<T> extends PopupRoute<T> {
     super.requestFocus,
     this.anchorPoint,
   }) : _barrierDismissible = barrierDismissible,
-        _semanticsDismissible = semanticsDismissible;
+       _semanticsDismissible = semanticsDismissible;
 
   /// A builder that builds the widget tree for the [CupertinoModalPopupRoute].
   ///
@@ -1209,11 +1168,7 @@ class CupertinoModalPopupRoute<T> extends PopupRoute<T> {
   }
 
   @override
-  Widget buildPage(
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      ) {
+  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
     return CupertinoUserInterfaceLevel(
       data: CupertinoUserInterfaceLevelData.elevated,
       child: DisplayFeatureSubScreen(
@@ -1225,21 +1180,18 @@ class CupertinoModalPopupRoute<T> extends PopupRoute<T> {
 
   @override
   Widget buildTransitions(
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      Widget child,
-      ) {
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: FractionalTranslation(translation: _offsetTween.evaluate(animation), child: child),
     );
   }
 
-  static final Tween<Offset> _offsetTween = Tween<Offset>(
-    begin: const Offset(0.0, 1.0),
-    end: Offset.zero,
-  );
+  static final Tween<Offset> _offsetTween = Tween<Offset>(begin: const Offset(0.0, 1.0), end: Offset.zero);
 }
 
 /// Shows a modal iOS-style popup that slides up from the bottom of the screen.
@@ -1337,11 +1289,11 @@ Future<T?> showCupertinoModalPopup<T>({
 }
 
 Widget _buildCupertinoDialogTransitions(
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-    ) {
+  BuildContext context,
+  Animation<double> animation,
+  Animation<double> secondaryAnimation,
+  Widget child,
+) {
   return child;
 }
 
@@ -1481,19 +1433,13 @@ class CupertinoDialogRoute<T> extends RawDialogRoute<T> {
     super.requestFocus,
     super.anchorPoint,
   }) : super(
-    pageBuilder:
-        (
-        BuildContext context,
-        Animation<double> animation,
-        Animation<double> secondaryAnimation,
-        ) {
-      return builder(context);
-    },
-    transitionBuilder: transitionBuilder ?? _buildCupertinoDialogTransitions,
-    barrierLabel: barrierLabel ?? CupertinoLocalizations.of(context).modalBarrierDismissLabel,
-    barrierColor:
-    barrierColor ?? CupertinoDynamicColor.resolve(kCupertinoModalBarrierColor, context),
-  );
+         pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+           return builder(context);
+         },
+         transitionBuilder: transitionBuilder ?? _buildCupertinoDialogTransitions,
+         barrierLabel: barrierLabel ?? CupertinoLocalizations.of(context).modalBarrierDismissLabel,
+         barrierColor: barrierColor ?? CupertinoDynamicColor.resolve(kCupertinoModalBarrierColor, context),
+       );
 
   /// Custom transition builder
   RouteTransitionsBuilder? transitionBuilder;
@@ -1516,11 +1462,11 @@ class CupertinoDialogRoute<T> extends RawDialogRoute<T> {
 
   @override
   Widget buildTransitions(
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      Widget child,
-      ) {
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
     if (transitionBuilder != null) {
       return super.buildTransitions(context, animation, secondaryAnimation, child);
     }
