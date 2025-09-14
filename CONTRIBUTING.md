@@ -1,94 +1,94 @@
 # Contributing
 
-感谢您对 **此项目** 的兴趣！我们欢迎社区贡献并鼓励您参与其中。以下是有关如何贡献代码、报告问题和提出功能建议的指导。
+Thank you for your interest in **this project**! We welcome community contributions and encourage your participation. Below are guidelines on how to contribute code, report issues, and suggest features.
 
-## 参与方式
+## Ways to Contribute
 
-### 1. 提交 Bug 报告 🐞
-如果您发现了 Bug，请提供以下信息来帮助我们快速定位问题：
-- **问题描述**：简洁明了地描述 Bug。
-- **重现步骤**：列出清晰的步骤，说明如何触发该问题。
-- **期望结果**：您期望的行为是什么。
-- **实际结果**：当前行为或错误信息。
-- **环境**：操作系统版本、应用版本、依赖的库等。
+### 1. Submitting Bug Reports 🐞
+If you discover a bug, please provide the following information to help us quickly identify the issue:
+- **Problem Description**: Clearly and concisely describe the bug.
+- **Reproduction Steps**: List clear steps explaining how to trigger the issue.
+- **Expected Result**: What behavior you expected.
+- **Actual Result**: Current behavior or error messages.
+- **Environment**: Operating system version, application version, dependent libraries, etc.
 
-### 2. 提出功能请求 🚀
-如果您有想法来增强功能，请提供以下信息：
-- **功能描述**：简洁描述功能请求。
-- **使用场景**：您希望如何使用该功能，或解决什么问题。
-- **优先级**：此功能对您有多重要？是否可以延后？
+### 2. Requesting Features 🚀
+If you have ideas to enhance functionality, please provide the following information:
+- **Feature Description**: Briefly describe the feature request.
+- **Use Case**: How you would like to use this feature or what problem it would solve.
+- **Priority**: How important is this feature to you? Can it be delayed?
 
-### 3. 提交代码 🧑‍💻
-如果您想直接为项目贡献代码，请遵循以下步骤：
+### 3. Contributing Code 🧑‍💻
+If you would like to directly contribute code to the project, please follow these steps:
 
-#### 步骤 1：Fork 本项目
-- 点击右上角的 **Fork** 按钮，将本仓库复制到您的 GitHub 账户下。
+#### Step 1: Fork This Project
+- Click the **Fork** button in the top right corner to copy this repository to your GitHub account.
 
-#### 步骤 2：克隆到本地
+#### Step 2: Clone to Local
 ```bash
-git clone https://github.com/您的用户名/项目名称.git
+git clone https://github.com/your-username/project-name.git
 ```
 
-#### 步骤 3：创建分支
-请为您的修改创建一个新的分支：
+#### Step 3: Create a Branch
+Please create a new branch for your modifications:
 ```bash
-git checkout -b feature/您的功能名
+git checkout -b feature/your-feature-name
 ```
 
-#### 步骤 4：进行修改
-在本地进行代码更改或修复 Bug。确保按照项目的代码风格和开发规范进行编写。
+#### Step 4: Make Changes
+Make code changes or bug fixes locally. Ensure you follow the project's coding style and development standards.
 
-#### 步骤 5：提交更改
-提交您的更改，并写出清晰的提交信息：
+#### Step 5: Commit Changes
+Commit your changes with clear commit messages:
 ```bash
 git add .
-git commit -m "简短描述您的更改"
+git commit -m "Brief description of your changes"
 ```
 
-#### 步骤 6：推送到远程
-将您的更改推送到 GitHub：
+#### Step 6: Push to Remote
+Push your changes to GitHub:
 ```bash
-git push origin feature/您的功能名
+git push origin feature/your-feature-name
 ```
 
-#### 步骤 7：创建 Pull Request
-- 进入您的 Fork 仓库，点击 **Compare & Pull Request** 按钮。
-- 选择目标分支（通常为 `main` 或 `master`），并添加清晰的描述说明您的更改。
-- 提交 Pull Request，等待维护者审查。
+#### Step 7: Create Pull Request
+- Go to your Fork repository and click the **Compare & Pull Request** button.
+- Select the target branch (usually `main` or `master`) and add a clear description explaining your changes.
+- Submit the Pull Request and wait for maintainer review.
 
-## 提交代码规范
+## Code Contribution Standards
 
-- 请确保您的代码通过了项目的测试用例（如果有）。
-- 确保遵循代码风格和格式，尽量避免修改与您更改无关的部分。
-- 提交信息应简洁明了，描述清楚您所做的更改。
-- 如果您的更改涉及到文档更新，请同时更新相关文档。
+- Please ensure your code passes the project's test cases (if any).
+- Ensure you follow coding style and formatting, and avoid modifying parts unrelated to your changes.
+- Commit messages should be clear and concise, describing what changes you made.
+- If your changes involve documentation updates, please update the relevant documentation as well.
 
-## 代码风格
+## Code Style
 
-- 使用统一的缩进（如 2 或 4 个空格，保持一致）。
-- 变量命名应简洁且有描述性，遵循适当的命名规则。
-- 代码行长度尽量保持在 80-120 个字符以内。
-- 使用注释来解释复杂的逻辑。
+- Use consistent indentation (such as 2 or 4 spaces, maintain consistency).
+- Variable names should be concise and descriptive, following appropriate naming conventions.
+- Keep code line length within 80-120 characters when possible.
+- Use comments to explain complex logic.
 
-## 文档贡献 📚
+## Documentation Contributions 📚
 
-如果您希望改善文档，欢迎提交 PR。文档的改进对新用户非常重要，您可以帮助我们：
-- 改进安装说明
-- 添加/更新功能文档
-- 改进教程或示例代码
+If you would like to improve documentation, we welcome PR submissions. Documentation improvements are very important for new users, and you can help us by:
+- Improving installation instructions
+- Adding/updating feature documentation
+- Improving tutorials or example code
 
-## 社区行为准则
+## Code of Conduct
 
-在提交问题、PR 或其他任何形式的贡献时，请遵守以下行为准则：
+When submitting issues, PRs, or any other form of contribution, please follow these behavioral guidelines:
 
-- 尊重他人：无论在报告问题、请求功能，还是代码审查过程中，都要始终保持尊重与友好。
-- 贡献开放性：欢迎任何形式的贡献，不论大小，每一份贡献都值得重视。
-- 保持建设性：保持讨论的建设性和积极性，避免无意义的批评。
+- Respect Others: Always maintain respect and friendliness when reporting issues, requesting features, or during code review processes.
+- Open Contributions: We welcome contributions of any kind, regardless of size. Every contribution is valuable.
+- Stay Constructive: Keep discussions constructive and positive, avoiding meaningless criticism.
 
-## 许可证
+## License
 
-本项目遵循 [GPL-3.0 License](LICENSE)。
+This project is licensed under the [GPL-3.0 License](LICENSE).
 
 ---
 
-我们非常感谢您的贡献，期待您的加入！如果您有任何问题，随时可以在 Issues 区域提问，或者直接联系项目维护者。
+We greatly appreciate your contributions and look forward to your participation! If you have any questions, feel free to ask in the Issues section or contact the project maintainers directly.
