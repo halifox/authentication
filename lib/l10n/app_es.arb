@@ -59,5 +59,12 @@
   "invalidPeriod": "Período inválido",
   "invalidCounter": "Contador inválido",
   "invalidPin": "Código PIN inválido",
-  "invalidSecretKey": "Clave secreta inválida"
-}
+    "invalidSecretKey": "Clave secreta inválida",
+    "noData": "Sin datos",
+    "search": "Buscar",
+    "importWarning": "Está a punto de importar datos desde el portapapeles. Si ya existen las mismas cuentas en la base de datos, se sobrescribirán. ¿Desea continuar?",
+    "exportFailed": "Error al exportar",
+    "noDataToExport": "No hay datos disponibles para exportar",
+    "exportWarning": "Está a punto de exportar todos los autenticadores al portapapeles. El contenido exportado estará en formato de texto plano. Asegúrese de que su entorno sea seguro y limpie el portapapeles después. ¿Desea continuar?"
+  }
+  

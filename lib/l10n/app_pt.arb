@@ -59,5 +59,12 @@
   "invalidPeriod": "Período inválido",
   "invalidCounter": "Contador inválido",
   "invalidPin": "Código PIN inválido",
-  "invalidSecretKey": "Chave secreta inválida"
-}
+    "invalidSecretKey": "Chave secreta inválida",
+    "noData": "Sem dados",
+    "search": "Pesquisar",
+    "importWarning": "Você está prestes a importar dados da área de transferência. Se as mesmas contas já existirem no banco de datos, elas serão sobrescritas. Deseja continuar?",
+    "exportFailed": "Falha na exportação",
+    "noDataToExport": "Não há dados disponíveis para exportar",
+    "exportWarning": "Você está prestes a exportar todos os autenticadores para a área de transferência. O conteúdo exportado estará em formato de texto simples. Certifique-se de que seu ambiente é seguro e limpe a área de transferência depois. Deseja continuar?"
+  }
+  

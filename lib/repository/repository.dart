@@ -1,122 +1,115 @@
-import 'dart:io';
+import 'package:auth/db/auth_entries_ext.dart';
+import 'package:auth/db/database.dart';
+import 'package:auth/domain/services/otp_service.dart';
+import 'package:auth/utils/encryption_service.dart';
+import 'package:drift/drift.dart';
 
-import 'package:flutter/foundation.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:sembast/sembast_io.dart';
-import 'package:sembast_web/sembast_web.dart';
+/// 批量导入的结果报告
+class ImportResult {
+  ImportResult({
+    required this.successCount,
+    required this.failures,
+  });
 
-import 'auth.dart';
-import 'encrypt_codec.dart';
-import 'otp.dart';
+  final int successCount;
+  final List<ImportFailure> failures;
+}
 
-typedef Listener = void Function(List<AuthConfig>);
+class ImportFailure {
+  ImportFailure(this.source, this.error);
+  final String source;
+  final String error;
+}
 
-late final Database db;
-final StoreRef<String, Map<String, Object?>> authStore = stringMapStoreFactory.store('auth');
-final StoreRef<String, Map<String, Object?>> settingsStore = stringMapStoreFactory.store('settings');
+class AuthRepository {
+  AuthRepository(this.db);
 
-Future<void> initDatabase() async {
-  SembastCodec? codec;
-  String path;
-  if (kReleaseMode) {
-    path = 'auth.db';
-    codec = getEncryptSembastCodec(password: '99999');
-  } else {
-    path = 'auth.debug.db';
-    codec = null;
+  final AppDatabase db;
+
+  Stream<List<AuthEntry>> get authConfigsStream {
+    return db.watchAllAuthEntries().map((list) => list.map(_decryptEntry).toList());
   }
-  if (kIsWeb) {
-    db = await databaseFactoryWeb.openDatabase(path, codec: codec);
-  } else {
-    final Directory dir = await getApplicationDocumentsDirectory();
-    await dir.create(recursive: true);
-    db = await databaseFactoryIo.openDatabase(join(dir.path, path), codec: codec);
+
+  Stream<AuthEntry?> watchConfig(int id) {
+    return db.watchAuthEntry(id).map((entry) => entry != null ? _decryptEntry(entry) : null);
   }
-  if (kDebugMode) {
-    await settingsStore.delete(db);
-    await authStore.delete(db);
-    await authStore.add(
-      db,
-      AuthConfig(
-        secret: OTP.randomSecret(),
-        type: 'totp',
-        account: 'user@github.com',
-        issuer: 'GitHub',
-        period: 30,
-        icon: 'assets/icons/github.svg',
-      ).toJson(),
-    );
-    await authStore.add(
-      db,
-      AuthConfig(
-        secret: OTP.randomSecret(),
-        type: 'totp',
-        account: 'user@gmail.com',
-        issuer: 'Google',
-        period: 30,
-        icon: 'assets/icons/gmail.svg',
-      ).toJson(),
-    );
-    await authStore.add(
-      db,
-      AuthConfig(
-        secret: OTP.randomSecret(),
-        type: 'totp',
-        account: 'user@icloud.com',
-        issuer: 'Apple',
-        period: 40,
-        icon: 'assets/icons/apple.svg',
-      ).toJson(),
-    );
-    await authStore.add(
-      db,
-      AuthConfig(
-        secret: OTP.randomSecret(),
-        type: 'totp',
-        account: 'user@dropbox.com',
-        issuer: 'Dropbox',
-        period: 45,
-        icon: 'assets/icons/dropbox.svg',
-      ).toJson(),
-    );
-    await authStore.add(
-      db,
-      AuthConfig(
-        secret: OTP.randomSecret(),
-        type: 'totp',
-        account: 'user@1dot1dot1dot1.com',
-        issuer: '1dot1dot1dot1',
-        period: 60,
-        icon: 'assets/icons/1dot1dot1dot1.svg',
-      ).toJson(),
-    );
-    await authStore.add(
-      db,
-      AuthConfig(
-        secret: OTP.randomSecret(),
-        type: 'hotp',
-        account: 'user@aws.com',
-        issuer: 'Amazon',
-        counter: 0,
-        icon: 'assets/icons/amazon.svg',
-      ).toJson(),
-    );
-    await authStore.add(
-      db,
-      AuthConfig(
-        secret: OTP.randomSecret(),
-        type: 'hotp',
-        account: 'user@ansible.com',
-        issuer: 'ansible',
-        counter: 0,
-        icon: 'assets/icons/ansible.svg',
-      ).toJson(),
-    );
+
+  // --- Helper: Encryption/Decryption ---
+
+  AuthEntry _decryptEntry(AuthEntry entry) {
+    return entry.copyWith(secret: EncryptionService.decrypt(entry.secret));
   }
-  await settingsStore.record('settings').put(db, {
-    'biometricUnlock': false,
-    'isShowCaptchaOnTap': false,
-    'isCopyCaptchaOnTap': false,
-  }, ifNotExists: true);
+
+  AuthEntriesCompanion _encryptCompanion(AuthEntriesCompanion companion) {
+    if (companion.secret.present) {
+      return companion.copyWith(
+        secret: Value(EncryptionService.encrypt(companion.secret.value)),
+      );
+    }
+    return companion;
+  }
+
+  AuthEntry _encryptEntry(AuthEntry entry) {
+    return entry.copyWith(secret: EncryptionService.encrypt(entry.secret));
+  }
+
+  // --- CRUD Actions ---
+
+  Future<void> addConfig(AuthEntriesCompanion companion) async {
+    await db.insertAuthEntry(_encryptCompanion(companion));
+  }
+
+  Future<void> insertCompanion(AuthEntriesCompanion companion) async {
+    await db.insertAuthEntry(_encryptCompanion(companion));
+  }
+
+  Future<void> updateConfig(AuthEntry entry) async {
+    await db.updateAuthEntry(_encryptEntry(entry));
+  }
+
+  Future<void> deleteConfig(int id) async {
+    await db.deleteAuthEntry(id);
+  }
+
+  Future<List<AuthEntry>> getAllConfigs() async {
+    final list = await db.getAllAuthEntries();
+    return list.map(_decryptEntry).toList();
+  }
+
+  Future<AuthEntry?> getConfigByAccountAndIssuer(
+    String account,
+    String issuer,
+  ) async {
+    final entry = await db.getAuthEntryByAccountAndIssuer(account, issuer);
+    return entry != null ? _decryptEntry(entry) : null;
+  }
+
+  /// Batch import from text (e.g. clipboard).
+  /// Returns a detailed result report.
+  Future<ImportResult> importBatch(String text) async {
+    int successCount = 0;
+    final List<ImportFailure> failures = [];
+    final List<String> optUrls = OtpService.splitUriList(text);
+
+    for (final String optUrl in optUrls) {
+      try {
+        final AuthEntriesCompanion config = AuthEntryUtils.parse(optUrl);
+        final existing = await getConfigByAccountAndIssuer(
+          config.account.value,
+          config.issuer.value,
+        );
+
+        if (existing != null) {
+          final updatedEntry = existing.copyWithCompanion(config);
+          await updateConfig(updatedEntry);
+        } else {
+          await addConfig(config);
+        }
+        successCount++;
+      } catch (e) {
+        failures.add(ImportFailure(optUrl, e.toString()));
+      }
+    }
+    return ImportResult(successCount: successCount, failures: failures);
+  }
 }

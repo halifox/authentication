@@ -1,114 +1,139 @@
+name: Fast Multi-Platform Build
+
 on:
   workflow_dispatch:
   push:
     tags:
       - '*'
+
+permissions:
+  contents: write
+
 jobs:
-  web:
+  prepare:
     runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.vars.outputs.tag_name }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # 获取完整历史，以便获取最新的提交哈希
       - uses: subosito/flutter-action@v2
-      - run: flutter pub get
-      - run: flutter build web --release
-      - run: tar -czvf web.tar.gz -C build/web .
-      - uses: softprops/action-gh-release@v2
         with:
-          files: web.tar.gz
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}
-          name: Release ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}
-          draft: ${{ startsWith(github.ref, 'refs/tags/') == false }}
-          prerelease: false
-  linux:
-    runs-on: ubuntu-latest
+          cache: true
+
+      - id: vars
+        run: echo "tag_name=${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate Code
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Upload Generated Files
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-code
+          path: |
+            lib/**/*.g.dart
+            .dart_tool/ # 包含 pub 缓存索引，非常重要
+
+  build:
+    needs: prepare
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - { os: ubuntu-latest, platform: web, name: web }
+          - { os: ubuntu-latest, platform: apk, name: android }
+          - { os: ubuntu-latest, platform: linux, name: linux }
+          - { os: windows-latest, platform: windows, name: windows }
+          - { os: macos-latest, platform: macos, name: macos }
+          - { os: macos-latest, platform: ios, name: ios, args: "--no-codesign" }
+
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: subosito/flutter-action@v2
-      - run: |
-          sudo apt-get update -y
-          sudo apt-get install -y ninja-build libgtk-3-dev
-      - run: flutter pub get
-      - run: flutter build linux --release
-      - run: tar -czvf linux-x64.tar.gz -C build/linux/x64/release/bundle .
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: linux-x64.tar.gz
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}
-          name: Release ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}
-          draft: ${{ startsWith(github.ref, 'refs/tags/') == false }}
-          prerelease: false
-  android:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-java@v4
+
+      # 1. 【Android 专用优化】设置 Java 和 Gradle 缓存
+      - name: Setup Java
+        if: matrix.config.name == 'android'
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
+
+      - name: Setup Gradle
+        if: matrix.config.name == 'android'
+        uses: gradle/actions/setup-gradle@v3 # 核心加速器：缓存 Gradle 依赖和构建输出
+
+      # 2. 设置 Flutter
       - uses: subosito/flutter-action@v2
-      - run: flutter pub get
-      - run: flutter build apk --target-platform android-arm64
-      - uses: softprops/action-gh-release@v2
         with:
-          files: build/app/outputs/flutter-apk/app-release.apk
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}
-          name: Release ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}
-          draft: ${{ startsWith(github.ref, 'refs/tags/') == false }}
-          prerelease: false
-  windows:
-    runs-on: windows-latest
+          cache: true
+
+      # 3. 下载预生成的代码
+      - name: Download Generated Files
+        uses: actions/download-artifact@v4
+        with:
+          name: generated-code
+
+      - name: Install System Dependencies (Linux)
+        if: matrix.config.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libgtk-3-dev
+
+      # 4. 编译（由于下载了 .dart_tool，pub get 会极快）
+      - name: Build
+        run: |
+          flutter pub get --offline || flutter pub get # 优先尝试离线模式
+          flutter build ${{ matrix.config.platform }} --release ${{ matrix.config.args }}
+
+      # 5. 产物打包（修正了路径和逻辑）
+      - name: Package Assets
+        shell: bash
+        run: |
+          if [ "${{ matrix.config.platform }}" == "web" ]; then
+            tar -czvf web.tar.gz -C build/web .
+          elif [ "${{ matrix.config.platform }}" == "linux" ]; then
+            tar -czvf linux-x64.tar.gz -C build/linux/x64/release/bundle .
+          elif [ "${{ matrix.config.platform }}" == "windows" ]; then
+            cd build/windows/x64/runner/Release && 7z a ../../../../../windows-x64.zip *
+          elif [ "${{ matrix.config.platform }}" == "macos" ]; then
+            cd build/macos/Build/Products/Release && tar -czvf ../../../../../macos.tar.gz *.app
+          elif [ "${{ matrix.config.platform }}" == "ios" ]; then
+            cd build/ios/iphoneos && tar -czvf ../../../ios.tar.gz Runner.app
+          elif [ "${{ matrix.config.platform }}" == "apk" ]; then
+            cp build/app/outputs/flutter-apk/app-release.apk android-release.apk
+          fi
+
+      - name: Upload Platform Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-${{ matrix.config.name }}
+          path: |
+            *.tar.gz
+            *.zip
+            *.apk
+
+  publish:
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/') # 仅在有 Tag 时发布
     steps:
-      - uses: actions/checkout@v4
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
         with:
-          fetch-depth: 0
-      - uses: subosito/flutter-action@v2
-      - run: flutter pub get
-      - run: flutter build windows --release
-      - run: Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath windows-x64.zip
-      - uses: softprops/action-gh-release@v2
+          path: release-assets
+          pattern: build-artifacts-*
+          merge-multiple: true
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
         with:
-          files: windows-x64.zip
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}
-          name: Release ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}
-          draft: ${{ startsWith(github.ref, 'refs/tags/') == false }}
+          files: release-assets/*
+          tag_name: ${{ needs.prepare.outputs.tag_name }}
+          name: Release ${{ needs.prepare.outputs.tag_name }}
+          draft: false
           prerelease: false
-  macos:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: subosito/flutter-action@v2
-      - run: flutter pub get
-      - run: flutter build macos --release
-      - run: tar -czvf macos.tar.gz -C build/macos/Build/Products/Release auth.app
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: macos.tar.gz
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}
-          name: Release ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}
-          draft: ${{ startsWith(github.ref, 'refs/tags/') == false }}
-          prerelease: false
-  ios:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: subosito/flutter-action@v2
-      - run: flutter pub get
-      - run: flutter build ios --release --no-codesign
-      - run: tar -czvf ios.tar.gz -C build/ios/iphoneos Runner.app
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: ios.tar.gz
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}
-          name: Release ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.sha }}
-          draft: ${{ startsWith(github.ref, 'refs/tags/') == false }}
-          prerelease: false
+          generate_release_notes: true

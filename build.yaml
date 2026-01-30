@@ -1,0 +1,25 @@
+targets:
+  drift_target:
+    builders:
+      drift_dev:
+        enabled: true
+      riverpod_generator:
+        enabled: false
+    sources:
+      - lib/db/**
+
+  $default:
+    dependencies:
+      - :drift_target
+    builders:
+      drift_dev:
+        enabled: false
+      riverpod_generator:
+        enabled: true
+    sources:
+      include:
+        - lib/**
+        - test/**
+        - $package$
+      exclude:
+        - lib/db/**

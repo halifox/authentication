@@ -59,5 +59,12 @@
   "invalidPeriod": "Ungültiger Zeitraum",
   "invalidCounter": "Ungültiger Zähler",
   "invalidPin": "Ungültiger PIN-Code",
-  "invalidSecretKey": "Ungültiger geheimer Schlüssel"
-}
+    "invalidSecretKey": "Ungültiger geheimer Schlüssel",
+    "noData": "Keine Daten",
+    "search": "Suchen",
+    "importWarning": "Sie sind dabei, Daten aus der Zwischenablage zu importieren. Wenn bereits dieselben Konten in der Datenbank vorhanden sind, werden diese überschrieben. Möchten Sie fortfahren?",
+    "exportFailed": "Export fehlgeschlagen",
+    "noDataToExport": "Keine Daten zum Exportieren verfügbar",
+    "exportWarning": "Sie sind dabei, alle Authentifikatoren in die Zwischenablage zu exportieren. Der exportierte Inhalt liegt im Klartextformat vor. Bitte stellen Sie sicher, dass Ihre Umgebung sicher ist, und löschen Sie anschließend die Zwischenablage. Möchten Sie fortfahren?"
+  }
+  

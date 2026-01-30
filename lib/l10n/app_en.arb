@@ -59,5 +59,11 @@
   "invalidPeriod": "Invalid period",
   "invalidCounter": "Invalid counter",
   "invalidPin": "Invalid PIN code",
-  "invalidSecretKey": "Invalid secret key"
+  "invalidSecretKey": "Invalid secret key",
+  "noData": "No data",
+  "search": "Search",
+  "importWarning": "You are about to import data from the clipboard. If same accounts already exist in the database, they will be overwritten. Do you want to continue?",
+  "exportFailed": "Export Failed",
+  "noDataToExport": "No data available to export",
+  "exportWarning": "You are about to export all authenticators to the clipboard. The exported content will be in plain text format. Please ensure your environment is secure and clear the clipboard afterwards. Do you want to continue?"
 }

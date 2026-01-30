@@ -8,7 +8,11 @@
 # The following line activates a set of recommended lints for Flutter apps,
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
-
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "lib/generated/**" # 你之前配置的 l10n 目录
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`
@@ -33,7 +37,8 @@ linter:
     prefer_typing_uninitialized_variables: true   # 为未初始化的变量添加类型注解
     prefer_collection_literals: true              # 优先使用集合字面量语法
     prefer_expression_function_bodies: false      # 优先使用表达式函数体而不是块函数体 (已禁用)
-    prefer_relative_imports: true                 # 优先使用相对导入
+    prefer_relative_imports: false                 # 优先使用相对导入
+    always_use_package_imports: true              # 开启绝对路径建议 (强制使用 package: 导入)
     sort_constructors_first: true                 # 构造函数声明应该放在非构造函数声明之前
     sort_unnamed_constructors_first: true         # 未命名构造函数应该放在命名构造函数之前
     
@@ -163,6 +168,6 @@ linter:
     
     # ========== 递归规则 ==========
     recursive_getters: true                       # 避免递归getter
-
+    lines_longer_than_80_chars: false
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

@@ -257,5 +257,27 @@
   "invalidSecretKey": "非法的密钥",
   "@invalidSecretKey": {
     "description": "密钥参数无效或格式错误时的验证错误消息"
+  },
+  "noData": "暂无数据",
+  "@noData": {
+    "description": "主页列表为空时显示的提示文本"
+  },
+  "search": "搜索",
+  "@search": {
+    "description": "搜索框的提示文本或标签"
+  },
+  "importWarning": "您即将从剪贴板导入数据。如果数据库中已存在相同的账户，它们将被覆盖。是否继续？",
+  "@importWarning": {
+    "description": "批量导入前的警告提示"
+  },
+  "exportFailed": "导出失败",
+  "@exportFailed": {
+    "description": "导出失败标题"
+  },
+    "noDataToExport": "没有可导出的数据",
+    "@noDataToExport": {
+      "description": "没有数据可导出时的提示"
+    },
+    "exportWarning": "您即将将所有认证器导出到剪贴板。导出的内容为明文格式，请确保您的环境安全并及时处理剪贴板内容。是否继续？"
   }
-}
+  

@@ -59,5 +59,12 @@
   "invalidPeriod": "Période invalide",
   "invalidCounter": "Compteur invalide",
   "invalidPin": "Code PIN invalide",
-  "invalidSecretKey": "Clé secrète invalide"
-}
+    "invalidSecretKey": "Clé secrète invalide",
+    "noData": "Aucune donnée",
+    "search": "Rechercher",
+    "importWarning": "Vous êtes sur le point d'importer des données depuis le presse-papiers. Si les mêmes comptes existent déjà dans la base de données, ils seront écrasés. Voulez-vous continuer ?",
+    "exportFailed": "Échec de l'exportation",
+    "noDataToExport": "Aucune donnée disponible à exporter",
+    "exportWarning": "Vous êtes sur le point d'exporter tous les authentificateurs vers le presse-papiers. Le contenu exporté sera au format texte clair. Veuillez vous assurer que votre environnement est sécurisé et videz le presse-papiers ensuite. Voulez-vous continuer ?"
+  }
+  

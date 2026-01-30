@@ -59,5 +59,12 @@
   "invalidPeriod": "유효하지 않은 기간",
   "invalidCounter": "유효하지 않은 카운터",
   "invalidPin": "유효하지 않은 PIN 코드",
-  "invalidSecretKey": "유효하지 않은 시크릿 키"
-}
+    "invalidSecretKey": "유효하지 않은 시크릿 키",
+    "noData": "데이터 없음",
+    "search": "검색",
+    "importWarning": "클립보드에서 데이터를 가져오려고 합니다. 데이터베이스에 동일한 계정이 이미 있는 경우 덮어씌워집니다. 계속하시겠습니까?",
+    "exportFailed": "내보내기 실패",
+    "noDataToExport": "내보낼 데이터가 없습니다",
+    "exportWarning": "모든 인증기를 클립보드로 내보내려고 합니다. 내보낸 내용은 일반 텍스트 형식입니다. 사용 중인 환경이 안전한지 확인하고 나중에 클립보드를 비워주세요. 계속하시겠습니까?"
+  }
+  

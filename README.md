@@ -216,7 +216,7 @@ This project is licensed under the [GPL-3.0 License](LICENSE).
 - [elliotwutingfeng/motp](https://github.com/elliotwutingfeng/motp)
 - [stratumauth](https://github.com/stratumauth/app)
 - [simple-icons](https://github.com/simple-icons/simple-icons)
-- [sembast](https://pub.dev/packages/sembast)
+- [drift](https://pub.dev/packages/drift)
 - [google_mlkit_barcode_scanning](https://pub.dev/packages/google_mlkit_barcode_scanning)
 - [dynamic_color](https://pub.dev/packages/dynamic_color)
 - [flutter_swipe_action_cell](https://pub.dev/packages/flutter_swipe_action_cell)

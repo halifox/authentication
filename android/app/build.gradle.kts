@@ -21,9 +21,9 @@ android {
     signingConfigs {
         create("release") {
             keyAlias = "halifox"
-            keyPassword = System.getenv("KEY_PASSWORD")
+            keyPassword = "halifox"
             storeFile = file("halifox.jks")
-            storePassword = System.getenv("KEYSTORE_PASSWORD")
+            storePassword = "halifox"
         }
     }
     defaultConfig {

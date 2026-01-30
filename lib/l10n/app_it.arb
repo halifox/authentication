@@ -59,5 +59,12 @@
   "invalidPeriod": "Periodo non valido",
   "invalidCounter": "Contatore non valido",
   "invalidPin": "Codice PIN non valido",
-  "invalidSecretKey": "Chiave segreta non valida"
-}
+    "invalidSecretKey": "Chiave segreta non valida",
+    "noData": "Nessun dato",
+    "search": "Cerca",
+    "importWarning": "Stai per importare dati dagli appunti. Se gli stessi account esistono già nel database, verranno sovrascritti. Vuoi continuare?",
+    "exportFailed": "Esportazione fallita",
+    "noDataToExport": "Nessun dato disponibile da esportare",
+    "exportWarning": "Stai per esportare tutti gli autenticatori negli appunti. Il contenuto esportato sarà in formato testo semplice. Assicurati che il tuo ambiente sia sicuro e svuota gli appunti in seguito. Vuoi continuare?"
+  }
+  
