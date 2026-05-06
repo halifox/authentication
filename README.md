@@ -1,51 +1,20 @@
 # Purity Auth
 
-A clean, elegant cross-platform 2FA (Two-Factor Authentication) tool designed to provide the simplest and most user-friendly experience, helping users secure their account information more effectively. Runs completely offline with no unnecessary permission requests, ensuring your privacy and security.
+一款简洁优雅的跨平台双因素认证（2FA）工具，致力于提供最简单、最友好的使用体验，帮助用户更安全地保护账户信息。完全离线运行，无多余权限请求，守护您的隐私与安全。
 
 ---
 
-## ✨ Features
+## ✨ 核心特性
 
-- 🔒 Simple 2FA generation and management functionality.
-- 🎨 Clean and elegant user interface that is easy to operate.
-- 🛑 Completely offline operation with no internet dependency.
-- 🚫 No unnecessary permission requests, respecting user privacy.
-- 📱 Multi-platform support (Windows, Mac, Linux, Android, iOS, Web).
-
----
-
-## 🎨 Design Guidelines
-
-### 1. **Simplicity**
-
-- The interface should remain clean and avoid excessive decoration and redundant elements.
-- Each interface element should have a clear function and purpose, minimizing unnecessary distractions.
-
-### 2. **Consistency**
-
-- Ensure that global elements (such as buttons, icons, colors, fonts, etc.) remain consistent across different interfaces and states, enhancing user familiarity and trust.
-
-### 3. **Contrast**
-
-- Ensure sufficient contrast between text and background to improve readability.
-- Pay special attention to color-blind users by avoiding information conveyance through color alone, and appropriately use text or icons for additional clarification.
-
-### 4. **Color Standards**
-
-- Use a limited primary color palette to build the interface, avoiding excessive colors that distract users.
-- Complement with neutral tones (such as gray, black, white) to highlight important content.
-- Ensure sufficient color contrast between important actions (such as buttons, links) and regular content.
-- Use dynamic color schemes (such as Android's dynamic colors) to ensure compatibility and consistency across different system themes.
-
-### 5. **Typography Standards**
-
-- Choose readable fonts, such as system default fonts (like Roboto, San Francisco) or other common web fonts.
-- Use appropriate font sizes and line spacing to ensure text readability.
-- Text elements such as titles, body text, and buttons should use clearly hierarchical font sizes to enhance interface usability and content hierarchy.
+- 🔒 **简洁高效** - 专注于 2FA 生成与管理，无冗余功能
+- 🎨 **优雅界面** - 清爽的设计风格，操作简单直观
+- 🛑 **完全离线** - 无需联网，数据永不上传
+- 🚫 **隐私至上** - 零多余权限，尊重用户隐私
+- 📱 **全平台支持** - Windows、Mac、Linux、Android、iOS、Web 全覆盖
 
 ---
 
-## 📸 Screenshots
+## 📸 应用截图
 
 ### Android
 
@@ -62,14 +31,14 @@ A clean, elegant cross-platform 2FA (Two-Factor Authentication) tool designed to
    <img src="./screenshot/Screenshot_20250920_172013.webp" width="24%"/>
 </p>
 
-### Foldable Phone
+### 折叠屏设备
 
 <p float="center">
    <img src="./screenshot/Screenshot_20250920_165047.webp" width="49%"/>
    <img src="./screenshot/Screenshot_20250920_165058.webp" width="49%"/>
 </p>
 
-### IOS
+### iOS
 
 <p float="center">
    <img src="./screenshot/Screenshot_ios_1.webp" width="24%"/>
@@ -83,134 +52,114 @@ A clean, elegant cross-platform 2FA (Two-Factor Authentication) tool designed to
    <img src="./screenshot/Screenshot_ios_5.webp" width="24%"/>
 </p>
 
-### MacOS
+### macOS
 
 <p float="center">
    <img src="./screenshot/Screenshot_macos_1.webp" width="49%"/>
    <img src="./screenshot/Screenshot_macos_2.webp" width="49%"/>
 </p>
 
-### Web
+### Web 版
 
 <p float="center">
    <img src="./screenshot/Screenshot_web.webp" width="99%"/>
 </p>
 
-
-
-
 ---
 
-## 📥 Download and Installation Instructions
+## 📥 下载安装
 
-> ⚠️ Security Notice: The applications are not yet published on official app stores. Please download installation packages only from the official GitHub Releases page to ensure the authenticity of the software.  
-> ⚠️ System Compatibility: Before installing, ensure that your device meets the minimum system requirements for the corresponding platform to avoid installation failures or runtime issues.
+> ⚠️ **安全提示**：应用尚未上架官方应用商店，请仅从 GitHub Releases 页面下载安装包，确保软件来源可信。  
+> ⚠️ **系统兼容性**：安装前请确认设备满足对应平台的最低系统要求。
 
 ### Android
-- The application is not available on Google Play.
-- APK files can be downloaded from the [Releases page](https://github.com/halifox/PurityAuth/releases).
-- Before installation, make sure your device allows installation from unknown sources and that the Android version meets the minimum requirement.
+- 从 [Releases 页面](https://github.com/halifox/PurityAuth/releases) 下载 APK 文件
+- 安装前需允许"未知来源"应用安装权限
+- 最低系统要求：Android 5.0+
 
 ### iOS
-- The application is not available on the App Store.
-- Installation files are available on the [Releases page](https://github.com/halifox/PurityAuth/releases).
-- Before installation, follow iOS prompts to trust the developer certificate and ensure the device version supports the application.
+- 从 [Releases 页面](https://github.com/halifox/PurityAuth/releases) 获取安装文件
+- 安装时需按系统提示信任开发者证书
+- 最低系统要求：iOS 12.0+
 
 ### macOS
-- The application is not available on the Mac App Store.
-- DMG or ZIP files can be downloaded from the [Releases page](https://github.com/halifox/PurityAuth/releases).
-- During installation, you may need to allow “apps from any source” in system security settings.
+- 从 [Releases 页面](https://github.com/halifox/PurityAuth/releases) 下载 DMG 或 ZIP 文件
+- 安装时可能需要在系统安全设置中允许"任何来源"的应用
+- 最低系统要求：macOS 10.13+
 
 ### Windows
-- The application is not available on Microsoft Store.
-- Installation packages can be downloaded from the [Releases page](https://github.com/halifox/PurityAuth/releases).
-- Ensure the system meets the minimum Windows version requirement and that you have administrator privileges to complete the installation.
+- 从 [Releases 页面](https://github.com/halifox/PurityAuth/releases) 下载安装包
+- 需要管理员权限完成安装
+- 最低系统要求：Windows 10+
 
 ### Linux
-- The application is not available in any official software repositories.
-- Executable files or compressed packages are available on the [Releases page](https://github.com/halifox/PurityAuth/releases).
-- Some distributions may require additional dependencies; please refer to your distribution’s installation guide.
+- 从 [Releases 页面](https://github.com/halifox/PurityAuth/releases) 获取可执行文件或压缩包
+- 部分发行版可能需要额外依赖，请参考对应发行版安装指南
 
-### Web
-- Access the official hosted page directly: [https://purityauth.pages.dev](https://purityauth.pages.dev)
-- No installation is required, suitable for quick testing and usage.
-- Using a modern browser is recommended to ensure compatibility and security.
-
-## Updates and Version Information
-- All updates are published via the [GitHub Releases page](https://github.com/halifox/PurityAuth/releases).
-- Users can check the changelog for each release to learn about new features and fixes.
-
-## Security and Usage Boundaries
-- It is strongly recommended to obtain installation packages only from official sources to prevent malicious tampering.
-- This application provides identity verification functionality only and does not guarantee security of the device or system in other aspects.
-- For enterprise or managed environments, ensure compliance with relevant IT security policies before use.
+### Web 版
+- 直接访问：[https://purityauth.pages.dev](https://purityauth.pages.dev)
+- 无需安装，适合快速体验
+- 建议使用现代浏览器以确保兼容性
 
 ---
 
-## 🛠️ Usage Instructions
+## 🛠️ 使用指南
 
-### 1. Adding Accounts and Generating 2FA Codes
+### 添加账户
 
-1. **Launch the Application**: After startup, you will see the main interface. Click the "Add Account" button on the page.
-2. **Scan QR Code or Manually Enter Secret Key**:
-    - If your service provider supports QR code scanning, click the "Scan QR Code" button and use a QR code scanner on your phone or other device to scan the QR code displayed on the screen.
-    - If your service provider offers a manual secret key input option, you can manually enter the secret key.
-    - The application will automatically generate a 6-digit dynamic verification code.
-3. **Save Account Information**:  
-   After input is complete, click the "Save" button to save the account information to the application.  
-   You can view or delete saved accounts at any time.
+1. **启动应用**，点击"添加账户"按钮
+2. **扫描二维码**或**手动输入密钥**
+   - 扫码：使用相机扫描服务商提供的 2FA 二维码
+   - 手动：输入服务商提供的密钥字符串
+3. **保存账户**，应用将自动生成 6 位动态验证码
 
-### 2. Using 2FA Codes for Authentication
+### 使用验证码
 
-1. **Log into Your Account**: Enter your username and password on the target website or application.
-2. **Enter 2FA Code**:
-    - When the system prompts you to enter a 2FA code, open our 2FA tool application.
-    - Find the corresponding account name in the application and view the generated 6-digit dynamic verification code.
-    - Enter this verification code to complete the login process.
-3. **Expiration Time**: Each generated verification code is valid for only 30 seconds. Please complete the input within the valid time period.⌛
+1. 在目标网站或应用输入用户名和密码
+2. 当系统提示输入 2FA 验证码时，打开 Purity Auth
+3. 找到对应账户，查看生成的 6 位验证码
+4. 在 30 秒有效期内输入验证码完成登录 ⌛
 
-### 3. Managing Saved Accounts
+### 管理账户
 
-1. **View Saved Accounts**:  
-   On the main interface, all added accounts will be listed by name. You can easily find and view the 2FA codes for each account.
-2. **Delete Accounts**:  
-   Swipe the account entry and click the "Delete" button. After confirming deletion, the account will be removed from the application.  
-   Deletion operations cannot be undone. Please proceed with caution.🗑️
-3. **Edit Accounts**:  
-   If you need to modify an account name or rescan a QR code, swipe the account entry and click the "Edit" button to make changes.✏️
+- **查看账户**：主界面列出所有已添加的账户及其验证码
+- **删除账户**：滑动账户条目，点击"删除"按钮（操作不可撤销）🗑️
+- **编辑账户**：滑动账户条目，点击"编辑"按钮修改账户信息 ✏️
 
 ---
 
-## ❓ Frequently Asked Questions
+## ❓ 常见问题
 
-Q1: I lost my device. How can I recover 2FA? 🤔  
-A1: If you have lost your device or cannot access saved 2FA codes, you will need to use backup keys or contact the relevant service provider for account recovery. Please ensure you saved backup keys when enabling 2FA.🔑
+**Q1: 设备丢失后如何恢复 2FA？** 🤔  
+A1: 需要使用备份密钥或联系服务商进行账户恢复。启用 2FA 时请务必保存备份密钥。🔑
 
-Q2: How can I ensure my 2FA codes are secure? 🔒  
-A2: Since this tool operates completely offline and does not send any information to servers, your 2FA codes are stored only on your local device. For enhanced security, we recommend using a strong password to lock your device and regularly backing up your keys.💼
+**Q2: 如何确保 2FA 验证码的安全？** 🔒  
+A2: 本工具完全离线运行，验证码仅存储在本地设备。建议使用强密码锁定设备，并定期备份密钥。💼
 
-Q3: Can I use this tool on multiple devices? 📱💻  
-A3: Currently, this tool does not support synchronization functionality, so 2FA codes and account information are stored locally on each device. If you need to use it on multiple devices, please set it up separately on each device.🔄
+**Q3: 能否在多设备上使用？** 📱💻  
+A3: 目前不支持同步功能，账户信息仅存储在本地。如需在多设备使用，请分别设置。🔄
 
-Q4: Why do I always see expired verification codes? ⏳   
-A4: 2FA codes are time-based and update every 30 seconds. Ensure you enter the code before it expires. If the code times out, please wait for a new code to be generated.⌛
-
----
-
-## 🤝 Contributing
-
-We welcome community contributions of any kind!  
-Please read the [Contributing Guidelines (CONTRIBUTING.md)](CONTRIBUTING.md) to learn how to submit issues, request features, or contribute code.
+**Q4: 为什么验证码总是过期？** ⏳  
+A4: 验证码每 30 秒更新一次，请在有效期内输入。如超时，请等待新验证码生成。⌛
 
 ---
 
-## 📜 License
+## 🤝 参与贡献
 
-This project is licensed under the [GPL-3.0 License](LICENSE).
+欢迎任何形式的社区贡献！  
+请阅读 [贡献指南 (CONTRIBUTING.md)](CONTRIBUTING.md) 了解如何提交问题、请求功能或贡献代码。
 
 ---
 
-## 🙏 Acknowledgments
+## 📜 开源协议
+
+本项目采用 [GPL-3.0 协议](LICENSE) 开源。
+
+---
+
+## 🙏 致谢
+
+感谢以下开源项目的支持：
 
 - [daegalus/dart-otp](https://github.com/daegalus/dart-otp)
 - [elliotwutingfeng/motp](https://github.com/elliotwutingfeng/motp)
@@ -221,11 +170,3 @@ This project is licensed under the [GPL-3.0 License](LICENSE).
 - [dynamic_color](https://pub.dev/packages/dynamic_color)
 - [flutter_swipe_action_cell](https://pub.dev/packages/flutter_swipe_action_cell)
 - [mobile_scanner](https://github.com/juliansteenbakker/mobile_scanner)
-
-## 📢 Legal Notice
-
-This open-source project is intended solely for personal technical learning and reference purposes. As it may involve patent or copyright-related content, please ensure you fully understand the relevant laws and regulations before use. Without authorization, **please do not use this tool for commercial purposes or distribute it in any form**.
-
-All code and related content in this project are intended solely for personal technical learning and reference. Users are responsible for any legal consequences arising from their use of this project.
-
-Thank you for your understanding and support.
