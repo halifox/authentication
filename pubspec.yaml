@@ -1,7 +1,7 @@
 name: auth
 description: "A secure and elegant authentication app built with Flutter, supporting TOTP/HOTP and biometrics."
 publish_to: 'none'
-version: 0.1.0+10
+version: 0.1.1+11
 
 environment:
   sdk: ^3.9.0
