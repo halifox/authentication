@@ -50,7 +50,6 @@ linter:
     avoid_empty_else: true                        # 避免空的else语句
     avoid_function_literals_in_foreach_calls: true # 避免在forEach调用中使用函数字面量
     avoid_renaming_method_parameters: true        # 避免重命名方法参数
-    avoid_returning_null_for_future: true         # 避免为Future返回null
     avoid_returning_null_for_void: true           # 避免为void返回null
     avoid_single_cascade_in_expression_statements: true # 避免在表达式语句中使用单个级联
     avoid_types_as_parameter_names: true          # 避免使用类型作为参数名
@@ -69,12 +68,9 @@ linter:
     control_flow_in_finally: true                 # 避免在finally块中使用控制流语句
     empty_catches: true                           # 避免空的catch块
     empty_statements: true                        # 避免空语句
-    invariant_booleans: true                      # 避免在条件表达式中使用不变的布尔值
     literal_only_boolean_expressions: true        # 避免仅包含字面量的布尔表达式
-    
+
     # ========== 类型安全规则 ==========
-    iterable_contains_unrelated_type: true        # 避免在Iterable.contains中使用不相关的类型
-    list_remove_unrelated_type: true              # 避免在List.remove中使用不相关的类型
     unrelated_type_equality_checks: true          # 避免不相关类型的相等性检查
     hash_and_equals: true                         # 如果重写hashCode，也应该重写operator==
     

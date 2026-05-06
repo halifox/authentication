@@ -1,7 +1,5 @@
 import 'package:auth/db/database.dart';
 import 'package:auth/domain/models/auth_validation.dart';
-import 'package:auth/utils/otp.dart';
-import 'package:drift/drift.dart';
 
 class OtpService {
   /// 鲁棒地解析 URI 列表，支持多种换行符和空格清理。

@@ -2,7 +2,6 @@ import 'package:auth/db/database.dart';
 import 'package:auth/providers/auth_repository_provider.dart';
 import 'package:auth/router/app_router.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'token_item_provider.g.dart';

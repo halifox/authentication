@@ -1,4 +1,3 @@
-import 'package:auth/db/auth_entries_ext.dart';
 import 'package:auth/db/database.dart';
 import 'package:auth/l10n/generated/app_localizations.dart';
 import 'package:auth/providers/token_form_controller.dart';
