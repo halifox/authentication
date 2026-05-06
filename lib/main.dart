@@ -1,5 +1,5 @@
-import 'package:auth/l10n/generated/app_localizations.dart';
-import 'package:auth/router/app_router.dart';
+import 'package:pureotp/l10n/generated/app_localizations.dart';
+import 'package:pureotp/router/app_router.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -32,7 +32,7 @@ class AuthApp extends ConsumerWidget {
     );
     return DynamicColorBuilder(
       builder: (lightDynamic, darkDynamic) => MaterialApp.router(
-        title: 'Purity Auth',
+        title: 'PureOTP',
         debugShowCheckedModeBanner: false,
         themeMode: ThemeMode.system,
         theme: ThemeData(

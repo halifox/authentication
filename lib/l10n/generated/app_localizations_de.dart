@@ -9,7 +9,7 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
-  String get appTitle => 'Purity Auth';
+  String get appTitle => 'PureOTP';
 
   @override
   String get add => 'Hinzufügen';

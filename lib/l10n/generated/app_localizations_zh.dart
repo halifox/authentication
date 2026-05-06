@@ -9,7 +9,7 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get appTitle => 'Purity Auth';
+  String get appTitle => 'PureOTP';
 
   @override
   String get add => '添加';

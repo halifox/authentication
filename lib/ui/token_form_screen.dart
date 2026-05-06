@@ -1,9 +1,9 @@
-import 'package:auth/db/database.dart';
-import 'package:auth/l10n/generated/app_localizations.dart';
-import 'package:auth/providers/token_form_controller.dart';
-import 'package:auth/router/app_router.dart';
-import 'package:auth/ui/action_result_sheet.dart';
-import 'package:auth/ui/custom_app_bar.dart';
+import 'package:pureotp/db/database.dart';
+import 'package:pureotp/l10n/generated/app_localizations.dart';
+import 'package:pureotp/providers/token_form_controller.dart';
+import 'package:pureotp/router/app_router.dart';
+import 'package:pureotp/ui/action_result_sheet.dart';
+import 'package:pureotp/ui/custom_app_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

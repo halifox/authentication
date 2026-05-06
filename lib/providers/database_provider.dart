@@ -1,4 +1,4 @@
-import 'package:auth/db/database.dart';
+import 'package:pureotp/db/database.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'database_provider.g.dart';

@@ -1,6 +1,8 @@
-# Purity Auth
+# PureOTP
 
-一款简洁优雅的跨平台双因素认证（2FA）工具，致力于提供最简单、最友好的使用体验，帮助用户更安全地保护账户信息。完全离线运行，无多余权限请求，守护您的隐私与安全。
+一款基于 RFC 6238 的双因素认证工具，支持 iOS、Android、Windows、macOS、Linux 和 Web。
+
+简洁优雅的跨平台 2FA 工具，致力于提供最简单、最友好的使用体验，帮助用户更安全地保护账户信息。完全离线运行，无多余权限请求，守护您的隐私与安全。
 
 ---
 
@@ -73,31 +75,31 @@
 > ⚠️ **系统兼容性**：安装前请确认设备满足对应平台的最低系统要求。
 
 ### Android
-- 从 [Releases 页面](https://github.com/halifox/PurityAuth/releases) 下载 APK 文件
+- 从 [Releases 页面](https://github.com/halifox/PureOTP/releases) 下载 APK 文件
 - 安装前需允许"未知来源"应用安装权限
 - 最低系统要求：Android 5.0+
 
 ### iOS
-- 从 [Releases 页面](https://github.com/halifox/PurityAuth/releases) 获取安装文件
+- 从 [Releases 页面](https://github.com/halifox/PureOTP/releases) 获取安装文件
 - 安装时需按系统提示信任开发者证书
 - 最低系统要求：iOS 12.0+
 
 ### macOS
-- 从 [Releases 页面](https://github.com/halifox/PurityAuth/releases) 下载 DMG 或 ZIP 文件
+- 从 [Releases 页面](https://github.com/halifox/PureOTP/releases) 下载 DMG 或 ZIP 文件
 - 安装时可能需要在系统安全设置中允许"任何来源"的应用
 - 最低系统要求：macOS 10.13+
 
 ### Windows
-- 从 [Releases 页面](https://github.com/halifox/PurityAuth/releases) 下载安装包
+- 从 [Releases 页面](https://github.com/halifox/PureOTP/releases) 下载安装包
 - 需要管理员权限完成安装
 - 最低系统要求：Windows 10+
 
 ### Linux
-- 从 [Releases 页面](https://github.com/halifox/PurityAuth/releases) 获取可执行文件或压缩包
+- 从 [Releases 页面](https://github.com/halifox/PureOTP/releases) 获取可执行文件或压缩包
 - 部分发行版可能需要额外依赖，请参考对应发行版安装指南
 
 ### Web 版
-- 直接访问：[https://purityauth.pages.dev](https://purityauth.pages.dev)
+- 直接访问：[https://pureotp.pages.dev](https://pureotp.pages.dev)
 - 无需安装，适合快速体验
 - 建议使用现代浏览器以确保兼容性
 
@@ -116,7 +118,7 @@
 ### 使用验证码
 
 1. 在目标网站或应用输入用户名和密码
-2. 当系统提示输入 2FA 验证码时，打开 Purity Auth
+2. 当系统提示输入 2FA 验证码时，打开 PureOTP
 3. 找到对应账户，查看生成的 6 位验证码
 4. 在 30 秒有效期内输入验证码完成登录 ⌛
 

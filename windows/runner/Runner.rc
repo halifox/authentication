@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.purity" "\0"
-            VALUE "FileDescription", "auth" "\0"
+            VALUE "CompanyName", "com.halifox" "\0"
+            VALUE "FileDescription", "PureOTP" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "auth" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2025 com.purity. All rights reserved." "\0"
-            VALUE "OriginalFilename", "auth.exe" "\0"
-            VALUE "ProductName", "auth" "\0"
+            VALUE "InternalName", "pureotp" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 com.halifox. All rights reserved." "\0"
+            VALUE "OriginalFilename", "pureotp.exe" "\0"
+            VALUE "ProductName", "PureOTP" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

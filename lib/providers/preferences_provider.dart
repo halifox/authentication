@@ -1,4 +1,4 @@
-import 'package:auth/repository/settings_repository.dart';
+import 'package:pureotp/repository/settings_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

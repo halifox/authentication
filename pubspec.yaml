@@ -1,7 +1,7 @@
-name: auth
-description: "A secure and elegant authentication app built with Flutter, supporting TOTP/HOTP and biometrics."
+name: pureotp
+description: "A secure and elegant TOTP/HOTP authentication app built with Flutter."
 publish_to: 'none'
-version: 0.1.1+11
+version: 0.2.0+20
 
 environment:
   sdk: ^3.9.0

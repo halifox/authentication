@@ -1,6 +1,6 @@
-import 'package:auth/db/auth_entries_ext.dart';
-import 'package:auth/providers/auth_repository_provider.dart';
-import 'package:auth/providers/data_transfer_state.dart';
+import 'package:pureotp/db/auth_entries_ext.dart';
+import 'package:pureotp/providers/auth_repository_provider.dart';
+import 'package:pureotp/providers/data_transfer_state.dart';
 import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

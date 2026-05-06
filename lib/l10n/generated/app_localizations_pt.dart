@@ -9,7 +9,7 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
-  String get appTitle => 'Purity Auth';
+  String get appTitle => 'PureOTP';
 
   @override
   String get add => 'Adicionar';

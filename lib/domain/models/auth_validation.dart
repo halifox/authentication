@@ -1,4 +1,4 @@
-import 'package:auth/l10n/generated/app_localizations.dart';
+import 'package:pureotp/l10n/generated/app_localizations.dart';
 import 'package:flutter/widgets.dart';
 import 'package:base32/base32.dart';
 

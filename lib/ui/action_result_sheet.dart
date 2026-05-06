@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:auth/l10n/generated/app_localizations.dart';
-import 'package:auth/ui/custom_app_bar.dart';
+import 'package:pureotp/l10n/generated/app_localizations.dart';
+import 'package:pureotp/ui/custom_app_bar.dart';
 import 'package:go_router/go_router.dart';
 
 /// 操作结果底面菜单，用于向用户展示成功或失败的反馈。

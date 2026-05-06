@@ -1,4 +1,4 @@
 ```bash
-wrangler pages deploy build/web --project-name=purityauth --branch main
+wrangler pages deploy build/web --project-name=pureotp --branch main
 ```
 

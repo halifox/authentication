@@ -1,6 +1,6 @@
 {
   "@@locale": "zh",
-  "appTitle": "Purity Auth",
+  "appTitle": "PureOTP",
   "@appTitle": {
     "description": "应用程序主标题，显示在应用栏和应用名称"
   },

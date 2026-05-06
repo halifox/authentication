@@ -1,4 +1,4 @@
-import 'package:auth/router/app_router.dart';
+import 'package:pureotp/router/app_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'add_account_controller.g.dart';

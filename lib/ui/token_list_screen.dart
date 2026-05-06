@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:auth/l10n/generated/app_localizations.dart';
-import 'package:auth/providers/auth_repository_provider.dart';
-import 'package:auth/providers/token_list_controller.dart';
-import 'package:auth/ui/token_list_item.dart';
-import 'package:auth/ui/custom_app_bar.dart';
+import 'package:pureotp/l10n/generated/app_localizations.dart';
+import 'package:pureotp/providers/auth_repository_provider.dart';
+import 'package:pureotp/providers/token_list_controller.dart';
+import 'package:pureotp/ui/token_list_item.dart';
+import 'package:pureotp/ui/custom_app_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

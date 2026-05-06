@@ -1,10 +1,10 @@
-import 'package:auth/db/auth_entries_ext.dart';
-import 'package:auth/db/database.dart';
-import 'package:auth/l10n/generated/app_localizations.dart';
-import 'package:auth/providers/token_item_provider.dart';
-import 'package:auth/providers/preferences_provider.dart';
-import 'package:auth/ui/action_result_sheet.dart';
-import 'package:auth/utils/otp.dart';
+import 'package:pureotp/db/auth_entries_ext.dart';
+import 'package:pureotp/db/database.dart';
+import 'package:pureotp/l10n/generated/app_localizations.dart';
+import 'package:pureotp/providers/token_item_provider.dart';
+import 'package:pureotp/providers/preferences_provider.dart';
+import 'package:pureotp/ui/action_result_sheet.dart';
+import 'package:pureotp/utils/otp.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

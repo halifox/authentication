@@ -117,7 +117,7 @@ abstract class AppLocalizations {
   /// 应用程序主标题，显示在应用栏和应用名称
   ///
   /// In zh, this message translates to:
-  /// **'Purity Auth'**
+  /// **'PureOTP'**
   String get appTitle;
 
   /// 主界面添加新认证器的浮动操作按钮文本

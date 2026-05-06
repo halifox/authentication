@@ -1,6 +1,6 @@
-import 'package:auth/db/database.dart';
-import 'package:auth/providers/database_provider.dart';
-import 'package:auth/repository/repository.dart';
+import 'package:pureotp/db/database.dart';
+import 'package:pureotp/providers/database_provider.dart';
+import 'package:pureotp/repository/repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_repository_provider.g.dart';

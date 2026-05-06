@@ -1,9 +1,9 @@
 import 'package:base32/base32.dart';
 
-import 'package:auth/db/database.dart';
-import 'package:auth/utils/otp.dart';
-import 'package:auth/domain/models/auth_validation.dart';
-import 'package:auth/domain/services/otp_service.dart';
+import 'package:pureotp/db/database.dart';
+import 'package:pureotp/utils/otp.dart';
+import 'package:pureotp/domain/models/auth_validation.dart';
+import 'package:pureotp/domain/services/otp_service.dart';
 
 // --- Extensions ---
 

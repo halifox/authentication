@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:auth/db/auth_entries_ext.dart';
-import 'package:auth/db/database.dart';
-import 'package:auth/domain/models/auth_validation.dart';
-import 'package:auth/providers/auth_repository_provider.dart';
+import 'package:pureotp/db/auth_entries_ext.dart';
+import 'package:pureotp/db/database.dart';
+import 'package:pureotp/domain/models/auth_validation.dart';
+import 'package:pureotp/providers/auth_repository_provider.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

@@ -5,7 +5,7 @@ import 'package:encrypt/encrypt.dart';
 /// 为了演示架构，这里使用固定 Key 或简单的派生 Key。
 class EncryptionService {
   // 这里的 Key 仅作演示。实际应用应从安全存储读取或由用户密码派生。
-  static final _key = Key.fromUtf8('PurityAuthSecretKey32CharsLong!'); 
+  static final _key = Key.fromUtf8('PurityAuthSecretKey32CharsLong!');
   static final _iv = IV.fromLength(16);
   static final _encrypter = Encrypter(AES(_key));
 

@@ -3,7 +3,7 @@
     <uses-permission
         android:name="android.permission.INTERNET" tools:node="remove" />
     <application
-        android:label="Purity Auth"
+        android:label="PureOTP"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

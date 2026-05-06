@@ -1,7 +1,7 @@
-import 'package:auth/db/auth_entries_ext.dart';
-import 'package:auth/db/database.dart';
-import 'package:auth/domain/services/otp_service.dart';
-import 'package:auth/utils/encryption_service.dart';
+import 'package:pureotp/db/auth_entries_ext.dart';
+import 'package:pureotp/db/database.dart';
+import 'package:pureotp/domain/services/otp_service.dart';
+import 'package:pureotp/utils/encryption_service.dart';
 import 'package:drift/drift.dart';
 
 /// 批量导入的结果报告

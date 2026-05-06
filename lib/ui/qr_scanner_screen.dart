@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-import 'package:auth/l10n/generated/app_localizations.dart';
-import 'package:auth/ui/custom_app_bar.dart';
+import 'package:pureotp/l10n/generated/app_localizations.dart';
+import 'package:pureotp/ui/custom_app_bar.dart';
 
 /// 二维码扫描页面，使用相机扫描并识别 OTP 二维码。
 class QrScannerScreen extends StatefulWidget {
