@@ -14,28 +14,6 @@
 
 ## 应用截图
 
-### Android
-
-<p float="center">
-   <img src="./screenshot/Screenshot_20250920_164636.webp" width="24%"/>
-   <img src="./screenshot/Screenshot_20250920_165514.webp" width="24%"/>
-   <img src="./screenshot/Screenshot_20250920_164849.webp" width="24%"/>
-   <img src="./screenshot/Screenshot_20250920_165825.webp" width="24%"/>
-   <img src="./screenshot/Screenshot_20250920_164717.webp" width="24%"/>
-   <img src="./screenshot/Screenshot_20250920_164727.webp" width="24%"/>
-   <img src="./screenshot/Screenshot_20250920_164804.webp" width="24%"/>
-   <img src="./screenshot/Screenshot_20250920_172013.webp" width="24%"/>
-</p>
-
-### 折叠屏设备
-
-<p float="center">
-   <img src="./screenshot/Screenshot_20250920_165047.webp" width="49%"/>
-   <img src="./screenshot/Screenshot_20250920_165058.webp" width="49%"/>
-</p>
-
-### iOS
-
 <p float="center">
    <img src="./screenshot/Screenshot_ios_1.webp" width="24%"/>
    <img src="./screenshot/Screenshot_ios_7.webp" width="24%"/>
@@ -46,18 +24,6 @@
    <img src="./screenshot/Screenshot_ios_5.webp" width="24%"/>
 </p>
 
-### macOS
-
-<p float="center">
-   <img src="./screenshot/Screenshot_macos_1.webp" width="49%"/>
-   <img src="./screenshot/Screenshot_macos_2.webp" width="49%"/>
-</p>
-
-### Web
-
-<p float="center">
-   <img src="./screenshot/Screenshot_web.webp" width="99%"/>
-</p>
 
 ## 致谢
 
