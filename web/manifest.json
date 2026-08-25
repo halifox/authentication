@@ -1,11 +1,11 @@
 {
-    "name": "PureOTP",
-    "short_name": "PureOTP",
+    "name": "authentication",
+    "short_name": "authentication",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A secure and elegant TOTP/HOTP authentication app.",
+    "description": "A new Flutter project.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

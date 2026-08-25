@@ -1,4 +1,4 @@
-package com.halifox.pureotp
+package com.halifox.authentication
 
 import io.flutter.embedding.android.FlutterActivity
 
