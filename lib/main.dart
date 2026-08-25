@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:pureotp/l10n/generated/app_localizations.dart';
 import 'package:pureotp/router/app_router.dart';
 import 'package:dynamic_color/dynamic_color.dart';
@@ -19,7 +20,7 @@ class AuthApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
-    
+
     const pageTransitionsTheme = PageTransitionsTheme(
       builders: {
         TargetPlatform.android: CupertinoPageTransitionsBuilder(),

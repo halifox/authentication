@@ -1,5 +1,5 @@
 name: pureotp
-description: "A secure and elegant TOTP/HOTP authentication app built with Flutter."
+description: ""
 publish_to: 'none'
 version: 0.2.0+20
 
@@ -73,3 +73,8 @@ flutter:
     - family: VarelaRound
       fonts:
         - asset: assets/fonts/VarelaRound-Regular.ttf
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/app_icon.png"
