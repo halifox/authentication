@@ -1,6 +1,6 @@
 {
   "@@locale": "ko",
-  "appTitle": "PureOTP",
+  "appTitle": "Authentication",
   "add": "추가",
   "scan": "스캔",
   "settings": "설정",

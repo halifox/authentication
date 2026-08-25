@@ -9,7 +9,7 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
-  String get appTitle => 'PureOTP';
+  String get appTitle => 'Authentication';
 
   @override
   String get add => '추가';

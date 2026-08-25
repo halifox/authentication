@@ -9,7 +9,7 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
-  String get appTitle => 'PureOTP';
+  String get appTitle => 'Authentication';
 
   @override
   String get add => 'Добавить';

@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appTitle": "PureOTP",
+  "appTitle": "Authentication",
   "add": "Add",
   "scan": "Scan",
   "settings": "Settings",

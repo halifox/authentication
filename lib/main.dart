@@ -33,7 +33,7 @@ class AuthApp extends ConsumerWidget {
     );
     return DynamicColorBuilder(
       builder: (lightDynamic, darkDynamic) => MaterialApp.router(
-        title: 'PureOTP',
+        title: 'Authentication',
         debugShowCheckedModeBanner: false,
         themeMode: ThemeMode.system,
         theme: ThemeData(

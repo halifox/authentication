@@ -1,6 +1,6 @@
 {
   "@@locale": "ru",
-  "appTitle": "PureOTP",
+  "appTitle": "Authentication",
   "add": "Добавить",
   "scan": "Сканировать",
   "settings": "Настройки",
