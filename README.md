@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/app_icon.png" 应用图标" width="128" />
+</p>
+
 # Authentication
 
 一款基于 RFC 6238 标准的离线双因素认证（2FA）管理工具，旨在提供极简的凭证存储与一次性密码生成方案，支持 Windows、macOS、Linux、Android、iOS 及 Web 端。
