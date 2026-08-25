@@ -15,13 +15,13 @@
 ## 应用截图
 
 <p float="center">
-   <img src="./screenshot/Screenshot_ios_1.webp" width="24%"/>
-   <img src="./screenshot/Screenshot_ios_7.webp" width="24%"/>
-   <img src="./screenshot/Screenshot_ios_3.webp" width="24%"/>
-   <img src="./screenshot/Screenshot_ios_2.webp" width="24%"/>
-   <img src="./screenshot/Screenshot_ios_6.webp" width="24%"/>
-   <img src="./screenshot/Screenshot_ios_4.webp" width="24%"/>
-   <img src="./screenshot/Screenshot_ios_5.webp" width="24%"/>
+   <img src="./screenshots/Screenshot_ios_1.webp" width="24%"/>
+   <img src="./screenshots/Screenshot_ios_7.webp" width="24%"/>
+   <img src="./screenshots/Screenshot_ios_3.webp" width="24%"/>
+   <img src="./screenshots/Screenshot_ios_2.webp" width="24%"/>
+   <img src="./screenshots/Screenshot_ios_6.webp" width="24%"/>
+   <img src="./screenshots/Screenshot_ios_4.webp" width="24%"/>
+   <img src="./screenshots/Screenshot_ios_5.webp" width="24%"/>
 </p>
 
 
