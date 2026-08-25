@@ -1,9 +1,9 @@
-import 'package:pureotp/db/database.dart';
-import 'package:pureotp/l10n/generated/app_localizations.dart';
-import 'package:pureotp/providers/token_form_controller.dart';
-import 'package:pureotp/router/app_router.dart';
-import 'package:pureotp/ui/action_result_sheet.dart';
-import 'package:pureotp/ui/custom_app_bar.dart';
+import 'package:authentication/db/database.dart';
+import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/providers/token_form_controller.dart';
+import 'package:authentication/router/app_router.dart';
+import 'package:authentication/ui/action_result_sheet.dart';
+import 'package:authentication/ui/custom_app_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,12 +25,20 @@ class TokenFormScreen extends HookConsumerWidget {
 
     // Controllers
     final issuerController = useTextEditingController(text: args?.issuer ?? '');
-    final accountController = useTextEditingController(text: args?.account ?? '');
+    final accountController = useTextEditingController(
+      text: args?.account ?? '',
+    );
     final secretController = useTextEditingController(text: args?.secret ?? '');
     final pinController = useTextEditingController(text: args?.pin ?? '');
-    final digitsController = useTextEditingController(text: (args?.digits ?? 6).toString());
-    final periodController = useTextEditingController(text: (args?.period ?? 30).toString());
-    final counterController = useTextEditingController(text: (args?.counter ?? 0).toString());
+    final digitsController = useTextEditingController(
+      text: (args?.digits ?? 6).toString(),
+    );
+    final periodController = useTextEditingController(
+      text: (args?.period ?? 30).toString(),
+    );
+    final counterController = useTextEditingController(
+      text: (args?.counter ?? 0).toString(),
+    );
 
     // State
     final type = useState(args?.type ?? 'totp');
@@ -38,17 +46,15 @@ class TokenFormScreen extends HookConsumerWidget {
     final icon = useState(args?.icon ?? 'assets/icons/passkey.svg');
     final obscureText = useState(true);
 
-    final typeLabels = useMemoized(() => {
-      'totp': l10n.totp,
-      'hotp': l10n.hotp,
-      'motp': l10n.motp,
-    }, [l10n]);
+    final typeLabels = useMemoized(
+      () => {'totp': l10n.totp, 'hotp': l10n.hotp, 'motp': l10n.motp},
+      [l10n],
+    );
 
-    final algorithmLabels = useMemoized(() => {
-      'sha1': l10n.sha1,
-      'sha256': l10n.sha256,
-      'sha512': l10n.sha512,
-    }, [l10n]);
+    final algorithmLabels = useMemoized(
+      () => {'sha1': l10n.sha1, 'sha256': l10n.sha256, 'sha512': l10n.sha512},
+      [l10n],
+    );
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -74,33 +80,70 @@ class TokenFormScreen extends HookConsumerWidget {
       ),
       body: SizedBox.expand(
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             child: Column(
               spacing: 16,
               children: [
-                _buildDropdown<String>(l10n.type, type.value, typeLabels, (value) => type.value = value),
+                _buildDropdown<String>(
+                  l10n.type,
+                  type.value,
+                  typeLabels,
+                  (value) => type.value = value,
+                ),
                 _buildTextField(
                   label: l10n.issuer,
                   controller: issuerController,
-                  suffixIcon: _buildIcon(context, icon.value, (newIcon) => icon.value = newIcon),
+                  suffixIcon: _buildIcon(
+                    context,
+                    icon.value,
+                    (newIcon) => icon.value = newIcon,
+                  ),
                 ),
-                _buildTextField(label: l10n.account, controller: accountController),
-                _buildPasswordTextField(secretController, l10n.secret, obscureText),
+                _buildTextField(
+                  label: l10n.account,
+                  controller: accountController,
+                ),
+                _buildPasswordTextField(
+                  secretController,
+                  l10n.secret,
+                  obscureText,
+                ),
                 switch (type.value.toLowerCase()) {
-                  'totp' || 'hotp' => _buildDropdown<String>(l10n.algorithm, algorithm.value, algorithmLabels, (value) => algorithm.value = value),
-                  'motp' => _buildTextField(label: l10n.pin, controller: pinController),
+                  'totp' || 'hotp' => _buildDropdown<String>(
+                    l10n.algorithm,
+                    algorithm.value,
+                    algorithmLabels,
+                    (value) => algorithm.value = value,
+                  ),
+                  'motp' => _buildTextField(
+                    label: l10n.pin,
+                    controller: pinController,
+                  ),
                   String() => const SizedBox.shrink(),
                 },
                 Row(
                   spacing: 16,
                   children: <Widget>[
-                    Expanded(child: _buildDigitsOnlyTextField(digitsController, l10n.digits)),
+                    Expanded(
+                      child: _buildDigitsOnlyTextField(
+                        digitsController,
+                        l10n.digits,
+                      ),
+                    ),
                     Expanded(
                       child: switch (type.value.toLowerCase()) {
-                        'totp' || 'motp' => _buildDigitsOnlyTextField(periodController, l10n.period),
-                        'hotp' => _buildDigitsOnlyTextField(counterController, l10n.counter),
+                        'totp' || 'motp' => _buildDigitsOnlyTextField(
+                          periodController,
+                          l10n.period,
+                        ),
+                        'hotp' => _buildDigitsOnlyTextField(
+                          counterController,
+                          l10n.counter,
+                        ),
                         String() => const SizedBox.shrink(),
                       },
                     ),
@@ -114,38 +157,57 @@ class TokenFormScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildDigitsOnlyTextField(TextEditingController controller, String label) {
+  Widget _buildDigitsOnlyTextField(
+    TextEditingController controller,
+    String label,
+  ) {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(14.0))),
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(14.0)),
+        ),
       ),
       keyboardType: TextInputType.number,
-      inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+      inputFormatters: <TextInputFormatter>[
+        FilteringTextInputFormatter.digitsOnly,
+      ],
     );
   }
 
-  Widget _buildTextField({required String label, TextEditingController? controller, Widget? suffixIcon}) {
+  Widget _buildTextField({
+    required String label,
+    TextEditingController? controller,
+    Widget? suffixIcon,
+  }) {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(14.0))),
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(14.0)),
+        ),
         suffixIcon: suffixIcon,
       ),
     );
   }
 
-  Widget _buildPasswordTextField(TextEditingController controller, String label, ValueNotifier<bool> obscureText) => TextField(
+  Widget _buildPasswordTextField(
+    TextEditingController controller,
+    String label,
+    ValueNotifier<bool> obscureText,
+  ) => TextField(
     controller: controller,
     obscureText: obscureText.value,
     decoration: InputDecoration(
       labelText: label,
       floatingLabelBehavior: FloatingLabelBehavior.always,
-      border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(14.0))),
+      border: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(14.0)),
+      ),
       suffixIcon: IconButton(
         icon: Icon(obscureText.value ? Icons.visibility_off : Icons.visibility),
         onPressed: () => obscureText.value = !obscureText.value,
@@ -153,12 +215,26 @@ class TokenFormScreen extends HookConsumerWidget {
     ),
   );
 
-  Widget _buildDropdown<T>(String label, T initialValue, Map<T, String> options, void Function(T) onChanged) => DropdownMenuFormField<T>(
+  Widget _buildDropdown<T>(
+    String label,
+    T initialValue,
+    Map<T, String> options,
+    void Function(T) onChanged,
+  ) => DropdownMenuFormField<T>(
     width: double.infinity,
     label: Text(label),
     initialSelection: initialValue,
-    dropdownMenuEntries: options.entries.map((MapEntry<T, String> entry) => DropdownMenuEntry(value: entry.key, label: entry.value)).toList(),
-    inputDecorationTheme: const InputDecorationTheme(border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(14.0)))),
+    dropdownMenuEntries: options.entries
+        .map(
+          (MapEntry<T, String> entry) =>
+              DropdownMenuEntry(value: entry.key, label: entry.value),
+        )
+        .toList(),
+    inputDecorationTheme: const InputDecorationTheme(
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(14.0)),
+      ),
+    ),
     onSelected: (value) {
       if (value != null) {
         onChanged(value);
@@ -166,7 +242,11 @@ class TokenFormScreen extends HookConsumerWidget {
     },
   );
 
-  Widget _buildIcon(BuildContext context, String icon, void Function(String) onChange) => Padding(
+  Widget _buildIcon(
+    BuildContext context,
+    String icon,
+    void Function(String) onChange,
+  ) => Padding(
     padding: const EdgeInsets.all(6.0),
     child: GestureDetector(
       onTap: () async {
@@ -179,13 +259,22 @@ class TokenFormScreen extends HookConsumerWidget {
         height: 44,
         width: 44,
         alignment: Alignment.center,
-        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(10)),
-        child: SvgPicture.asset(icon, width: 28, height: 28, colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn)),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: SvgPicture.asset(
+          icon,
+          width: 28,
+          height: 28,
+          colorFilter: ColorFilter.mode(
+            Theme.of(context).colorScheme.onPrimary,
+            BlendMode.srcIn,
+          ),
+        ),
       ),
     ),
   );
-
-      
 
   Future<void> _handleSave({
     required BuildContext context,
@@ -243,7 +332,10 @@ class TokenFormScreen extends HookConsumerWidget {
             builder: (ctx) => ActionResultSheet(
               state: 0,
               title: l10n.warning,
-              message: l10n.tokenExists(result.pending.issuer.value, result.pending.account.value),
+              message: l10n.tokenExists(
+                result.pending.issuer.value,
+                result.pending.account.value,
+              ),
               falseButtonVisible: true,
             ),
           );
@@ -283,11 +375,13 @@ class TokenFormScreen extends HookConsumerWidget {
       if (context.mounted) {
         await showCupertinoModalPopup(
           context: context,
-          builder: (ctx) => ActionResultSheet(state: 0, title: l10n.saveFailed, message: e.toString()),
+          builder: (ctx) => ActionResultSheet(
+            state: 0,
+            title: l10n.saveFailed,
+            message: e.toString(),
+          ),
         );
       }
     }
   }
 }
-
-  

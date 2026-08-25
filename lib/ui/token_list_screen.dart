@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:pureotp/l10n/generated/app_localizations.dart';
-import 'package:pureotp/providers/auth_repository_provider.dart';
-import 'package:pureotp/providers/token_list_controller.dart';
-import 'package:pureotp/ui/token_list_item.dart';
-import 'package:pureotp/ui/custom_app_bar.dart';
+import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/providers/auth_repository_provider.dart';
+import 'package:authentication/providers/token_list_controller.dart';
+import 'package:authentication/ui/token_list_item.dart';
+import 'package:authentication/ui/custom_app_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -35,7 +35,9 @@ class TokenListScreen extends ConsumerWidget {
             return Center(child: Text(AppLocalizations.of(context)!.noData));
           }
           return GridView.builder(
-            physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 16),
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 700,
@@ -60,12 +62,18 @@ class TokenListScreen extends ConsumerWidget {
       scaffold = AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle(
           systemNavigationBarColor: Theme.of(context).colorScheme.surface,
-          systemNavigationBarDividerColor: Theme.of(context).colorScheme.surface,
-          systemNavigationBarIconBrightness: Theme.of(context).colorScheme.brightness,
+          systemNavigationBarDividerColor: Theme.of(
+            context,
+          ).colorScheme.surface,
+          systemNavigationBarIconBrightness: Theme.of(
+            context,
+          ).colorScheme.brightness,
           statusBarColor: Colors.transparent,
           statusBarBrightness: Theme.of(context).colorScheme.brightness,
           statusBarIconBrightness:
-              (Theme.of(context).colorScheme.brightness == Brightness.dark) ? Brightness.light : Brightness.dark,
+              (Theme.of(context).colorScheme.brightness == Brightness.dark)
+              ? Brightness.light
+              : Brightness.dark,
         ),
         child: scaffold,
       );

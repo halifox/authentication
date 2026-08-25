@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:pureotp/l10n/generated/app_localizations.dart';
-import 'package:pureotp/router/app_router.dart';
+import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/router/app_router.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';

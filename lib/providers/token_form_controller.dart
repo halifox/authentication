@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:pureotp/db/auth_entries_ext.dart';
-import 'package:pureotp/db/database.dart';
-import 'package:pureotp/domain/models/auth_validation.dart';
-import 'package:pureotp/providers/auth_repository_provider.dart';
+import 'package:authentication/db/auth_entries_ext.dart';
+import 'package:authentication/db/database.dart';
+import 'package:authentication/domain/models/auth_validation.dart';
+import 'package:authentication/providers/auth_repository_provider.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -65,7 +65,9 @@ class TokenFormController extends _$TokenFormController {
         icon: drift.Value(icon),
         scheme: const drift.Value('otpauth'),
         sortOrder: const drift.Value(0),
-        createdAt: id == null ? drift.Value(DateTime.now().millisecondsSinceEpoch) : const drift.Value.absent(),
+        createdAt: id == null
+            ? drift.Value(DateTime.now().millisecondsSinceEpoch)
+            : const drift.Value.absent(),
       );
 
       // 验证逻辑
@@ -75,20 +77,26 @@ class TokenFormController extends _$TokenFormController {
 
       if (id == null) {
         if (!forceUpdate) {
-          final existing = await repo.getConfigByAccountAndIssuer(companion.account.value, companion.issuer.value);
+          final existing = await repo.getConfigByAccountAndIssuer(
+            companion.account.value,
+            companion.issuer.value,
+          );
           if (existing != null) {
             return TokenFormConflict(companion);
           }
         }
-        
+
         if (forceUpdate) {
-          final existing = await repo.getConfigByAccountAndIssuer(companion.account.value, companion.issuer.value);
+          final existing = await repo.getConfigByAccountAndIssuer(
+            companion.account.value,
+            companion.issuer.value,
+          );
           if (existing != null) {
             await repo.updateConfig(existing.copyWithCompanion(companion));
             return TokenFormSuccess(isUpdate: true);
           }
         }
-        
+
         await repo.addConfig(companion);
         return TokenFormSuccess(isUpdate: false);
       } else {

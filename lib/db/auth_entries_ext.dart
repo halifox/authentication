@@ -1,14 +1,13 @@
 import 'package:base32/base32.dart';
 
-import 'package:pureotp/db/database.dart';
-import 'package:pureotp/utils/otp.dart';
-import 'package:pureotp/domain/models/auth_validation.dart';
-import 'package:pureotp/domain/services/otp_service.dart';
+import 'package:authentication/db/database.dart';
+import 'package:authentication/utils/otp.dart';
+import 'package:authentication/domain/models/auth_validation.dart';
+import 'package:authentication/domain/services/otp_service.dart';
 
 // --- Extensions ---
 
 extension AuthEntryLogic on AuthEntry {
-
   void validateThrow() {
     AuthValidator.validate(
       scheme: scheme,
@@ -29,19 +28,45 @@ extension AuthEntryLogic on AuthEntry {
     final algo = AuthEntryUtils.getAlgorithm(algorithm);
 
     return switch (typeLower) {
-      'totp' => OTP.generateTOTPCodeString(secret: secret, digits: digits, algorithm: algo, intervalSeconds: period, isBase32: true),
-      'hotp' => OTP.generateHOTPCodeString(secret: secret, digits: digits, algorithm: algo, counter: counter, isBase32: true),
-      'motp' => OTP.generateMOTPCodeString(secret: secret, digits: digits, intervalSeconds: period, pin: pin),
+      'totp' => OTP.generateTOTPCodeString(
+        secret: secret,
+        digits: digits,
+        algorithm: algo,
+        intervalSeconds: period,
+        isBase32: true,
+      ),
+      'hotp' => OTP.generateHOTPCodeString(
+        secret: secret,
+        digits: digits,
+        algorithm: algo,
+        counter: counter,
+        isBase32: true,
+      ),
+      'motp' => OTP.generateMOTPCodeString(
+        secret: secret,
+        digits: digits,
+        intervalSeconds: period,
+        pin: pin,
+      ),
       _ => '',
     };
   }
 
-  String toOtpUri() =>
-      AuthEntryUtils.generateUri(scheme: scheme, type: type, issuer: issuer, account: account, secret: secret, algorithm: algorithm, digits: digits, period: period, counter: counter, pin: pin);
+  String toOtpUri() => AuthEntryUtils.generateUri(
+    scheme: scheme,
+    type: type,
+    issuer: issuer,
+    account: account,
+    secret: secret,
+    algorithm: algorithm,
+    digits: digits,
+    period: period,
+    counter: counter,
+    pin: pin,
+  );
 }
 
 extension AuthEntriesCompanionLogic on AuthEntriesCompanion {
-
   void validateThrow() {
     AuthValidator.validate(
       scheme: scheme.value,
@@ -56,7 +81,6 @@ extension AuthEntriesCompanionLogic on AuthEntriesCompanion {
       pin: pin.value,
     );
   }
-
 }
 
 // --- Utils ---
@@ -81,7 +105,12 @@ class AuthEntryUtils {
     required String pin,
   }) {
     final typeLower = type.toLowerCase();
-    final queryParams = {'secret': secret.toUpperCase(), 'issuer': issuer, 'algorithm': algorithm.toLowerCase(), 'digits': digits.toString()};
+    final queryParams = {
+      'secret': secret.toUpperCase(),
+      'issuer': issuer,
+      'algorithm': algorithm.toLowerCase(),
+      'digits': digits.toString(),
+    };
 
     if (typeLower == 'totp' || typeLower == 'motp') {
       queryParams['period'] = period.toString();
@@ -96,7 +125,12 @@ class AuthEntryUtils {
     // Standard Label format: Issuer:Account
     final label = issuer.isNotEmpty ? '$issuer:$account' : account;
 
-    return Uri(scheme: scheme.toLowerCase(), host: typeLower, path: '/$label', queryParameters: queryParams).toString();
+    return Uri(
+      scheme: scheme.toLowerCase(),
+      host: typeLower,
+      path: '/$label',
+      queryParameters: queryParams,
+    ).toString();
   }
 
   /// Verifies if the input string is a valid Base32 encoded string.

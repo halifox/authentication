@@ -1,5 +1,5 @@
-import 'package:pureotp/db/database.dart';
-import 'package:pureotp/domain/models/auth_validation.dart';
+import 'package:authentication/db/database.dart';
+import 'package:authentication/domain/models/auth_validation.dart';
 
 class OtpService {
   /// 鲁棒地解析 URI 列表，支持多种换行符和空格清理。

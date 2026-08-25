@@ -1,6 +1,6 @@
-import 'package:pureotp/db/auth_entries_ext.dart';
-import 'package:pureotp/providers/auth_repository_provider.dart';
-import 'package:pureotp/providers/data_transfer_state.dart';
+import 'package:authentication/db/auth_entries_ext.dart';
+import 'package:authentication/providers/auth_repository_provider.dart';
+import 'package:authentication/providers/data_transfer_state.dart';
 import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -31,7 +31,7 @@ class DataTransferController extends _$DataTransferController {
     // 为了保持之前逻辑的一致性（点击 -> 弹窗警告 -> 确认 -> 导入），
     // 我们将这个流程控制权交给 UI。UI 应该先询问用户，然后再调用此方法。
     // 如果 UI 已经询问过了，则这里直接执行。
-    
+
     // 但是，为了完全解耦，Controller 应该提供“导入”原子操作。
     // 之前的逻辑是：点击 -> (警告: 可能会覆盖) -> 确定 -> 执行。
     // 这意味着警告是无条件的（只要点击就警告），而不是基于数据内容的。

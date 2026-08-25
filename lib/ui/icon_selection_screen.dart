@@ -1,6 +1,6 @@
-import 'package:pureotp/l10n/generated/app_localizations.dart';
-import 'package:pureotp/providers/icon_selection_provider.dart';
-import 'package:pureotp/ui/custom_app_bar.dart';
+import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/providers/icon_selection_provider.dart';
+import 'package:authentication/ui/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -21,10 +21,13 @@ class IconSelectionScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: TextField(
-              onChanged: (String value) => ref.read(iconSearchQueryProvider.notifier).update(value),
+              onChanged: (String value) =>
+                  ref.read(iconSearchQueryProvider.notifier).update(value),
               decoration: InputDecoration(
                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(14.0))),
+                border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(14.0)),
+                ),
                 prefixIcon: const Icon(Icons.search),
                 hintText: AppLocalizations.of(context)!.search,
               ),
@@ -38,9 +41,15 @@ class IconSelectionScreen extends ConsumerWidget {
                 thickness: 8,
                 radius: const Radius.circular(12),
                 child: GridView.builder(
-                  physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                  physics: const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
+                  ),
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 60, crossAxisSpacing: 16, mainAxisSpacing: 16),
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 60,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                  ),
                   itemCount: icons.length,
                   itemBuilder: (BuildContext context, int index) {
                     final icon = icons[index];
@@ -49,8 +58,19 @@ class IconSelectionScreen extends ConsumerWidget {
                       onTap: () => Navigator.pop(context, fullPath),
                       child: Container(
                         alignment: Alignment.center,
-                        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(14)),
-                        child: SvgPicture.asset(fullPath, width: 28, height: 28, colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn)),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: SvgPicture.asset(
+                          fullPath,
+                          width: 28,
+                          height: 28,
+                          colorFilter: ColorFilter.mode(
+                            Theme.of(context).colorScheme.onPrimary,
+                            BlendMode.srcIn,
+                          ),
+                        ),
                       ),
                     );
                   },

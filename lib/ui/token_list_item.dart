@@ -1,10 +1,10 @@
-import 'package:pureotp/db/auth_entries_ext.dart';
-import 'package:pureotp/db/database.dart';
-import 'package:pureotp/l10n/generated/app_localizations.dart';
-import 'package:pureotp/providers/token_item_provider.dart';
-import 'package:pureotp/providers/preferences_provider.dart';
-import 'package:pureotp/ui/action_result_sheet.dart';
-import 'package:pureotp/utils/otp.dart';
+import 'package:authentication/db/auth_entries_ext.dart';
+import 'package:authentication/db/database.dart';
+import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/providers/token_item_provider.dart';
+import 'package:authentication/providers/preferences_provider.dart';
+import 'package:authentication/ui/action_result_sheet.dart';
+import 'package:authentication/utils/otp.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,12 +26,19 @@ class TokenListItem extends ConsumerWidget {
 
     return SwipeActionCell(
       key: ValueKey('swipe_${config.id}'),
-      trailingActions: [_buildAction(context, l10n.delete, () => _onDelete(context, ref)), _buildAction(context, l10n.edit, () => _onEdit(ref))],
+      trailingActions: [
+        _buildAction(context, l10n.delete, () => _onDelete(context, ref)),
+        _buildAction(context, l10n.edit, () => _onEdit(ref)),
+      ],
       child: _TokenCard(config: config),
     );
   }
 
-  SwipeAction _buildAction(BuildContext context, String label, VoidCallback onTap) {
+  SwipeAction _buildAction(
+    BuildContext context,
+    String label,
+    VoidCallback onTap,
+  ) {
     return SwipeAction(
       widthSpace: 152,
       onTap: (handler) async => onTap(),
@@ -40,7 +47,10 @@ class TokenListItem extends ConsumerWidget {
         padding: const EdgeInsets.only(left: 12),
         child: Container(
           alignment: Alignment.center,
-          decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: BorderRadius.circular(24)),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(24),
+          ),
           child: Text(label),
         ),
       ),
@@ -55,7 +65,12 @@ class TokenListItem extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final bool? result = await showCupertinoModalPopup<bool>(
       context: context,
-      builder: (ctx) => ActionResultSheet(state: 0, title: l10n.warning, message: l10n.deleteWarning, falseButtonVisible: true),
+      builder: (ctx) => ActionResultSheet(
+        state: 0,
+        title: l10n.warning,
+        message: l10n.deleteWarning,
+        falseButtonVisible: true,
+      ),
     );
     if (result ?? false) {
       await ref.read(tokenItemProvider(config.id).notifier).deleteToken();
@@ -80,11 +95,15 @@ class _TokenCard extends ConsumerWidget {
     return GestureDetector(
       onTap: () {
         if (isShowOnTap) controller.toggleReveal();
-        if (isCopyOnTap) _handleCopy(context, controller, config.generateCodeString());
+        if (isCopyOnTap)
+          _handleCopy(context, controller, config.generateCodeString());
       },
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: BorderRadius.circular(24)),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(24),
+        ),
         child: Column(
           children: [
             _TokenHeader(config: config),
@@ -96,12 +115,21 @@ class _TokenCard extends ConsumerWidget {
     );
   }
 
-  Future<void> _handleCopy(BuildContext context, TokenItem controller, String code) async {
+  Future<void> _handleCopy(
+    BuildContext context,
+    TokenItem controller,
+    String code,
+  ) async {
     await controller.copyCode(code);
     if (!context.mounted) return;
 
     ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.codeCopied), duration: const Duration(milliseconds: 1200)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.codeCopied),
+        duration: const Duration(milliseconds: 1200),
+      ),
+    );
   }
 }
 
@@ -125,13 +153,20 @@ class _TokenHeader extends StatelessWidget {
                 config.issuer,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onPrimaryContainer),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onPrimaryContainer,
+                ),
               ),
               Text(
                 config.account,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8)),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onPrimaryContainer.withValues(
+                    alpha: 0.8,
+                  ),
+                ),
               ),
             ],
           ),
@@ -154,8 +189,19 @@ class _TokenIcon extends StatelessWidget {
       height: 48,
       width: 48,
       alignment: Alignment.center,
-      decoration: BoxDecoration(color: theme.colorScheme.primary, borderRadius: BorderRadius.circular(12)),
-      child: SvgPicture.asset(iconPath, width: 28, height: 28, colorFilter: ColorFilter.mode(theme.colorScheme.onPrimary, BlendMode.srcIn)),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: SvgPicture.asset(
+        iconPath,
+        width: 28,
+        height: 28,
+        colorFilter: ColorFilter.mode(
+          theme.colorScheme.onPrimary,
+          BlendMode.srcIn,
+        ),
+      ),
     );
   }
 }
@@ -169,7 +215,14 @@ class _TokenAction extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (config.type == 'hotp') {
       final itemState = ref.watch(tokenItemProvider(config.id));
-      return IconButton(onPressed: itemState.isUpdating ? null : () => ref.read(tokenItemProvider(config.id).notifier).incrementHotp(config), icon: const Icon(Icons.refresh));
+      return IconButton(
+        onPressed: itemState.isUpdating
+            ? null
+            : () => ref
+                  .read(tokenItemProvider(config.id).notifier)
+                  .incrementHotp(config),
+        icon: const Icon(Icons.refresh),
+      );
     }
     return _OtpTimer(period: config.period);
   }
@@ -199,7 +252,9 @@ class _OtpDisplay extends ConsumerWidget {
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: code.characters.map((String char) => _DigitBox(char: char, isVisible: isVisible)).toList(),
+      children: code.characters
+          .map((String char) => _DigitBox(char: char, isVisible: isVisible))
+          .toList(),
     );
   }
 }
@@ -217,7 +272,10 @@ class _DigitBox extends StatelessWidget {
       height: 42,
       width: 40,
       alignment: Alignment.center,
-      decoration: BoxDecoration(color: theme.colorScheme.tertiary, borderRadius: BorderRadius.circular(14)),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.tertiary,
+        borderRadius: BorderRadius.circular(14),
+      ),
       child: Text(
         isVisible ? char : '-',
         style: TextStyle(
@@ -227,7 +285,10 @@ class _DigitBox extends StatelessWidget {
           fontFamily: 'VarelaRound',
           height: 1.0, // 强制行高与字号一致
         ),
-        textHeightBehavior: const TextHeightBehavior(applyHeightToFirstAscent: false, applyHeightToLastDescent: false),
+        textHeightBehavior: const TextHeightBehavior(
+          applyHeightToFirstAscent: false,
+          applyHeightToLastDescent: false,
+        ),
       ),
     );
   }
@@ -243,9 +304,15 @@ class _OtpTimer extends StatelessWidget {
     final intervalMs = period * 1000;
 
     return TweenAnimationBuilder<double>(
-      key: ValueKey(DateTime.now().millisecondsSinceEpoch ~/ intervalMs), // 每当一个周期结束时重启动画
+      key: ValueKey(
+        DateTime.now().millisecondsSinceEpoch ~/ intervalMs,
+      ), // 每当一个周期结束时重启动画
       tween: Tween(begin: 1.0, end: 0.0),
-      duration: Duration(milliseconds: OTP.remainingMilliseconds(intervalMilliseconds: intervalMs)),
+      duration: Duration(
+        milliseconds: OTP.remainingMilliseconds(
+          intervalMilliseconds: intervalMs,
+        ),
+      ),
       onEnd: () {
         // 强制重建以获取新的剩余时间
         (context as Element).markNeedsBuild();

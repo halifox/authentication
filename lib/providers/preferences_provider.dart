@@ -1,4 +1,4 @@
-import 'package:pureotp/repository/settings_repository.dart';
+import 'package:authentication/repository/settings_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,7 +21,8 @@ Future<SettingsRepository> settingsRepository(Ref ref) async {
 @Riverpod(keepAlive: true)
 class BiometricUnlock extends _$BiometricUnlock {
   @override
-  bool build() => ref.watch(settingsRepositoryProvider).value?.biometricUnlock ?? false;
+  bool build() =>
+      ref.watch(settingsRepositoryProvider).value?.biometricUnlock ?? false;
 
   /// 更新并持久化生物识别解锁偏好。
   Future<void> update(bool value) async {
@@ -35,7 +36,8 @@ class BiometricUnlock extends _$BiometricUnlock {
 @Riverpod(keepAlive: true)
 class IsShowCaptchaOnTap extends _$IsShowCaptchaOnTap {
   @override
-  bool build() => ref.watch(settingsRepositoryProvider).value?.showCaptchaOnTap ?? false;
+  bool build() =>
+      ref.watch(settingsRepositoryProvider).value?.showCaptchaOnTap ?? false;
 
   /// 更新并持久化“点击显示验证码”偏好。
   Future<void> update(bool value) async {
@@ -49,7 +51,8 @@ class IsShowCaptchaOnTap extends _$IsShowCaptchaOnTap {
 @Riverpod(keepAlive: true)
 class IsCopyCaptchaOnTap extends _$IsCopyCaptchaOnTap {
   @override
-  bool build() => ref.watch(settingsRepositoryProvider).value?.copyCaptchaOnTap ?? false;
+  bool build() =>
+      ref.watch(settingsRepositoryProvider).value?.copyCaptchaOnTap ?? false;
 
   /// 更新并持久化“点击复制验证码”偏好。
   Future<void> update(bool value) async {

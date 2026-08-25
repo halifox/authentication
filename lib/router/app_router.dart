@@ -1,10 +1,10 @@
-import 'package:pureotp/db/database.dart';
-import 'package:pureotp/ui/add_account_screen.dart';
-import 'package:pureotp/ui/icon_selection_screen.dart';
-import 'package:pureotp/ui/qr_scanner_screen.dart';
-import 'package:pureotp/ui/settings_screen.dart';
-import 'package:pureotp/ui/token_form_screen.dart';
-import 'package:pureotp/ui/token_list_screen.dart';
+import 'package:authentication/db/database.dart';
+import 'package:authentication/ui/add_account_screen.dart';
+import 'package:authentication/ui/icon_selection_screen.dart';
+import 'package:authentication/ui/qr_scanner_screen.dart';
+import 'package:authentication/ui/settings_screen.dart';
+import 'package:authentication/ui/token_form_screen.dart';
+import 'package:authentication/ui/token_list_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

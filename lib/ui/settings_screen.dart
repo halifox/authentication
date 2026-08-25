@@ -1,6 +1,6 @@
-import 'package:pureotp/l10n/generated/app_localizations.dart';
-import 'package:pureotp/providers/preferences_provider.dart';
-import 'package:pureotp/ui/custom_app_bar.dart';
+import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/providers/preferences_provider.dart';
+import 'package:authentication/ui/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,12 +10,18 @@ class SettingsItemModel {
   /// [label] 设置项名称。
   /// [value] 当前布尔值状态。
   /// [onTap] 切换状态时的回调。
-  const SettingsItemModel({required this.label, required this.value, required this.onTap});
+  const SettingsItemModel({
+    required this.label,
+    required this.value,
+    required this.onTap,
+  });
 
   /// 标签名称
   final String label;
+
   /// 布尔值
   final bool value;
+
   /// 点击回调
   final VoidCallback onTap;
 }
@@ -30,16 +36,35 @@ class SettingsScreen extends ConsumerWidget {
     final isShowCaptchaOnTap = ref.watch(isShowCaptchaOnTapProvider);
     final isCopyCaptchaOnTap = ref.watch(isCopyCaptchaOnTapProvider);
     final List<SettingsItemModel> options = [
-      SettingsItemModel(label: AppLocalizations.of(context)!.showCaptchaOnTap, value: isShowCaptchaOnTap, onTap: () => ref.read(isShowCaptchaOnTapProvider.notifier).update(!isShowCaptchaOnTap)),
-      SettingsItemModel(label: AppLocalizations.of(context)!.copyCaptchaOnTap, value: isCopyCaptchaOnTap, onTap: () => ref.read(isCopyCaptchaOnTapProvider.notifier).update(!isCopyCaptchaOnTap)),
+      SettingsItemModel(
+        label: AppLocalizations.of(context)!.showCaptchaOnTap,
+        value: isShowCaptchaOnTap,
+        onTap: () => ref
+            .read(isShowCaptchaOnTapProvider.notifier)
+            .update(!isShowCaptchaOnTap),
+      ),
+      SettingsItemModel(
+        label: AppLocalizations.of(context)!.copyCaptchaOnTap,
+        value: isCopyCaptchaOnTap,
+        onTap: () => ref
+            .read(isCopyCaptchaOnTapProvider.notifier)
+            .update(!isCopyCaptchaOnTap),
+      ),
     ];
 
     return Scaffold(
       appBar: CustomAppBar(title: AppLocalizations.of(context)!.settings),
       body: GridView.builder(
-        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 90),
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 700,
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 16,
+          mainAxisExtent: 90,
+        ),
         itemCount: options.length,
         itemBuilder: (BuildContext context, int index) {
           final option = options[index];
@@ -64,7 +89,10 @@ class SettingsSwitchTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       alignment: Alignment.center,
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: const BorderRadius.all(Radius.circular(24))),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        borderRadius: const BorderRadius.all(Radius.circular(24)),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
@@ -73,7 +101,12 @@ class SettingsSwitchTile extends StatelessWidget {
             child: Text(
               option.label,
               maxLines: 1,
-              style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                height: 0,
+                fontSize: 18,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           const SizedBox(width: 16),
@@ -84,10 +117,16 @@ class SettingsSwitchTile extends StatelessWidget {
               width: 48,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: option.value ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.inversePrimary,
+                color: option.value
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.inversePrimary,
                 borderRadius: const BorderRadius.all(Radius.circular(12)),
               ),
-              child: Icon(option.value ? Icons.done : Icons.close, size: 36, color: Theme.of(context).colorScheme.onPrimary),
+              child: Icon(
+                option.value ? Icons.done : Icons.close,
+                size: 36,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
             ),
           ),
         ],

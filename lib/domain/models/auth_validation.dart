@@ -1,4 +1,4 @@
-import 'package:pureotp/l10n/generated/app_localizations.dart';
+import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:flutter/widgets.dart';
 import 'package:base32/base32.dart';
 
@@ -66,8 +66,10 @@ class AuthValidator {
       throw AuthFailure(AuthErrorCode.invalidType);
     }
 
-    if (issuer.trim().isEmpty) throw AuthFailure(AuthErrorCode.issuerCannotBeEmpty);
-    if (account.trim().isEmpty) throw AuthFailure(AuthErrorCode.accountCannotBeEmpty);
+    if (issuer.trim().isEmpty)
+      throw AuthFailure(AuthErrorCode.issuerCannotBeEmpty);
+    if (account.trim().isEmpty)
+      throw AuthFailure(AuthErrorCode.accountCannotBeEmpty);
 
     final algorithm = algorithmStr.toLowerCase();
     if (!const ['sha1', 'sha256', 'sha512'].contains(algorithm)) {
@@ -76,10 +78,12 @@ class AuthValidator {
 
     switch (type) {
       case 'totp':
-        if (digits < 6 || digits > 8) throw AuthFailure(AuthErrorCode.invalidDigits);
+        if (digits < 6 || digits > 8)
+          throw AuthFailure(AuthErrorCode.invalidDigits);
         if (period <= 0) throw AuthFailure(AuthErrorCode.invalidPeriod);
       case 'hotp':
-        if (digits < 6 || digits > 8) throw AuthFailure(AuthErrorCode.invalidDigits);
+        if (digits < 6 || digits > 8)
+          throw AuthFailure(AuthErrorCode.invalidDigits);
         if (counter < 0) throw AuthFailure(AuthErrorCode.invalidCounter);
       case 'motp':
         if (digits == 6) throw AuthFailure(AuthErrorCode.invalidDigits);

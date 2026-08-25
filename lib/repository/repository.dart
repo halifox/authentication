@@ -1,15 +1,12 @@
-import 'package:pureotp/db/auth_entries_ext.dart';
-import 'package:pureotp/db/database.dart';
-import 'package:pureotp/domain/services/otp_service.dart';
-import 'package:pureotp/utils/encryption_service.dart';
+import 'package:authentication/db/auth_entries_ext.dart';
+import 'package:authentication/db/database.dart';
+import 'package:authentication/domain/services/otp_service.dart';
+import 'package:authentication/utils/encryption_service.dart';
 import 'package:drift/drift.dart';
 
 /// 批量导入的结果报告
 class ImportResult {
-  ImportResult({
-    required this.successCount,
-    required this.failures,
-  });
+  ImportResult({required this.successCount, required this.failures});
 
   final int successCount;
   final List<ImportFailure> failures;
@@ -27,11 +24,15 @@ class AuthRepository {
   final AppDatabase db;
 
   Stream<List<AuthEntry>> get authConfigsStream {
-    return db.watchAllAuthEntries().map((list) => list.map(_decryptEntry).toList());
+    return db.watchAllAuthEntries().map(
+      (list) => list.map(_decryptEntry).toList(),
+    );
   }
 
   Stream<AuthEntry?> watchConfig(int id) {
-    return db.watchAuthEntry(id).map((entry) => entry != null ? _decryptEntry(entry) : null);
+    return db
+        .watchAuthEntry(id)
+        .map((entry) => entry != null ? _decryptEntry(entry) : null);
   }
 
   // --- Helper: Encryption/Decryption ---

@@ -1,11 +1,11 @@
-import 'package:pureotp/l10n/generated/app_localizations.dart';
-import 'package:pureotp/providers/add_account_controller.dart';
-import 'package:pureotp/providers/data_transfer_controller.dart';
-import 'package:pureotp/providers/data_transfer_state.dart';
-import 'package:pureotp/providers/qr_code_controller.dart';
-import 'package:pureotp/router/app_router.dart';
-import 'package:pureotp/ui/action_result_sheet.dart';
-import 'package:pureotp/ui/custom_app_bar.dart';
+import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/providers/add_account_controller.dart';
+import 'package:authentication/providers/data_transfer_controller.dart';
+import 'package:authentication/providers/data_transfer_state.dart';
+import 'package:authentication/providers/qr_code_controller.dart';
+import 'package:authentication/router/app_router.dart';
+import 'package:authentication/ui/action_result_sheet.dart';
+import 'package:authentication/ui/custom_app_bar.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +23,10 @@ class AddMethodOption {
 
   /// 图标数据
   final IconData icon;
+
   /// 标签文字
   final String label;
+
   /// 点击回调
   final VoidCallback onTap;
 }
@@ -37,24 +39,53 @@ class AddAccountScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // We keep the addAccountController alive with watch because its method is passed directly as a callback.
-    final addAccountController = ref.watch(addAccountControllerProvider.notifier);
-    
+    final addAccountController = ref.watch(
+      addAccountControllerProvider.notifier,
+    );
+
     final l10n = AppLocalizations.of(context)!;
 
     final List<AddMethodOption> options = [
-      AddMethodOption(Icons.camera_enhance, l10n.scanQRCode, () => _handleScan(context, ref)),
-      AddMethodOption(Icons.photo_library, l10n.uploadQRCode, () => _handleUpload(context, ref)),
-      AddMethodOption(Icons.keyboard, l10n.enterKey, addAccountController.enter),
-      AddMethodOption(Icons.file_upload_outlined, l10n.importFromClipboard, () => _handleRestore(context, ref)),
-      AddMethodOption(Icons.file_download_outlined, l10n.exportToClipboard, () => _handleBackup(context, ref)),
+      AddMethodOption(
+        Icons.camera_enhance,
+        l10n.scanQRCode,
+        () => _handleScan(context, ref),
+      ),
+      AddMethodOption(
+        Icons.photo_library,
+        l10n.uploadQRCode,
+        () => _handleUpload(context, ref),
+      ),
+      AddMethodOption(
+        Icons.keyboard,
+        l10n.enterKey,
+        addAccountController.enter,
+      ),
+      AddMethodOption(
+        Icons.file_upload_outlined,
+        l10n.importFromClipboard,
+        () => _handleRestore(context, ref),
+      ),
+      AddMethodOption(
+        Icons.file_download_outlined,
+        l10n.exportToClipboard,
+        () => _handleBackup(context, ref),
+      ),
     ];
 
     return Scaffold(
       appBar: CustomAppBar(title: l10n.add),
       body: GridView.builder(
-        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 700, mainAxisSpacing: 16, crossAxisSpacing: 16, mainAxisExtent: 90),
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 700,
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 16,
+          mainAxisExtent: 90,
+        ),
         itemCount: options.length,
         itemBuilder: (BuildContext context, int index) {
           final AddMethodOption option = options[index];
@@ -70,8 +101,10 @@ class AddAccountScreen extends ConsumerWidget {
       _showNotSupported(context);
       return;
     }
-    
-    final BarcodeCapture? barcodeCapture = await context.pushNamed(AppRoutes.scanName);
+
+    final BarcodeCapture? barcodeCapture = await context.pushNamed(
+      AppRoutes.scanName,
+    );
     if (barcodeCapture != null && barcodeCapture.barcodes.isNotEmpty) {
       final code = barcodeCapture.barcodes.first.rawValue;
       if (code != null && context.mounted) {
@@ -94,14 +127,24 @@ class AddAccountScreen extends ConsumerWidget {
     if (codes.isNotEmpty && context.mounted) {
       await _processQrCode(context, ref, codes.first);
     } else if (context.mounted) {
-       _showResult(context, 0, AppLocalizations.of(context)!.tip, AppLocalizations.of(context)!.unsupportedQRCode);
+      _showResult(
+        context,
+        0,
+        AppLocalizations.of(context)!.tip,
+        AppLocalizations.of(context)!.unsupportedQRCode,
+      );
     }
   }
 
-  Future<void> _processQrCode(BuildContext context, WidgetRef ref, String code, {bool forceUpdate = false}) async {
+  Future<void> _processQrCode(
+    BuildContext context,
+    WidgetRef ref,
+    String code, {
+    bool forceUpdate = false,
+  }) async {
     final controller = ref.read(qrCodeControllerProvider.notifier);
     final result = await controller.processCode(code, forceUpdate: forceUpdate);
-    
+
     if (!context.mounted) return;
     final l10n = AppLocalizations.of(context)!;
 
@@ -117,7 +160,10 @@ class AddAccountScreen extends ConsumerWidget {
           builder: (ctx) => ActionResultSheet(
             state: 0,
             title: l10n.warning,
-            message: l10n.tokenExists(result.pending.issuer.value, result.pending.account.value),
+            message: l10n.tokenExists(
+              result.pending.issuer.value,
+              result.pending.account.value,
+            ),
             falseButtonVisible: true,
           ),
         );
@@ -127,7 +173,12 @@ class AddAccountScreen extends ConsumerWidget {
       }
     } else if (result is QrProcessError) {
       if (context.mounted) {
-        await _showResult(context, 0, l10n.tip, result.code.getLocalizedMessage(context));
+        await _showResult(
+          context,
+          0,
+          l10n.tip,
+          result.code.getLocalizedMessage(context),
+        );
       }
     }
   }
@@ -147,16 +198,33 @@ class AddAccountScreen extends ConsumerWidget {
     if (proceed != true) return;
 
     // 2. Execute
-    final result = await ref.read(dataTransferControllerProvider.notifier).restore();
+    final result = await ref
+        .read(dataTransferControllerProvider.notifier)
+        .restore();
     if (!context.mounted) return;
 
     switch (result) {
       case DataTransferSuccess(count: final count):
-        await _showResult(context, 1, l10n.importSuccess, l10n.importedCount(count));
+        await _showResult(
+          context,
+          1,
+          l10n.importSuccess,
+          l10n.importedCount(count),
+        );
       case DataTransferFailure(error: _):
-        await _showResult(context, 0, l10n.importFailed, l10n.importFailed); // Simplified error message for UI
+        await _showResult(
+          context,
+          0,
+          l10n.importFailed,
+          l10n.importFailed,
+        ); // Simplified error message for UI
       case DataTransferNoData():
-        await _showResult(context, 0, l10n.importFailed, l10n.cannotGetClipboardData);
+        await _showResult(
+          context,
+          0,
+          l10n.importFailed,
+          l10n.cannotGetClipboardData,
+        );
       case DataTransferConfirmationRequired():
         // Not used in this simplified flow
         break;
@@ -179,12 +247,19 @@ class AddAccountScreen extends ConsumerWidget {
     if (proceed != true) return;
 
     // 2. Execute
-    final result = await ref.read(dataTransferControllerProvider.notifier).backup();
+    final result = await ref
+        .read(dataTransferControllerProvider.notifier)
+        .backup();
     if (!context.mounted) return;
 
     switch (result) {
       case DataTransferSuccess(count: final count):
-        await _showResult(context, 1, l10n.exportSuccess, l10n.exportedCount(count));
+        await _showResult(
+          context,
+          1,
+          l10n.exportSuccess,
+          l10n.exportedCount(count),
+        );
       case DataTransferNoData():
         await _showResult(context, 0, l10n.exportFailed, l10n.noDataToExport);
       case _:
@@ -192,18 +267,28 @@ class AddAccountScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _showResult(BuildContext context, int state, String title, String message) async {
+  Future<void> _showResult(
+    BuildContext context,
+    int state,
+    String title,
+    String message,
+  ) async {
     return await showCupertinoModalPopup(
       context: context,
-      builder: (ctx) => ActionResultSheet(state: state, title: title, message: message),
+      builder: (ctx) =>
+          ActionResultSheet(state: state, title: title, message: message),
     );
   }
 
   Future<void> _showNotSupported(BuildContext context) async {
-    await _showResult(context, 0, AppLocalizations.of(context)!.tip, AppLocalizations.of(context)!.platformNotSupported);
+    await _showResult(
+      context,
+      0,
+      AppLocalizations.of(context)!.tip,
+      AppLocalizations.of(context)!.platformNotSupported,
+    );
   }
 }
-
 
 /// 添加方式的列表项组件。
 class AddMethodTile extends StatelessWidget {
@@ -215,8 +300,10 @@ class AddMethodTile extends StatelessWidget {
 
   /// 图标数据
   final IconData icon;
+
   /// 标签文字
   final String label;
+
   /// 点击回调
   final VoidCallback onTap;
 
@@ -226,7 +313,10 @@ class AddMethodTile extends StatelessWidget {
     child: Container(
       padding: const EdgeInsets.all(16),
       alignment: Alignment.center,
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: const BorderRadius.all(Radius.circular(24))),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        borderRadius: const BorderRadius.all(Radius.circular(24)),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -234,14 +324,26 @@ class AddMethodTile extends StatelessWidget {
             height: 48,
             width: 48,
             alignment: Alignment.center,
-            decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: const BorderRadius.all(Radius.circular(12))),
-            child: Icon(icon, size: 24, color: Theme.of(context).colorScheme.onPrimary),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              borderRadius: const BorderRadius.all(Radius.circular(12)),
+            ),
+            child: Icon(
+              icon,
+              size: 24,
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
           ),
           const SizedBox(width: 16),
           Text(
             label,
             maxLines: 1,
-            style: TextStyle(height: 0, fontSize: 18, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              height: 0,
+              fontSize: 18,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(width: 16),
         ],
