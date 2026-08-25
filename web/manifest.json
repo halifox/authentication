@@ -1,6 +1,6 @@
 {
-    "name": "authentication",
-    "short_name": "authentication",
+    "name": "Authentication",
+    "short_name": "Authentication",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
