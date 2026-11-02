@@ -423,4 +423,18 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get qrUnsupportedParameters =>
       'Standard QR codes require account and issuer names without colons and a 6- or 8-digit code.';
+
+  @override
+  String get exportHtml => 'Export HTML backup';
+
+  @override
+  String get htmlBackupTitle => 'Account QR backup';
+
+  @override
+  String get htmlPlainWarning =>
+      'This unencrypted HTML file contains account secrets in QR codes. Anyone with the file can generate your codes. Store it securely. It does not include categories, icons, settings or statistics, and cannot be restored as a backup file. Some apps may ignore code settings.';
+
+  @override
+  String get htmlExportFailed =>
+      'The file could not be created. Check that all accounts support standard QR codes and the backup is not too large.';
 }

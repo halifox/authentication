@@ -182,16 +182,17 @@ String toStandardOtpQrUri(OtpAccount account) {
       account.account.contains(':')) {
     throw const FormatException('Unsupported QR account parameters.');
   }
-  final uri = Uri.parse(account.toOtpUri());
-  return uri
-      .replace(
-        queryParameters: {
-          ...uri.queryParameters,
-          'secret': account.secret
-              .replaceAll(RegExp(r'\s+|='), '')
-              .toUpperCase(),
-          'algorithm': account.algorithm.toUpperCase(),
-        },
-      )
-      .toString();
+  return Uri(
+    scheme: 'otpauth',
+    host: type,
+    pathSegments: ['${account.issuer}:${account.account}'],
+    queryParameters: {
+      'secret': account.secret.replaceAll(RegExp(r'\s+|='), '').toUpperCase(),
+      'issuer': account.issuer,
+      'algorithm': account.algorithm.toUpperCase(),
+      'digits': '${account.digits}',
+      if (type == 'totp') 'period': '${account.period}',
+      if (type == 'hotp') 'counter': '${account.counter}',
+    },
+  ).toString();
 }

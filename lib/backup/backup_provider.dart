@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:authentication/backup/backup.dart';
+import 'package:authentication/backup/html_backup.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:authentication/storage/database_provider.dart';
@@ -62,6 +63,26 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
         fileName: 'authentication-backup.json',
         bytes: bytes,
         mimeType: 'application/json',
+      );
+      return location != null || kIsWeb;
+    });
+  }
+
+  Future<bool> exportHtmlFile({
+    required String title,
+    required String warning,
+  }) {
+    final db = ref.read(appDatabaseProvider);
+    return _run(() async {
+      final bytes = encodeHtmlBackup(
+        await db.getAllConfigs(),
+        title: title,
+        warning: warning,
+      );
+      final location = await FilePicker.saveFile(
+        fileName: 'authentication-backup.html',
+        bytes: bytes,
+        mimeType: 'text/html',
       );
       return location != null || kIsWeb;
     });

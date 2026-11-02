@@ -411,4 +411,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get qrUnsupportedParameters => '标准二维码要求账户名和发行方不含冒号，且验证码为 6 位或 8 位。';
+
+  @override
+  String get exportHtml => '导出 HTML 备份';
+
+  @override
+  String get htmlBackupTitle => '账户二维码备份';
+
+  @override
+  String get htmlPlainWarning =>
+      '此未加密的 HTML 文件以二维码包含账户密钥。任何取得文件的人都可以生成验证码，请安全保管。文件不包含分类、图标、设置或统计，不能作为备份文件恢复。部分应用可能忽略验证码设置。';
+
+  @override
+  String get htmlExportFailed => '无法创建文件。请检查所有账户是否支持标准二维码，以及备份是否过大。';
 }

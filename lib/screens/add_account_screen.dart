@@ -81,6 +81,11 @@ class AddAccountScreen extends ConsumerWidget {
         l10n.exportUriList,
         () => _handleUriExport(context, ref),
       ),
+      AddMethodOption(
+        Icons.html,
+        l10n.exportHtml,
+        () => _handleHtmlExport(context, ref),
+      ),
     ];
 
     return Scaffold(
@@ -376,6 +381,39 @@ class AddAccountScreen extends ConsumerWidget {
     }
   }
 
+  Future<void> _handleHtmlExport(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
+    final proceed = await showCupertinoModalPopup<bool>(
+      context: context,
+      builder: (_) => ActionResultSheet(
+        state: 0,
+        title: l10n.warning,
+        message: l10n.htmlPlainWarning,
+        falseButtonVisible: true,
+      ),
+    );
+    if (proceed != true || !context.mounted) return;
+    try {
+      final saved = await ref
+          .read(backupOperationsProvider.notifier)
+          .exportHtmlFile(
+            title: l10n.htmlBackupTitle,
+            warning: l10n.htmlPlainWarning,
+          );
+      if (context.mounted && saved) {
+        await _showResult(
+          context,
+          1,
+          l10n.exportSuccess,
+          kIsWeb ? l10n.backupDownloadStarted : l10n.backupSaved,
+        );
+      }
+    } catch (_) {
+      if (context.mounted)
+        await _showResult(context, 0, l10n.exportFailed, l10n.htmlExportFailed);
+    }
+  }
+
   Future<void> _showResult(
     BuildContext context,
     int state,
@@ -444,14 +482,17 @@ class AddMethodTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
-          Text(
-            label,
-            maxLines: 1,
-            style: TextStyle(
-              height: 0,
-              fontSize: 18,
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-              fontWeight: FontWeight.bold,
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                height: 0,
+                fontSize: 18,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           const SizedBox(width: 16),

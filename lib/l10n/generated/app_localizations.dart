@@ -899,6 +899,30 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'标准二维码要求账户名和发行方不含冒号，且验证码为 6 位或 8 位。'**
   String get qrUnsupportedParameters;
+
+  /// No description provided for @exportHtml.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出 HTML 备份'**
+  String get exportHtml;
+
+  /// No description provided for @htmlBackupTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'账户二维码备份'**
+  String get htmlBackupTitle;
+
+  /// No description provided for @htmlPlainWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'此未加密的 HTML 文件以二维码包含账户密钥。任何取得文件的人都可以生成验证码，请安全保管。文件不包含分类、图标、设置或统计，不能作为备份文件恢复。部分应用可能忽略验证码设置。'**
+  String get htmlPlainWarning;
+
+  /// No description provided for @htmlExportFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法创建文件。请检查所有账户是否支持标准二维码，以及备份是否过大。'**
+  String get htmlExportFailed;
 }
 
 class _AppLocalizationsDelegate
