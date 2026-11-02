@@ -25,6 +25,21 @@
 </p>
 
 
+## 构建与发布
+
+GitHub Actions 在 `master` 上使用 Release Please 根据 Conventional Commits 维护版本 PR 和更新日志。合并版本 PR 后，工作流创建 GitHub Release，构建 Android arm64 APK 和未签名的 iOS IPA 并上传附件。推送标签也会触发构建；Actions 页面可以手动运行构建，填写已有 Release 标签以上传附件，留空则只构建。iOS IPA 需要自行签名后安装。Dependabot 每周检查 Dart 依赖更新。
+
+启用发布前，在仓库的 Actions 设置中允许工作流创建和批准 Pull Request，并配置以下仓库 Secrets：
+
+- `ANDROID_KEYSTORE_BASE64`：Android 签名密钥库文件的 Base64 内容。
+- `ANDROID_KEYSTORE_PASSWORD`：密钥库密码。
+- `ANDROID_KEY_ALIAS`：签名密钥别名。
+- `ANDROID_KEY_PASSWORD`：签名密钥密码。
+
+应使用与已有安装包相同的签名密钥，否则新 APK 无法覆盖安装。Android 和 iOS 构建都成功后才会上传 Release 附件；工作流失败时可在 Actions 页面查看日志并重试。
+
+本地构建 Android Release 时，可在 `android/key.properties` 配置 `storeFile`、`storePassword`、`keyAlias` 和 `keyPassword`；`storeFile` 相对于 `android` 目录。密钥文件和配置不得提交到仓库。
+
 ## 致谢
 
 感谢以下开源项目的支持：

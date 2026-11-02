@@ -1,0 +1,179 @@
+name: Build Android and iOS
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing release tag to build and upload assets for (leave empty for build only)
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      release_tag:
+        description: Release tag to build and upload assets for
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ inputs.release_tag || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  android:
+    name: Build Android arm64 APK
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.release_tag || github.ref }}
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+          cache-dependency-path: |
+            pubspec.lock
+            android/*.gradle.kts
+            android/gradle.properties
+            android/app/build.gradle.kts
+            android/gradle/wrapper/gradle-wrapper.properties
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Configure Android release signing
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          : "${ANDROID_KEYSTORE_BASE64:?Missing Android keystore secret}"
+          umask 077
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/android-release.jks"
+
+      - name: Build APK
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/android-release.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          : "${ANDROID_KEYSTORE_PASSWORD:?Missing Android keystore password}"
+          : "${ANDROID_KEY_PASSWORD:?Missing Android key password}"
+          : "${ANDROID_KEY_ALIAS:?Missing Android key alias}"
+          flutter build apk --release --no-pub --target-platform android-arm64
+
+      - name: Verify Android release signature
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          expected=$(keytool -exportcert -keystore "$RUNNER_TEMP/android-release.jks" \
+            -alias "$ANDROID_KEY_ALIAS" -storepass:env ANDROID_KEYSTORE_PASSWORD | sha256sum | cut -d ' ' -f 1)
+          apksigner=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)
+          : "${apksigner:?Android APK signature verifier unavailable}"
+          actual=$("$apksigner" verify --print-certs build/app/outputs/flutter-apk/app-release.apk \
+            | sed -n 's/^.*certificate SHA-256 digest: //p' | tr '[:upper:]' '[:lower:]' | sort -u)
+          if [ "$actual" != "$expected" ]; then
+            echo "APK does not match the configured release signing certificate" >&2
+            exit 1
+          fi
+          echo "Verified release signing certificate SHA-256: $actual"
+
+      - name: Remove Android signing files
+        if: always()
+        run: rm -f "$RUNNER_TEMP/android-release.jks"
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: authentication-android-arm64
+          retention-days: 1
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+
+  ios:
+    name: Build unsigned iOS IPA
+    runs-on: macos-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.release_tag || github.ref }}
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Build iOS app without code signing
+        run: |
+          flutter build ios --release --no-codesign
+
+      - name: Package unsigned IPA
+        working-directory: build/ios/iphoneos
+        run: |
+          mkdir -p Payload
+          mv Runner.app Payload/
+          /usr/bin/zip -qr authentication-ios-unsigned.ipa Payload
+
+      - name: Upload unsigned IPA
+        uses: actions/upload-artifact@v7
+        with:
+          name: authentication-ios-unsigned
+          retention-days: 1
+          path: build/ios/iphoneos/authentication-ios-unsigned.ipa
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub Release
+    if: inputs.release_tag != '' || startsWith(github.ref, 'refs/tags/')
+    needs:
+      - android
+      - ios
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download Android APK
+        uses: actions/download-artifact@v8
+        with:
+          name: authentication-android-arm64
+          path: release
+
+      - name: Download unsigned iOS IPA
+        uses: actions/download-artifact@v8
+        with:
+          name: authentication-ios-unsigned
+          path: release
+
+      - name: Publish release with build artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
+        run: |
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" > /dev/null; then
+            gh release upload "$RELEASE_TAG" release/* --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$RELEASE_TAG" release/* --generate-notes --verify-tag --repo "$GITHUB_REPOSITORY"
+          fi
