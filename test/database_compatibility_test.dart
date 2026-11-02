@@ -1,0 +1,34 @@
+import 'package:authentication/db/database.dart';
+import 'package:drift/native.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  test('opens an existing version 1 database without losing entries', () async {
+    final database = AppDatabase(
+      NativeDatabase.memory(
+        setup: (sqlite) {
+          sqlite.execute('''
+            CREATE TABLE auth_entries (
+              id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+              scheme TEXT NOT NULL, type TEXT NOT NULL, issuer TEXT NOT NULL,
+              account TEXT NOT NULL, secret TEXT NOT NULL, algorithm TEXT NOT NULL,
+              digits INTEGER NOT NULL, period INTEGER NOT NULL, counter INTEGER NOT NULL,
+              pin TEXT NOT NULL, icon TEXT NOT NULL, sort_order INTEGER NOT NULL,
+              created_at INTEGER NOT NULL, UNIQUE (issuer, account)
+            )
+          ''');
+          sqlite.execute(
+            "INSERT INTO auth_entries VALUES (1, 'otpauth', 'totp', 'Example', 'user', 'secret', 'SHA1', 6, 30, 0, '', '', 0, 1)",
+          );
+          sqlite.execute('PRAGMA user_version = 1');
+        },
+      ),
+    );
+    addTearDown(database.close);
+
+    final entries = await database.getAllAuthEntries();
+    expect(entries.single.issuer, 'Example');
+    expect(entries.single.secret, 'secret');
+    expect(entries.single.period, 30);
+  });
+}

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:material_ui/material_ui.dart' as material_ui;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,12 +39,12 @@ class AuthApp extends ConsumerWidget {
         themeMode: ThemeMode.system,
         theme: ThemeData(
           brightness: Brightness.light,
-          colorScheme: lightDynamic,
+          colorScheme: toFlutterColorScheme(lightDynamic),
           pageTransitionsTheme: pageTransitionsTheme,
         ),
         darkTheme: ThemeData(
           brightness: Brightness.dark,
-          colorScheme: darkDynamic,
+          colorScheme: toFlutterColorScheme(darkDynamic),
           pageTransitionsTheme: pageTransitionsTheme,
         ),
         localizationsDelegates: const [
@@ -69,4 +70,57 @@ class AuthApp extends ConsumerWidget {
       ),
     );
   }
+}
+
+ColorScheme? toFlutterColorScheme(material_ui.ColorScheme? scheme) {
+  if (scheme == null) return null;
+  return ColorScheme(
+    brightness: scheme.brightness,
+    primary: scheme.primary,
+    onPrimary: scheme.onPrimary,
+    primaryContainer: scheme.primaryContainer,
+    onPrimaryContainer: scheme.onPrimaryContainer,
+    secondary: scheme.secondary,
+    onSecondary: scheme.onSecondary,
+    secondaryContainer: scheme.secondaryContainer,
+    onSecondaryContainer: scheme.onSecondaryContainer,
+    tertiary: scheme.tertiary,
+    onTertiary: scheme.onTertiary,
+    tertiaryContainer: scheme.tertiaryContainer,
+    onTertiaryContainer: scheme.onTertiaryContainer,
+    error: scheme.error,
+    onError: scheme.onError,
+    errorContainer: scheme.errorContainer,
+    onErrorContainer: scheme.onErrorContainer,
+    surface: scheme.surface,
+    onSurface: scheme.onSurface,
+    surfaceDim: scheme.surfaceDim,
+    surfaceBright: scheme.surfaceBright,
+    surfaceContainerLowest: scheme.surfaceContainerLowest,
+    surfaceContainerLow: scheme.surfaceContainerLow,
+    surfaceContainer: scheme.surfaceContainer,
+    surfaceContainerHigh: scheme.surfaceContainerHigh,
+    surfaceContainerHighest: scheme.surfaceContainerHighest,
+    onSurfaceVariant: scheme.onSurfaceVariant,
+    outline: scheme.outline,
+    outlineVariant: scheme.outlineVariant,
+    shadow: scheme.shadow,
+    scrim: scheme.scrim,
+    inverseSurface: scheme.inverseSurface,
+    onInverseSurface: scheme.onInverseSurface,
+    inversePrimary: scheme.inversePrimary,
+    surfaceTint: scheme.surfaceTint,
+    primaryFixed: scheme.primaryFixed,
+    primaryFixedDim: scheme.primaryFixedDim,
+    onPrimaryFixed: scheme.onPrimaryFixed,
+    onPrimaryFixedVariant: scheme.onPrimaryFixedVariant,
+    secondaryFixed: scheme.secondaryFixed,
+    secondaryFixedDim: scheme.secondaryFixedDim,
+    onSecondaryFixed: scheme.onSecondaryFixed,
+    onSecondaryFixedVariant: scheme.onSecondaryFixedVariant,
+    tertiaryFixed: scheme.tertiaryFixed,
+    tertiaryFixedDim: scheme.tertiaryFixedDim,
+    onTertiaryFixed: scheme.onTertiaryFixed,
+    onTertiaryFixedVariant: scheme.onTertiaryFixedVariant,
+  );
 }

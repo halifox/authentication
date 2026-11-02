@@ -10,7 +10,8 @@ part 'database.g.dart';
 /// 该类通过继承 [_$AppDatabase] 提供对底层数据库的 CRUD（增删改查）访问。
 @DriftDatabase(tables: [AuthEntries])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(driftDatabase(name: 'auth_db'));
+  AppDatabase([QueryExecutor? executor])
+    : super(executor ?? driftDatabase(name: 'auth_db'));
 
   /// 数据库架构版本号。
   /// 如果修改了表结构，需要递增此版本并处理迁移逻辑。
