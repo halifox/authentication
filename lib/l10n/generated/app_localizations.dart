@@ -719,6 +719,42 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'拖动以调整顺序'**
   String get dragToReorder;
+
+  /// No description provided for @codeGrouping.
+  ///
+  /// In zh, this message translates to:
+  /// **'验证码分组'**
+  String get codeGrouping;
+
+  /// No description provided for @groupNone.
+  ///
+  /// In zh, this message translates to:
+  /// **'不分组'**
+  String get groupNone;
+
+  /// No description provided for @groupEvery.
+  ///
+  /// In zh, this message translates to:
+  /// **'每 {count} 位'**
+  String groupEvery(int count);
+
+  /// No description provided for @groupHalves.
+  ///
+  /// In zh, this message translates to:
+  /// **'分成两组'**
+  String get groupHalves;
+
+  /// No description provided for @groupThirds.
+  ///
+  /// In zh, this message translates to:
+  /// **'分成三组'**
+  String get groupThirds;
+
+  /// No description provided for @codeHidden.
+  ///
+  /// In zh, this message translates to:
+  /// **'验证码已隐藏'**
+  String get codeHidden;
 }
 
 class _AppLocalizationsDelegate

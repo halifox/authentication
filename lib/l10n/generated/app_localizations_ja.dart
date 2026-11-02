@@ -325,4 +325,24 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get dragToReorder => 'Drag to reorder';
+
+  @override
+  String get codeGrouping => 'Code grouping';
+
+  @override
+  String get groupNone => 'No grouping';
+
+  @override
+  String groupEvery(int count) {
+    return 'Every $count characters';
+  }
+
+  @override
+  String get groupHalves => 'Two equal groups';
+
+  @override
+  String get groupThirds => 'Three equal groups';
+
+  @override
+  String get codeHidden => 'Code hidden';
 }

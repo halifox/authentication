@@ -285,15 +285,27 @@ class _TokenCodeRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _OtpDisplay(config: config, isVisible: isVisible);
+    return Consumer(
+      builder: (context, ref, _) => _OtpDisplay(
+        config: config,
+        isVisible: isVisible,
+        grouping:
+            ref.watch(integerSettingsProvider).value?[codeGroupingKey] ?? 0,
+      ),
+    );
   }
 }
 
 class _OtpDisplay extends StatefulWidget {
-  const _OtpDisplay({required this.config, required this.isVisible});
+  const _OtpDisplay({
+    required this.config,
+    required this.isVisible,
+    required this.grouping,
+  });
 
   final OtpAccount config;
   final bool isVisible;
+  final int grouping;
 
   @override
   State<_OtpDisplay> createState() => _OtpDisplayState();
@@ -322,15 +334,24 @@ class _OtpDisplayState extends State<_OtpDisplay> {
   Widget build(BuildContext context) {
     final code = widget.config.generateCodeString();
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: code.characters
-          .map(
-            (String char) => Flexible(
-              child: _DigitBox(char: char, isVisible: widget.isVisible),
-            ),
-          )
-          .toList(),
+    final chars = code.characters.toList();
+    final breaks = codeGroupBreaks(chars.length, widget.grouping).toSet();
+    return Semantics(
+      label: widget.isVisible ? code : AppLocalizations.of(context)!.codeHidden,
+      child: ExcludeSemantics(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            for (var i = 0; i < chars.length; i++) ...[
+              if (breaks.contains(i))
+                SizedBox(key: ValueKey('group_$i'), width: 8),
+              Flexible(
+                child: _DigitBox(char: chars[i], isVisible: widget.isVisible),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }

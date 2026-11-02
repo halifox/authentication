@@ -318,4 +318,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get dragToReorder => '拖动以调整顺序';
+
+  @override
+  String get codeGrouping => '验证码分组';
+
+  @override
+  String get groupNone => '不分组';
+
+  @override
+  String groupEvery(int count) {
+    return '每 $count 位';
+  }
+
+  @override
+  String get groupHalves => '分成两组';
+
+  @override
+  String get groupThirds => '分成三组';
+
+  @override
+  String get codeHidden => '验证码已隐藏';
 }

@@ -113,6 +113,7 @@ void main() {
       expect(await db.getIntegerSettings(), {
         hideCodeAfterKey: 30,
         sortModeKey: 0,
+        codeGroupingKey: 0,
       });
       expect((await db.getAllConfigs()).single.counter, 7);
       final oldV2 = await encodeBackupAccounts(

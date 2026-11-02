@@ -100,5 +100,11 @@
   "unlockSorting": "Unlock custom order",
   "clearSearchToReorder": "Clear the search to reorder accounts.",
   "reorderFailed": "Could not reorder accounts. Try again.",
-  "dragToReorder": "Drag to reorder"
+  "dragToReorder": "Drag to reorder",
+  "codeGrouping": "Code grouping",
+  "groupNone": "No grouping",
+  "groupEvery": "Every {count} characters",
+  "groupHalves": "Two equal groups",
+  "groupThirds": "Three equal groups",
+  "codeHidden": "Code hidden"
 }

@@ -1,0 +1,78 @@
+import 'dart:async';
+
+import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/otp/account.dart';
+import 'package:authentication/otp/otp.dart';
+import 'package:authentication/settings/settings.dart';
+import 'package:authentication/settings/settings_provider.dart';
+import 'package:authentication/widgets/token_list_item.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+void main() {
+  test('groups fixed widths, halves and thirds for different code lengths', () {
+    expect(codeGroupBreaks(6, 0), isEmpty);
+    expect(codeGroupBreaks(8, 2), [2, 4, 6]);
+    expect(codeGroupBreaks(8, 3), [3, 6]);
+    expect(codeGroupBreaks(8, 4), [4]);
+    expect(codeGroupBreaks(5, 5), [3]);
+    expect(codeGroupBreaks(8, 6), [3, 6]);
+    expect(codeGroupBreaks(5, 6), [2, 4]);
+    expect(() => codeGroupBreaks(6, 7), throwsArgumentError);
+  });
+  testWidgets(
+    'account card changes group spacing without exposing hidden code',
+    (tester) async {
+      final settings = StreamController<Map<String, int>>.broadcast();
+      addTearDown(settings.close);
+      const account = OtpAccount(
+        id: 1,
+        type: 'hotp',
+        issuer: 'Example',
+        account: 'user',
+        secret: 'JBSWY3DPEHPK3PXP',
+        digits: 8,
+      );
+      final semantics = tester.ensureSemantics();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            settingsProvider.overrideWith(
+              (ref) =>
+                  Stream.value({...defaultSettings, showCaptchaOnTapKey: true}),
+            ),
+            integerSettingsProvider.overrideWith((ref) => settings.stream),
+          ],
+          child: const MaterialApp(
+            locale: Locale('en'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: Center(
+                child: SizedBox(
+                  width: 350,
+                  height: 140,
+                  child: TokenListItem(config: account),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      settings.add({...defaultIntegerSettings, codeGroupingKey: 3});
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('group_3')), findsOneWidget);
+      expect(find.byKey(const ValueKey('group_6')), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp('Code hidden')), findsOneWidget);
+      expect(find.text('-'), findsNWidgets(8));
+      settings.add({...defaultIntegerSettings, codeGroupingKey: 5});
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('group_4')), findsOneWidget);
+      expect(find.byKey(const ValueKey('group_3')), findsNothing);
+      semantics.dispose();
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(const Duration(milliseconds: 10));
+    },
+  );
+}

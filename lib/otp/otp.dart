@@ -347,3 +347,22 @@ class OTP {
 
 /// 用于生成一次性密码代码的哈希算法
 enum Algorithm { sha1, sha256, sha512 }
+
+/// Returns the character offsets at which a displayed code is split.
+List<int> codeGroupBreaks(int length, int mode) {
+  if (length <= 0 || mode == 0) return [];
+  if (mode >= 2 && mode <= 4) {
+    return [for (var i = mode; i < length; i += mode) i];
+  }
+  if (mode != 5 && mode != 6) throw ArgumentError('Invalid grouping mode');
+  final groups = mode == 5 ? 2 : 3;
+  final base = length ~/ groups;
+  final extra = length % groups;
+  var offset = 0;
+  final breaks = <int>[];
+  for (var i = 0; i < groups - 1; i++) {
+    offset += base + (i < extra ? 1 : 0);
+    if (offset > 0 && offset < length) breaks.add(offset);
+  }
+  return breaks;
+}

@@ -287,5 +287,12 @@
   "unlockSorting": "解锁自定义顺序",
   "clearSearchToReorder": "清除搜索后可调整账户顺序。",
   "reorderFailed": "无法调整账户顺序，请重试。",
-  "dragToReorder": "拖动以调整顺序"
+  "dragToReorder": "拖动以调整顺序",
+  "codeGrouping": "验证码分组",
+  "groupNone": "不分组",
+  "groupEvery": "每 {count} 位",
+  "groupHalves": "分成两组",
+  "groupThirds": "分成三组",
+  "codeHidden": "验证码已隐藏",
+  "@groupEvery": {"placeholders": {"count": {"type": "int"}}}
 }

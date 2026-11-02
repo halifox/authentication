@@ -98,9 +98,11 @@ class SettingsScreen extends ConsumerWidget {
               crossAxisSpacing: 16,
               mainAxisExtent: 90,
             ),
-            itemCount: options.length + 1,
+            itemCount: options.length + 2,
             itemBuilder: (BuildContext context, int index) {
-              if (index == options.length) {
+              if (index >= options.length) {
+                final isDelay = index == options.length;
+                final settingKey = isDelay ? hideCodeAfterKey : codeGroupingKey;
                 return Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -111,23 +113,47 @@ class SettingsScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(24),
                   ),
                   child: DropdownButtonFormField<int>(
-                    initialValue: values[hideCodeAfterKey],
-                    decoration: InputDecoration(labelText: l10n.hideCodeAfter),
-                    items: [
-                      DropdownMenuItem(value: 0, child: Text(l10n.never)),
-                      for (final seconds in hideCodeDelayOptions.skip(1))
-                        DropdownMenuItem(
-                          value: seconds,
-                          child: Text(l10n.seconds(seconds)),
-                        ),
-                    ],
+                    initialValue: values[settingKey],
+                    decoration: InputDecoration(
+                      labelText: isDelay
+                          ? l10n.hideCodeAfter
+                          : l10n.codeGrouping,
+                    ),
+                    items: isDelay
+                        ? [
+                            DropdownMenuItem(value: 0, child: Text(l10n.never)),
+                            for (final seconds in hideCodeDelayOptions.skip(1))
+                              DropdownMenuItem(
+                                value: seconds,
+                                child: Text(l10n.seconds(seconds)),
+                              ),
+                          ]
+                        : [
+                            DropdownMenuItem(
+                              value: 0,
+                              child: Text(l10n.groupNone),
+                            ),
+                            for (final n in [2, 3, 4])
+                              DropdownMenuItem(
+                                value: n,
+                                child: Text(l10n.groupEvery(n)),
+                              ),
+                            DropdownMenuItem(
+                              value: 5,
+                              child: Text(l10n.groupHalves),
+                            ),
+                            DropdownMenuItem(
+                              value: 6,
+                              child: Text(l10n.groupThirds),
+                            ),
+                          ],
                     onChanged: busy
                         ? null
                         : (value) {
                             if (value != null)
                               ref
                                   .read(settingsOperationsProvider.notifier)
-                                  .updateInteger(hideCodeAfterKey, value);
+                                  .updateInteger(settingKey, value);
                           },
                   ),
                 );

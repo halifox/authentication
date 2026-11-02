@@ -33,15 +33,19 @@ const hideCodeAfterKey = 'hide_code_after_seconds';
 const hideCodeDelayOptions = <int>[0, 5, 10, 30, 60];
 const sortModeKey = 'account_sort_mode';
 const sortModeOptions = <int>[0, 1, 2, 3, 4];
+const codeGroupingKey = 'code_grouping';
+const codeGroupingOptions = <int>[0, 2, 3, 4, 5, 6];
 const defaultIntegerSettings = <String, int>{
   hideCodeAfterKey: 0,
   sortModeKey: 0,
+  codeGroupingKey: 0,
 };
 
 void validateIntegerSetting(String key, Object? value) {
   final allowed = switch (key) {
     hideCodeAfterKey => hideCodeDelayOptions,
     sortModeKey => sortModeOptions,
+    codeGroupingKey => codeGroupingOptions,
     _ => throw const FormatException('Unknown integer setting.'),
   };
   if (value is! int || !allowed.contains(value)) {

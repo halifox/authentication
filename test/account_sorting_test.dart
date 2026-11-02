@@ -96,6 +96,7 @@ void main() {
         2,
       ]);
       await db.setIntegerSetting(sortModeKey, 4);
+      await db.setIntegerSetting(codeGroupingKey, 6);
       await db.setSetting(sortLockedKey, false);
       final backup = await encodeBackupAccounts(
         await db.getAllConfigs(),
@@ -105,6 +106,7 @@ void main() {
         includeCopyCounts: true,
       );
       await db.setIntegerSetting(sortModeKey, 1);
+      await db.setIntegerSetting(codeGroupingKey, 0);
       await db.setSetting(sortLockedKey, true);
       await db.reorderAccounts([1, 2, 3]);
       final container = ProviderContainer(
@@ -115,6 +117,7 @@ void main() {
           .read(backupOperationsProvider.notifier)
           .import(backup, null);
       expect((await db.getIntegerSettings())[sortModeKey], 4);
+      expect((await db.getIntegerSettings())[codeGroupingKey], 6);
       expect((await db.getSettings())[sortLockedKey], false);
       expect(sortAccounts(await db.getAllConfigs(), 0).map((e) => e.id), [
         3,
@@ -131,6 +134,7 @@ void main() {
           .read(backupOperationsProvider.notifier)
           .import(legacy, null);
       expect((await db.getIntegerSettings())[sortModeKey], 4);
+      expect((await db.getIntegerSettings())[codeGroupingKey], 6);
       expect((await db.getSettings())[sortLockedKey], false);
     },
   );
