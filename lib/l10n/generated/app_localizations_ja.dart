@@ -545,4 +545,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get viewTiles => 'Tiles';
+
+  @override
+  String get externalAccount => 'External account link';
+
+  @override
+  String get externalAccountInvalid =>
+      'The link is invalid or unsupported. No account was imported.';
+
+  @override
+  String get externalAccountUnavailable =>
+      'Could not receive external account links.';
 }

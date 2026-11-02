@@ -1,3 +1,4 @@
+import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/screens/add_account_screen.dart';
 import 'package:authentication/screens/categories_screen.dart';
@@ -6,6 +7,7 @@ import 'package:authentication/screens/qr_scanner_screen.dart';
 import 'package:authentication/screens/settings_screen.dart';
 import 'package:authentication/screens/token_form_screen.dart';
 import 'package:authentication/screens/token_list_screen.dart';
+import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -17,6 +19,30 @@ class AppRoutes {
   static const form = '/form';
   static const scan = '/scan';
   static const icons = '/icons';
+}
+
+Route<void> externalAccountRoute(String name) {
+  OtpAccount? account;
+  try {
+    if (name.length > 65536) throw const FormatException();
+    account = parseOtpUri(name)..validate();
+  } catch (_) {
+    // Never include an external URI or parsing exception in the UI or route.
+  }
+  final parsedAccount = account;
+  return MaterialPageRoute<void>(
+    settings: const RouteSettings(name: '/external-account'),
+    builder: (context) => parsedAccount == null
+        ? Scaffold(
+            appBar: CustomAppBar(
+              title: AppLocalizations.of(context)!.externalAccount,
+            ),
+            body: Center(
+              child: Text(AppLocalizations.of(context)!.externalAccountInvalid),
+            ),
+          )
+        : TokenFormScreen(initialEntry: parsedAccount),
+  );
 }
 
 Route<dynamic> onGenerateRoute(RouteSettings settings) {

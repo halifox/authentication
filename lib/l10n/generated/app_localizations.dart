@@ -1121,6 +1121,24 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'平铺'**
   String get viewTiles;
+
+  /// No description provided for @externalAccount.
+  ///
+  /// In zh, this message translates to:
+  /// **'外部账户链接'**
+  String get externalAccount;
+
+  /// No description provided for @externalAccountInvalid.
+  ///
+  /// In zh, this message translates to:
+  /// **'链接无效或不受支持，未导入任何账户。'**
+  String get externalAccountInvalid;
+
+  /// No description provided for @externalAccountUnavailable.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法接收外部账户链接。'**
+  String get externalAccountUnavailable;
 }
 
 class _AppLocalizationsDelegate

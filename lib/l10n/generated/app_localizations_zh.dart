@@ -530,4 +530,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get viewTiles => '平铺';
+
+  @override
+  String get externalAccount => '外部账户链接';
+
+  @override
+  String get externalAccountInvalid => '链接无效或不受支持，未导入任何账户。';
+
+  @override
+  String get externalAccountUnavailable => '无法接收外部账户链接。';
 }

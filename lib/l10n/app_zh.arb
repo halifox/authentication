@@ -358,5 +358,8 @@
   "accountView": "账户视图",
   "viewDefault": "默认",
   "viewCompact": "紧凑",
-  "viewTiles": "平铺"
+  "viewTiles": "平铺",
+  "externalAccount": "外部账户链接",
+  "externalAccountInvalid": "链接无效或不受支持，未导入任何账户。",
+  "externalAccountUnavailable": "无法接收外部账户链接。"
 }

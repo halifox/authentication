@@ -28,6 +28,7 @@ class TokenFormScreen extends HookConsumerWidget {
     ref.watch(categoriesProvider);
     ref.watch(categoryMembershipsProvider);
     final args = initialEntry;
+    final isSaved = args != null && args.id > 0;
     final busy = ref.watch(accountOperationsProvider).isLoading;
     final l10n = AppLocalizations.of(context)!;
 
@@ -52,7 +53,7 @@ class TokenFormScreen extends HookConsumerWidget {
     // State
     final type = useState(args?.type ?? 'totp');
     final algorithm = useState(args?.algorithm ?? 'sha1');
-    final icon = useState<String?>(args?.icon);
+    final icon = useState<String?>(isSaved ? args.icon : null);
     final icons = ref.watch(allIconsProvider);
     final chosenIcon =
         icon.value ??
@@ -86,7 +87,7 @@ class TokenFormScreen extends HookConsumerWidget {
                 await _handleSave(
                   context: context,
                   ref: ref,
-                  id: args?.id,
+                  id: isSaved ? args.id : null,
                   type: type.value,
                   issuer: issuerController.text,
                   account: accountController.text,
@@ -155,7 +156,7 @@ class TokenFormScreen extends HookConsumerWidget {
                   ),
                   String() => const SizedBox.shrink(),
                 },
-                if (args != null)
+                if (isSaved)
                   OutlinedButton.icon(
                     onPressed: busy
                         ? null
@@ -163,7 +164,7 @@ class TokenFormScreen extends HookConsumerWidget {
                     icon: const Icon(Icons.label_outline),
                     label: Text(l10n.assignCategories),
                   ),
-                if (args != null)
+                if (isSaved)
                   OutlinedButton.icon(
                     onPressed: busy
                         ? null

@@ -1,19 +1,81 @@
+import 'dart:async';
+
+import 'package:app_links/app_links.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/router/app_router.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/settings/settings_provider.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_ui/material_ui.dart' as material_ui;
 
-class AuthApp extends ConsumerWidget {
+class AuthApp extends ConsumerStatefulWidget {
   const AuthApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AuthApp> createState() => _AuthAppState();
+}
+
+final externalLinksProvider = Provider<Stream<String>>((ref) {
+  if (kIsWeb || defaultTargetPlatform != TargetPlatform.android)
+    return const Stream.empty();
+  return AppLinks().stringLinkStream;
+});
+
+class _AuthAppState extends ConsumerState<AuthApp> {
+  final navigatorKey = GlobalKey<NavigatorState>();
+  StreamSubscription<String>? links;
+
+  @override
+  void initState() {
+    super.initState();
+    links = ref
+        .read(externalLinksProvider)
+        .listen(
+          _handleLink,
+          onError: (Object error, StackTrace stack) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              final context = navigatorKey.currentContext;
+              if (mounted && context != null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      AppLocalizations.of(context)!.externalAccountUnavailable,
+                    ),
+                  ),
+                );
+              }
+            });
+            WidgetsBinding.instance.ensureVisualUpdate();
+          },
+        );
+  }
+
+  @override
+  void dispose() {
+    links?.cancel();
+    super.dispose();
+  }
+
+  void _handleLink(String link) {
+    if (!link.toLowerCase().startsWith('otpauth:')) return;
+    final route = externalAccountRoute(link);
+    final navigator = navigatorKey.currentState;
+    if (navigator != null) {
+      navigator.push(route);
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) navigatorKey.currentState?.push(route);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     const pageTransitionsTheme = PageTransitionsTheme(
       builders: {
         TargetPlatform.android: CupertinoPageTransitionsBuilder(),
@@ -32,6 +94,7 @@ class AuthApp extends ConsumerWidget {
     final dynamicEnabled = settings?[dynamicColorKey] ?? true;
     return DynamicColorBuilder(
       builder: (lightDynamic, darkDynamic) => MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'Authentication',
         debugShowCheckedModeBanner: false,
         themeMode: switch (mode) {
