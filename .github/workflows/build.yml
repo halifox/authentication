@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   android:
-    name: Build Android arm64 APK
+    name: Build Android APK and App Bundle
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -54,6 +54,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: '3.44.0'
           cache: true
 
       - name: Get Flutter dependencies
@@ -67,7 +68,7 @@ jobs:
           umask 077
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/android-release.jks"
 
-      - name: Build APK
+      - name: Build APK and App Bundle
         env:
           ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/android-release.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -78,6 +79,7 @@ jobs:
           : "${ANDROID_KEY_PASSWORD:?Missing Android key password}"
           : "${ANDROID_KEY_ALIAS:?Missing Android key alias}"
           flutter build apk --release --no-pub --target-platform android-arm64
+          flutter build appbundle --release --no-pub
 
       - name: Verify Android release signature
         env:
@@ -94,6 +96,13 @@ jobs:
             echo "APK does not match the configured release signing certificate" >&2
             exit 1
           fi
+          jarsigner -verify build/app/outputs/bundle/release/app-release.aab
+          bundle_cert=$(keytool -printcert -jarfile build/app/outputs/bundle/release/app-release.aab \
+            | sed -n 's/^[[:space:]]*SHA256: //p' | tr -d ':' | tr '[:upper:]' '[:lower:]' | sort -u)
+          if [ "$bundle_cert" != "$expected" ]; then
+            echo "App Bundle does not match the configured release signing certificate" >&2
+            exit 1
+          fi
           echo "Verified release signing certificate SHA-256: $actual"
 
       - name: Remove Android signing files
@@ -106,6 +115,14 @@ jobs:
           name: authentication-android-arm64
           retention-days: 1
           path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+
+      - name: Upload Android App Bundle
+        uses: actions/upload-artifact@v7
+        with:
+          name: authentication-android-app-bundle
+          retention-days: 1
+          path: build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
 
   ios:
@@ -121,6 +138,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: '3.44.0'
           cache: true
 
       - name: Get Flutter dependencies
@@ -165,6 +183,12 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: authentication-ios-unsigned
+          path: release
+
+      - name: Download Android App Bundle
+        uses: actions/download-artifact@v8
+        with:
+          name: authentication-android-app-bundle
           path: release
 
       - name: Publish release with build artifacts
