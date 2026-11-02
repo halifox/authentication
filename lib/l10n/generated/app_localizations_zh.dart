@@ -239,4 +239,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get uriPlainWarning => '此文件明文包含账户密钥。任何取得文件的人都可以生成验证码，请安全保管。';
+
+  @override
+  String get clearSearch => '清除搜索';
+
+  @override
+  String get noSearchResults => '没有匹配的账户';
 }

@@ -569,6 +569,18 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'此文件明文包含账户密钥。任何取得文件的人都可以生成验证码，请安全保管。'**
   String get uriPlainWarning;
+
+  /// No description provided for @clearSearch.
+  ///
+  /// In zh, this message translates to:
+  /// **'清除搜索'**
+  String get clearSearch;
+
+  /// No description provided for @noSearchResults.
+  ///
+  /// In zh, this message translates to:
+  /// **'没有匹配的账户'**
+  String get noSearchResults;
 }
 
 class _AppLocalizationsDelegate

@@ -245,4 +245,10 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get uriPlainWarning =>
       'This file contains account secrets in plain text. Anyone with the file can generate your codes. Store it securely.';
+
+  @override
+  String get clearSearch => 'Clear search';
+
+  @override
+  String get noSearchResults => 'No matching accounts';
 }

@@ -75,5 +75,7 @@
   "backupDownloadStarted": "The browser was asked to download the backup. Check that the download completed.",
   "importUriList": "Import URI list",
   "exportUriList": "Export URI list",
-  "uriPlainWarning": "This file contains account secrets in plain text. Anyone with the file can generate your codes. Store it securely."
+  "uriPlainWarning": "This file contains account secrets in plain text. Anyone with the file can generate your codes. Store it securely.",
+  "clearSearch": "Clear search",
+  "noSearchResults": "No matching accounts"
 }

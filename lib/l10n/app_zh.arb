@@ -260,5 +260,7 @@
   "backupDownloadStarted": "已请求浏览器下载备份文件。请确认下载完成。",
   "importUriList": "导入 URI 列表",
   "exportUriList": "导出 URI 列表",
-  "uriPlainWarning": "此文件明文包含账户密钥。任何取得文件的人都可以生成验证码，请安全保管。"
+  "uriPlainWarning": "此文件明文包含账户密钥。任何取得文件的人都可以生成验证码，请安全保管。",
+  "clearSearch": "清除搜索",
+  "noSearchResults": "没有匹配的账户"
 }
