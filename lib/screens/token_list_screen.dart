@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/otp/category_provider.dart';
 import 'package:authentication/otp/otp_provider.dart';
 import 'package:authentication/otp/sorting.dart';
 import 'package:authentication/router/app_router.dart';
@@ -23,10 +24,19 @@ class TokenListScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final searchController = useTextEditingController();
     final query = useState('');
+    final categoryFilter = useState(-1);
     final l10n = AppLocalizations.of(context)!;
 
     // 监听列表 Provider。每当数据库发生变化时，此流都会更新。
     final authListAsync = ref.watch(authEntryListProvider);
+    final categories = ref.watch(categoriesProvider);
+    final memberships = ref.watch(categoryMembershipsProvider);
+    final categoryList = categories.value ?? [];
+    final selectedCategory =
+        categoryFilter.value <= 0 ||
+            categoryList.any((c) => c.id == categoryFilter.value)
+        ? categoryFilter.value
+        : -1;
     final sortMode =
         ref.watch(integerSettingsProvider).value?[sortModeKey] ?? 0;
     final sortLocked =
@@ -79,6 +89,25 @@ class TokenListScreen extends HookConsumerWidget {
                   ),
                 ),
                 PopupMenuButton<int>(
+                  tooltip: l10n.categoryFilter,
+                  icon: Icon(
+                    selectedCategory == -1
+                        ? Icons.filter_list
+                        : Icons.filter_alt,
+                  ),
+                  initialValue: selectedCategory,
+                  onSelected: (value) => categoryFilter.value = value,
+                  itemBuilder: (_) => [
+                    PopupMenuItem(value: -1, child: Text(l10n.allCategories)),
+                    PopupMenuItem(value: 0, child: Text(l10n.uncategorized)),
+                    for (final category in categoryList)
+                      PopupMenuItem(
+                        value: category.id,
+                        child: Text(category.name),
+                      ),
+                  ],
+                ),
+                PopupMenuButton<int>(
                   tooltip: l10n.sortAccounts,
                   icon: const Icon(Icons.sort),
                   initialValue: sortMode,
@@ -121,29 +150,63 @@ class TokenListScreen extends HookConsumerWidget {
               ],
             ),
           ),
-          if (sortMode == 0 && !sortLocked && query.value.trim().isNotEmpty)
+          if (selectedCategory != -1)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: InputChip(
+                label: Text(
+                  selectedCategory == 0
+                      ? l10n.uncategorized
+                      : categoryList
+                            .firstWhere((c) => c.id == selectedCategory)
+                            .name,
+                ),
+                onDeleted: () => categoryFilter.value = -1,
+              ),
+            ),
+          if (sortMode == 0 &&
+              !sortLocked &&
+              (query.value.trim().isNotEmpty || selectedCategory != -1))
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(l10n.clearSearchToReorder),
+              child: Text(
+                selectedCategory == -1
+                    ? l10n.clearSearchToReorder
+                    : l10n.clearFilterToReorder,
+              ),
             ),
           Expanded(
             child: authListAsync.when(
               data: (data) {
+                if (categories.hasError || memberships.hasError) {
+                  return Center(child: Text(l10n.categoryLoadFailed));
+                }
+                if (categories.isLoading || memberships.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
                 if (data.isEmpty) {
                   return Center(child: Text(l10n.noData));
                 }
                 final search = query.value.trim().toLowerCase();
-                final filtered = sortAccounts(data, sortMode)
-                    .where(
-                      (entry) =>
-                          entry.issuer.toLowerCase().contains(search) ||
-                          entry.account.toLowerCase().contains(search),
-                    )
-                    .toList();
+                final filtered = sortAccounts(data, sortMode).where((entry) {
+                  final matchesSearch =
+                      entry.issuer.toLowerCase().contains(search) ||
+                      entry.account.toLowerCase().contains(search);
+                  final assigned = memberships.value?[entry.id] ?? <int>{};
+                  final matchesCategory =
+                      selectedCategory == -1 ||
+                      (selectedCategory == 0
+                          ? assigned.isEmpty
+                          : assigned.contains(selectedCategory));
+                  return matchesSearch && matchesCategory;
+                }).toList();
                 if (filtered.isEmpty) {
                   return Center(child: Text(l10n.noSearchResults));
                 }
-                if (sortMode == 0 && !sortLocked && search.isEmpty) {
+                if (sortMode == 0 &&
+                    !sortLocked &&
+                    search.isEmpty &&
+                    selectedCategory == -1) {
                   return ReorderableListView.builder(
                     buildDefaultDragHandles: false,
                     padding: const EdgeInsets.symmetric(horizontal: 16),

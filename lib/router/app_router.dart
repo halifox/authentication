@@ -1,5 +1,6 @@
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/screens/add_account_screen.dart';
+import 'package:authentication/screens/categories_screen.dart';
 import 'package:authentication/screens/icon_selection_screen.dart';
 import 'package:authentication/screens/qr_scanner_screen.dart';
 import 'package:authentication/screens/settings_screen.dart';
@@ -12,6 +13,7 @@ class AppRoutes {
   static const home = '/';
   static const add = '/add';
   static const settings = '/settings';
+  static const categories = '/categories';
   static const form = '/form';
   static const scan = '/scan';
   static const icons = '/icons';
@@ -21,6 +23,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
   final Widget screen = switch (settings.name) {
     AppRoutes.add => const AddAccountScreen(),
     AppRoutes.settings => const SettingsScreen(),
+    AppRoutes.categories => const CategoriesScreen(),
     AppRoutes.form => TokenFormScreen(
       initialEntry: settings.arguments as OtpAccount?,
     ),

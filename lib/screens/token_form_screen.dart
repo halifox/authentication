@@ -1,11 +1,13 @@
 import 'package:authentication/actions/account_actions.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/account.dart';
+import 'package:authentication/otp/category_provider.dart';
 import 'package:authentication/otp/otp_provider.dart';
 import 'package:authentication/router/app_router.dart';
 import 'package:authentication/screens/auth_error_localization.dart';
 import 'package:authentication/widgets/account_qr.dart';
 import 'package:authentication/widgets/action_result_sheet.dart';
+import 'package:authentication/widgets/category_selection.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +24,8 @@ class TokenFormScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(categoriesProvider);
+    ref.watch(categoryMembershipsProvider);
     final args = initialEntry;
     final busy = ref.watch(accountOperationsProvider).isLoading;
     final l10n = AppLocalizations.of(context)!;
@@ -108,8 +112,9 @@ class TokenFormScreen extends HookConsumerWidget {
                     'yandex' => '8',
                     _ => '6',
                   };
-                  if (value == 'steam' || value == 'yandex')
+                  if (value == 'steam' || value == 'yandex') {
                     periodController.text = '30';
+                  }
                 }),
                 _buildTextField(
                   label: l10n.issuer,
@@ -142,6 +147,14 @@ class TokenFormScreen extends HookConsumerWidget {
                   ),
                   String() => const SizedBox.shrink(),
                 },
+                if (args != null)
+                  OutlinedButton.icon(
+                    onPressed: busy
+                        ? null
+                        : () => assignAccountCategories(context, ref, args.id),
+                    icon: const Icon(Icons.label_outline),
+                    label: Text(l10n.assignCategories),
+                  ),
                 if (args != null)
                   OutlinedButton.icon(
                     onPressed: busy
@@ -473,8 +486,9 @@ class TokenFormScreen extends HookConsumerWidget {
               message: id == null ? l10n.addSuccess : l10n.updateSuccess,
             ),
           );
-          if (context.mounted)
+          if (context.mounted) {
             Navigator.popUntil(context, (route) => route.isFirst);
+          }
         }
       } else if (result is TokenFormConflict) {
         if (context.mounted) {

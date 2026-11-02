@@ -250,7 +250,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsLoadError => '无法加载设置。';
 
   @override
-  String get backupSettingsWarning => '发行者和账户名相同的条目将被更新。备份中包含的设置也会被恢复。是否继续？';
+  String get backupSettingsWarning =>
+      '发行者和账户名相同的条目将被更新。若备份包含分类和设置，将按名称合并分类、替换导入账户的分类，并恢复设置和默认分类。是否继续？';
 
   @override
   String get showAccountName => '显示账户名';
@@ -451,4 +452,64 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get languageSystem => '跟随系统';
+
+  @override
+  String get categories => '分类';
+
+  @override
+  String get categoryCreate => '创建分类';
+
+  @override
+  String get categoryRename => '重命名分类';
+
+  @override
+  String get categoryName => '分类名称';
+
+  @override
+  String get categoryOperationFailed => '无法保存分类，请检查名称后重试。';
+
+  @override
+  String get categoryLoadFailed => '无法加载分类。';
+
+  @override
+  String get categoryEmpty => '尚无分类。';
+
+  @override
+  String get categoryDefault => '默认';
+
+  @override
+  String get categoryActions => '分类操作';
+
+  @override
+  String get categoryClearDefault => '取消默认分类';
+
+  @override
+  String get categorySetDefault => '设为默认分类';
+
+  @override
+  String get categoryDelete => '删除分类';
+
+  @override
+  String get categoryDeleteWarning => '删除此分类？账户会保留。';
+
+  @override
+  String get assignCategories => '分配分类';
+
+  @override
+  String get assignAccounts => '分配账户';
+
+  @override
+  String get categorySelectionEmpty => '没有可选择的项目。';
+
+  @override
+  String get allCategories => '全部账户';
+
+  @override
+  String get uncategorized => '未分类';
+
+  @override
+  String get categoryFilter => '筛选分类';
+
+  @override
+  String get clearFilterToReorder => '显示全部账户并清除搜索后可调整顺序。';
 }

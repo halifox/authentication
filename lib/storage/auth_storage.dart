@@ -63,10 +63,12 @@ extension AuthStorage on AppDatabase {
   Future<void> addConfig(
     OtpAccount account, {
     bool preserveSortOrder = false,
+    bool applyDefaultCategory = true,
   }) async {
     await transaction(() async {
       if (preserveSortOrder) {
-        await _insertAuthEntry(_encode(this, account));
+        final id = await _insertAuthEntry(_encode(this, account));
+        if (applyDefaultCategory) await _assignDefaultCategory(id);
         return;
       }
       final entries = await getAllAuthEntries();
@@ -76,7 +78,10 @@ extension AuthStorage on AppDatabase {
             (max, e) => e.sortOrder > max ? e.sortOrder : max,
           ) +
           1;
-      await _insertAuthEntry(_encode(this, account.copyWith(sortOrder: next)));
+      final id = await _insertAuthEntry(
+        _encode(this, account.copyWith(sortOrder: next)),
+      );
+      if (applyDefaultCategory) await _assignDefaultCategory(id);
     });
   }
 
@@ -91,7 +96,27 @@ extension AuthStorage on AppDatabase {
     )..where((t) => t.id.equals(account.id))).write(companion);
   }
 
-  Future<void> deleteConfig(int id) async => _deleteAuthEntry(id);
+  Future<void> _assignDefaultCategory(int accountId) async {
+    final defaults = (await getCategories())
+        .where((category) => category.isDefault)
+        .toList();
+    if (defaults.length > 1) throw StateError('Multiple default categories.');
+    if (defaults.isNotEmpty) {
+      await into(accountCategoryLinks).insert(
+        AccountCategoryLinksCompanion.insert(
+          accountId: accountId,
+          categoryId: defaults.single.id,
+        ),
+      );
+    }
+  }
+
+  Future<void> deleteConfig(int id) async => transaction(() async {
+    await (delete(
+      accountCategoryLinks,
+    )..where((link) => link.accountId.equals(id))).go();
+    await _deleteAuthEntry(id);
+  });
 
   Future<void> reorderAccounts(List<int> ids) async {
     await transaction(() async {
@@ -162,12 +187,15 @@ extension AuthStorage on AppDatabase {
     bool preserveExistingCopyCount = false,
     Map<String, bool>? settings,
     Map<String, int>? integerSettings,
+    List<AccountCategory>? importedCategories,
+    Map<(String, String), List<String>>? importedMemberships,
   }) async {
     final keys = <(String, String)>{};
     for (final account in accounts) {
       account.validate();
-      if (!keys.add((account.issuer, account.account)))
+      if (!keys.add((account.issuer, account.account))) {
         throw const FormatException('Duplicate accounts in backup.');
+      }
     }
     final validatedSettings = settings == null
         ? null
@@ -175,7 +203,64 @@ extension AuthStorage on AppDatabase {
     final validatedIntegers = integerSettings == null
         ? null
         : validateIntegerSettings(integerSettings);
+    final checkedCategories = importedCategories == null
+        ? null
+        : validateCategories(importedCategories);
+    if ((checkedCategories == null) != (importedMemberships == null)) {
+      throw const FormatException('Missing category membership.');
+    }
+    if (checkedCategories != null) {
+      final names = checkedCategories.map((c) => c.name).toSet();
+      if (importedMemberships!.length != accounts.length ||
+          accounts.any(
+            (a) => !importedMemberships.containsKey((a.issuer, a.account)),
+          ) ||
+          importedMemberships.values.any(
+            (list) =>
+                list.toSet().length != list.length ||
+                list.any((n) => !names.contains(n)),
+          )) {
+        throw const FormatException('Invalid category membership.');
+      }
+    }
     await transaction(() async {
+      var categoryIds = <String, int>{};
+      if (checkedCategories != null) {
+        final local = {
+          for (final category in await getCategories()) category.name: category,
+        };
+        if ({...local.keys, ...checkedCategories.map((c) => c.name)}.length >
+            1000) {
+          throw const FormatException('Too many categories.');
+        }
+        await update(categories)
+            .write(const CategoriesCompanion(isDefault: Value(false)));
+        for (final category in checkedCategories) {
+          final existing = local[category.name];
+          if (existing == null) {
+            await into(categories).insert(
+              CategoriesCompanion.insert(
+                name: category.name,
+                sortOrder: category.sortOrder,
+                isDefault: Value(category.isDefault),
+              ),
+            );
+          } else {
+            await (update(
+              categories,
+            )..where((c) => c.id.equals(existing.id))).write(
+              CategoriesCompanion(
+                sortOrder: Value(category.sortOrder),
+                isDefault: Value(category.isDefault),
+              ),
+            );
+          }
+        }
+        categoryIds = {
+          for (final category in await getCategories())
+            category.name: category.id,
+        };
+      }
       if (validatedIntegers != null) {
         for (final setting in validatedIntegers.entries) {
           await setIntegerSetting(setting.key, setting.value);
@@ -195,6 +280,7 @@ extension AuthStorage on AppDatabase {
           await addConfig(
             account,
             preserveSortOrder: !preserveExistingMetadata,
+            applyDefaultCategory: checkedCategories == null,
           );
         } else {
           await updateConfig(
@@ -224,6 +310,25 @@ extension AuthStorage on AppDatabase {
               authEntries,
             )..where((t) => t.id.equals(existing.id))).write(
               AuthEntriesCompanion(copyCount: Value(account.copyCount)),
+            );
+          }
+        }
+        if (checkedCategories != null) {
+          final saved = await getConfigByAccountAndIssuer(
+            account.account,
+            account.issuer,
+          );
+          if (saved == null) throw StateError('Imported account not found.');
+          await (delete(
+            accountCategoryLinks,
+          )..where((link) => link.accountId.equals(saved.id))).go();
+          for (final name
+              in importedMemberships![(account.issuer, account.account)]!) {
+            await into(accountCategoryLinks).insert(
+              AccountCategoryLinksCompanion.insert(
+                accountId: saved.id,
+                categoryId: categoryIds[name]!,
+              ),
             );
           }
         }

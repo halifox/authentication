@@ -256,7 +256,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get backupSettingsWarning =>
-      'Accounts with the same issuer and account name will be updated. Settings in the backup will also be restored. Continue?';
+      'Accounts with the same issuer and account name will be updated. If included, categories will be merged by name, memberships for imported accounts replaced, and settings and default category restored. Continue?';
 
   @override
   String get showAccountName => 'Show account name';
@@ -464,4 +464,67 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get languageSystem => 'システムに従う';
+
+  @override
+  String get categories => 'Categories';
+
+  @override
+  String get categoryCreate => 'Create category';
+
+  @override
+  String get categoryRename => 'Rename category';
+
+  @override
+  String get categoryName => 'Category name';
+
+  @override
+  String get categoryOperationFailed =>
+      'Could not save the category. Check its name and try again.';
+
+  @override
+  String get categoryLoadFailed => 'Could not load categories.';
+
+  @override
+  String get categoryEmpty => 'No categories yet.';
+
+  @override
+  String get categoryDefault => 'Default';
+
+  @override
+  String get categoryActions => 'Category actions';
+
+  @override
+  String get categoryClearDefault => 'Clear default';
+
+  @override
+  String get categorySetDefault => 'Set as default';
+
+  @override
+  String get categoryDelete => 'Delete category';
+
+  @override
+  String get categoryDeleteWarning =>
+      'Delete this category? Accounts will remain.';
+
+  @override
+  String get assignCategories => 'Assign categories';
+
+  @override
+  String get assignAccounts => 'Assign accounts';
+
+  @override
+  String get categorySelectionEmpty => 'Nothing to select.';
+
+  @override
+  String get allCategories => 'All accounts';
+
+  @override
+  String get uncategorized => 'Uncategorized';
+
+  @override
+  String get categoryFilter => 'Filter categories';
+
+  @override
+  String get clearFilterToReorder =>
+      'Show all accounts and clear search to reorder.';
 }

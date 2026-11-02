@@ -72,3 +72,21 @@ class AppIntegerSettings extends Table {
   @override
   Set<Column> get primaryKey => {key};
 }
+
+@DataClassName('CategoryRow')
+class Categories extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text().unique()();
+  IntColumn get sortOrder => integer()();
+  BoolColumn get isDefault => boolean().withDefault(const Constant(false))();
+}
+
+class AccountCategoryLinks extends Table {
+  IntColumn get accountId =>
+      integer().references(AuthEntries, #id, onDelete: KeyAction.cascade)();
+  IntColumn get categoryId =>
+      integer().references(Categories, #id, onDelete: KeyAction.cascade)();
+
+  @override
+  Set<Column> get primaryKey => {accountId, categoryId};
+}

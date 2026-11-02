@@ -2,10 +2,10 @@ import 'dart:typed_data';
 
 import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/html_backup.dart';
+import 'package:authentication/storage/database.dart';
+import 'package:authentication/storage/database_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:authentication/storage/database_provider.dart';
-import 'package:authentication/storage/database.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class BackupOperations extends Notifier<AsyncValue<void>> {
@@ -13,8 +13,9 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
   AsyncValue<void> build() => const AsyncData(null);
 
   Future<T> _run<T>(Future<T> Function() action) async {
-    if (state.isLoading)
+    if (state.isLoading) {
       throw StateError('A backup operation is already running.');
+    }
     state = const AsyncLoading();
     try {
       final result = await action();
@@ -30,12 +31,14 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
     final file = await FilePicker.pickFile();
     if (file == null) return null;
     final size = await file.length();
-    if (size != null && size > maxBackupBytes)
+    if (size != null && size > maxBackupBytes) {
       throw const FormatException('File too large');
+    }
     final buffer = BytesBuilder(copy: false);
     await for (final chunk in file.readAsByteStream()) {
-      if (buffer.length + chunk.length > maxBackupBytes)
+      if (buffer.length + chunk.length > maxBackupBytes) {
         throw const FormatException('File too large');
+      }
       buffer.add(chunk);
     }
     return buffer.takeBytes();
@@ -49,15 +52,33 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
           accounts: await db.getAllConfigs(),
           settings: await db.getSettings(),
           integerSettings: await db.getIntegerSettings(),
+          categories: await db.getCategories(),
+          membershipIds: await db.getCategoryMemberships(),
         ),
       );
-      if (snapshot.accounts.isEmpty) throw StateError('No accounts to export.');
+      final names = {
+        for (final category in snapshot.categories) category.id: category.name,
+      };
+      final accountIds = snapshot.accounts.map((account) => account.id).toSet();
+      final memberships = <int, List<String>>{};
+      for (final entry in snapshot.membershipIds.entries) {
+        if (!accountIds.contains(entry.key) ||
+            entry.value.any((id) => !names.containsKey(id))) {
+          throw StateError('Invalid category membership.');
+        }
+        memberships[entry.key] = [
+          for (final category in snapshot.categories)
+            if (entry.value.contains(category.id)) category.name,
+        ];
+      }
       final bytes = await encodeBackupAccounts(
         snapshot.accounts,
         password,
         settings: snapshot.settings,
         integerSettings: snapshot.integerSettings,
         includeCopyCounts: true,
+        categories: snapshot.categories,
+        memberships: memberships,
       );
       final location = await FilePicker.saveFile(
         fileName: 'authentication-backup.json',
@@ -120,6 +141,8 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
         settings: document.settings,
         integerSettings: document.integerSettings,
         preserveExistingCopyCount: !document.hasCopyCounts,
+        importedCategories: document.categories,
+        importedMemberships: document.memberships,
       );
     });
   }

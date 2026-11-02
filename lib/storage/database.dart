@@ -1,4 +1,5 @@
 import 'package:authentication/otp/account.dart';
+import 'package:authentication/otp/category.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/storage/auth_entries.dart';
 import 'package:authentication/storage/encryption.dart';
@@ -12,7 +13,15 @@ part 'auth_storage.dart';
 ///
 /// 使用 Drift 框架构建的数据库访问层，负责管理身份验证条目 (AuthEntries) 的持久化操作。
 /// 该类通过继承 [_$AppDatabase] 提供对底层数据库的 CRUD（增删改查）访问。
-@DriftDatabase(tables: [AuthEntries, AppSettings, AppIntegerSettings])
+@DriftDatabase(
+  tables: [
+    AuthEntries,
+    AppSettings,
+    AppIntegerSettings,
+    Categories,
+    AccountCategoryLinks,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   late final EncryptionService encryption;
   AppDatabase([QueryExecutor? executor])
@@ -30,7 +39,7 @@ class AppDatabase extends _$AppDatabase {
   /// 数据库架构版本号。
   /// 如果修改了表结构，需要递增此版本并处理迁移逻辑。
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -38,6 +47,10 @@ class AppDatabase extends _$AppDatabase {
       if (from < 2) await m.createTable(appSettings);
       if (from < 3) await m.createTable(appIntegerSettings);
       if (from < 4) await m.addColumn(authEntries, authEntries.copyCount);
+      if (from < 5) {
+        await m.createTable(categories);
+        await m.createTable(accountCategoryLinks);
+      }
     },
   );
 
@@ -94,6 +107,186 @@ class AppDatabase extends _$AppDatabase {
     await into(appIntegerSettings).insertOnConflictUpdate(
       AppIntegerSettingsCompanion.insert(key: key, value: value),
     );
+  }
+
+  AccountCategory _category(CategoryRow row) => AccountCategory(
+    id: row.id,
+    name: row.name,
+    sortOrder: row.sortOrder,
+    isDefault: row.isDefault,
+  );
+
+  Stream<List<AccountCategory>> watchCategories() =>
+      (select(categories)..orderBy([
+            (c) => OrderingTerm.asc(c.sortOrder),
+            (c) => OrderingTerm.asc(c.id),
+          ]))
+          .watch()
+          .map((rows) => rows.map(_category).toList());
+
+  Future<List<AccountCategory>> getCategories() async =>
+      (await (select(categories)..orderBy([
+                (c) => OrderingTerm.asc(c.sortOrder),
+                (c) => OrderingTerm.asc(c.id),
+              ]))
+              .get())
+          .map(_category)
+          .toList();
+
+  Future<void> createCategory(String name) async {
+    final valid = validateCategoryName(name);
+    await transaction(() async {
+      final existing = await getCategories();
+      if (existing.length >= 1000) {
+        throw const FormatException('Too many categories.');
+      }
+      final order =
+          existing.fold<int>(
+            -1,
+            (max, c) => c.sortOrder > max ? c.sortOrder : max,
+          ) +
+          1;
+      await into(categories)
+          .insert(CategoriesCompanion.insert(name: valid, sortOrder: order));
+    });
+  }
+
+  Future<void> renameCategory(int id, String name) async {
+    final valid = validateCategoryName(name);
+    final count = await (update(categories)..where((c) => c.id.equals(id)))
+        .write(CategoriesCompanion(name: Value(valid)));
+    if (count != 1) throw StateError('Category not found.');
+  }
+
+  Future<void> deleteCategory(int id) async {
+    await transaction(() async {
+      await (delete(
+        accountCategoryLinks,
+      )..where((link) => link.categoryId.equals(id))).go();
+      final count = await (delete(
+        categories,
+      )..where((c) => c.id.equals(id))).go();
+      if (count != 1) throw StateError('Category not found.');
+    });
+  }
+
+  Stream<Map<int, Set<int>>> watchCategoryMemberships() =>
+      select(accountCategoryLinks).watch().map((rows) {
+        final result = <int, Set<int>>{};
+        for (final row in rows) {
+          (result[row.accountId] ??= {}).add(row.categoryId);
+        }
+        return result;
+      });
+
+  Future<Map<int, Set<int>>> getCategoryMemberships() async {
+    final result = <int, Set<int>>{};
+    for (final row in await select(accountCategoryLinks).get()) {
+      (result[row.accountId] ??= {}).add(row.categoryId);
+    }
+    return result;
+  }
+
+  Future<void> setAccountCategories(
+    int accountId,
+    Set<int> categoryIds, {
+    Set<int>? expected,
+  }) async {
+    await transaction(() async {
+      if (expected != null) {
+        final current = (await getCategoryMemberships())[accountId] ?? <int>{};
+        if (current.length != expected.length ||
+            !current.containsAll(expected)) {
+          throw StateError('Category membership changed.');
+        }
+      }
+      if (await getConfig(accountId) == null) {
+        throw StateError('Account not found.');
+      }
+      final validIds = (await getCategories()).map((c) => c.id).toSet();
+      if (!categoryIds.every(validIds.contains)) {
+        throw const FormatException('Category not found.');
+      }
+      await (delete(
+        accountCategoryLinks,
+      )..where((link) => link.accountId.equals(accountId))).go();
+      for (final id in categoryIds) {
+        await into(accountCategoryLinks).insert(
+          AccountCategoryLinksCompanion.insert(
+            accountId: accountId,
+            categoryId: id,
+          ),
+        );
+      }
+    });
+  }
+
+  Future<void> setCategoryAccounts(
+    int categoryId,
+    Set<int> accountIds, {
+    Set<int>? expected,
+  }) async {
+    await transaction(() async {
+      if (expected != null) {
+        final current = {
+          for (final entry in (await getCategoryMemberships()).entries)
+            if (entry.value.contains(categoryId)) entry.key,
+        };
+        if (current.length != expected.length ||
+            !current.containsAll(expected)) {
+          throw StateError('Category membership changed.');
+        }
+      }
+      if (!(await getCategories()).any((c) => c.id == categoryId)) {
+        throw StateError('Category not found.');
+      }
+      final validIds = (await getAllAuthEntries()).map((a) => a.id).toSet();
+      if (!accountIds.every(validIds.contains)) {
+        throw const FormatException('Account not found.');
+      }
+      await (delete(
+        accountCategoryLinks,
+      )..where((link) => link.categoryId.equals(categoryId))).go();
+      for (final id in accountIds) {
+        await into(accountCategoryLinks).insert(
+          AccountCategoryLinksCompanion.insert(
+            accountId: id,
+            categoryId: categoryId,
+          ),
+        );
+      }
+    });
+  }
+
+  Future<void> setDefaultCategory(int? id) async {
+    await transaction(() async {
+      if (id != null && !(await getCategories()).any((c) => c.id == id)) {
+        throw StateError('Category not found.');
+      }
+      await update(categories)
+          .write(const CategoriesCompanion(isDefault: Value(false)));
+      if (id != null) {
+        await (update(categories)..where((c) => c.id.equals(id))).write(
+          const CategoriesCompanion(isDefault: Value(true)),
+        );
+      }
+    });
+  }
+
+  Future<void> reorderCategories(List<int> ids) async {
+    await transaction(() async {
+      final existing = (await getCategories()).map((c) => c.id).toSet();
+      if (ids.length != existing.length ||
+          ids.toSet().length != ids.length ||
+          !ids.every(existing.contains)) {
+        throw StateError('Category list changed.');
+      }
+      for (var i = 0; i < ids.length; i++) {
+        await (update(categories)..where((c) => c.id.equals(ids[i]))).write(
+          CategoriesCompanion(sortOrder: Value(i)),
+        );
+      }
+    });
   }
 
   /// 插入新的身份验证条目。

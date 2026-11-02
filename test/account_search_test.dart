@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/account.dart';
+import 'package:authentication/otp/category_provider.dart';
 import 'package:authentication/otp/otp_provider.dart';
 import 'package:authentication/screens/token_list_screen.dart';
 import 'package:authentication/settings/settings.dart';
@@ -40,6 +41,8 @@ void main() {
         overrides: [
           authEntryListProvider.overrideWith((ref) => entries.stream),
           settingsProvider.overrideWith((ref) => settings.stream),
+          categoriesProvider.overrideWith((ref) => Stream.value([])),
+          categoryMembershipsProvider.overrideWith((ref) => Stream.value({})),
           integerSettingsProvider.overrideWith(
             (ref) => Stream.value(defaultIntegerSettings),
           ),

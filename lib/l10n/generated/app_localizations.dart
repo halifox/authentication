@@ -591,7 +591,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupSettingsWarning.
   ///
   /// In zh, this message translates to:
-  /// **'发行者和账户名相同的条目将被更新。备份中包含的设置也会被恢复。是否继续？'**
+  /// **'发行者和账户名相同的条目将被更新。若备份包含分类和设置，将按名称合并分类、替换导入账户的分类，并恢复设置和默认分类。是否继续？'**
   String get backupSettingsWarning;
 
   /// No description provided for @showAccountName.
@@ -965,6 +965,126 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'跟随系统'**
   String get languageSystem;
+
+  /// No description provided for @categories.
+  ///
+  /// In zh, this message translates to:
+  /// **'分类'**
+  String get categories;
+
+  /// No description provided for @categoryCreate.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建分类'**
+  String get categoryCreate;
+
+  /// No description provided for @categoryRename.
+  ///
+  /// In zh, this message translates to:
+  /// **'重命名分类'**
+  String get categoryRename;
+
+  /// No description provided for @categoryName.
+  ///
+  /// In zh, this message translates to:
+  /// **'分类名称'**
+  String get categoryName;
+
+  /// No description provided for @categoryOperationFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法保存分类，请检查名称后重试。'**
+  String get categoryOperationFailed;
+
+  /// No description provided for @categoryLoadFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法加载分类。'**
+  String get categoryLoadFailed;
+
+  /// No description provided for @categoryEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'尚无分类。'**
+  String get categoryEmpty;
+
+  /// No description provided for @categoryDefault.
+  ///
+  /// In zh, this message translates to:
+  /// **'默认'**
+  String get categoryDefault;
+
+  /// No description provided for @categoryActions.
+  ///
+  /// In zh, this message translates to:
+  /// **'分类操作'**
+  String get categoryActions;
+
+  /// No description provided for @categoryClearDefault.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消默认分类'**
+  String get categoryClearDefault;
+
+  /// No description provided for @categorySetDefault.
+  ///
+  /// In zh, this message translates to:
+  /// **'设为默认分类'**
+  String get categorySetDefault;
+
+  /// No description provided for @categoryDelete.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除分类'**
+  String get categoryDelete;
+
+  /// No description provided for @categoryDeleteWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除此分类？账户会保留。'**
+  String get categoryDeleteWarning;
+
+  /// No description provided for @assignCategories.
+  ///
+  /// In zh, this message translates to:
+  /// **'分配分类'**
+  String get assignCategories;
+
+  /// No description provided for @assignAccounts.
+  ///
+  /// In zh, this message translates to:
+  /// **'分配账户'**
+  String get assignAccounts;
+
+  /// No description provided for @categorySelectionEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'没有可选择的项目。'**
+  String get categorySelectionEmpty;
+
+  /// No description provided for @allCategories.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部账户'**
+  String get allCategories;
+
+  /// No description provided for @uncategorized.
+  ///
+  /// In zh, this message translates to:
+  /// **'未分类'**
+  String get uncategorized;
+
+  /// No description provided for @categoryFilter.
+  ///
+  /// In zh, this message translates to:
+  /// **'筛选分类'**
+  String get categoryFilter;
+
+  /// No description provided for @clearFilterToReorder.
+  ///
+  /// In zh, this message translates to:
+  /// **'显示全部账户并清除搜索后可调整顺序。'**
+  String get clearFilterToReorder;
 }
 
 class _AppLocalizationsDelegate

@@ -1,4 +1,5 @@
 import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/router/app_router.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
@@ -106,8 +107,20 @@ class SettingsScreen extends ConsumerWidget {
               crossAxisSpacing: 16,
               mainAxisExtent: 90,
             ),
-            itemCount: options.length + 5,
+            itemCount: options.length + 6,
             itemBuilder: (BuildContext context, int index) {
+              if (index == options.length + 5) {
+                return Material(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(24),
+                  child: ListTile(
+                    title: Text(l10n.categories),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () =>
+                        Navigator.pushNamed(context, AppRoutes.categories),
+                  ),
+                );
+              }
               if (index >= options.length) {
                 final selection = index - options.length;
                 final settingKey = switch (selection) {
@@ -240,10 +253,11 @@ class SettingsScreen extends ConsumerWidget {
                       onChanged: busy
                           ? null
                           : (value) {
-                              if (value != null)
+                              if (value != null) {
                                 ref
                                     .read(settingsOperationsProvider.notifier)
                                     .updateInteger(settingKey, value);
+                              }
                             },
                     ),
                   ),
