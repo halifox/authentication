@@ -518,4 +518,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get backupReminderMessage => '数据已更改，请创建备份';
+
+  @override
+  String get accountView => '账户视图';
+
+  @override
+  String get viewDefault => '默认';
+
+  @override
+  String get viewCompact => '紧凑';
+
+  @override
+  String get viewTiles => '平铺';
 }

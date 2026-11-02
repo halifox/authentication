@@ -163,5 +163,9 @@
   "categoryFilter": "Filter categories",
   "clearFilterToReorder": "Show all accounts and clear search to reorder.",
   "backupReminders": "Backup reminders",
-  "backupReminderMessage": "Your data has changed. Create a backup."
+  "backupReminderMessage": "Your data has changed. Create a backup.",
+  "accountView": "Account view",
+  "viewDefault": "Default",
+  "viewCompact": "Compact",
+  "viewTiles": "Tiles"
 }

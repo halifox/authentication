@@ -115,9 +115,9 @@ class SettingsScreen extends ConsumerWidget {
               crossAxisSpacing: 16,
               mainAxisExtent: 90,
             ),
-            itemCount: options.length + 6,
+            itemCount: options.length + 7,
             itemBuilder: (BuildContext context, int index) {
-              if (index == options.length + 5) {
+              if (index == options.length + 6) {
                 return Material(
                   color: Theme.of(context).colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(24),
@@ -136,7 +136,8 @@ class SettingsScreen extends ConsumerWidget {
                   1 => codeGroupingKey,
                   2 => themeModeKey,
                   3 => accentColorKey,
-                  _ => languageKey,
+                  4 => languageKey,
+                  _ => accountViewKey,
                 };
                 return Container(
                   padding: const EdgeInsets.symmetric(
@@ -159,7 +160,8 @@ class SettingsScreen extends ConsumerWidget {
                           1 => l10n.codeGrouping,
                           2 => l10n.themeChoice,
                           3 => l10n.accentChoice,
-                          _ => l10n.languageChoice,
+                          4 => l10n.languageChoice,
+                          _ => l10n.accountView,
                         },
                       ),
                       items: switch (selection) {
@@ -246,7 +248,7 @@ class SettingsScreen extends ConsumerWidget {
                             child: Text(l10n.accentPink),
                           ),
                         ],
-                        _ => [
+                        4 => [
                           DropdownMenuItem(
                             value: 0,
                             child: Text(l10n.languageSystem),
@@ -256,6 +258,20 @@ class SettingsScreen extends ConsumerWidget {
                               value: i + 1,
                               child: Text(languageNames[i]),
                             ),
+                        ],
+                        _ => [
+                          DropdownMenuItem(
+                            value: 0,
+                            child: Text(l10n.viewDefault),
+                          ),
+                          DropdownMenuItem(
+                            value: 1,
+                            child: Text(l10n.viewCompact),
+                          ),
+                          DropdownMenuItem(
+                            value: 2,
+                            child: Text(l10n.viewTiles),
+                          ),
                         ],
                       },
                       onChanged: busy

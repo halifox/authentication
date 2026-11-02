@@ -533,4 +533,16 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get backupReminderMessage => 'Your data has changed. Create a backup.';
+
+  @override
+  String get accountView => 'Account view';
+
+  @override
+  String get viewDefault => 'Default';
+
+  @override
+  String get viewCompact => 'Compact';
+
+  @override
+  String get viewTiles => 'Tiles';
 }

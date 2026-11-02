@@ -44,6 +44,8 @@ const themeModeOptions = <int>[0, 1, 2, 3, 4];
 const accentColorKey = 'accent_color';
 const accentColorOptions = <int>[0, 1, 2, 3, 4, 5, 6, 7];
 const languageKey = 'language';
+const accountViewKey = 'account_view';
+const accountViewOptions = <int>[0, 1, 2];
 // Values are persisted and backed up; append new languages rather than reorder.
 const languageCodes = <String>[
   'de',
@@ -76,6 +78,7 @@ const defaultIntegerSettings = <String, int>{
   themeModeKey: 0,
   accentColorKey: 0,
   languageKey: 0,
+  accountViewKey: 0,
 };
 
 void validateIntegerSetting(String key, Object? value) {
@@ -86,6 +89,7 @@ void validateIntegerSetting(String key, Object? value) {
     themeModeKey => themeModeOptions,
     accentColorKey => accentColorOptions,
     languageKey => List.generate(languageCodes.length + 1, (index) => index),
+    accountViewKey => accountViewOptions,
     _ => throw const FormatException('Unknown integer setting.'),
   };
   if (value is! int || !allowed.contains(value)) {

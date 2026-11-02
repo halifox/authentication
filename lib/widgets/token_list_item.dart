@@ -18,10 +18,11 @@ import 'package:flutter_swipe_action_cell/core/cell.dart';
 class TokenListItem extends ConsumerWidget {
   /// 创建一个令牌列表项。
   /// [config] 身份验证条目配置数据。
-  const TokenListItem({super.key, required this.config});
+  const TokenListItem({super.key, required this.config, this.compact = false});
 
   /// 身份验证配置
   final OtpAccount config;
+  final bool compact;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,7 +39,7 @@ class TokenListItem extends ConsumerWidget {
           () => _onReset(context, ref),
         ),
       ],
-      child: _TokenCard(config: config),
+      child: _TokenCard(config: config, compact: compact),
     );
   }
 
@@ -112,9 +113,10 @@ class TokenListItem extends ConsumerWidget {
 }
 
 class _TokenCard extends ConsumerWidget {
-  const _TokenCard({required this.config});
+  const _TokenCard({required this.config, required this.compact});
 
   final OtpAccount config;
+  final bool compact;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -146,7 +148,11 @@ class _TokenCard extends ConsumerWidget {
           children: [
             _TokenHeader(config: config),
             const Spacer(),
-            _TokenCodeRow(config: config, isVisible: isVisible),
+            _TokenCodeRow(
+              config: config,
+              isVisible: isVisible,
+              compact: compact,
+            ),
           ],
         ),
       ),
@@ -278,10 +284,15 @@ class _TokenAction extends ConsumerWidget {
 }
 
 class _TokenCodeRow extends StatelessWidget {
-  const _TokenCodeRow({required this.config, required this.isVisible});
+  const _TokenCodeRow({
+    required this.config,
+    required this.isVisible,
+    required this.compact,
+  });
 
   final OtpAccount config;
   final bool isVisible;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -289,6 +300,7 @@ class _TokenCodeRow extends StatelessWidget {
       builder: (context, ref, _) => _OtpDisplay(
         config: config,
         isVisible: isVisible,
+        compact: compact,
         grouping:
             ref.watch(integerSettingsProvider).value?[codeGroupingKey] ?? 0,
       ),
@@ -301,11 +313,13 @@ class _OtpDisplay extends StatefulWidget {
     required this.config,
     required this.isVisible,
     required this.grouping,
+    required this.compact,
   });
 
   final OtpAccount config;
   final bool isVisible;
   final int grouping;
+  final bool compact;
 
   @override
   State<_OtpDisplay> createState() => _OtpDisplayState();
@@ -346,7 +360,11 @@ class _OtpDisplayState extends State<_OtpDisplay> {
               if (breaks.contains(i))
                 SizedBox(key: ValueKey('group_$i'), width: 8),
               Flexible(
-                child: _DigitBox(char: chars[i], isVisible: widget.isVisible),
+                child: _DigitBox(
+                  char: chars[i],
+                  isVisible: widget.isVisible,
+                  compact: widget.compact,
+                ),
               ),
             ],
           ],
@@ -357,34 +375,41 @@ class _OtpDisplayState extends State<_OtpDisplay> {
 }
 
 class _DigitBox extends StatelessWidget {
-  const _DigitBox({required this.char, required this.isVisible});
+  const _DigitBox({
+    required this.char,
+    required this.isVisible,
+    required this.compact,
+  });
 
   final String char;
   final bool isVisible;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      height: 42,
-      width: 40,
+      height: compact ? 32 : 42,
+      width: compact ? 30 : 40,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: theme.colorScheme.tertiary,
         borderRadius: BorderRadius.circular(14),
       ),
-      child: Text(
-        isVisible ? char : '-',
-        style: TextStyle(
-          fontSize: 38,
-          color: theme.colorScheme.onTertiary,
-          fontWeight: FontWeight.w900,
-          fontFamily: 'VarelaRound',
-          height: 1.0, // 强制行高与字号一致
-        ),
-        textHeightBehavior: const TextHeightBehavior(
-          applyHeightToFirstAscent: false,
-          applyHeightToLastDescent: false,
+      child: FittedBox(
+        child: Text(
+          isVisible ? char : '-',
+          style: TextStyle(
+            fontSize: compact ? 28 : 38,
+            color: theme.colorScheme.onTertiary,
+            fontWeight: FontWeight.w900,
+            fontFamily: 'VarelaRound',
+            height: 1.0, // 强制行高与字号一致
+          ),
+          textHeightBehavior: const TextHeightBehavior(
+            applyHeightToFirstAscent: false,
+            applyHeightToLastDescent: false,
+          ),
         ),
       ),
     );

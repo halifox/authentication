@@ -49,12 +49,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               icon: leftIcon,
               onPressed: () => leftOnPressed?.call(context),
             ),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
+            Expanded(
+              child: Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
             ),
             AppBarIconButton(

@@ -43,6 +43,10 @@ class TokenListScreen extends HookConsumerWidget {
         : -1;
     final sortMode =
         ref.watch(integerSettingsProvider).value?[sortModeKey] ?? 0;
+    final view = ref.watch(integerSettingsProvider).value?[accountViewKey] ?? 0;
+    final textScale = MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.0);
+    final itemHeight = (view == 1 ? 120.0 : 140.0) + (textScale - 1) * 72;
+    final compactCode = view != 0;
     final sortLocked =
         ref.watch(settingsProvider).value?[sortLockedKey] ?? true;
     final busy =
@@ -251,13 +255,14 @@ class TokenListScreen extends HookConsumerWidget {
                         key: ValueKey(config.id),
                         padding: const EdgeInsets.only(bottom: 16),
                         child: SizedBox(
-                          height: 140,
+                          height: itemHeight,
                           child: Row(
                             children: [
                               Expanded(
                                 child: TokenListItem(
                                   key: ValueKey('token_${config.id}'),
                                   config: config,
+                                  compact: compactCode,
                                 ),
                               ),
                               ReorderableDragStartListener(
@@ -265,10 +270,10 @@ class TokenListScreen extends HookConsumerWidget {
                                 enabled: !busy,
                                 child: Tooltip(
                                   message: l10n.dragToReorder,
-                                  child: const SizedBox(
+                                  child: SizedBox(
                                     width: 48,
-                                    height: 140,
-                                    child: Icon(Icons.drag_handle),
+                                    height: itemHeight,
+                                    child: const Icon(Icons.drag_handle),
                                   ),
                                 ),
                               ),
@@ -284,11 +289,11 @@ class TokenListScreen extends HookConsumerWidget {
                     parent: AlwaysScrollableScrollPhysics(),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 700,
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: view == 2 ? 350 : 700,
                     mainAxisSpacing: 16,
                     crossAxisSpacing: 16,
-                    mainAxisExtent: 140,
+                    mainAxisExtent: itemHeight,
                   ),
                   itemCount: filtered.length,
                   itemBuilder: (context, index) {
@@ -296,6 +301,7 @@ class TokenListScreen extends HookConsumerWidget {
                     return TokenListItem(
                       key: ValueKey(config.id),
                       config: config,
+                      compact: compactCode,
                     );
                   },
                 );

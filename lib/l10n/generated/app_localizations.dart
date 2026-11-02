@@ -1097,6 +1097,30 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'数据已更改，请创建备份'**
   String get backupReminderMessage;
+
+  /// No description provided for @accountView.
+  ///
+  /// In zh, this message translates to:
+  /// **'账户视图'**
+  String get accountView;
+
+  /// No description provided for @viewDefault.
+  ///
+  /// In zh, this message translates to:
+  /// **'默认'**
+  String get viewDefault;
+
+  /// No description provided for @viewCompact.
+  ///
+  /// In zh, this message translates to:
+  /// **'紧凑'**
+  String get viewCompact;
+
+  /// No description provided for @viewTiles.
+  ///
+  /// In zh, this message translates to:
+  /// **'平铺'**
+  String get viewTiles;
 }
 
 class _AppLocalizationsDelegate

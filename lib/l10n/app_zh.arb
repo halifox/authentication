@@ -354,5 +354,9 @@
   "categoryFilter": "筛选分类",
   "clearFilterToReorder": "显示全部账户并清除搜索后可调整顺序。",
   "backupReminders": "备份提醒",
-  "backupReminderMessage": "数据已更改，请创建备份"
+  "backupReminderMessage": "数据已更改，请创建备份",
+  "accountView": "账户视图",
+  "viewDefault": "默认",
+  "viewCompact": "紧凑",
+  "viewTiles": "平铺"
 }
