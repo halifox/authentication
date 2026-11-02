@@ -27,6 +27,8 @@
 
 ## 构建与发布
 
+构建需要 Flutter 3.47 或更高版本；GitHub Actions 使用 Flutter 3.47.6。
+
 GitHub Actions 在 `master` 上使用 Release Please 根据 Conventional Commits 维护版本 PR 和更新日志。合并版本 PR 后，工作流创建 GitHub Release，构建 Android arm64 APK、可上传至 Google Play 的签名 App Bundle（AAB）和未签名的 iOS IPA，并上传附件。推送标签也会触发构建；Actions 页面可以手动运行构建，填写已有 Release 标签以上传附件，留空则只构建。iOS IPA 需要自行签名后安装。Dependabot 每周检查 Dart 依赖更新。
 
 启用发布前，在仓库的 Actions 设置中允许工作流创建和批准 Pull Request，并配置以下仓库 Secrets：

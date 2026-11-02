@@ -4,7 +4,8 @@ publish_to: 'none'
 version: 1.0.0+31
 
 environment:
-  sdk: ^3.9.0
+  sdk: ^3.13.0
+  flutter: '>=3.47.0'
 
 dependencies:
   # Core & Internationalization
@@ -14,53 +15,53 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  intl: 0.20.2
+  intl: ^0.20.3
 
   # State Management & Hooks
-  flutter_hooks: 0.21.3+1
-  flutter_riverpod: 3.3.1
-  hooks_riverpod: 3.3.1
-  riverpod_annotation: 4.0.2
+  flutter_hooks: ^0.21.3+1
+  flutter_riverpod: ^3.4.3
+  hooks_riverpod: ^3.4.3
+  riverpod_annotation: ^4.0.7
 
   # Navigation
-  go_router: 17.2.3
+  go_router: ^18.1.2
 
   # Database & Persistence
-  drift: 2.31.0
-  drift_flutter: 0.2.8
-  shared_preferences: 2.5.5
-  sqlite3_flutter_libs: 0.5.42
+  drift: ^2.35.3
+  drift_flutter: ^0.3.1
+  shared_preferences: ^2.5.6
 
   # UI & Styling
-  dynamic_color: 1.8.1
-  flutter_svg: 2.2.4
-  flutter_swipe_action_cell: 3.1.6
+  dynamic_color: ^2.1.0
+  material_ui: ^1.9.0
+  flutter_svg: ^2.3.2
+  flutter_swipe_action_cell: ^3.1.9
 
   # Security & Cryptography
-  base32: 2.2.0
-  crypto: 3.0.7
-  encrypt: 5.0.3
-  hashlib: 2.3.4
+  base32: ^2.2.0
+  crypto: ^3.0.8
+  encrypt: ^5.0.3
+  hashlib: ^2.4.2
 
   # Utilities & System
-  file_selector: 1.1.0
-  mobile_scanner: 7.2.0
-  path: 1.9.1
-  path_provider: 2.1.5
+  file_selector: ^1.1.0
+  mobile_scanner: ^7.5.0
+  path: ^1.9.1
+  path_provider: ^2.1.6
 
 dev_dependencies:
   # Testing & Linting
-  flutter_lints: 6.0.0
+  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
 
   # Code Generation
-  build_runner: 2.15.0
-  drift_dev: 2.31.0
-  riverpod_generator: 4.0.3
+  build_runner: ^2.16.2
+  drift_dev: ^2.35.2
+  riverpod_generator: ^4.0.9
 
   # Tools
-  flutter_launcher_icons: 0.14.4
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true

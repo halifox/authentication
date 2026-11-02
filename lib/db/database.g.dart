@@ -1133,7 +1133,16 @@ class $$AuthEntriesTableTableManager
                 createdAt: createdAt,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable<$AuthEntriesTable, AuthEntry>(table),
+                  BaseReferences<_$AppDatabase, $AuthEntriesTable, AuthEntry>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
               .toList(),
           prefetchHooksCallback: null,
         ),
