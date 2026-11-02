@@ -12,7 +12,12 @@ void main() {
     final db = AppDatabase(NativeDatabase.memory());
     addTearDown(db.close);
     db.encryption = await EncryptionService.initialize(db);
-    Future<TokenFormResult> save({int? id}) => saveAccount(
+    Future<TokenFormResult> save({
+      int? id,
+      String icon = 'assets/icons/passkey.svg',
+      bool forceUpdate = false,
+      bool preserveExistingIcon = false,
+    }) => saveAccount(
       db,
       id: id,
       type: 'totp',
@@ -24,12 +29,21 @@ void main() {
       period: 30,
       counter: 0,
       pin: '',
-      icon: 'assets/icons/passkey.svg',
+      icon: icon,
+      forceUpdate: forceUpdate,
+      preserveExistingIcon: preserveExistingIcon,
     );
     expect(await save(), isA<TokenFormSuccess>());
     expect(await save(), isA<TokenFormConflict>());
     final entries = await db.getAllConfigs();
     expect(await save(id: entries.single.id), isA<TokenFormSuccess>());
+    await save(id: entries.single.id, icon: 'assets/icons/google.svg');
+    await save(
+      forceUpdate: true,
+      preserveExistingIcon: true,
+      icon: 'assets/icons/github.svg',
+    );
+    expect((await db.getAllConfigs()).single.icon, 'assets/icons/google.svg');
     expect(
       (await db.getAllAuthEntries()).single.secret,
       isNot('JBSWY3DPEHPK3PXP'),

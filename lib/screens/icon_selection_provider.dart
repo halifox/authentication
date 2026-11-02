@@ -1,6 +1,25 @@
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+String? matchBuiltInIcon(String issuer, Iterable<String> icons) {
+  final value = issuer.trim().toLowerCase();
+  if (value.isEmpty || !RegExp(r'^[a-z0-9 ._-]+$').hasMatch(value)) return null;
+  final normalized = value.replaceAll(RegExp(r'[ ._-]'), '');
+  if (normalized.isEmpty) return null;
+  final matches = icons
+      .where(
+        (name) =>
+            name.endsWith('.svg') &&
+            name
+                    .substring(0, name.length - 4)
+                    .toLowerCase()
+                    .replaceAll(RegExp(r'[ ._-]'), '') ==
+                normalized,
+      )
+      .toList();
+  return matches.length == 1 ? 'assets/icons/${matches.single}' : null;
+}
+
 /// 管理用于过滤图标的当前搜索查询。
 class IconSearchQuery extends Notifier<String> {
   @override

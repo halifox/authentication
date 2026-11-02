@@ -38,6 +38,7 @@ Future<TokenFormResult> saveAccount(
   required int counter,
   required String pin,
   required String icon,
+  bool preserveExistingIcon = false,
   bool forceUpdate = false, // 用于在冲突确认后强制更新
 }) async {
   try {
@@ -79,6 +80,7 @@ Future<TokenFormResult> saveAccount(
           await repo.updateConfig(
             companion.copyWith(
               id: existing.id,
+              icon: preserveExistingIcon ? existing.icon : companion.icon,
               sortOrder: existing.sortOrder,
               createdAt: existing.createdAt,
               copyCount: existing.copyCount,

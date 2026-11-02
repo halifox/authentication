@@ -5,6 +5,7 @@ import 'package:authentication/otp/category_provider.dart';
 import 'package:authentication/otp/otp_provider.dart';
 import 'package:authentication/router/app_router.dart';
 import 'package:authentication/screens/auth_error_localization.dart';
+import 'package:authentication/screens/icon_selection_provider.dart';
 import 'package:authentication/widgets/account_qr.dart';
 import 'package:authentication/widgets/action_result_sheet.dart';
 import 'package:authentication/widgets/category_selection.dart';
@@ -32,6 +33,7 @@ class TokenFormScreen extends HookConsumerWidget {
 
     // Controllers
     final issuerController = useTextEditingController(text: args?.issuer ?? '');
+    useListenable(issuerController);
     final accountController = useTextEditingController(
       text: args?.account ?? '',
     );
@@ -50,7 +52,12 @@ class TokenFormScreen extends HookConsumerWidget {
     // State
     final type = useState(args?.type ?? 'totp');
     final algorithm = useState(args?.algorithm ?? 'sha1');
-    final icon = useState(args?.icon ?? 'assets/icons/passkey.svg');
+    final icon = useState<String?>(args?.icon);
+    final icons = ref.watch(allIconsProvider);
+    final chosenIcon =
+        icon.value ??
+        matchBuiltInIcon(issuerController.text, icons.value ?? const []) ??
+        'assets/icons/passkey.svg';
     final obscureText = useState(true);
 
     final typeLabels = useMemoized(
@@ -73,7 +80,7 @@ class TokenFormScreen extends HookConsumerWidget {
       appBar: CustomAppBar(
         title: l10n.enterProvidedKey,
         rightIcon: Icons.save,
-        rightOnPressed: busy
+        rightOnPressed: busy || (icon.value == null && icons.isLoading)
             ? null
             : (_) async {
                 await _handleSave(
@@ -89,7 +96,8 @@ class TokenFormScreen extends HookConsumerWidget {
                   period: int.tryParse(periodController.text) ?? 30,
                   counter: int.tryParse(counterController.text) ?? 0,
                   pin: pinController.text,
-                  icon: icon.value,
+                  icon: chosenIcon,
+                  preserveExistingIcon: icon.value == null,
                 );
               },
       ),
@@ -121,7 +129,7 @@ class TokenFormScreen extends HookConsumerWidget {
                   controller: issuerController,
                   suffixIcon: _buildIcon(
                     context,
-                    icon.value,
+                    chosenIcon,
                     (newIcon) => icon.value = newIcon,
                   ),
                 ),
@@ -452,6 +460,7 @@ class TokenFormScreen extends HookConsumerWidget {
     required int counter,
     required String pin,
     required String icon,
+    required bool preserveExistingIcon,
     bool forceUpdate = false,
   }) async {
     final l10n = AppLocalizations.of(context)!;
@@ -471,6 +480,7 @@ class TokenFormScreen extends HookConsumerWidget {
             counter: counter,
             pin: pin,
             icon: icon,
+            preserveExistingIcon: preserveExistingIcon,
             forceUpdate: forceUpdate,
           );
 
@@ -520,6 +530,7 @@ class TokenFormScreen extends HookConsumerWidget {
               counter: counter,
               pin: pin,
               icon: icon,
+              preserveExistingIcon: preserveExistingIcon,
               forceUpdate: true,
             );
           }

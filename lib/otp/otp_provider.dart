@@ -29,6 +29,7 @@ class AccountOperations extends Notifier<AsyncValue<void>> {
     required int counter,
     required String pin,
     required String icon,
+    bool preserveExistingIcon = false,
     bool forceUpdate = false,
   }) async {
     if (state.isLoading)
@@ -49,6 +50,7 @@ class AccountOperations extends Notifier<AsyncValue<void>> {
         counter: counter,
         pin: pin,
         icon: icon,
+        preserveExistingIcon: preserveExistingIcon,
         forceUpdate: forceUpdate,
       );
       state = const AsyncData(null);
