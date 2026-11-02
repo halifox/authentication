@@ -551,6 +551,24 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'已请求浏览器下载备份文件。请确认下载完成。'**
   String get backupDownloadStarted;
+
+  /// No description provided for @importUriList.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入 URI 列表'**
+  String get importUriList;
+
+  /// No description provided for @exportUriList.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出 URI 列表'**
+  String get exportUriList;
+
+  /// No description provided for @uriPlainWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'此文件明文包含账户密钥。任何取得文件的人都可以生成验证码，请安全保管。'**
+  String get uriPlainWarning;
 }
 
 class _AppLocalizationsDelegate

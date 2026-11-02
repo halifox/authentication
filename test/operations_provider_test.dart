@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:authentication/actions/account_actions.dart';
@@ -42,6 +43,20 @@ void main() {
     expect((await db.getAllConfigs()).single.account, 'user');
 
     final backupOps = container.read(backupOperationsProvider.notifier);
+    final uri =
+        'otpauth://hotp/Example:user?secret=JBSWY3DPEHPK3PXP&issuer=Example&counter=7';
+    final before = (await db.getAllConfigs()).single;
+    await backupOps.importUriFile(Uint8List.fromList(utf8.encode(uri)));
+    final updated = (await db.getAllConfigs()).single;
+    expect(updated.counter, 7);
+    expect(updated.createdAt, before.createdAt);
+    expect(updated.icon, before.icon);
+    await expectLater(
+      backupOps.importUriFile(Uint8List.fromList(utf8.encode('$uri\n$uri'))),
+      throwsFormatException,
+    );
+    expect((await db.getAllConfigs()).single.counter, 7);
+
     await expectLater(
       backupOps.import(Uint8List.fromList([1, 2, 3]), null),
       throwsA(anything),

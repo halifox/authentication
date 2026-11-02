@@ -62,7 +62,10 @@ extension AuthStorage on AppDatabase {
 
   Future<void> deleteConfig(int id) async => _deleteAuthEntry(id);
 
-  Future<int> importAccounts(List<OtpAccount> accounts) async {
+  Future<int> importAccounts(
+    List<OtpAccount> accounts, {
+    bool preserveExistingMetadata = false,
+  }) async {
     final keys = <String>{};
     for (final account in accounts) {
       account.validate();
@@ -78,7 +81,18 @@ extension AuthStorage on AppDatabase {
         if (existing == null) {
           await addConfig(account);
         } else {
-          await updateConfig(account.copyWith(id: existing.id));
+          await updateConfig(
+            account.copyWith(
+              id: existing.id,
+              icon: preserveExistingMetadata ? existing.icon : account.icon,
+              sortOrder: preserveExistingMetadata
+                  ? existing.sortOrder
+                  : account.sortOrder,
+              createdAt: preserveExistingMetadata
+                  ? existing.createdAt
+                  : account.createdAt,
+            ),
+          );
         }
       }
     });

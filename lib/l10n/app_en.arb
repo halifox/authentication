@@ -72,5 +72,8 @@
   "backupFileError": "The file could not be imported. Check the password and file contents.",
   "backupSaved": "Backup file saved.",
   "backupImported": "Backup file imported.",
-  "backupDownloadStarted": "The browser was asked to download the backup. Check that the download completed."
+  "backupDownloadStarted": "The browser was asked to download the backup. Check that the download completed.",
+  "importUriList": "Import URI list",
+  "exportUriList": "Export URI list",
+  "uriPlainWarning": "This file contains account secrets in plain text. Anyone with the file can generate your codes. Store it securely."
 }

@@ -55,6 +55,29 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
     });
   }
 
+  Future<bool> exportUriFile() {
+    final db = ref.read(appDatabaseProvider);
+    return _run(() async {
+      final bytes = encodeUriList(await db.getAllConfigs());
+      final location = await FilePicker.saveFile(
+        fileName: 'authentication-uris.txt',
+        bytes: bytes,
+        mimeType: 'text/plain',
+      );
+      return location != null || kIsWeb;
+    });
+  }
+
+  Future<int> importUriFile(Uint8List bytes) {
+    final db = ref.read(appDatabaseProvider);
+    return _run(
+      () async => db.importAccounts(
+        decodeUriList(bytes),
+        preserveExistingMetadata: true,
+      ),
+    );
+  }
+
   Future<int> import(Uint8List bytes, String? password) {
     final db = ref.read(appDatabaseProvider);
     return _run(

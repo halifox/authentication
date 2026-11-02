@@ -230,4 +230,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get backupDownloadStarted => '已请求浏览器下载备份文件。请确认下载完成。';
+
+  @override
+  String get importUriList => '导入 URI 列表';
+
+  @override
+  String get exportUriList => '导出 URI 列表';
+
+  @override
+  String get uriPlainWarning => '此文件明文包含账户密钥。任何取得文件的人都可以生成验证码，请安全保管。';
 }

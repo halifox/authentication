@@ -234,4 +234,14 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get backupDownloadStarted =>
       'The browser was asked to download the backup. Check that the download completed.';
+
+  @override
+  String get importUriList => 'Import URI list';
+
+  @override
+  String get exportUriList => 'Export URI list';
+
+  @override
+  String get uriPlainWarning =>
+      'This file contains account secrets in plain text. Anyone with the file can generate your codes. Store it securely.';
 }

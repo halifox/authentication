@@ -71,6 +71,16 @@ class AddAccountScreen extends ConsumerWidget {
         l10n.exportFile,
         () => _handleBackup(context, ref),
       ),
+      AddMethodOption(
+        Icons.playlist_add,
+        l10n.importUriList,
+        () => _handleUriImport(context, ref),
+      ),
+      AddMethodOption(
+        Icons.list_alt,
+        l10n.exportUriList,
+        () => _handleUriExport(context, ref),
+      ),
     ];
 
     return Scaffold(
@@ -302,6 +312,67 @@ class AddAccountScreen extends ConsumerWidget {
     } catch (_) {
       if (context.mounted)
         await _showResult(context, 0, l10n.exportFailed, l10n.exportFailed);
+    }
+  }
+
+  Future<void> _handleUriImport(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final bytes = await ref
+          .read(backupOperationsProvider.notifier)
+          .pickFile();
+      if (bytes == null || !context.mounted) return;
+      // Validate the complete file before presenting the conflict policy.
+      decodeUriList(bytes);
+      final proceed = await showCupertinoModalPopup<bool>(
+        context: context,
+        builder: (_) => ActionResultSheet(
+          state: 0,
+          title: l10n.warning,
+          message: l10n.backupReplaceWarning,
+          falseButtonVisible: true,
+        ),
+      );
+      if (proceed != true || !context.mounted) return;
+      await ref.read(backupOperationsProvider.notifier).importUriFile(bytes);
+      if (context.mounted) {
+        await _showResult(context, 1, l10n.importSuccess, l10n.backupImported);
+      }
+    } catch (_) {
+      if (context.mounted) {
+        await _showResult(context, 0, l10n.importFailed, l10n.backupFileError);
+      }
+    }
+  }
+
+  Future<void> _handleUriExport(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
+    final proceed = await showCupertinoModalPopup<bool>(
+      context: context,
+      builder: (_) => ActionResultSheet(
+        state: 0,
+        title: l10n.warning,
+        message: l10n.uriPlainWarning,
+        falseButtonVisible: true,
+      ),
+    );
+    if (proceed != true || !context.mounted) return;
+    try {
+      final saved = await ref
+          .read(backupOperationsProvider.notifier)
+          .exportUriFile();
+      if (context.mounted && saved) {
+        await _showResult(
+          context,
+          1,
+          l10n.exportSuccess,
+          kIsWeb ? l10n.backupDownloadStarted : l10n.backupSaved,
+        );
+      }
+    } catch (_) {
+      if (context.mounted) {
+        await _showResult(context, 0, l10n.exportFailed, l10n.exportFailed);
+      }
     }
   }
 
