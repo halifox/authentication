@@ -58,7 +58,6 @@ Web 数据库运行文件 `web/drift_worker.js` 和 `web/sqlite3.wasm` 来自锁
 
 - [daegalus/dart-otp](https://github.com/daegalus/dart-otp)
 - [elliotwutingfeng/motp](https://github.com/elliotwutingfeng/motp)
-- [stratumauth](https://github.com/stratumauth/app)
 - [simple-icons](https://github.com/simple-icons/simple-icons)
 - [drift](https://pub.dev/packages/drift)
 - [google_mlkit_barcode_scanning](https://pub.dev/packages/google_mlkit_barcode_scanning)

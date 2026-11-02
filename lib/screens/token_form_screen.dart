@@ -49,7 +49,13 @@ class TokenFormScreen extends HookConsumerWidget {
     final obscureText = useState(true);
 
     final typeLabels = useMemoized(
-      () => {'totp': l10n.totp, 'hotp': l10n.hotp, 'motp': l10n.motp},
+      () => {
+        'totp': l10n.totp,
+        'hotp': l10n.hotp,
+        'motp': l10n.motp,
+        'steam': 'Steam',
+        'yandex': 'Yandex',
+      },
       [l10n],
     );
 
@@ -92,12 +98,18 @@ class TokenFormScreen extends HookConsumerWidget {
             child: Column(
               spacing: 16,
               children: [
-                _buildDropdown<String>(
-                  l10n.type,
-                  type.value,
-                  typeLabels,
-                  (value) => type.value = value,
-                ),
+                _buildDropdown<String>(l10n.type, type.value, typeLabels, (
+                  value,
+                ) {
+                  type.value = value;
+                  digitsController.text = switch (value) {
+                    'steam' => '5',
+                    'yandex' => '8',
+                    _ => '6',
+                  };
+                  if (value == 'steam' || value == 'yandex')
+                    periodController.text = '30';
+                }),
                 _buildTextField(
                   label: l10n.issuer,
                   controller: issuerController,
@@ -123,7 +135,7 @@ class TokenFormScreen extends HookConsumerWidget {
                     algorithmLabels,
                     (value) => algorithm.value = value,
                   ),
-                  'motp' => _buildTextField(
+                  'motp' || 'yandex' => _buildTextField(
                     label: l10n.pin,
                     controller: pinController,
                   ),
@@ -140,7 +152,10 @@ class TokenFormScreen extends HookConsumerWidget {
                     ),
                     Expanded(
                       child: switch (type.value.toLowerCase()) {
-                        'totp' || 'motp' => _buildDigitsOnlyTextField(
+                        'totp' ||
+                        'motp' ||
+                        'steam' ||
+                        'yandex' => _buildDigitsOnlyTextField(
                           periodController,
                           l10n.period,
                         ),

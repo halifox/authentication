@@ -42,7 +42,7 @@ class AuthValidator {
     }
 
     final type = typeStr.toLowerCase();
-    if (!const ['totp', 'hotp', 'motp'].contains(type)) {
+    if (!const ['totp', 'hotp', 'motp', 'steam', 'yandex'].contains(type)) {
       throw AuthFailure(AuthErrorCode.invalidType);
     }
 
@@ -69,6 +69,20 @@ class AuthValidator {
         if (digits != 6) throw AuthFailure(AuthErrorCode.invalidDigits);
         if (pin.isEmpty) throw AuthFailure(AuthErrorCode.invalidPin);
         if (period <= 0) throw AuthFailure(AuthErrorCode.invalidPeriod);
+      case 'steam':
+        if (digits != 5) throw AuthFailure(AuthErrorCode.invalidDigits);
+        if (period != 30) throw AuthFailure(AuthErrorCode.invalidPeriod);
+      case 'yandex':
+        if (digits != 8) throw AuthFailure(AuthErrorCode.invalidDigits);
+        if (period != 30) throw AuthFailure(AuthErrorCode.invalidPeriod);
+        if (pin.isEmpty) throw AuthFailure(AuthErrorCode.invalidPin);
+        try {
+          if (base32.decode(secret).length < 16) {
+            throw AuthFailure(AuthErrorCode.invalidSecretKey);
+          }
+        } catch (_) {
+          throw AuthFailure(AuthErrorCode.invalidSecretKey);
+        }
     }
 
     // Secret (Base32) check

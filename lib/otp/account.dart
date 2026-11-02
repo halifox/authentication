@@ -81,6 +81,8 @@ class OtpAccount {
         intervalSeconds: period,
         pin: pin,
       ),
+      'steam' => OTP.generateSteamCode(secret: secret),
+      'yandex' => OTP.generateYandexCode(secret: secret, pin: pin),
       _ => throw StateError('Invalid OTP type'),
     };
   }
@@ -95,7 +97,8 @@ class OtpAccount {
     };
     if (kind == 'totp' || kind == 'motp') params['period'] = '$period';
     if (kind == 'hotp') params['counter'] = '$counter';
-    if (kind == 'motp' && pin.isNotEmpty) params['pin'] = pin;
+    if ((kind == 'motp' || kind == 'yandex') && pin.isNotEmpty)
+      params['pin'] = pin;
     return Uri(
       scheme: 'otpauth',
       host: kind,

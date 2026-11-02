@@ -279,7 +279,9 @@ class _OtpDisplayState extends State<_OtpDisplay> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: code.characters
           .map(
-            (String char) => _DigitBox(char: char, isVisible: widget.isVisible),
+            (String char) => Flexible(
+              child: _DigitBox(char: char, isVisible: widget.isVisible),
+            ),
           )
           .toList(),
     );
