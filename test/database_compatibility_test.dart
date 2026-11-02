@@ -38,6 +38,7 @@ void main() {
     expect(await database.getSettings(), {
       showCaptchaOnTapKey: true,
       copyCaptchaOnTapKey: false,
+      showAccountNameKey: true,
     });
     await database.setSetting(showCaptchaOnTapKey, false);
     await database.initializeSettings({
@@ -47,6 +48,7 @@ void main() {
     expect(await database.getSettings(), {
       showCaptchaOnTapKey: false,
       copyCaptchaOnTapKey: false,
+      showAccountNameKey: true,
     });
     expect((await database.getAllAuthEntries()).single.secret, 'secret');
   });

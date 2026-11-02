@@ -31,10 +31,13 @@ void main() {
     await tester.tap(find.byIcon(Icons.close).first);
     await tester.pumpAndSettle();
     expect((await db.getSettings())[showCaptchaOnTapKey], isTrue);
-    expect(find.byIcon(Icons.done), findsOneWidget);
+    expect(find.byIcon(Icons.done), findsNWidgets(2));
     await db.setSetting(copyCaptchaOnTapKey, true);
     await tester.pumpAndSettle();
-    expect(find.byIcon(Icons.done), findsNWidgets(2));
+    expect(find.byIcon(Icons.done), findsNWidgets(3));
+    await tester.tap(find.byIcon(Icons.done).last);
+    await tester.pumpAndSettle();
+    expect((await db.getSettings())[showAccountNameKey], isFalse);
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 10));
   });

@@ -4,6 +4,7 @@ import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/otp_provider.dart';
 import 'package:authentication/screens/token_list_screen.dart';
+import 'package:authentication/settings/settings.dart';
 import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/widgets/token_list_item.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,8 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final entries = StreamController<List<OtpAccount>>.broadcast();
     addTearDown(entries.close);
+    final settings = StreamController<Map<String, bool>>.broadcast();
+    addTearDown(settings.close);
     const alice = OtpAccount(
       id: 1,
       type: 'hotp',
@@ -36,7 +39,7 @@ void main() {
       ProviderScope(
         overrides: [
           authEntryListProvider.overrideWith((ref) => entries.stream),
-          settingsProvider.overrideWith((ref) => Stream.value({})),
+          settingsProvider.overrideWith((ref) => settings.stream),
         ],
         child: const MaterialApp(
           locale: Locale('en'),
@@ -47,6 +50,7 @@ void main() {
       ),
     );
     entries.add([alice, bob]);
+    settings.add({showAccountNameKey: true});
     await tester.pumpAndSettle();
     expect(find.byType(TokenListItem), findsNWidgets(2));
 
@@ -59,6 +63,12 @@ void main() {
     await tester.pump();
     expect(find.text('Bob'), findsOneWidget);
     expect(find.text('Alice'), findsNothing);
+    settings.add({showAccountNameKey: false});
+    await tester.pump();
+    expect(find.text('Bob'), findsNothing);
+    expect(find.text('Another'), findsOneWidget);
+    settings.add({showAccountNameKey: true});
+    await tester.pump();
 
     entries.add([alice]);
     await tester.pump();

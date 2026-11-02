@@ -251,4 +251,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get backupSettingsWarning => '发行者和账户名相同的条目将被更新。备份中包含的设置也会被恢复。是否继续？';
+
+  @override
+  String get showAccountName => '显示账户名';
 }

@@ -258,4 +258,7 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get backupSettingsWarning =>
       'Accounts with the same issuer and account name will be updated. Settings in the backup will also be restored. Continue?';
+
+  @override
+  String get showAccountName => 'Show account name';
 }

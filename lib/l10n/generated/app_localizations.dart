@@ -593,6 +593,12 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'发行者和账户名相同的条目将被更新。备份中包含的设置也会被恢复。是否继续？'**
   String get backupSettingsWarning;
+
+  /// No description provided for @showAccountName.
+  ///
+  /// In zh, this message translates to:
+  /// **'显示账户名'**
+  String get showAccountName;
 }
 
 class _AppLocalizationsDelegate

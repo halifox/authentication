@@ -14,6 +14,10 @@ final isCopyCaptchaOnTapProvider = Provider<bool>(
   (ref) => ref.watch(settingsProvider).value?[copyCaptchaOnTapKey] ?? false,
 );
 
+final showAccountNameProvider = Provider<bool>(
+  (ref) => ref.watch(settingsProvider).value?[showAccountNameKey] ?? true,
+);
+
 class SettingsOperations extends Notifier<AsyncValue<void>> {
   @override
   AsyncValue<void> build() => const AsyncData(null);

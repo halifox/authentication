@@ -135,13 +135,13 @@ class _TokenCard extends ConsumerWidget {
   }
 }
 
-class _TokenHeader extends StatelessWidget {
+class _TokenHeader extends ConsumerWidget {
   const _TokenHeader({required this.config});
 
   final OtpAccount config;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     return Row(
       children: [
@@ -160,16 +160,17 @@ class _TokenHeader extends StatelessWidget {
                   color: theme.colorScheme.onPrimaryContainer,
                 ),
               ),
-              Text(
-                config.account,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onPrimaryContainer.withValues(
-                    alpha: 0.8,
+              if (ref.watch(showAccountNameProvider))
+                Text(
+                  config.account,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onPrimaryContainer.withValues(
+                      alpha: 0.8,
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ),

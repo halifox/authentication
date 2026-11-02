@@ -22,7 +22,11 @@ void main() {
     secret: 'JBSWY3DPEHPK3PXP',
     counter: 7,
   );
-  const settings = {showCaptchaOnTapKey: true, copyCaptchaOnTapKey: false};
+  const settings = {
+    showCaptchaOnTapKey: true,
+    copyCaptchaOnTapKey: false,
+    showAccountNameKey: false,
+  };
 
   test('version 2 backups preserve settings and reject damage', () async {
     final bytes = await encodeBackupAccounts(
@@ -95,6 +99,13 @@ void main() {
       await operations.import(bytes, null);
       expect(await db.getSettings(), settings);
       expect((await db.getAllConfigs()).single.counter, 7);
+      final oldV2 = await encodeBackupAccounts(
+        [account],
+        null,
+        settings: {showCaptchaOnTapKey: false, copyCaptchaOnTapKey: true},
+      );
+      await operations.import(oldV2, null);
+      expect((await db.getSettings())[showAccountNameKey], isFalse);
     },
   );
 }
