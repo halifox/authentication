@@ -1,7 +1,7 @@
 name: authentication
 description: "A new Flutter project."
 publish_to: 'none'
-version: 0.3.0+30
+version: 1.0.0+31
 
 environment:
   sdk: ^3.9.0
