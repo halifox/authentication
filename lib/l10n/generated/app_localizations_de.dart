@@ -346,4 +346,56 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get codeHidden => 'Code hidden';
+
+  @override
+  String get dynamicColor => 'Use system dynamic colors';
+
+  @override
+  String get themeChoice => 'Theme';
+
+  @override
+  String get themeSystem => 'Follow system';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get themeDark => 'Dark';
+
+  @override
+  String get themeBlack => 'Black';
+
+  @override
+  String get themeSystemBlack => 'System with black dark mode';
+
+  @override
+  String get accentChoice => 'Accent color';
+
+  @override
+  String get accentDefault => 'Default';
+
+  @override
+  String get accentRed => 'Red';
+
+  @override
+  String get accentOrange => 'Orange';
+
+  @override
+  String get accentGreen => 'Green';
+
+  @override
+  String get accentTeal => 'Teal';
+
+  @override
+  String get accentBlue => 'Blue';
+
+  @override
+  String get accentIndigo => 'Indigo';
+
+  @override
+  String get accentPink => 'Pink';
+
+  @override
+  String get accentPriority =>
+      'System dynamic colors take priority when enabled and available.';
 }

@@ -294,5 +294,22 @@
   "groupHalves": "分成两组",
   "groupThirds": "分成三组",
   "codeHidden": "验证码已隐藏",
-  "@groupEvery": {"placeholders": {"count": {"type": "int"}}}
+  "@groupEvery": {"placeholders": {"count": {"type": "int"}}},
+  "dynamicColor": "使用系统动态配色",
+  "themeChoice": "主题",
+  "themeSystem": "跟随系统",
+  "themeLight": "浅色",
+  "themeDark": "深色",
+  "themeBlack": "纯黑",
+  "themeSystemBlack": "跟随系统（深色时纯黑）",
+  "accentChoice": "强调色",
+  "accentDefault": "默认",
+  "accentRed": "红色",
+  "accentOrange": "橙色",
+  "accentGreen": "绿色",
+  "accentTeal": "青色",
+  "accentBlue": "蓝色",
+  "accentIndigo": "靛蓝",
+  "accentPink": "粉色",
+  "accentPriority": "系统动态配色可用且启用时优先使用动态配色。"
 }

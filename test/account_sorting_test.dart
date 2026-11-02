@@ -97,6 +97,9 @@ void main() {
       ]);
       await db.setIntegerSetting(sortModeKey, 4);
       await db.setIntegerSetting(codeGroupingKey, 6);
+      await db.setIntegerSetting(themeModeKey, 4);
+      await db.setIntegerSetting(accentColorKey, 5);
+      await db.setSetting(dynamicColorKey, false);
       await db.setSetting(sortLockedKey, false);
       final backup = await encodeBackupAccounts(
         await db.getAllConfigs(),
@@ -107,6 +110,9 @@ void main() {
       );
       await db.setIntegerSetting(sortModeKey, 1);
       await db.setIntegerSetting(codeGroupingKey, 0);
+      await db.setIntegerSetting(themeModeKey, 0);
+      await db.setIntegerSetting(accentColorKey, 0);
+      await db.setSetting(dynamicColorKey, true);
       await db.setSetting(sortLockedKey, true);
       await db.reorderAccounts([1, 2, 3]);
       final container = ProviderContainer(
@@ -118,6 +124,9 @@ void main() {
           .import(backup, null);
       expect((await db.getIntegerSettings())[sortModeKey], 4);
       expect((await db.getIntegerSettings())[codeGroupingKey], 6);
+      expect((await db.getIntegerSettings())[themeModeKey], 4);
+      expect((await db.getIntegerSettings())[accentColorKey], 5);
+      expect((await db.getSettings())[dynamicColorKey], false);
       expect((await db.getSettings())[sortLockedKey], false);
       expect(sortAccounts(await db.getAllConfigs(), 0).map((e) => e.id), [
         3,
@@ -135,6 +144,9 @@ void main() {
           .import(legacy, null);
       expect((await db.getIntegerSettings())[sortModeKey], 4);
       expect((await db.getIntegerSettings())[codeGroupingKey], 6);
+      expect((await db.getIntegerSettings())[themeModeKey], 4);
+      expect((await db.getIntegerSettings())[accentColorKey], 5);
+      expect((await db.getSettings())[dynamicColorKey], false);
       expect((await db.getSettings())[sortLockedKey], false);
     },
   );

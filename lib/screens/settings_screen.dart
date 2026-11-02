@@ -48,6 +48,7 @@ class SettingsScreen extends ConsumerWidget {
     final isCopyCaptchaOnTap = ref.watch(isCopyCaptchaOnTapProvider);
     final showAccountName = ref.watch(showAccountNameProvider);
     final advanceHotp = settings.value?[advanceHotpOnCopyKey] ?? false;
+    final dynamicColor = settings.value?[dynamicColorKey] ?? true;
     final List<SettingsItemModel> options = [
       SettingsItemModel(
         label: AppLocalizations.of(context)!.showCaptchaOnTap,
@@ -77,6 +78,13 @@ class SettingsScreen extends ConsumerWidget {
             .read(settingsOperationsProvider.notifier)
             .update(advanceHotpOnCopyKey, !advanceHotp),
       ),
+      SettingsItemModel(
+        label: l10n.dynamicColor,
+        value: dynamicColor,
+        onTap: () => ref
+            .read(settingsOperationsProvider.notifier)
+            .update(dynamicColorKey, !dynamicColor),
+      ),
     ];
 
     return Scaffold(
@@ -98,11 +106,16 @@ class SettingsScreen extends ConsumerWidget {
               crossAxisSpacing: 16,
               mainAxisExtent: 90,
             ),
-            itemCount: options.length + 2,
+            itemCount: options.length + 4,
             itemBuilder: (BuildContext context, int index) {
               if (index >= options.length) {
-                final isDelay = index == options.length;
-                final settingKey = isDelay ? hideCodeAfterKey : codeGroupingKey;
+                final selection = index - options.length;
+                final settingKey = switch (selection) {
+                  0 => hideCodeAfterKey,
+                  1 => codeGroupingKey,
+                  2 => themeModeKey,
+                  _ => accentColorKey,
+                };
                 return Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -112,49 +125,114 @@ class SettingsScreen extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.primaryContainer,
                     borderRadius: BorderRadius.circular(24),
                   ),
-                  child: DropdownButtonFormField<int>(
-                    initialValue: values[settingKey],
-                    decoration: InputDecoration(
-                      labelText: isDelay
-                          ? l10n.hideCodeAfter
-                          : l10n.codeGrouping,
+                  child: Tooltip(
+                    message: selection == 3 ? l10n.accentPriority : '',
+                    child: DropdownButtonFormField<int>(
+                      key: ValueKey(settingKey),
+                      isExpanded: true,
+                      initialValue: values[settingKey],
+                      decoration: InputDecoration(
+                        labelText: switch (selection) {
+                          0 => l10n.hideCodeAfter,
+                          1 => l10n.codeGrouping,
+                          2 => l10n.themeChoice,
+                          _ => l10n.accentChoice,
+                        },
+                      ),
+                      items: switch (selection) {
+                        0 => [
+                          DropdownMenuItem(value: 0, child: Text(l10n.never)),
+                          for (final seconds in hideCodeDelayOptions.skip(1))
+                            DropdownMenuItem(
+                              value: seconds,
+                              child: Text(l10n.seconds(seconds)),
+                            ),
+                        ],
+                        1 => [
+                          DropdownMenuItem(
+                            value: 0,
+                            child: Text(l10n.groupNone),
+                          ),
+                          for (final n in [2, 3, 4])
+                            DropdownMenuItem(
+                              value: n,
+                              child: Text(l10n.groupEvery(n)),
+                            ),
+                          DropdownMenuItem(
+                            value: 5,
+                            child: Text(l10n.groupHalves),
+                          ),
+                          DropdownMenuItem(
+                            value: 6,
+                            child: Text(l10n.groupThirds),
+                          ),
+                        ],
+                        2 => [
+                          DropdownMenuItem(
+                            value: 0,
+                            child: Text(l10n.themeSystem),
+                          ),
+                          DropdownMenuItem(
+                            value: 1,
+                            child: Text(l10n.themeLight),
+                          ),
+                          DropdownMenuItem(
+                            value: 2,
+                            child: Text(l10n.themeDark),
+                          ),
+                          DropdownMenuItem(
+                            value: 3,
+                            child: Text(l10n.themeBlack),
+                          ),
+                          DropdownMenuItem(
+                            value: 4,
+                            child: Text(l10n.themeSystemBlack),
+                          ),
+                        ],
+                        _ => [
+                          DropdownMenuItem(
+                            value: 0,
+                            child: Text(l10n.accentDefault),
+                          ),
+                          DropdownMenuItem(
+                            value: 1,
+                            child: Text(l10n.accentRed),
+                          ),
+                          DropdownMenuItem(
+                            value: 2,
+                            child: Text(l10n.accentOrange),
+                          ),
+                          DropdownMenuItem(
+                            value: 3,
+                            child: Text(l10n.accentGreen),
+                          ),
+                          DropdownMenuItem(
+                            value: 4,
+                            child: Text(l10n.accentTeal),
+                          ),
+                          DropdownMenuItem(
+                            value: 5,
+                            child: Text(l10n.accentBlue),
+                          ),
+                          DropdownMenuItem(
+                            value: 6,
+                            child: Text(l10n.accentIndigo),
+                          ),
+                          DropdownMenuItem(
+                            value: 7,
+                            child: Text(l10n.accentPink),
+                          ),
+                        ],
+                      },
+                      onChanged: busy
+                          ? null
+                          : (value) {
+                              if (value != null)
+                                ref
+                                    .read(settingsOperationsProvider.notifier)
+                                    .updateInteger(settingKey, value);
+                            },
                     ),
-                    items: isDelay
-                        ? [
-                            DropdownMenuItem(value: 0, child: Text(l10n.never)),
-                            for (final seconds in hideCodeDelayOptions.skip(1))
-                              DropdownMenuItem(
-                                value: seconds,
-                                child: Text(l10n.seconds(seconds)),
-                              ),
-                          ]
-                        : [
-                            DropdownMenuItem(
-                              value: 0,
-                              child: Text(l10n.groupNone),
-                            ),
-                            for (final n in [2, 3, 4])
-                              DropdownMenuItem(
-                                value: n,
-                                child: Text(l10n.groupEvery(n)),
-                              ),
-                            DropdownMenuItem(
-                              value: 5,
-                              child: Text(l10n.groupHalves),
-                            ),
-                            DropdownMenuItem(
-                              value: 6,
-                              child: Text(l10n.groupThirds),
-                            ),
-                          ],
-                    onChanged: busy
-                        ? null
-                        : (value) {
-                            if (value != null)
-                              ref
-                                  .read(settingsOperationsProvider.notifier)
-                                  .updateInteger(settingKey, value);
-                          },
                   ),
                 );
               }

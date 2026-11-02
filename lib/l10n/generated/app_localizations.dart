@@ -755,6 +755,108 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'验证码已隐藏'**
   String get codeHidden;
+
+  /// No description provided for @dynamicColor.
+  ///
+  /// In zh, this message translates to:
+  /// **'使用系统动态配色'**
+  String get dynamicColor;
+
+  /// No description provided for @themeChoice.
+  ///
+  /// In zh, this message translates to:
+  /// **'主题'**
+  String get themeChoice;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In zh, this message translates to:
+  /// **'跟随系统'**
+  String get themeSystem;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In zh, this message translates to:
+  /// **'浅色'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In zh, this message translates to:
+  /// **'深色'**
+  String get themeDark;
+
+  /// No description provided for @themeBlack.
+  ///
+  /// In zh, this message translates to:
+  /// **'纯黑'**
+  String get themeBlack;
+
+  /// No description provided for @themeSystemBlack.
+  ///
+  /// In zh, this message translates to:
+  /// **'跟随系统（深色时纯黑）'**
+  String get themeSystemBlack;
+
+  /// No description provided for @accentChoice.
+  ///
+  /// In zh, this message translates to:
+  /// **'强调色'**
+  String get accentChoice;
+
+  /// No description provided for @accentDefault.
+  ///
+  /// In zh, this message translates to:
+  /// **'默认'**
+  String get accentDefault;
+
+  /// No description provided for @accentRed.
+  ///
+  /// In zh, this message translates to:
+  /// **'红色'**
+  String get accentRed;
+
+  /// No description provided for @accentOrange.
+  ///
+  /// In zh, this message translates to:
+  /// **'橙色'**
+  String get accentOrange;
+
+  /// No description provided for @accentGreen.
+  ///
+  /// In zh, this message translates to:
+  /// **'绿色'**
+  String get accentGreen;
+
+  /// No description provided for @accentTeal.
+  ///
+  /// In zh, this message translates to:
+  /// **'青色'**
+  String get accentTeal;
+
+  /// No description provided for @accentBlue.
+  ///
+  /// In zh, this message translates to:
+  /// **'蓝色'**
+  String get accentBlue;
+
+  /// No description provided for @accentIndigo.
+  ///
+  /// In zh, this message translates to:
+  /// **'靛蓝'**
+  String get accentIndigo;
+
+  /// No description provided for @accentPink.
+  ///
+  /// In zh, this message translates to:
+  /// **'粉色'**
+  String get accentPink;
+
+  /// No description provided for @accentPriority.
+  ///
+  /// In zh, this message translates to:
+  /// **'系统动态配色可用且启用时优先使用动态配色。'**
+  String get accentPriority;
 }
 
 class _AppLocalizationsDelegate

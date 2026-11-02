@@ -106,5 +106,22 @@
   "groupEvery": "Every {count} characters",
   "groupHalves": "Two equal groups",
   "groupThirds": "Three equal groups",
-  "codeHidden": "Code hidden"
+  "codeHidden": "Code hidden",
+  "dynamicColor": "Use system dynamic colors",
+  "themeChoice": "Theme",
+  "themeSystem": "Follow system",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "themeBlack": "Black",
+  "themeSystemBlack": "System with black dark mode",
+  "accentChoice": "Accent color",
+  "accentDefault": "Default",
+  "accentRed": "Red",
+  "accentOrange": "Orange",
+  "accentGreen": "Green",
+  "accentTeal": "Teal",
+  "accentBlue": "Blue",
+  "accentIndigo": "Indigo",
+  "accentPink": "Pink",
+  "accentPriority": "System dynamic colors take priority when enabled and available."
 }

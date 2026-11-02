@@ -31,25 +31,53 @@ void main() {
     await tester.tap(find.byIcon(Icons.close).first);
     await tester.pumpAndSettle();
     expect((await db.getSettings())[showCaptchaOnTapKey], isTrue);
-    expect(find.byIcon(Icons.done), findsNWidgets(2));
+    expect(find.byIcon(Icons.done), findsNWidgets(3));
     await db.setSetting(copyCaptchaOnTapKey, true);
     await tester.pumpAndSettle();
-    expect(find.byIcon(Icons.done), findsNWidgets(3));
-    await tester.tap(find.byIcon(Icons.done).last);
+    expect(find.byIcon(Icons.done), findsNWidgets(4));
+    await tester.tap(
+      find.descendant(
+        of: find.ancestor(
+          of: find.text('Show account name'),
+          matching: find.byType(SettingsSwitchTile),
+        ),
+        matching: find.byIcon(Icons.done),
+      ),
+    );
     await tester.pumpAndSettle();
     expect((await db.getSettings())[showAccountNameKey], isFalse);
-    await tester.tap(find.byType(DropdownButtonFormField<int>).first);
+    await tester.tap(find.byKey(const ValueKey(hideCodeAfterKey)));
     await tester.pumpAndSettle();
     await tester.tap(find.text('10 seconds').last);
     await tester.pumpAndSettle();
     expect((await db.getIntegerSettings())[hideCodeAfterKey], 10);
     await tester.drag(find.byType(GridView), const Offset(0, -400));
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(DropdownButtonFormField<int>).last);
+    await tester.tap(find.byKey(const ValueKey(codeGroupingKey)));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Every 3 characters').last);
     await tester.pumpAndSettle();
     expect((await db.getIntegerSettings())[codeGroupingKey], 3);
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey(themeModeKey)),
+      150,
+      scrollable: find.byType(Scrollable),
+    );
+    await tester.tap(find.byKey(const ValueKey(themeModeKey)));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Black').last);
+    await tester.pumpAndSettle();
+    expect((await db.getIntegerSettings())[themeModeKey], 3);
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey(accentColorKey)),
+      150,
+      scrollable: find.byType(Scrollable),
+    );
+    await tester.tap(find.byKey(const ValueKey(accentColorKey)));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Blue').last);
+    await tester.pumpAndSettle();
+    expect((await db.getIntegerSettings())[accentColorKey], 5);
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 10));
   });

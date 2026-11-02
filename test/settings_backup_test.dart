@@ -109,11 +109,14 @@ void main() {
         ...settings,
         advanceHotpOnCopyKey: false,
         sortLockedKey: true,
+        dynamicColorKey: true,
       });
       expect(await db.getIntegerSettings(), {
         hideCodeAfterKey: 30,
         sortModeKey: 0,
         codeGroupingKey: 0,
+        themeModeKey: 0,
+        accentColorKey: 0,
       });
       expect((await db.getAllConfigs()).single.counter, 7);
       final oldV2 = await encodeBackupAccounts(

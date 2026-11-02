@@ -338,4 +338,55 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get codeHidden => '验证码已隐藏';
+
+  @override
+  String get dynamicColor => '使用系统动态配色';
+
+  @override
+  String get themeChoice => '主题';
+
+  @override
+  String get themeSystem => '跟随系统';
+
+  @override
+  String get themeLight => '浅色';
+
+  @override
+  String get themeDark => '深色';
+
+  @override
+  String get themeBlack => '纯黑';
+
+  @override
+  String get themeSystemBlack => '跟随系统（深色时纯黑）';
+
+  @override
+  String get accentChoice => '强调色';
+
+  @override
+  String get accentDefault => '默认';
+
+  @override
+  String get accentRed => '红色';
+
+  @override
+  String get accentOrange => '橙色';
+
+  @override
+  String get accentGreen => '绿色';
+
+  @override
+  String get accentTeal => '青色';
+
+  @override
+  String get accentBlue => '蓝色';
+
+  @override
+  String get accentIndigo => '靛蓝';
+
+  @override
+  String get accentPink => '粉色';
+
+  @override
+  String get accentPriority => '系统动态配色可用且启用时优先使用动态配色。';
 }

@@ -45,6 +45,7 @@ void main() {
       showAccountNameKey: true,
       advanceHotpOnCopyKey: false,
       sortLockedKey: true,
+      dynamicColorKey: true,
     });
     await database.setSetting(showCaptchaOnTapKey, false);
     await database.initializeSettings({
@@ -57,6 +58,7 @@ void main() {
       showAccountNameKey: true,
       advanceHotpOnCopyKey: false,
       sortLockedKey: true,
+      dynamicColorKey: true,
     });
     expect((await database.getAllAuthEntries()).single.secret, 'secret');
   });

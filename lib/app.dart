@@ -1,5 +1,7 @@
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/router/app_router.dart';
+import 'package:authentication/settings/settings.dart';
+import 'package:authentication/settings/settings_provider.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,19 +24,36 @@ class AuthApp extends ConsumerWidget {
         TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
       },
     );
+    final settings = ref.watch(settingsProvider).value;
+    final integers = ref.watch(integerSettingsProvider).value;
+    final mode = integers?[themeModeKey] ?? 0;
+    final accent = integers?[accentColorKey] ?? 0;
+    final dynamicEnabled = settings?[dynamicColorKey] ?? true;
     return DynamicColorBuilder(
       builder: (lightDynamic, darkDynamic) => MaterialApp(
         title: 'Authentication',
         debugShowCheckedModeBanner: false,
-        themeMode: ThemeMode.system,
+        themeMode: switch (mode) {
+          1 => ThemeMode.light,
+          2 || 3 => ThemeMode.dark,
+          _ => ThemeMode.system,
+        },
         theme: ThemeData(
-          brightness: Brightness.light,
-          colorScheme: toFlutterColorScheme(lightDynamic),
+          colorScheme: appColorScheme(
+            Brightness.light,
+            dynamicEnabled ? toFlutterColorScheme(lightDynamic) : null,
+            accent,
+            false,
+          ),
           pageTransitionsTheme: pageTransitionsTheme,
         ),
         darkTheme: ThemeData(
-          brightness: Brightness.dark,
-          colorScheme: toFlutterColorScheme(darkDynamic),
+          colorScheme: appColorScheme(
+            Brightness.dark,
+            dynamicEnabled ? toFlutterColorScheme(darkDynamic) : null,
+            accent,
+            mode == 3 || mode == 4,
+          ),
           pageTransitionsTheme: pageTransitionsTheme,
         ),
         localizationsDelegates: const [
@@ -60,6 +79,42 @@ class AuthApp extends ConsumerWidget {
       ),
     );
   }
+}
+
+ColorScheme appColorScheme(
+  Brightness brightness,
+  ColorScheme? dynamicScheme,
+  int accent,
+  bool black,
+) {
+  const seeds = <int, Color>{
+    1: Colors.red,
+    2: Colors.orange,
+    3: Colors.green,
+    4: Colors.teal,
+    5: Colors.blue,
+    6: Colors.indigo,
+    7: Colors.pink,
+  };
+  final seed = seeds[accent];
+  var scheme =
+      dynamicScheme ??
+      (seed == null
+          ? ThemeData(brightness: brightness).colorScheme
+          : ColorScheme.fromSeed(seedColor: seed, brightness: brightness));
+  if (black && brightness == Brightness.dark) {
+    scheme = scheme.copyWith(
+      surface: Colors.black,
+      surfaceDim: Colors.black,
+      surfaceBright: Colors.black,
+      surfaceContainerLowest: Colors.black,
+      surfaceContainerLow: Colors.black,
+      surfaceContainer: Colors.black,
+      surfaceContainerHigh: Colors.black,
+      surfaceContainerHighest: Colors.black,
+    );
+  }
+  return scheme;
 }
 
 ColorScheme? toFlutterColorScheme(material_ui.ColorScheme? scheme) {
