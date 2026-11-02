@@ -857,6 +857,48 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'系统动态配色可用且启用时优先使用动态配色。'**
   String get accentPriority;
+
+  /// No description provided for @showSavedAccountQr.
+  ///
+  /// In zh, this message translates to:
+  /// **'显示已保存账户的二维码'**
+  String get showSavedAccountQr;
+
+  /// No description provided for @qrSecretWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'二维码明文包含已保存的账户密钥。扫描或拍摄它的人都可以生成验证码，请仅向可信设备展示。未保存的修改不会包含在内。接收应用可能忽略部分验证码设置，扫码后请核对。'**
+  String get qrSecretWarning;
+
+  /// No description provided for @qrUnsupportedAccount.
+  ///
+  /// In zh, this message translates to:
+  /// **'仅支持为时间型和计数器型账户展示二维码。'**
+  String get qrUnsupportedAccount;
+
+  /// No description provided for @qrAccountUnavailable.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法加载已保存的账户。'**
+  String get qrAccountUnavailable;
+
+  /// No description provided for @qrTooLarge.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法以可扫描的尺寸显示二维码。'**
+  String get qrTooLarge;
+
+  /// No description provided for @qrSecretSemantics.
+  ///
+  /// In zh, this message translates to:
+  /// **'包含账户密钥的二维码'**
+  String get qrSecretSemantics;
+
+  /// No description provided for @qrUnsupportedParameters.
+  ///
+  /// In zh, this message translates to:
+  /// **'标准二维码要求账户名和发行方不含冒号，且验证码为 6 位或 8 位。'**
+  String get qrUnsupportedParameters;
 }
 
 class _AppLocalizationsDelegate

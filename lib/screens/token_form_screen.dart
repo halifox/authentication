@@ -1,9 +1,10 @@
-import 'package:authentication/screens/auth_error_localization.dart';
-import 'package:authentication/otp/account.dart';
-import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/actions/account_actions.dart';
+import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/otp_provider.dart';
 import 'package:authentication/router/app_router.dart';
+import 'package:authentication/screens/auth_error_localization.dart';
+import 'package:authentication/widgets/account_qr.dart';
 import 'package:authentication/widgets/action_result_sheet.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -141,6 +142,14 @@ class TokenFormScreen extends HookConsumerWidget {
                   ),
                   String() => const SizedBox.shrink(),
                 },
+                if (args != null)
+                  OutlinedButton.icon(
+                    onPressed: busy
+                        ? null
+                        : () => _showAccountQr(context, ref, args.id),
+                    icon: const Icon(Icons.qr_code),
+                    label: Text(l10n.showSavedAccountQr),
+                  ),
                 Row(
                   spacing: 16,
                   children: <Widget>[
@@ -174,6 +183,124 @@ class TokenFormScreen extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _showAccountQr(
+    BuildContext context,
+    WidgetRef ref,
+    int id,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final account = await ref
+          .read(accountOperationsProvider.notifier)
+          .getAccount(id);
+      if (!context.mounted) return;
+      if (account == null) {
+        await showDialog<void>(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: Text(l10n.warning),
+            content: Text(l10n.qrAccountUnavailable),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(l10n.ok),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+      if (account.type.toLowerCase() != 'totp' &&
+          account.type.toLowerCase() != 'hotp') {
+        await showDialog<void>(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: Text(l10n.warning),
+            content: Text(l10n.qrUnsupportedAccount),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(l10n.ok),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+      try {
+        toStandardOtpQrUri(account);
+      } on FormatException {
+        await showDialog<void>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(l10n.warning),
+            content: Text(l10n.qrUnsupportedParameters),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(l10n.ok),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+      if (!context.mounted) return;
+      final proceed = await showCupertinoModalPopup<bool>(
+        context: context,
+        builder: (_) => ActionResultSheet(
+          state: 0,
+          title: l10n.warning,
+          message: l10n.qrSecretWarning,
+          falseButtonVisible: true,
+        ),
+      );
+      if (proceed != true || !context.mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(l10n.showSavedAccountQr),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(l10n.qrSecretWarning),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: 320,
+                  height: 320,
+                  child: AccountQr(account: account),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.ok),
+            ),
+          ],
+        ),
+      );
+    } catch (_) {
+      if (context.mounted) {
+        await showDialog<void>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(l10n.warning),
+            content: Text(l10n.qrAccountUnavailable),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(l10n.ok),
+              ),
+            ],
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildDigitsOnlyTextField(

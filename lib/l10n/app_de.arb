@@ -123,5 +123,12 @@
   "accentBlue": "Blue",
   "accentIndigo": "Indigo",
   "accentPink": "Pink",
-  "accentPriority": "System dynamic colors take priority when enabled and available."
+  "accentPriority": "System dynamic colors take priority when enabled and available.",
+  "showSavedAccountQr": "Show saved account QR code",
+  "qrSecretWarning": "This QR code contains the saved account secret in plain text. Anyone who scans or photographs it can generate your codes. Show it only to a trusted device. Unsaved edits are not included. The receiving app may ignore some code settings; verify them after scanning.",
+  "qrUnsupportedAccount": "QR export is available only for time-based and counter-based accounts.",
+  "qrAccountUnavailable": "The saved account could not be loaded.",
+  "qrTooLarge": "The QR code cannot be displayed at a scannable size.",
+  "qrSecretSemantics": "QR code containing an account secret",
+  "qrUnsupportedParameters": "Standard QR codes require account and issuer names without colons and a 6- or 8-digit code."
 }

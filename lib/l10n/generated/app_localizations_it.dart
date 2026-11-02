@@ -398,4 +398,29 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get accentPriority =>
       'System dynamic colors take priority when enabled and available.';
+
+  @override
+  String get showSavedAccountQr => 'Show saved account QR code';
+
+  @override
+  String get qrSecretWarning =>
+      'This QR code contains the saved account secret in plain text. Anyone who scans or photographs it can generate your codes. Show it only to a trusted device. Unsaved edits are not included. The receiving app may ignore some code settings; verify them after scanning.';
+
+  @override
+  String get qrUnsupportedAccount =>
+      'QR export is available only for time-based and counter-based accounts.';
+
+  @override
+  String get qrAccountUnavailable => 'The saved account could not be loaded.';
+
+  @override
+  String get qrTooLarge =>
+      'The QR code cannot be displayed at a scannable size.';
+
+  @override
+  String get qrSecretSemantics => 'QR code containing an account secret';
+
+  @override
+  String get qrUnsupportedParameters =>
+      'Standard QR codes require account and issuer names without colons and a 6- or 8-digit code.';
 }

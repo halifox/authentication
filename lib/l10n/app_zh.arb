@@ -311,5 +311,12 @@
   "accentBlue": "蓝色",
   "accentIndigo": "靛蓝",
   "accentPink": "粉色",
-  "accentPriority": "系统动态配色可用且启用时优先使用动态配色。"
+  "accentPriority": "系统动态配色可用且启用时优先使用动态配色。",
+  "showSavedAccountQr": "显示已保存账户的二维码",
+  "qrSecretWarning": "二维码明文包含已保存的账户密钥。扫描或拍摄它的人都可以生成验证码，请仅向可信设备展示。未保存的修改不会包含在内。接收应用可能忽略部分验证码设置，扫码后请核对。",
+  "qrUnsupportedAccount": "仅支持为时间型和计数器型账户展示二维码。",
+  "qrAccountUnavailable": "无法加载已保存的账户。",
+  "qrTooLarge": "无法以可扫描的尺寸显示二维码。",
+  "qrSecretSemantics": "包含账户密钥的二维码",
+  "qrUnsupportedParameters": "标准二维码要求账户名和发行方不含冒号，且验证码为 6 位或 8 位。"
 }

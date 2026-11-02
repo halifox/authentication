@@ -1,5 +1,5 @@
-import 'package:authentication/otp/validation.dart';
 import 'package:authentication/otp/otp.dart';
+import 'package:authentication/otp/validation.dart';
 
 /// Protocol data independent of the database and UI.
 class OtpAccount {
@@ -170,4 +170,28 @@ OtpAccount parseOtpUri(String input) {
     counter: number('counter', 0, AuthErrorCode.invalidCounter),
     pin: params['pin'] ?? '',
   );
+}
+
+/// Produces a standard provisioning URI for QR export.
+String toStandardOtpQrUri(OtpAccount account) {
+  account.validate();
+  final type = account.type.toLowerCase();
+  if ((type != 'totp' && type != 'hotp') ||
+      (account.digits != 6 && account.digits != 8) ||
+      account.issuer.contains(':') ||
+      account.account.contains(':')) {
+    throw const FormatException('Unsupported QR account parameters.');
+  }
+  final uri = Uri.parse(account.toOtpUri());
+  return uri
+      .replace(
+        queryParameters: {
+          ...uri.queryParameters,
+          'secret': account.secret
+              .replaceAll(RegExp(r'\s+|='), '')
+              .toUpperCase(),
+          'algorithm': account.algorithm.toUpperCase(),
+        },
+      )
+      .toString();
 }

@@ -55,6 +55,9 @@ class AccountOperations extends Notifier<AsyncValue<void>> {
     }
   }
 
+  Future<OtpAccount?> getAccount(int id) =>
+      ref.read(appDatabaseProvider).getConfig(id);
+
   Future<void> reorder(List<int> ids) async {
     if (state.isLoading)
       throw StateError('An account operation is already running.');

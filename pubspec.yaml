@@ -46,6 +46,7 @@ dependencies:
   file_picker: ^13.3.1
   web: ^1.1.2
   pointycastle: ^3.9.1
+  qr: ^4.0.1
 
 dev_dependencies:
   # Testing & Linting
