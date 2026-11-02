@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/halifox/authentication/compare/v1.0.0...v1.0.1) (2026-11-02)
+
+
+### Bug Fixes
+
+* upgrade dependencies and restore compatibility ([#4](https://github.com/halifox/authentication/issues/4)) ([78e336d](https://github.com/halifox/authentication/commit/78e336d624db52dd4695c7a1f945441b37c5dab2))
+
 ## [1.0.0](https://github.com/halifox/authentication/compare/v0.3.0...v1.0.0) (2026-11-02)
 
 
