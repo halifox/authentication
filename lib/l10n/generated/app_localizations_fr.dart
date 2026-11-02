@@ -460,4 +460,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get migrationInvalid =>
       'The migration data is invalid, unsupported, duplicated or incomplete. No accounts were imported.';
+
+  @override
+  String get languageChoice => 'Langue';
+
+  @override
+  String get languageSystem => 'Selon le système';
 }

@@ -445,4 +445,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get migrationInvalid => '迁移数据无效、不受支持、重复或不完整，未导入任何账户。';
+
+  @override
+  String get languageChoice => '语言';
+
+  @override
+  String get languageSystem => '跟随系统';
 }

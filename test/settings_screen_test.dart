@@ -78,6 +78,16 @@ void main() {
     await tester.tap(find.text('Blue').last);
     await tester.pumpAndSettle();
     expect((await db.getIntegerSettings())[accentColorKey], 5);
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey(languageKey)),
+      150,
+      scrollable: find.byType(Scrollable),
+    );
+    await tester.tap(find.byKey(const ValueKey(languageKey)));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('日本語').last);
+    await tester.pumpAndSettle();
+    expect((await db.getIntegerSettings())[languageKey], 6);
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 10));
   });

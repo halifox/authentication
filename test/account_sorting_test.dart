@@ -99,6 +99,7 @@ void main() {
       await db.setIntegerSetting(codeGroupingKey, 6);
       await db.setIntegerSetting(themeModeKey, 4);
       await db.setIntegerSetting(accentColorKey, 5);
+      await db.setIntegerSetting(languageKey, 10);
       await db.setSetting(dynamicColorKey, false);
       await db.setSetting(sortLockedKey, false);
       final backup = await encodeBackupAccounts(
@@ -112,6 +113,7 @@ void main() {
       await db.setIntegerSetting(codeGroupingKey, 0);
       await db.setIntegerSetting(themeModeKey, 0);
       await db.setIntegerSetting(accentColorKey, 0);
+      await db.setIntegerSetting(languageKey, 0);
       await db.setSetting(dynamicColorKey, true);
       await db.setSetting(sortLockedKey, true);
       await db.reorderAccounts([1, 2, 3]);
@@ -126,6 +128,7 @@ void main() {
       expect((await db.getIntegerSettings())[codeGroupingKey], 6);
       expect((await db.getIntegerSettings())[themeModeKey], 4);
       expect((await db.getIntegerSettings())[accentColorKey], 5);
+      expect((await db.getIntegerSettings())[languageKey], 10);
       expect((await db.getSettings())[dynamicColorKey], false);
       expect((await db.getSettings())[sortLockedKey], false);
       expect(sortAccounts(await db.getAllConfigs(), 0).map((e) => e.id), [
@@ -146,6 +149,7 @@ void main() {
       expect((await db.getIntegerSettings())[codeGroupingKey], 6);
       expect((await db.getIntegerSettings())[themeModeKey], 4);
       expect((await db.getIntegerSettings())[accentColorKey], 5);
+      expect((await db.getIntegerSettings())[languageKey], 10);
       expect((await db.getSettings())[dynamicColorKey], false);
       expect((await db.getSettings())[sortLockedKey], false);
     },

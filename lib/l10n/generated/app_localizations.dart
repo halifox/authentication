@@ -953,6 +953,18 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'迁移数据无效、不受支持、重复或不完整，未导入任何账户。'**
   String get migrationInvalid;
+
+  /// No description provided for @languageChoice.
+  ///
+  /// In zh, this message translates to:
+  /// **'语言'**
+  String get languageChoice;
+
+  /// No description provided for @languageSystem.
+  ///
+  /// In zh, this message translates to:
+  /// **'跟随系统'**
+  String get languageSystem;
 }
 
 class _AppLocalizationsDelegate

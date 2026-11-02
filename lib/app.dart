@@ -28,6 +28,7 @@ class AuthApp extends ConsumerWidget {
     final integers = ref.watch(integerSettingsProvider).value;
     final mode = integers?[themeModeKey] ?? 0;
     final accent = integers?[accentColorKey] ?? 0;
+    final language = integers?[languageKey] ?? 0;
     final dynamicEnabled = settings?[dynamicColorKey] ?? true;
     return DynamicColorBuilder(
       builder: (lightDynamic, darkDynamic) => MaterialApp(
@@ -56,6 +57,7 @@ class AuthApp extends ConsumerWidget {
           ),
           pageTransitionsTheme: pageTransitionsTheme,
         ),
+        locale: language == 0 ? null : Locale(languageCodes[language - 1]),
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,

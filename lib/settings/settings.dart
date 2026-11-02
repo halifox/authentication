@@ -41,12 +41,39 @@ const themeModeKey = 'theme_mode';
 const themeModeOptions = <int>[0, 1, 2, 3, 4];
 const accentColorKey = 'accent_color';
 const accentColorOptions = <int>[0, 1, 2, 3, 4, 5, 6, 7];
+const languageKey = 'language';
+// Values are persisted and backed up; append new languages rather than reorder.
+const languageCodes = <String>[
+  'de',
+  'en',
+  'es',
+  'fr',
+  'it',
+  'ja',
+  'ko',
+  'pt',
+  'ru',
+  'zh',
+];
+const languageNames = <String>[
+  'Deutsch',
+  'English',
+  'Español',
+  'Français',
+  'Italiano',
+  '日本語',
+  '한국어',
+  'Português',
+  'Русский',
+  '中文',
+];
 const defaultIntegerSettings = <String, int>{
   hideCodeAfterKey: 0,
   sortModeKey: 0,
   codeGroupingKey: 0,
   themeModeKey: 0,
   accentColorKey: 0,
+  languageKey: 0,
 };
 
 void validateIntegerSetting(String key, Object? value) {
@@ -56,6 +83,7 @@ void validateIntegerSetting(String key, Object? value) {
     codeGroupingKey => codeGroupingOptions,
     themeModeKey => themeModeOptions,
     accentColorKey => accentColorOptions,
+    languageKey => List.generate(languageCodes.length + 1, (index) => index),
     _ => throw const FormatException('Unknown integer setting.'),
   };
   if (value is! int || !allowed.contains(value)) {

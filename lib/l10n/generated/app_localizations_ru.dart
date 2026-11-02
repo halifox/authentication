@@ -459,4 +459,10 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get migrationInvalid =>
       'The migration data is invalid, unsupported, duplicated or incomplete. No accounts were imported.';
+
+  @override
+  String get languageChoice => 'Язык';
+
+  @override
+  String get languageSystem => 'Как в системе';
 }

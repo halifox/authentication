@@ -458,4 +458,10 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get migrationInvalid =>
       'The migration data is invalid, unsupported, duplicated or incomplete. No accounts were imported.';
+
+  @override
+  String get languageChoice => '언어';
+
+  @override
+  String get languageSystem => '시스템 설정 따르기';
 }

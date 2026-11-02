@@ -106,7 +106,7 @@ class SettingsScreen extends ConsumerWidget {
               crossAxisSpacing: 16,
               mainAxisExtent: 90,
             ),
-            itemCount: options.length + 4,
+            itemCount: options.length + 5,
             itemBuilder: (BuildContext context, int index) {
               if (index >= options.length) {
                 final selection = index - options.length;
@@ -114,7 +114,8 @@ class SettingsScreen extends ConsumerWidget {
                   0 => hideCodeAfterKey,
                   1 => codeGroupingKey,
                   2 => themeModeKey,
-                  _ => accentColorKey,
+                  3 => accentColorKey,
+                  _ => languageKey,
                 };
                 return Container(
                   padding: const EdgeInsets.symmetric(
@@ -136,7 +137,8 @@ class SettingsScreen extends ConsumerWidget {
                           0 => l10n.hideCodeAfter,
                           1 => l10n.codeGrouping,
                           2 => l10n.themeChoice,
-                          _ => l10n.accentChoice,
+                          3 => l10n.accentChoice,
+                          _ => l10n.languageChoice,
                         },
                       ),
                       items: switch (selection) {
@@ -189,7 +191,7 @@ class SettingsScreen extends ConsumerWidget {
                             child: Text(l10n.themeSystemBlack),
                           ),
                         ],
-                        _ => [
+                        3 => [
                           DropdownMenuItem(
                             value: 0,
                             child: Text(l10n.accentDefault),
@@ -222,6 +224,17 @@ class SettingsScreen extends ConsumerWidget {
                             value: 7,
                             child: Text(l10n.accentPink),
                           ),
+                        ],
+                        _ => [
+                          DropdownMenuItem(
+                            value: 0,
+                            child: Text(l10n.languageSystem),
+                          ),
+                          for (var i = 0; i < languageNames.length; i++)
+                            DropdownMenuItem(
+                              value: i + 1,
+                              child: Text(languageNames[i]),
+                            ),
                         ],
                       },
                       onChanged: busy

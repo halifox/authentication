@@ -1,4 +1,6 @@
 import 'package:authentication/app.dart';
+import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/screens/token_list_screen.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
@@ -68,6 +70,28 @@ void main() {
     await db.setIntegerSetting(themeModeKey, 1);
     await tester.pumpAndSettle();
     expect(app().themeMode, ThemeMode.light);
+    await db.setIntegerSetting(languageKey, 10);
+    await tester.pumpAndSettle();
+    expect(app().locale, const Locale('zh'));
+    expect(
+      AppLocalizations.of(tester.element(find.byType(TokenListScreen)))!
+          .settings,
+      '设置',
+    );
+    await db.setIntegerSetting(languageKey, 0);
+    await tester.pumpAndSettle();
+    expect(app().locale, isNull);
+    expect(
+      app().localeResolutionCallback!(
+        const Locale('zz'),
+        app().supportedLocales,
+      ),
+      const Locale('en'),
+    );
+    await expectLater(
+      db.setIntegerSetting(languageKey, 11),
+      throwsFormatException,
+    );
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 10));
   });

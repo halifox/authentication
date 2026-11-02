@@ -117,6 +117,7 @@ void main() {
         codeGroupingKey: 0,
         themeModeKey: 0,
         accentColorKey: 0,
+        languageKey: 0,
       });
       expect((await db.getAllConfigs()).single.counter, 7);
       final oldV2 = await encodeBackupAccounts(

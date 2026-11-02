@@ -330,5 +330,7 @@
   "migrationInvalid": "迁移数据无效、不受支持、重复或不完整，未导入任何账户。",
   "@migrationNext": {"placeholders": {"received": {"type": "int"}, "total": {"type": "int"}}},
   "@migrationConfirm": {"placeholders": {"count": {"type": "int"}}},
-  "@migrationImported": {"placeholders": {"count": {"type": "int"}}}
+  "@migrationImported": {"placeholders": {"count": {"type": "int"}}},
+  "languageChoice": "语言",
+  "languageSystem": "跟随系统"
 }
