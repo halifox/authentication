@@ -251,4 +251,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noSearchResults => 'No matching accounts';
+
+  @override
+  String get settingsLoadError => 'Settings could not be loaded.';
+
+  @override
+  String get backupSettingsWarning =>
+      'Accounts with the same issuer and account name will be updated. Settings in the backup will also be restored. Continue?';
 }

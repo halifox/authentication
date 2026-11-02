@@ -1,4 +1,5 @@
 import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/settings/settings.dart';
 import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,15 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final settings = ref.watch(settingsProvider);
+    final busy = ref.watch(settingsOperationsProvider).isLoading;
+    ref.listen(settingsOperationsProvider, (previous, next) {
+      if (next.hasError && context.mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.saveFailed)));
+      }
+    });
     final isShowCaptchaOnTap = ref.watch(isShowCaptchaOnTapProvider);
     final isCopyCaptchaOnTap = ref.watch(isCopyCaptchaOnTapProvider);
     final List<SettingsItemModel> options = [
@@ -40,36 +50,40 @@ class SettingsScreen extends ConsumerWidget {
         label: AppLocalizations.of(context)!.showCaptchaOnTap,
         value: isShowCaptchaOnTap,
         onTap: () => ref
-            .read(isShowCaptchaOnTapProvider.notifier)
-            .update(!isShowCaptchaOnTap),
+            .read(settingsOperationsProvider.notifier)
+            .update(showCaptchaOnTapKey, !isShowCaptchaOnTap),
       ),
       SettingsItemModel(
         label: AppLocalizations.of(context)!.copyCaptchaOnTap,
         value: isCopyCaptchaOnTap,
         onTap: () => ref
-            .read(isCopyCaptchaOnTapProvider.notifier)
-            .update(!isCopyCaptchaOnTap),
+            .read(settingsOperationsProvider.notifier)
+            .update(copyCaptchaOnTapKey, !isCopyCaptchaOnTap),
       ),
     ];
 
     return Scaffold(
       appBar: CustomAppBar(title: AppLocalizations.of(context)!.settings),
-      body: GridView.builder(
-        physics: const BouncingScrollPhysics(
-          parent: AlwaysScrollableScrollPhysics(),
+      body: settings.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (_, _) => Center(child: Text(l10n.settingsLoadError)),
+        data: (_) => GridView.builder(
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 700,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
+            mainAxisExtent: 90,
+          ),
+          itemCount: options.length,
+          itemBuilder: (BuildContext context, int index) {
+            final option = options[index];
+            return SettingsSwitchTile(option: option, enabled: !busy);
+          },
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 700,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          mainAxisExtent: 90,
-        ),
-        itemCount: options.length,
-        itemBuilder: (BuildContext context, int index) {
-          final option = options[index];
-          return SettingsSwitchTile(option: option);
-        },
       ),
     );
   }
@@ -79,10 +93,15 @@ class SettingsScreen extends ConsumerWidget {
 class SettingsSwitchTile extends StatelessWidget {
   /// 创建一个设置开关列表项。
   /// [option] 设置项模型。
-  const SettingsSwitchTile({required this.option, super.key});
+  const SettingsSwitchTile({
+    required this.option,
+    this.enabled = true,
+    super.key,
+  });
 
   /// 设置项模型
   final SettingsItemModel option;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +130,7 @@ class SettingsSwitchTile extends StatelessWidget {
           ),
           const SizedBox(width: 16),
           GestureDetector(
-            onTap: option.onTap,
+            onTap: enabled ? option.onTap : null,
             child: Container(
               height: 48,
               width: 48,

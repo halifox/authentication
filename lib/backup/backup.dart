@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:authentication/otp/account.dart';
+import 'package:authentication/settings/settings.dart';
 
 import 'package:encrypt/encrypt.dart' as enc;
 
@@ -14,16 +15,24 @@ const maxBackupBytes = 10 * 1024 * 1024;
 class Backup {
   static Future<Uint8List> encode(
     List<Map<String, Object>> entries,
-    String? password,
-  ) async {
-    final payload = utf8.encode(jsonEncode({'entries': entries}));
+    String? password, {
+    Map<String, bool>? settings,
+  }) async {
+    final validatedSettings = settings == null
+        ? null
+        : validateSettings(settings);
+    final contents = <String, Object>{
+      'entries': entries,
+      'settings': ?validatedSettings,
+    };
+    final payload = utf8.encode(jsonEncode(contents));
     final Map<String, Object> envelope = {
       'format': 'authentication-backup',
-      'version': 1,
+      'version': validatedSettings == null ? 1 : 2,
     };
     if (password == null) {
       envelope['encrypted'] = false;
-      envelope['entries'] = entries;
+      envelope.addAll(contents);
     } else {
       if (password.isEmpty)
         throw const FormatException('Password cannot be empty.');
@@ -51,7 +60,7 @@ class Backup {
     final data = jsonDecode(utf8.decode(bytes));
     if (data is! Map<String, dynamic> ||
         data['format'] != 'authentication-backup' ||
-        data['version'] != 1 ||
+        (data['version'] != 1 && data['version'] != 2) ||
         data['encrypted'] is! bool) {
       throw const FormatException('Unsupported backup format.');
     }
@@ -64,9 +73,14 @@ class Backup {
   static Future<List<Map<String, Object>>> decode(
     Uint8List bytes,
     String? password,
-  ) async {
+  ) async => (await decodeDocument(bytes, password)).entries;
+
+  static Future<
+    ({List<Map<String, Object>> entries, Map<String, bool>? settings})
+  >
+  decodeDocument(Uint8List bytes, String? password) async {
     final envelope = _envelope(bytes);
-    dynamic entries;
+    dynamic contents;
     if (envelope['encrypted'] == true) {
       if (password == null ||
           password.isEmpty ||
@@ -89,13 +103,23 @@ class Backup {
           envelope['ciphertext'] as String,
           iv: enc.IV(nonce),
         );
-        entries = (jsonDecode(plaintext) as Map<String, dynamic>)['entries'];
+        contents = jsonDecode(plaintext);
       } catch (_) {
         throw const FormatException('Incorrect password or damaged backup.');
       }
     } else {
-      entries = envelope['entries'];
+      contents = envelope;
     }
+    if (contents is! Map) {
+      throw const FormatException('Invalid backup contents.');
+    }
+    final entries = contents['entries'];
+    if (envelope['version'] == 1 && contents.containsKey('settings')) {
+      throw const FormatException('Invalid backup version.');
+    }
+    final settings = envelope['version'] == 2
+        ? validateSettings(contents['settings'])
+        : null;
     if (entries is! List ||
         entries.isEmpty ||
         entries.length > 10000 ||
@@ -109,7 +133,10 @@ class Backup {
         )) {
       throw const FormatException('Invalid backup entries.');
     }
-    return entries.map((e) => Map<String, Object>.from(e as Map)).toList();
+    return (
+      entries: entries.map((e) => Map<String, Object>.from(e as Map)).toList(),
+      settings: settings,
+    );
   }
 }
 
@@ -130,8 +157,9 @@ List<OtpAccount> parseBackupAccounts(List<Map<String, Object>> entries) =>
 
 Future<Uint8List> encodeBackupAccounts(
   List<OtpAccount> accounts,
-  String? password,
-) => Backup.encode(
+  String? password, {
+  Map<String, bool>? settings,
+}) => Backup.encode(
   accounts
       .map(
         (e) => <String, Object>{
@@ -143,7 +171,17 @@ Future<Uint8List> encodeBackupAccounts(
       )
       .toList(),
   password,
+  settings: settings,
 );
+
+Future<({List<OtpAccount> accounts, Map<String, bool>? settings})>
+decodeBackupDocument(Uint8List bytes, String? password) async {
+  final document = await Backup.decodeDocument(bytes, password);
+  return (
+    accounts: parseBackupAccounts(document.entries),
+    settings: document.settings,
+  );
+}
 
 Future<List<OtpAccount>> decodeBackupAccounts(
   Uint8List bytes,

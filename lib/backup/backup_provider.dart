@@ -43,9 +43,18 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
   Future<bool> exportFile(String? password) {
     final db = ref.read(appDatabaseProvider);
     return _run(() async {
-      final accounts = await db.getAllConfigs();
-      if (accounts.isEmpty) throw StateError('No accounts to export.');
-      final bytes = await encodeBackupAccounts(accounts, password);
+      final snapshot = await db.transaction(
+        () async => (
+          accounts: await db.getAllConfigs(),
+          settings: await db.getSettings(),
+        ),
+      );
+      if (snapshot.accounts.isEmpty) throw StateError('No accounts to export.');
+      final bytes = await encodeBackupAccounts(
+        snapshot.accounts,
+        password,
+        settings: snapshot.settings,
+      );
       final location = await FilePicker.saveFile(
         fileName: 'authentication-backup.json',
         bytes: bytes,
@@ -80,10 +89,10 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
 
   Future<int> import(Uint8List bytes, String? password) {
     final db = ref.read(appDatabaseProvider);
-    return _run(
-      () async =>
-          db.importAccounts(await decodeBackupAccounts(bytes, password)),
-    );
+    return _run(() async {
+      final document = await decodeBackupDocument(bytes, password);
+      return db.importAccounts(document.accounts, settings: document.settings);
+    });
   }
 }
 

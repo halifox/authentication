@@ -4,6 +4,7 @@ import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/otp_provider.dart';
 import 'package:authentication/screens/token_list_screen.dart';
+import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/widgets/token_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,6 +36,7 @@ void main() {
       ProviderScope(
         overrides: [
           authEntryListProvider.overrideWith((ref) => entries.stream),
+          settingsProvider.overrideWith((ref) => Stream.value({})),
         ],
         child: const MaterialApp(
           locale: Locale('en'),

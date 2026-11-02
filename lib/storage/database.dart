@@ -1,6 +1,7 @@
+import 'package:authentication/otp/account.dart';
+import 'package:authentication/settings/settings.dart';
 import 'package:authentication/storage/auth_entries.dart';
 import 'package:authentication/storage/encryption.dart';
-import 'package:authentication/otp/account.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
@@ -11,7 +12,7 @@ part 'auth_storage.dart';
 ///
 /// 使用 Drift 框架构建的数据库访问层，负责管理身份验证条目 (AuthEntries) 的持久化操作。
 /// 该类通过继承 [_$AppDatabase] 提供对底层数据库的 CRUD（增删改查）访问。
-@DriftDatabase(tables: [AuthEntries])
+@DriftDatabase(tables: [AuthEntries, AppSettings])
 class AppDatabase extends _$AppDatabase {
   late final EncryptionService encryption;
   AppDatabase([QueryExecutor? executor])
@@ -29,7 +30,47 @@ class AppDatabase extends _$AppDatabase {
   /// 数据库架构版本号。
   /// 如果修改了表结构，需要递增此版本并处理迁移逻辑。
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onUpgrade: (m, from, to) async {
+      if (from < 2) await m.createTable(appSettings);
+    },
+  );
+
+  Future<void> initializeSettings(Map<String, bool> legacySettings) async {
+    final values = validateSettings(legacySettings);
+    await transaction(() async {
+      for (final entry in values.entries) {
+        await into(appSettings).insert(
+          AppSettingsCompanion.insert(key: entry.key, value: entry.value),
+          mode: InsertMode.insertOrIgnore,
+        );
+      }
+    });
+  }
+
+  Future<Map<String, bool>> getSettings() async => {
+    ...defaultSettings,
+    for (final entry in await select(appSettings).get()) entry.key: entry.value,
+  };
+
+  Stream<Map<String, bool>> watchSettings() => select(appSettings).watch().map(
+    (entries) => {
+      ...defaultSettings,
+      for (final entry in entries) entry.key: entry.value,
+    },
+  );
+
+  Future<void> setSetting(String key, bool value) async {
+    if (!defaultSettings.containsKey(key)) {
+      throw ArgumentError('Unknown setting');
+    }
+    await into(appSettings).insertOnConflictUpdate(
+      AppSettingsCompanion.insert(key: key, value: value),
+    );
+  }
 
   /// 插入新的身份验证条目。
   ///

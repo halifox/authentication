@@ -65,6 +65,7 @@ extension AuthStorage on AppDatabase {
   Future<int> importAccounts(
     List<OtpAccount> accounts, {
     bool preserveExistingMetadata = false,
+    Map<String, bool>? settings,
   }) async {
     final keys = <String>{};
     for (final account in accounts) {
@@ -72,7 +73,15 @@ extension AuthStorage on AppDatabase {
       if (!keys.add('${account.issuer}\u0000${account.account}'))
         throw const FormatException('Duplicate accounts in backup.');
     }
+    final validatedSettings = settings == null
+        ? null
+        : validateSettings(settings);
     await transaction(() async {
+      if (validatedSettings != null) {
+        for (final setting in validatedSettings.entries) {
+          await setSetting(setting.key, setting.value);
+        }
+      }
       for (final account in accounts) {
         final existing = await getConfigByAccountAndIssuer(
           account.account,

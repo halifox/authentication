@@ -279,7 +279,7 @@ class AddAccountScreen extends ConsumerWidget {
         builder: (_) => ActionResultSheet(
           state: 0,
           title: l10n.warning,
-          message: l10n.backupReplaceWarning,
+          message: l10n.backupSettingsWarning,
           falseButtonVisible: true,
         ),
       );

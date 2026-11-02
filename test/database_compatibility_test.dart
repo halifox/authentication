@@ -1,3 +1,4 @@
+import 'package:authentication/settings/settings.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -30,5 +31,23 @@ void main() {
     expect(entries.single.issuer, 'Example');
     expect(entries.single.secret, 'secret');
     expect(entries.single.period, 30);
+    await database.initializeSettings({
+      showCaptchaOnTapKey: true,
+      copyCaptchaOnTapKey: false,
+    });
+    expect(await database.getSettings(), {
+      showCaptchaOnTapKey: true,
+      copyCaptchaOnTapKey: false,
+    });
+    await database.setSetting(showCaptchaOnTapKey, false);
+    await database.initializeSettings({
+      showCaptchaOnTapKey: true,
+      copyCaptchaOnTapKey: true,
+    });
+    expect(await database.getSettings(), {
+      showCaptchaOnTapKey: false,
+      copyCaptchaOnTapKey: false,
+    });
+    expect((await database.getAllAuthEntries()).single.secret, 'secret');
   });
 }

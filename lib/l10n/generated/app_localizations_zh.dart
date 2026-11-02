@@ -245,4 +245,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get noSearchResults => '没有匹配的账户';
+
+  @override
+  String get settingsLoadError => '无法加载设置。';
+
+  @override
+  String get backupSettingsWarning => '发行者和账户名相同的条目将被更新。备份中包含的设置也会被恢复。是否继续？';
 }

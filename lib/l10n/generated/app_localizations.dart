@@ -581,6 +581,18 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'没有匹配的账户'**
   String get noSearchResults;
+
+  /// No description provided for @settingsLoadError.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法加载设置。'**
+  String get settingsLoadError;
+
+  /// No description provided for @backupSettingsWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'发行者和账户名相同的条目将被更新。备份中包含的设置也会被恢复。是否继续？'**
+  String get backupSettingsWarning;
 }
 
 class _AppLocalizationsDelegate

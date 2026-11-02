@@ -54,3 +54,11 @@ class AuthEntries extends Table {
     {issuer, account},
   ];
 }
+
+class AppSettings extends Table {
+  TextColumn get key => text()();
+  BoolColumn get value => boolean()();
+
+  @override
+  Set<Column> get primaryKey => {key};
+}
