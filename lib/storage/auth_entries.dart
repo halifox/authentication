@@ -90,3 +90,12 @@ class AccountCategoryLinks extends Table {
   @override
   Set<Column> get primaryKey => {accountId, categoryId};
 }
+
+class BackupState extends Table {
+  IntColumn get id => integer()();
+  IntColumn get revision => integer()();
+  IntColumn get savedRevision => integer()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}

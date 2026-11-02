@@ -20,6 +20,7 @@ part 'auth_storage.dart';
     AppIntegerSettings,
     Categories,
     AccountCategoryLinks,
+    BackupState,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -39,10 +40,14 @@ class AppDatabase extends _$AppDatabase {
   /// 数据库架构版本号。
   /// 如果修改了表结构，需要递增此版本并处理迁移逻辑。
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) async {
+      await m.createAll();
+      await _initializeBackupTracking(false);
+    },
     onUpgrade: (m, from, to) async {
       if (from < 2) await m.createTable(appSettings);
       if (from < 3) await m.createTable(appIntegerSettings);
@@ -51,8 +56,52 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(categories);
         await m.createTable(accountCategoryLinks);
       }
+      if (from < 6) {
+        await m.createTable(backupState);
+        await _initializeBackupTracking(true);
+      }
     },
   );
+
+  Future<void> _initializeBackupTracking(bool existing) async {
+    await customStatement(
+      'INSERT INTO backup_state (id, revision, saved_revision) VALUES (1, ${existing ? 1 : 0}, 0)',
+    );
+    for (final table in [
+      'auth_entries',
+      'app_settings',
+      'app_integer_settings',
+      'categories',
+      'account_category_links',
+    ]) {
+      for (final operation in ['INSERT', 'UPDATE', 'DELETE']) {
+        await customStatement(
+          'CREATE TRIGGER backup_${table}_${operation.toLowerCase()} AFTER $operation ON $table BEGIN UPDATE backup_state SET revision = revision + 1 WHERE id = 1; END',
+        );
+      }
+    }
+  }
+
+  Future<int> backupRevision() async =>
+      (await select(backupState).getSingle()).revision;
+
+  Future<void> markBackupSaved(int revision) async {
+    await (update(backupState)..where((row) => row.id.equals(1))).write(
+      BackupStateCompanion(savedRevision: Value(revision)),
+    );
+  }
+
+  Stream<bool> watchBackupNeeded() => customSelect(
+    'SELECT revision != saved_revision AND (saved_revision > 0 OR EXISTS (SELECT 1 FROM auth_entries) OR EXISTS (SELECT 1 FROM categories)) AS needed FROM backup_state WHERE id = 1',
+    readsFrom: {
+      backupState,
+      authEntries,
+      appSettings,
+      appIntegerSettings,
+      categories,
+      accountCategoryLinks,
+    },
+  ).watchSingle().map((row) => row.read<bool>('needed'));
 
   Future<void> initializeSettings(Map<String, bool> legacySettings) async {
     final values = validateSettings(legacySettings);

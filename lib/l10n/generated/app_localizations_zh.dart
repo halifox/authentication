@@ -512,4 +512,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get clearFilterToReorder => '显示全部账户并清除搜索后可调整顺序。';
+
+  @override
+  String get backupReminders => '备份提醒';
+
+  @override
+  String get backupReminderMessage => '数据已更改，请创建备份';
 }

@@ -1085,6 +1085,18 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'显示全部账户并清除搜索后可调整顺序。'**
   String get clearFilterToReorder;
+
+  /// No description provided for @backupReminders.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份提醒'**
+  String get backupReminders;
+
+  /// No description provided for @backupReminderMessage.
+  ///
+  /// In zh, this message translates to:
+  /// **'数据已更改，请创建备份'**
+  String get backupReminderMessage;
 }
 
 class _AppLocalizationsDelegate

@@ -161,5 +161,7 @@
   "allCategories": "All accounts",
   "uncategorized": "Uncategorized",
   "categoryFilter": "Filter categories",
-  "clearFilterToReorder": "Show all accounts and clear search to reorder."
+  "clearFilterToReorder": "Show all accounts and clear search to reorder.",
+  "backupReminders": "Backup reminders",
+  "backupReminderMessage": "Your data has changed. Create a backup."
 }

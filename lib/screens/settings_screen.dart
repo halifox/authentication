@@ -50,6 +50,7 @@ class SettingsScreen extends ConsumerWidget {
     final showAccountName = ref.watch(showAccountNameProvider);
     final advanceHotp = settings.value?[advanceHotpOnCopyKey] ?? false;
     final dynamicColor = settings.value?[dynamicColorKey] ?? true;
+    final backupReminders = settings.value?[backupRemindersKey] ?? true;
     final List<SettingsItemModel> options = [
       SettingsItemModel(
         label: AppLocalizations.of(context)!.showCaptchaOnTap,
@@ -85,6 +86,13 @@ class SettingsScreen extends ConsumerWidget {
         onTap: () => ref
             .read(settingsOperationsProvider.notifier)
             .update(dynamicColorKey, !dynamicColor),
+      ),
+      SettingsItemModel(
+        label: l10n.backupReminders,
+        value: backupReminders,
+        onTap: () => ref
+            .read(settingsOperationsProvider.notifier)
+            .update(backupRemindersKey, !backupReminders),
       ),
     ];
 

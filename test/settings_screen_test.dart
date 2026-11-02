@@ -31,10 +31,28 @@ void main() {
     await tester.tap(find.byIcon(Icons.close).first);
     await tester.pumpAndSettle();
     expect((await db.getSettings())[showCaptchaOnTapKey], isTrue);
-    expect(find.byIcon(Icons.done), findsNWidgets(3));
+    expect(
+      find.descendant(
+        of: find.ancestor(
+          of: find.text('Tap to Reveal Code'),
+          matching: find.byType(SettingsSwitchTile),
+        ),
+        matching: find.byIcon(Icons.done),
+      ),
+      findsOneWidget,
+    );
     await db.setSetting(copyCaptchaOnTapKey, true);
     await tester.pumpAndSettle();
-    expect(find.byIcon(Icons.done), findsNWidgets(4));
+    expect(
+      find.descendant(
+        of: find.ancestor(
+          of: find.text('Tap to Copy Code'),
+          matching: find.byType(SettingsSwitchTile),
+        ),
+        matching: find.byIcon(Icons.done),
+      ),
+      findsOneWidget,
+    );
     await tester.tap(
       find.descendant(
         of: find.ancestor(

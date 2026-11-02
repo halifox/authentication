@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:authentication/backup/backup_provider.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/category_provider.dart';
 import 'package:authentication/otp/otp_provider.dart';
@@ -31,6 +32,9 @@ class TokenListScreen extends HookConsumerWidget {
     final authListAsync = ref.watch(authEntryListProvider);
     final categories = ref.watch(categoriesProvider);
     final memberships = ref.watch(categoryMembershipsProvider);
+    final backupNeeded = ref.watch(backupNeededProvider).value ?? false;
+    final backupReminders =
+        ref.watch(settingsProvider).value?[backupRemindersKey] ?? true;
     final categoryList = categories.value ?? [];
     final selectedCategory =
         categoryFilter.value <= 0 ||
@@ -61,6 +65,19 @@ class TokenListScreen extends HookConsumerWidget {
       ),
       body: Column(
         children: [
+          if (backupReminders && backupNeeded)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: Material(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(24),
+                child: ListTile(
+                  title: Text(l10n.backupReminderMessage),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.add),
+                ),
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             child: Row(

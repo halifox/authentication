@@ -4,6 +4,42 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('upgrades version 5 and preserves category links', () async {
+    final database = AppDatabase(
+      NativeDatabase.memory(
+        setup: (sqlite) {
+          sqlite.execute(
+            'CREATE TABLE app_settings (key TEXT NOT NULL PRIMARY KEY, value INTEGER NOT NULL)',
+          );
+          sqlite.execute(
+            'CREATE TABLE app_integer_settings (key TEXT NOT NULL PRIMARY KEY, value INTEGER NOT NULL)',
+          );
+          sqlite.execute(
+            'CREATE TABLE auth_entries (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, scheme TEXT NOT NULL, type TEXT NOT NULL, issuer TEXT NOT NULL, account TEXT NOT NULL, secret TEXT NOT NULL, algorithm TEXT NOT NULL, digits INTEGER NOT NULL, period INTEGER NOT NULL, counter INTEGER NOT NULL, pin TEXT NOT NULL, icon TEXT NOT NULL, sort_order INTEGER NOT NULL, created_at INTEGER NOT NULL, copy_count INTEGER NOT NULL DEFAULT 0, UNIQUE (issuer, account))',
+          );
+          sqlite.execute(
+            "INSERT INTO auth_entries VALUES (1, 'otpauth', 'totp', 'Example', 'user', 'secret', 'sha1', 6, 30, 0, '', '', 0, 1, 7)",
+          );
+          sqlite.execute(
+            'CREATE TABLE categories (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL UNIQUE, sort_order INTEGER NOT NULL, is_default INTEGER NOT NULL DEFAULT 0)',
+          );
+          sqlite.execute("INSERT INTO categories VALUES (1, 'Work', 0, 1)");
+          sqlite.execute(
+            'CREATE TABLE account_category_links (account_id INTEGER NOT NULL, category_id INTEGER NOT NULL, PRIMARY KEY (account_id, category_id))',
+          );
+          sqlite.execute('INSERT INTO account_category_links VALUES (1, 1)');
+          sqlite.execute('PRAGMA user_version = 5');
+        },
+      ),
+    );
+    addTearDown(database.close);
+    expect((await database.getAllAuthEntries()).single.secret, 'secret');
+    expect((await database.getCategories()).single.name, 'Work');
+    expect(await database.getCategoryMemberships(), {
+      1: {1},
+    });
+    expect(await database.watchBackupNeeded().first, true);
+  });
   test(
     'upgrades version 4 without losing accounts, statistics or settings',
     () async {
@@ -86,6 +122,7 @@ void main() {
       advanceHotpOnCopyKey: false,
       sortLockedKey: true,
       dynamicColorKey: true,
+      backupRemindersKey: true,
     });
     await database.setSetting(showCaptchaOnTapKey, false);
     await database.initializeSettings({
@@ -99,6 +136,7 @@ void main() {
       advanceHotpOnCopyKey: false,
       sortLockedKey: true,
       dynamicColorKey: true,
+      backupRemindersKey: true,
     });
     expect((await database.getAllAuthEntries()).single.secret, 'secret');
   });

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:authentication/backup/backup_provider.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/category_provider.dart';
@@ -40,6 +41,7 @@ void main() {
       ProviderScope(
         overrides: [
           authEntryListProvider.overrideWith((ref) => entries.stream),
+          backupNeededProvider.overrideWith((ref) => Stream.value(false)),
           settingsProvider.overrideWith((ref) => settings.stream),
           categoriesProvider.overrideWith((ref) => Stream.value([])),
           categoryMembershipsProvider.overrideWith((ref) => Stream.value({})),

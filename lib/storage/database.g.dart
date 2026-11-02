@@ -1778,6 +1778,258 @@ class AccountCategoryLinksCompanion
   }
 }
 
+class $BackupStateTable extends BackupState
+    with TableInfo<$BackupStateTable, BackupStateData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BackupStateTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _revisionMeta = const VerificationMeta(
+    'revision',
+  );
+  @override
+  late final GeneratedColumn<int> revision = GeneratedColumn<int>(
+    'revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _savedRevisionMeta = const VerificationMeta(
+    'savedRevision',
+  );
+  @override
+  late final GeneratedColumn<int> savedRevision = GeneratedColumn<int>(
+    'saved_revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, revision, savedRevision];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'backup_state';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<BackupStateData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('revision')) {
+      context.handle(
+        _revisionMeta,
+        revision.isAcceptableOrUnknown(data['revision']!, _revisionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_revisionMeta);
+    }
+    if (data.containsKey('saved_revision')) {
+      context.handle(
+        _savedRevisionMeta,
+        savedRevision.isAcceptableOrUnknown(
+          data['saved_revision']!,
+          _savedRevisionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_savedRevisionMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  BackupStateData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BackupStateData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      revision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}revision'],
+      )!,
+      savedRevision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}saved_revision'],
+      )!,
+    );
+  }
+
+  @override
+  $BackupStateTable createAlias(String alias) {
+    return $BackupStateTable(attachedDatabase, alias);
+  }
+}
+
+class BackupStateData extends DataClass implements Insertable<BackupStateData> {
+  final int id;
+  final int revision;
+  final int savedRevision;
+  const BackupStateData({
+    required this.id,
+    required this.revision,
+    required this.savedRevision,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['revision'] = Variable<int>(revision);
+    map['saved_revision'] = Variable<int>(savedRevision);
+    return map;
+  }
+
+  BackupStateCompanion toCompanion(bool nullToAbsent) {
+    return BackupStateCompanion(
+      id: Value(id),
+      revision: Value(revision),
+      savedRevision: Value(savedRevision),
+    );
+  }
+
+  factory BackupStateData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BackupStateData(
+      id: serializer.fromJson<int>(json['id']),
+      revision: serializer.fromJson<int>(json['revision']),
+      savedRevision: serializer.fromJson<int>(json['savedRevision']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'revision': serializer.toJson<int>(revision),
+      'savedRevision': serializer.toJson<int>(savedRevision),
+    };
+  }
+
+  BackupStateData copyWith({int? id, int? revision, int? savedRevision}) =>
+      BackupStateData(
+        id: id ?? this.id,
+        revision: revision ?? this.revision,
+        savedRevision: savedRevision ?? this.savedRevision,
+      );
+  BackupStateData copyWithCompanion(BackupStateCompanion data) {
+    return BackupStateData(
+      id: data.id.present ? data.id.value : this.id,
+      revision: data.revision.present ? data.revision.value : this.revision,
+      savedRevision: data.savedRevision.present
+          ? data.savedRevision.value
+          : this.savedRevision,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BackupStateData(')
+          ..write('id: $id, ')
+          ..write('revision: $revision, ')
+          ..write('savedRevision: $savedRevision')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, revision, savedRevision);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BackupStateData &&
+          other.id == this.id &&
+          other.revision == this.revision &&
+          other.savedRevision == this.savedRevision);
+}
+
+class BackupStateCompanion extends UpdateCompanion<BackupStateData> {
+  final Value<int> id;
+  final Value<int> revision;
+  final Value<int> savedRevision;
+  const BackupStateCompanion({
+    this.id = const Value.absent(),
+    this.revision = const Value.absent(),
+    this.savedRevision = const Value.absent(),
+  });
+  BackupStateCompanion.insert({
+    this.id = const Value.absent(),
+    required int revision,
+    required int savedRevision,
+  }) : revision = Value(revision),
+       savedRevision = Value(savedRevision);
+  static Insertable<BackupStateData> custom({
+    Expression<int>? id,
+    Expression<int>? revision,
+    Expression<int>? savedRevision,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (revision != null) 'revision': revision,
+      if (savedRevision != null) 'saved_revision': savedRevision,
+    });
+  }
+
+  BackupStateCompanion copyWith({
+    Value<int>? id,
+    Value<int>? revision,
+    Value<int>? savedRevision,
+  }) {
+    return BackupStateCompanion(
+      id: id ?? this.id,
+      revision: revision ?? this.revision,
+      savedRevision: savedRevision ?? this.savedRevision,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (revision.present) {
+      map['revision'] = Variable<int>(revision.value);
+    }
+    if (savedRevision.present) {
+      map['saved_revision'] = Variable<int>(savedRevision.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BackupStateCompanion(')
+          ..write('id: $id, ')
+          ..write('revision: $revision, ')
+          ..write('savedRevision: $savedRevision')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1788,6 +2040,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $CategoriesTable categories = $CategoriesTable(this);
   late final $AccountCategoryLinksTable accountCategoryLinks =
       $AccountCategoryLinksTable(this);
+  late final $BackupStateTable backupState = $BackupStateTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1798,6 +2051,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     appIntegerSettings,
     categories,
     accountCategoryLinks,
+    backupState,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -3274,6 +3528,173 @@ typedef $$AccountCategoryLinksTableProcessedTableManager =
       AccountCategoryLink,
       PrefetchHooks Function({bool accountId, bool categoryId})
     >;
+typedef $$BackupStateTableCreateCompanionBuilder =
+    BackupStateCompanion Function({
+      Value<int> id,
+      required int revision,
+      required int savedRevision,
+    });
+typedef $$BackupStateTableUpdateCompanionBuilder =
+    BackupStateCompanion Function({
+      Value<int> id,
+      Value<int> revision,
+      Value<int> savedRevision,
+    });
+
+class $$BackupStateTableFilterComposer
+    extends Composer<_$AppDatabase, $BackupStateTable> {
+  $$BackupStateTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get savedRevision => $composableBuilder(
+    column: $table.savedRevision,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$BackupStateTableOrderingComposer
+    extends Composer<_$AppDatabase, $BackupStateTable> {
+  $$BackupStateTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get savedRevision => $composableBuilder(
+    column: $table.savedRevision,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$BackupStateTableAnnotationComposer
+    extends Composer<_$AppDatabase, $BackupStateTable> {
+  $$BackupStateTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get revision =>
+      $composableBuilder(column: $table.revision, builder: (column) => column);
+
+  GeneratedColumn<int> get savedRevision => $composableBuilder(
+    column: $table.savedRevision,
+    builder: (column) => column,
+  );
+}
+
+class $$BackupStateTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $BackupStateTable,
+          BackupStateData,
+          $$BackupStateTableFilterComposer,
+          $$BackupStateTableOrderingComposer,
+          $$BackupStateTableAnnotationComposer,
+          $$BackupStateTableCreateCompanionBuilder,
+          $$BackupStateTableUpdateCompanionBuilder,
+          (
+            BackupStateData,
+            BaseReferences<_$AppDatabase, $BackupStateTable, BackupStateData>,
+          ),
+          BackupStateData,
+          PrefetchHooks Function()
+        > {
+  $$BackupStateTableTableManager(_$AppDatabase db, $BackupStateTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$BackupStateTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$BackupStateTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$BackupStateTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> revision = const Value.absent(),
+                Value<int> savedRevision = const Value.absent(),
+              }) => BackupStateCompanion(
+                id: id,
+                revision: revision,
+                savedRevision: savedRevision,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int revision,
+                required int savedRevision,
+              }) => BackupStateCompanion.insert(
+                id: id,
+                revision: revision,
+                savedRevision: savedRevision,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$BackupStateTable, BackupStateData>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $BackupStateTable,
+                    BackupStateData
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$BackupStateTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $BackupStateTable,
+      BackupStateData,
+      $$BackupStateTableFilterComposer,
+      $$BackupStateTableOrderingComposer,
+      $$BackupStateTableAnnotationComposer,
+      $$BackupStateTableCreateCompanionBuilder,
+      $$BackupStateTableUpdateCompanionBuilder,
+      (
+        BackupStateData,
+        BaseReferences<_$AppDatabase, $BackupStateTable, BackupStateData>,
+      ),
+      BackupStateData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3288,4 +3709,6 @@ class $AppDatabaseManager {
       $$CategoriesTableTableManager(_db, _db.categories);
   $$AccountCategoryLinksTableTableManager get accountCategoryLinks =>
       $$AccountCategoryLinksTableTableManager(_db, _db.accountCategoryLinks);
+  $$BackupStateTableTableManager get backupState =>
+      $$BackupStateTableTableManager(_db, _db.backupState);
 }

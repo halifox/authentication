@@ -54,6 +54,7 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
           integerSettings: await db.getIntegerSettings(),
           categories: await db.getCategories(),
           membershipIds: await db.getCategoryMemberships(),
+          revision: await db.backupRevision(),
         ),
       );
       final names = {
@@ -85,6 +86,9 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
         bytes: bytes,
         mimeType: 'application/json',
       );
+      if (location != null && !kIsWeb) {
+        await db.markBackupSaved(snapshot.revision);
+      }
       return location != null || kIsWeb;
     });
   }
@@ -150,3 +154,7 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
 
 final backupOperationsProvider =
     NotifierProvider<BackupOperations, AsyncValue<void>>(BackupOperations.new);
+
+final backupNeededProvider = StreamProvider<bool>(
+  (ref) => ref.watch(appDatabaseProvider).watchBackupNeeded(),
+);

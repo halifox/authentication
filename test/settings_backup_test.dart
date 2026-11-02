@@ -110,6 +110,7 @@ void main() {
         advanceHotpOnCopyKey: false,
         sortLockedKey: true,
         dynamicColorKey: true,
+        backupRemindersKey: true,
       });
       expect(await db.getIntegerSettings(), {
         hideCodeAfterKey: 30,

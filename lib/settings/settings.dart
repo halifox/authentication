@@ -4,6 +4,7 @@ const showAccountNameKey = 'show_account_name';
 const advanceHotpOnCopyKey = 'advance_hotp_on_copy';
 const sortLockedKey = 'sort_locked';
 const dynamicColorKey = 'dynamic_color';
+const backupRemindersKey = 'backup_reminders';
 
 const defaultSettings = <String, bool>{
   showCaptchaOnTapKey: false,
@@ -12,6 +13,7 @@ const defaultSettings = <String, bool>{
   advanceHotpOnCopyKey: false,
   sortLockedKey: true,
   dynamicColorKey: true,
+  backupRemindersKey: true,
 };
 
 Map<String, bool> validateSettings(Object? value) {

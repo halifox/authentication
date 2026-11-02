@@ -527,4 +527,10 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get clearFilterToReorder =>
       'Show all accounts and clear search to reorder.';
+
+  @override
+  String get backupReminders => 'Backup reminders';
+
+  @override
+  String get backupReminderMessage => 'Your data has changed. Create a backup.';
 }
