@@ -1,77 +1,44 @@
-import 'package:authentication/db/database.dart';
-import 'package:authentication/ui/add_account_screen.dart';
-import 'package:authentication/ui/icon_selection_screen.dart';
-import 'package:authentication/ui/qr_scanner_screen.dart';
-import 'package:authentication/ui/settings_screen.dart';
-import 'package:authentication/ui/token_form_screen.dart';
-import 'package:authentication/ui/token_list_screen.dart';
-import 'package:go_router/go_router.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:authentication/otp/account.dart';
+import 'package:authentication/screens/add_account_screen.dart';
+import 'package:authentication/screens/icon_selection_screen.dart';
+import 'package:authentication/screens/qr_scanner_screen.dart';
+import 'package:authentication/screens/settings_screen.dart';
+import 'package:authentication/screens/token_form_screen.dart';
+import 'package:authentication/screens/token_list_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
-part 'app_router.g.dart';
-
-/// 全局路由配置提供者
-@Riverpod(keepAlive: true)
-GoRouter router(Ref ref) {
-  return GoRouter(
-    initialLocation: AppRoutes.home,
-    routes: [
-      GoRoute(
-        path: AppRoutes.home,
-        name: AppRoutes.homeName,
-        builder: (context, state) => const TokenListScreen(),
-        routes: [
-          GoRoute(
-            path: 'add',
-            name: AppRoutes.addName,
-            builder: (context, state) => const AddAccountScreen(),
-          ),
-          GoRoute(
-            path: 'settings',
-            name: AppRoutes.settingsName,
-            builder: (context, state) => const SettingsScreen(),
-          ),
-          GoRoute(
-            path: 'form',
-            name: AppRoutes.formName,
-            builder: (context, state) {
-              final authEntry = state.extra as AuthEntry?;
-              return TokenFormScreen(initialEntry: authEntry);
-            },
-          ),
-          GoRoute(
-            path: 'scan',
-            name: AppRoutes.scanName,
-            builder: (context, state) => const QrScannerScreen(),
-          ),
-          GoRoute(
-            path: 'icons',
-            name: AppRoutes.iconsName,
-            builder: (context, state) => const IconSelectionScreen(),
-          ),
-        ],
-      ),
-    ],
-  );
-}
-
-/// 路由名称常量定义，提供基础的类型安全
 class AppRoutes {
   static const home = '/';
-  static const homeName = 'home';
-
   static const add = '/add';
-  static const addName = 'add';
-
   static const settings = '/settings';
-  static const settingsName = 'settings';
-
   static const form = '/form';
-  static const formName = 'form';
-
   static const scan = '/scan';
-  static const scanName = 'scan';
-
   static const icons = '/icons';
-  static const iconsName = 'icons';
+}
+
+Route<dynamic> onGenerateRoute(RouteSettings settings) {
+  final Widget screen = switch (settings.name) {
+    AppRoutes.add => const AddAccountScreen(),
+    AppRoutes.settings => const SettingsScreen(),
+    AppRoutes.form => TokenFormScreen(
+      initialEntry: settings.arguments as OtpAccount?,
+    ),
+    AppRoutes.scan => const QrScannerScreen(),
+    AppRoutes.icons => const IconSelectionScreen(),
+    _ => const TokenListScreen(),
+  };
+  if (settings.name == AppRoutes.icons) {
+    return MaterialPageRoute<String>(
+      settings: settings,
+      builder: (_) => screen,
+    );
+  }
+  if (settings.name == AppRoutes.scan) {
+    return MaterialPageRoute<BarcodeCapture>(
+      settings: settings,
+      builder: (_) => screen,
+    );
+  }
+  return MaterialPageRoute<void>(settings: settings, builder: (_) => screen);
 }

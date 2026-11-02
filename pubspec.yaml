@@ -21,10 +21,8 @@ dependencies:
   flutter_hooks: ^0.21.3+1
   flutter_riverpod: ^3.4.3
   hooks_riverpod: ^3.4.3
-  riverpod_annotation: ^4.0.7
 
   # Navigation
-  go_router: ^18.1.2
 
   # Database & Persistence
   drift: ^2.35.3
@@ -41,13 +39,13 @@ dependencies:
   base32: ^2.2.0
   crypto: ^3.0.8
   encrypt: ^5.0.3
-  hashlib: ^2.4.2
 
   # Utilities & System
-  file_selector: ^1.1.0
   mobile_scanner: ^7.5.0
-  path: ^1.9.1
-  path_provider: ^2.1.6
+  flutter_secure_storage: ^11.2.0
+  file_picker: ^13.3.1
+  web: ^1.1.2
+  pointycastle: ^3.9.1
 
 dev_dependencies:
   # Testing & Linting
@@ -58,7 +56,6 @@ dev_dependencies:
   # Code Generation
   build_runner: ^2.16.2
   drift_dev: ^2.35.2
-  riverpod_generator: ^4.0.9
 
   # Tools
   flutter_launcher_icons: ^0.14.4

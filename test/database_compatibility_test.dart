@@ -1,4 +1,4 @@
-import 'package:authentication/db/database.dart';
+import 'package:authentication/storage/database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 

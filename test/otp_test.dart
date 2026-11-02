@@ -1,4 +1,4 @@
-import 'package:authentication/utils/otp.dart';
+import 'package:authentication/otp/otp.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -8,9 +8,13 @@
 
 ## 简介
 
-本程序是一款专注于双重身份验证（2FA）的离线客户端。与常见集成了繁杂云同步功能的认证应用不同，Authentication 的设计逻辑完全聚焦于本地密钥管理与 TOTP 动态码的实时生成。程序架构上彻底移除了网络通信模块，不请求任何敏感系统权限，确保所有认证种子数据仅存在于本地沙盒环境。
+本项目目前处于实验阶段，尚未经独立安全审计。请勿将其作为重要账户唯一的恢复方式；请妥善保存服务商提供的恢复码，并在迁移设备前验证备份。
 
-相较于依赖云端的解决方案，本程序更偏向“极简与绝对控制”。用户无需担心凭证泄露或第三方隐私收集风险，所有操作逻辑均在本地闭环完成，是针对账户安全保护的纯粹本地化工具。
+认证种子保存在本地数据库中，使用设备生成的密钥和 AES-GCM 加密；密钥由平台安全存储管理。新版使用独立数据库，不会自动迁移旧版数据；旧数据库文件、SQLite 日志、系统备份或存储介质中可能仍留有历史明文。设备受到恶意软件控制、应用运行时的内存、未锁定的设备或受损的构建环境不在此保护范围内。
+
+导入和导出通过备份文件完成。导出时可选择密码保护；未设置密码的文件会明文包含所有密钥，请安全保管。密码无法找回，请先验证备份。Android 系统自动备份已禁用，卸载应用或更换设备前必须先导出并验证备份。加密数据库与设备密钥不能单独恢复彼此。
+
+扫码需要相机权限；Linux 需要 libsecret 和可用的 Secret Service；Web 需要 HTTPS 或 localhost，浏览器存储和站点脚本的安全边界不同于原生应用；浏览器下载仅表示已请求保存，必须确认文件实际下载完成。各平台的完整发布和恢复流程仍需真实设备验证。安全问题的私下报告方式见 [SECURITY.md](SECURITY.md)。
 
 ## 应用截图
 
@@ -24,6 +28,10 @@
    <img src="./screenshots/Screenshot_ios_5.webp" width="24%"/>
 </p>
 
+
+## 代码结构
+
+`lib/otp` 包含独立的 OTP 数据、解析、验证和计算；`lib/storage` 负责数据库、密钥和加密写入；`lib/backup` 负责备份格式及文件恢复；`lib/actions` 负责账户和扫码操作；`lib/otp/otp_provider.dart` 与 `lib/backup/backup_provider.dart` 管理操作状态；`lib/screens` 和 `lib/widgets` 分别保存页面与组件，界面通过 hooks_riverpod 观察数据和执行操作。数据库代码由 Drift 生成，可使用 `dart run build_runner build` 更新。
 
 ## 构建与发布
 
@@ -41,6 +49,8 @@ GitHub Actions 在 `master` 上使用 Release Please 根据 Conventional Commits
 应使用与已有安装包相同的签名密钥，否则新 APK 无法覆盖安装。Android 和 iOS 构建都成功后才会上传 Release 附件；工作流失败时可在 Actions 页面查看日志并重试。
 
 本地构建 Android Release 时，可在 `android/key.properties` 配置 `storeFile`、`storePassword`、`keyAlias` 和 `keyPassword`；`storeFile` 相对于 `android` 目录。密钥文件和配置不得提交到仓库。
+
+Web 数据库运行文件 `web/drift_worker.js` 和 `web/sqlite3.wasm` 来自锁定的 drift 2.35.3 包（后者位于该包的 devtools 构建目录）。更新 drift 或 sqlite3 时需要同时更新这两个文件，并在浏览器中验证数据库创建、重启和备份恢复。
 
 ## 致谢
 

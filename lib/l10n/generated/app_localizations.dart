@@ -246,24 +246,6 @@ abstract class AppLocalizations {
   /// **'该功能当前仅支持 Android 和 iOS 平台。'**
   String get platformNotSupported;
 
-  /// 读取剪贴板内容失败时的错误提示消息
-  ///
-  /// In zh, this message translates to:
-  /// **'无法获取剪贴板数据'**
-  String get cannotGetClipboardData;
-
-  /// 从剪贴板成功导入数据后显示的计数提示消息
-  ///
-  /// In zh, this message translates to:
-  /// **'{count}条数据已从剪贴板导入'**
-  String importedCount(int count);
-
-  /// 成功导出数据到剪贴板后显示的计数提示消息
-  ///
-  /// In zh, this message translates to:
-  /// **'{count}条数据已导出到剪贴板'**
-  String exportedCount(int count);
-
   /// 扫描到不支持的二维码格式时的错误提示消息
   ///
   /// In zh, this message translates to:
@@ -293,18 +275,6 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'输入密钥'**
   String get enterKey;
-
-  /// 设置页面从剪贴板导入数据的功能选项文本
-  ///
-  /// In zh, this message translates to:
-  /// **'从剪贴板导入'**
-  String get importFromClipboard;
-
-  /// 设置页面导出数据到剪贴板的功能选项文本
-  ///
-  /// In zh, this message translates to:
-  /// **'导出到剪贴板'**
-  String get exportToClipboard;
 
   /// 手动配置认证器页面的页面标题
   ///
@@ -486,12 +456,6 @@ abstract class AppLocalizations {
   /// **'搜索'**
   String get search;
 
-  /// 批量导入前的警告提示
-  ///
-  /// In zh, this message translates to:
-  /// **'您即将从剪贴板导入数据。如果数据库中已存在相同的账户，它们将被覆盖。是否继续？'**
-  String get importWarning;
-
   /// 导出失败标题
   ///
   /// In zh, this message translates to:
@@ -504,11 +468,89 @@ abstract class AppLocalizations {
   /// **'没有可导出的数据'**
   String get noDataToExport;
 
-  /// No description provided for @exportWarning.
+  /// No description provided for @importFile.
   ///
   /// In zh, this message translates to:
-  /// **'您即将将所有认证器导出到剪贴板。导出的内容为明文格式，请确保您的环境安全并及时处理剪贴板内容。是否继续？'**
-  String get exportWarning;
+  /// **'从文件导入'**
+  String get importFile;
+
+  /// No description provided for @exportFile.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出到文件'**
+  String get exportFile;
+
+  /// No description provided for @backupPasswordTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份密码'**
+  String get backupPasswordTitle;
+
+  /// No description provided for @backupPasswordHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'留空则导出未加密文件'**
+  String get backupPasswordHint;
+
+  /// No description provided for @backupPasswordRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入备份密码'**
+  String get backupPasswordRequired;
+
+  /// No description provided for @backupPasswordConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'确认密码'**
+  String get backupPasswordConfirm;
+
+  /// No description provided for @backupPasswordMismatch.
+  ///
+  /// In zh, this message translates to:
+  /// **'两次输入的密码不一致'**
+  String get backupPasswordMismatch;
+
+  /// No description provided for @backupPlainWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'不设置密码时，文件会明文包含所有密钥。请安全保管。'**
+  String get backupPlainWarning;
+
+  /// No description provided for @backupReplaceWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入将覆盖发行者和账户名相同的条目。是否继续？'**
+  String get backupReplaceWarning;
+
+  /// No description provided for @backupFileTooLarge.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份文件过大。'**
+  String get backupFileTooLarge;
+
+  /// No description provided for @backupFileError.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法导入文件，请检查密码和文件内容。'**
+  String get backupFileError;
+
+  /// No description provided for @backupSaved.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份文件已保存。'**
+  String get backupSaved;
+
+  /// No description provided for @backupImported.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份文件已导入。'**
+  String get backupImported;
+
+  /// No description provided for @backupDownloadStarted.
+  ///
+  /// In zh, this message translates to:
+  /// **'已请求浏览器下载备份文件。请确认下载完成。'**
+  String get backupDownloadStarted;
 }
 
 class _AppLocalizationsDelegate

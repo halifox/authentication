@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -75,19 +76,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get platformNotSupported => '이 기능은 현재 Android와 iOS 플랫폼에서만 지원됩니다.';
 
   @override
-  String get cannotGetClipboardData => '클립보드 데이터를 가져올 수 없습니다';
-
-  @override
-  String importedCount(int count) {
-    return '$count개의 데이터가 클립보드에서 가져왔습니다';
-  }
-
-  @override
-  String exportedCount(int count) {
-    return '$count개의 데이터가 클립보드로 내보냈습니다';
-  }
-
-  @override
   String get unsupportedQRCode => '이 타입의 QR코드는 지원되지 않습니다';
 
   @override
@@ -104,12 +92,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get enterKey => '키 입력';
-
-  @override
-  String get importFromClipboard => '클립보드에서 가져오기';
-
-  @override
-  String get exportToClipboard => '클립보드로 내보내기';
 
   @override
   String get enterProvidedKey => '키 입력';
@@ -202,16 +184,54 @@ class AppLocalizationsKo extends AppLocalizations {
   String get search => '검색';
 
   @override
-  String get importWarning =>
-      '클립보드에서 데이터를 가져오려고 합니다. 데이터베이스에 동일한 계정이 이미 있는 경우 덮어씌워집니다. 계속하시겠습니까?';
-
-  @override
   String get exportFailed => '내보내기 실패';
 
   @override
   String get noDataToExport => '내보낼 데이터가 없습니다';
 
   @override
-  String get exportWarning =>
-      '모든 인증기를 클립보드로 내보내려고 합니다. 내보낸 내용은 일반 텍스트 형식입니다. 사용 중인 환경이 안전한지 확인하고 나중에 클립보드를 비워주세요. 계속하시겠습니까?';
+  String get importFile => 'Import file';
+
+  @override
+  String get exportFile => 'Export file';
+
+  @override
+  String get backupPasswordTitle => 'Backup password';
+
+  @override
+  String get backupPasswordHint => 'Leave empty for an unencrypted file';
+
+  @override
+  String get backupPasswordRequired => 'Enter backup password';
+
+  @override
+  String get backupPasswordConfirm => 'Confirm password';
+
+  @override
+  String get backupPasswordMismatch => 'Passwords do not match';
+
+  @override
+  String get backupPlainWarning =>
+      'Without a password, this file contains all your secret keys in plain text. Keep it in a safe place.';
+
+  @override
+  String get backupReplaceWarning =>
+      'Importing replaces accounts with the same issuer and account name. Continue?';
+
+  @override
+  String get backupFileTooLarge => 'The backup file is too large.';
+
+  @override
+  String get backupFileError =>
+      'The file could not be imported. Check the password and file contents.';
+
+  @override
+  String get backupSaved => 'Backup file saved.';
+
+  @override
+  String get backupImported => 'Backup file imported.';
+
+  @override
+  String get backupDownloadStarted =>
+      'The browser was asked to download the backup. Check that the download completed.';
 }

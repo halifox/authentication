@@ -1,4 +1,4 @@
-import 'package:authentication/main.dart';
+import 'package:authentication/app.dart';
 import 'package:flutter/material.dart' as flutter;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart' as material;

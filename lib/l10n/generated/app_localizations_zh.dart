@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -75,19 +76,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get platformNotSupported => '该功能当前仅支持 Android 和 iOS 平台。';
 
   @override
-  String get cannotGetClipboardData => '无法获取剪贴板数据';
-
-  @override
-  String importedCount(int count) {
-    return '$count条数据已从剪贴板导入';
-  }
-
-  @override
-  String exportedCount(int count) {
-    return '$count条数据已导出到剪贴板';
-  }
-
-  @override
   String get unsupportedQRCode => '不支持此类型的二维码';
 
   @override
@@ -104,12 +92,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get enterKey => '输入密钥';
-
-  @override
-  String get importFromClipboard => '从剪贴板导入';
-
-  @override
-  String get exportToClipboard => '导出到剪贴板';
 
   @override
   String get enterProvidedKey => '输入密钥';
@@ -202,15 +184,50 @@ class AppLocalizationsZh extends AppLocalizations {
   String get search => '搜索';
 
   @override
-  String get importWarning => '您即将从剪贴板导入数据。如果数据库中已存在相同的账户，它们将被覆盖。是否继续？';
-
-  @override
   String get exportFailed => '导出失败';
 
   @override
   String get noDataToExport => '没有可导出的数据';
 
   @override
-  String get exportWarning =>
-      '您即将将所有认证器导出到剪贴板。导出的内容为明文格式，请确保您的环境安全并及时处理剪贴板内容。是否继续？';
+  String get importFile => '从文件导入';
+
+  @override
+  String get exportFile => '导出到文件';
+
+  @override
+  String get backupPasswordTitle => '备份密码';
+
+  @override
+  String get backupPasswordHint => '留空则导出未加密文件';
+
+  @override
+  String get backupPasswordRequired => '请输入备份密码';
+
+  @override
+  String get backupPasswordConfirm => '确认密码';
+
+  @override
+  String get backupPasswordMismatch => '两次输入的密码不一致';
+
+  @override
+  String get backupPlainWarning => '不设置密码时，文件会明文包含所有密钥。请安全保管。';
+
+  @override
+  String get backupReplaceWarning => '导入将覆盖发行者和账户名相同的条目。是否继续？';
+
+  @override
+  String get backupFileTooLarge => '备份文件过大。';
+
+  @override
+  String get backupFileError => '无法导入文件，请检查密码和文件内容。';
+
+  @override
+  String get backupSaved => '备份文件已保存。';
+
+  @override
+  String get backupImported => '备份文件已导入。';
+
+  @override
+  String get backupDownloadStarted => '已请求浏览器下载备份文件。请确认下载完成。';
 }

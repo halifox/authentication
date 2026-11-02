@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -76,20 +77,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Эта функция в настоящее время поддерживается только на платформах Android и iOS.';
 
   @override
-  String get cannotGetClipboardData =>
-      'Невозможно получить данные буфера обмена';
-
-  @override
-  String importedCount(int count) {
-    return '$count элементов импортировано из буфера обмена';
-  }
-
-  @override
-  String exportedCount(int count) {
-    return '$count элементов экспортировано в буфер обмена';
-  }
-
-  @override
   String get unsupportedQRCode => 'Этот тип QR-кода не поддерживается';
 
   @override
@@ -106,12 +93,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get enterKey => 'Ввести ключ';
-
-  @override
-  String get importFromClipboard => 'Импорт из буфера обмена';
-
-  @override
-  String get exportToClipboard => 'Экспорт в буфер обмена';
 
   @override
   String get enterProvidedKey => 'Ввести ключ';
@@ -204,16 +185,54 @@ class AppLocalizationsRu extends AppLocalizations {
   String get search => 'Поиск';
 
   @override
-  String get importWarning =>
-      'Вы собираетесь импортировать данные из буфера обмена. Если в базе данных уже есть такие же учетные записи, они будут перезаписаны. Продолжить?';
-
-  @override
   String get exportFailed => 'Экспорт не удался';
 
   @override
   String get noDataToExport => 'Нет данных для экспорта';
 
   @override
-  String get exportWarning =>
-      'Вы собираетесь экспортировать все аутентификаторы в буфер обмена. Экспортируемое содержимое будет в формате открытого текста. Убедитесь в безопасности вашего окружения и очистите буфер обмена после этого. Продолжить?';
+  String get importFile => 'Import file';
+
+  @override
+  String get exportFile => 'Export file';
+
+  @override
+  String get backupPasswordTitle => 'Backup password';
+
+  @override
+  String get backupPasswordHint => 'Leave empty for an unencrypted file';
+
+  @override
+  String get backupPasswordRequired => 'Enter backup password';
+
+  @override
+  String get backupPasswordConfirm => 'Confirm password';
+
+  @override
+  String get backupPasswordMismatch => 'Passwords do not match';
+
+  @override
+  String get backupPlainWarning =>
+      'Without a password, this file contains all your secret keys in plain text. Keep it in a safe place.';
+
+  @override
+  String get backupReplaceWarning =>
+      'Importing replaces accounts with the same issuer and account name. Continue?';
+
+  @override
+  String get backupFileTooLarge => 'The backup file is too large.';
+
+  @override
+  String get backupFileError =>
+      'The file could not be imported. Check the password and file contents.';
+
+  @override
+  String get backupSaved => 'Backup file saved.';
+
+  @override
+  String get backupImported => 'Backup file imported.';
+
+  @override
+  String get backupDownloadStarted =>
+      'The browser was asked to download the backup. Check that the download completed.';
 }

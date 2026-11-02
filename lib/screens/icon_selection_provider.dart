@@ -1,0 +1,46 @@
+import 'package:flutter/services.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+/// 管理用于过滤图标的当前搜索查询。
+class IconSearchQuery extends Notifier<String> {
+  @override
+  String build() {
+    return '';
+  }
+
+  /// 更新搜索查询状态。
+  void update(String query) {
+    state = query;
+  }
+}
+
+/// 从资源清单异步加载所有可用的图标文件名。
+Future<List<String>> allIcons(Ref ref) async {
+  final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+  return manifest
+      .listAssets()
+      .where(
+        (String key) => key.startsWith('assets/icons/') && key.endsWith('.svg'),
+      )
+      .map((e) => e.split('/').last)
+      .toList();
+}
+
+/// 根据当前搜索查询过滤所有图标的列表。
+Future<List<String>> filteredIcons(Ref ref) async {
+  final allIcons = await ref.watch(allIconsProvider.future);
+  final query = ref.watch(iconSearchQueryProvider).toLowerCase();
+
+  if (query.isEmpty) {
+    return allIcons;
+  }
+
+  return allIcons.where((icon) => icon.toLowerCase().contains(query)).toList();
+}
+
+final iconSearchQueryProvider =
+    NotifierProvider.autoDispose<IconSearchQuery, String>(IconSearchQuery.new);
+final allIconsProvider = FutureProvider.autoDispose<List<String>>(allIcons);
+final filteredIconsProvider = FutureProvider.autoDispose<List<String>>(
+  filteredIcons,
+);

@@ -88,28 +88,6 @@
   "@platformNotSupported": {
     "description": "当前平台不支持某功能时的错误提示消息"
   },
-  "cannotGetClipboardData": "无法获取剪贴板数据",
-  "@cannotGetClipboardData": {
-    "description": "读取剪贴板内容失败时的错误提示消息"
-  },
-  "importedCount": "{count}条数据已从剪贴板导入",
-  "@importedCount": {
-    "description": "从剪贴板成功导入数据后显示的计数提示消息",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "exportedCount": "{count}条数据已导出到剪贴板",
-  "@exportedCount": {
-    "description": "成功导出数据到剪贴板后显示的计数提示消息",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "unsupportedQRCode": "不支持此类型的二维码",
   "@unsupportedQRCode": {
     "description": "扫描到不支持的二维码格式时的错误提示消息"
@@ -137,14 +115,6 @@
   "enterKey": "输入密钥",
   "@enterKey": {
     "description": "添加页面手动输入密钥的选项按钮文本"
-  },
-  "importFromClipboard": "从剪贴板导入",
-  "@importFromClipboard": {
-    "description": "设置页面从剪贴板导入数据的功能选项文本"
-  },
-  "exportToClipboard": "导出到剪贴板",
-  "@exportToClipboard": {
-    "description": "设置页面导出数据到剪贴板的功能选项文本"
   },
   "enterProvidedKey": "输入密钥",
   "@enterProvidedKey": {
@@ -266,18 +236,26 @@
   "@search": {
     "description": "搜索框的提示文本或标签"
   },
-  "importWarning": "您即将从剪贴板导入数据。如果数据库中已存在相同的账户，它们将被覆盖。是否继续？",
-  "@importWarning": {
-    "description": "批量导入前的警告提示"
-  },
   "exportFailed": "导出失败",
   "@exportFailed": {
     "description": "导出失败标题"
   },
-    "noDataToExport": "没有可导出的数据",
-    "@noDataToExport": {
-      "description": "没有数据可导出时的提示"
-    },
-    "exportWarning": "您即将将所有认证器导出到剪贴板。导出的内容为明文格式，请确保您的环境安全并及时处理剪贴板内容。是否继续？"
-  }
-  
+  "noDataToExport": "没有可导出的数据",
+  "@noDataToExport": {
+    "description": "没有数据可导出时的提示"
+  },
+  "importFile": "从文件导入",
+  "exportFile": "导出到文件",
+  "backupPasswordTitle": "备份密码",
+  "backupPasswordHint": "留空则导出未加密文件",
+  "backupPasswordRequired": "请输入备份密码",
+  "backupPasswordConfirm": "确认密码",
+  "backupPasswordMismatch": "两次输入的密码不一致",
+  "backupPlainWarning": "不设置密码时，文件会明文包含所有密钥。请安全保管。",
+  "backupReplaceWarning": "导入将覆盖发行者和账户名相同的条目。是否继续？",
+  "backupFileTooLarge": "备份文件过大。",
+  "backupFileError": "无法导入文件，请检查密码和文件内容。",
+  "backupSaved": "备份文件已保存。",
+  "backupImported": "备份文件已导入。",
+  "backupDownloadStarted": "已请求浏览器下载备份文件。请确认下载完成。"
+}

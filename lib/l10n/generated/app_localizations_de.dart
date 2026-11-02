@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -76,20 +77,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Diese Funktion wird derzeit nur auf Android- und iOS-Plattformen unterstützt.';
 
   @override
-  String get cannotGetClipboardData =>
-      'Zwischenablage-Daten können nicht abgerufen werden';
-
-  @override
-  String importedCount(int count) {
-    return '$count Elemente aus der Zwischenablage importiert';
-  }
-
-  @override
-  String exportedCount(int count) {
-    return '$count Elemente in die Zwischenablage exportiert';
-  }
-
-  @override
   String get unsupportedQRCode => 'Dieser QR-Code-Typ wird nicht unterstützt';
 
   @override
@@ -106,12 +93,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get enterKey => 'Schlüssel eingeben';
-
-  @override
-  String get importFromClipboard => 'Aus Zwischenablage importieren';
-
-  @override
-  String get exportToClipboard => 'In Zwischenablage exportieren';
 
   @override
   String get enterProvidedKey => 'Schlüssel eingeben';
@@ -204,16 +185,54 @@ class AppLocalizationsDe extends AppLocalizations {
   String get search => 'Suchen';
 
   @override
-  String get importWarning =>
-      'Sie sind dabei, Daten aus der Zwischenablage zu importieren. Wenn bereits dieselben Konten in der Datenbank vorhanden sind, werden diese überschrieben. Möchten Sie fortfahren?';
-
-  @override
   String get exportFailed => 'Export fehlgeschlagen';
 
   @override
   String get noDataToExport => 'Keine Daten zum Exportieren verfügbar';
 
   @override
-  String get exportWarning =>
-      'Sie sind dabei, alle Authentifikatoren in die Zwischenablage zu exportieren. Der exportierte Inhalt liegt im Klartextformat vor. Bitte stellen Sie sicher, dass Ihre Umgebung sicher ist, und löschen Sie anschließend die Zwischenablage. Möchten Sie fortfahren?';
+  String get importFile => 'Import file';
+
+  @override
+  String get exportFile => 'Export file';
+
+  @override
+  String get backupPasswordTitle => 'Backup password';
+
+  @override
+  String get backupPasswordHint => 'Leave empty for an unencrypted file';
+
+  @override
+  String get backupPasswordRequired => 'Enter backup password';
+
+  @override
+  String get backupPasswordConfirm => 'Confirm password';
+
+  @override
+  String get backupPasswordMismatch => 'Passwords do not match';
+
+  @override
+  String get backupPlainWarning =>
+      'Without a password, this file contains all your secret keys in plain text. Keep it in a safe place.';
+
+  @override
+  String get backupReplaceWarning =>
+      'Importing replaces accounts with the same issuer and account name. Continue?';
+
+  @override
+  String get backupFileTooLarge => 'The backup file is too large.';
+
+  @override
+  String get backupFileError =>
+      'The file could not be imported. Check the password and file contents.';
+
+  @override
+  String get backupSaved => 'Backup file saved.';
+
+  @override
+  String get backupImported => 'Backup file imported.';
+
+  @override
+  String get backupDownloadStarted =>
+      'The browser was asked to download the backup. Check that the download completed.';
 }
