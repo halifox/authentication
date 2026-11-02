@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:authentication/actions/icon_selection_provider.dart';
 import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/html_backup.dart';
 import 'package:authentication/storage/database.dart';
@@ -128,12 +129,14 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
 
   Future<int> importUriFile(Uint8List bytes) {
     final db = ref.read(appDatabaseProvider);
-    return _run(
-      () async => db.importAccounts(
-        decodeUriList(bytes),
+    return _run(() async {
+      final accounts = decodeUriList(bytes);
+      final icons = await ref.read(allIconsProvider.future);
+      return db.importAccounts(
+        accounts.map((account) => suggestBuiltInIcon(account, icons)).toList(),
         preserveExistingMetadata: true,
-      ),
-    );
+      );
+    });
   }
 
   Future<int> import(Uint8List bytes, String? password) {

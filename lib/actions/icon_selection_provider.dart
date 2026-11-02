@@ -1,3 +1,4 @@
+import 'package:authentication/otp/account.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -18,6 +19,12 @@ String? matchBuiltInIcon(String issuer, Iterable<String> icons) {
       )
       .toList();
   return matches.length == 1 ? 'assets/icons/${matches.single}' : null;
+}
+
+OtpAccount suggestBuiltInIcon(OtpAccount account, Iterable<String> icons) {
+  if (account.icon != 'assets/icons/passkey.svg') return account;
+  final icon = matchBuiltInIcon(account.issuer, icons);
+  return icon == null ? account : account.copyWith(icon: icon);
 }
 
 /// 管理用于过滤图标的当前搜索查询。

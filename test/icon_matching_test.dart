@@ -1,6 +1,12 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:authentication/actions/icon_selection_provider.dart';
+import 'package:authentication/backup/backup_provider.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/otp/account.dart';
+import 'package:authentication/otp/otp_provider.dart';
 import 'package:authentication/router/app_router.dart';
-import 'package:authentication/screens/icon_selection_provider.dart';
 import 'package:authentication/screens/token_form_screen.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
@@ -22,6 +28,68 @@ void main() {
     expect(matchBuiltInIcon('GitHub™', ['github.svg']), isNull);
     expect(matchBuiltInIcon('GitHub', ['github.svg', 'git-hub.svg']), isNull);
   });
+  test(
+    'scan and URI import match icons while preserving existing choices',
+    () async {
+      FlutterSecureStorage.setMockInitialValues({});
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
+      db.encryption = await EncryptionService.initialize(db);
+      final container = ProviderContainer(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          allIconsProvider.overrideWith(
+            (ref) async => ['github.svg', 'google.svg'],
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      final operations = container.read(accountOperationsProvider.notifier);
+      await operations.scan(
+        'otpauth://totp/GitHub:one?secret=JBSWY3DPEHPK3PXP&issuer=GitHub',
+      );
+      var accounts = await db.getAllConfigs();
+      expect(accounts.single.icon, 'assets/icons/github.svg');
+      await db.updateConfig(
+        accounts.single.copyWith(icon: 'assets/icons/google.svg'),
+      );
+      await operations.scan(
+        'otpauth://totp/GitHub:one?secret=JBSWY3DPEHPK3PXP&issuer=GitHub',
+        forceUpdate: true,
+      );
+      final input = Uint8List.fromList(
+        utf8.encode(
+          'otpauth://totp/GitHub:one?secret=JBSWY3DPEHPK3PXP&issuer=GitHub\notpauth://totp/GitHub:two?secret=JBSWY3DPEHPK3PXP&issuer=GitHub',
+        ),
+      );
+      await container
+          .read(backupOperationsProvider.notifier)
+          .importUriFile(input);
+      accounts = await db.getAllConfigs();
+      expect(
+        accounts.singleWhere((account) => account.account == 'one').icon,
+        'assets/icons/google.svg',
+      );
+      expect(
+        accounts.singleWhere((account) => account.account == 'two').icon,
+        'assets/icons/github.svg',
+      );
+      await operations.importMigration([
+        const OtpAccount(
+          type: 'totp',
+          issuer: 'Google',
+          account: 'three',
+          secret: 'JBSWY3DPEHPK3PXP',
+        ),
+      ]);
+      expect(
+        (await db.getAllConfigs())
+            .singleWhere((account) => account.account == 'three')
+            .icon,
+        'assets/icons/google.svg',
+      );
+    },
+  );
   testWidgets('matching icon is saved for a new account', (tester) async {
     FlutterSecureStorage.setMockInitialValues({});
     final db = AppDatabase(NativeDatabase.memory());

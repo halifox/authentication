@@ -1,4 +1,5 @@
 import 'package:authentication/actions/account_actions.dart';
+import 'package:authentication/actions/icon_selection_provider.dart';
 import 'package:authentication/actions/qr_actions.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/storage/database.dart';
@@ -83,11 +84,17 @@ class AccountOperations extends Notifier<AsyncValue<void>> {
     state = const AsyncLoading();
     try {
       final now = DateTime.now().millisecondsSinceEpoch;
+      final icons = await ref.read(allIconsProvider.future);
       final count = await ref
           .read(appDatabaseProvider)
           .importAccounts(
             accounts
-                .map((account) => account.copyWith(createdAt: now))
+                .map(
+                  (account) => suggestBuiltInIcon(
+                    account.copyWith(createdAt: now),
+                    icons,
+                  ),
+                )
                 .toList(),
             preserveExistingMetadata: true,
           );
@@ -105,7 +112,13 @@ class AccountOperations extends Notifier<AsyncValue<void>> {
     final db = ref.read(appDatabaseProvider);
     state = const AsyncLoading();
     try {
-      final result = await processQrCode(db, uri, forceUpdate: forceUpdate);
+      final icons = await ref.read(allIconsProvider.future);
+      final result = await processQrCode(
+        db,
+        uri,
+        forceUpdate: forceUpdate,
+        icons: icons,
+      );
       state = const AsyncData(null);
       return result;
     } catch (error, stack) {

@@ -1,11 +1,11 @@
 import 'package:authentication/actions/account_actions.dart';
+import 'package:authentication/actions/icon_selection_provider.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/category_provider.dart';
 import 'package:authentication/otp/otp_provider.dart';
 import 'package:authentication/router/app_router.dart';
 import 'package:authentication/screens/auth_error_localization.dart';
-import 'package:authentication/screens/icon_selection_provider.dart';
 import 'package:authentication/widgets/account_qr.dart';
 import 'package:authentication/widgets/action_result_sheet.dart';
 import 'package:authentication/widgets/category_selection.dart';

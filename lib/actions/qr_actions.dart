@@ -1,9 +1,9 @@
-import 'package:authentication/storage/database.dart';
-
 import 'dart:io';
 
+import 'package:authentication/actions/icon_selection_provider.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/validation.dart';
+import 'package:authentication/storage/database.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -31,10 +31,14 @@ Future<QrProcessResult> processQrCode(
   AppDatabase repo,
   String uriString, {
   bool forceUpdate = false,
+  Iterable<String> icons = const [],
 }) async {
   try {
-    final config = parseOtpUri(uriString)
-        .copyWith(createdAt: DateTime.now().millisecondsSinceEpoch);
+    final config = suggestBuiltInIcon(
+      parseOtpUri(uriString)
+          .copyWith(createdAt: DateTime.now().millisecondsSinceEpoch),
+      icons,
+    );
     // 验证配置
     config.validate();
 

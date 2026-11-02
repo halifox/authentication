@@ -1,5 +1,5 @@
+import 'package:authentication/actions/icon_selection_provider.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
-import 'package:authentication/screens/icon_selection_provider.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
