@@ -108,8 +108,12 @@ void main() {
       expect(await db.getSettings(), {
         ...settings,
         advanceHotpOnCopyKey: false,
+        sortLockedKey: true,
       });
-      expect(await db.getIntegerSettings(), {hideCodeAfterKey: 30});
+      expect(await db.getIntegerSettings(), {
+        hideCodeAfterKey: 30,
+        sortModeKey: 0,
+      });
       expect((await db.getAllConfigs()).single.counter, 7);
       final oldV2 = await encodeBackupAccounts(
         [account],

@@ -293,4 +293,37 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get copyRecordFailed =>
       'Code copied, but the count or HOTP counter could not be updated. Check the account before copying again.';
+
+  @override
+  String get sortAccounts => 'Sort accounts';
+
+  @override
+  String get sortCustom => 'Custom order';
+
+  @override
+  String get sortNameAscending => 'Name A–Z';
+
+  @override
+  String get sortNameDescending => 'Name Z–A';
+
+  @override
+  String get sortCopiesAscending => 'Fewest copies';
+
+  @override
+  String get sortCopiesDescending => 'Most copies';
+
+  @override
+  String get lockSorting => 'Lock custom order';
+
+  @override
+  String get unlockSorting => 'Unlock custom order';
+
+  @override
+  String get clearSearchToReorder => 'Clear the search to reorder accounts.';
+
+  @override
+  String get reorderFailed => 'Could not reorder accounts. Try again.';
+
+  @override
+  String get dragToReorder => 'Drag to reorder';
 }

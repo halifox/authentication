@@ -90,7 +90,7 @@ class AppDatabase extends _$AppDatabase {
       );
 
   Future<void> setIntegerSetting(String key, int value) async {
-    validateIntegerSettings({key: value});
+    validateIntegerSetting(key, value);
     await into(appIntegerSettings).insertOnConflictUpdate(
       AppIntegerSettingsCompanion.insert(key: key, value: value),
     );

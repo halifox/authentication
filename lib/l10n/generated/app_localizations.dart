@@ -653,6 +653,72 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'验证码已复制，但无法更新复制次数或 HOTP 计数器。再次复制前请检查账户。'**
   String get copyRecordFailed;
+
+  /// No description provided for @sortAccounts.
+  ///
+  /// In zh, this message translates to:
+  /// **'账户排序'**
+  String get sortAccounts;
+
+  /// No description provided for @sortCustom.
+  ///
+  /// In zh, this message translates to:
+  /// **'自定义顺序'**
+  String get sortCustom;
+
+  /// No description provided for @sortNameAscending.
+  ///
+  /// In zh, this message translates to:
+  /// **'名称升序'**
+  String get sortNameAscending;
+
+  /// No description provided for @sortNameDescending.
+  ///
+  /// In zh, this message translates to:
+  /// **'名称降序'**
+  String get sortNameDescending;
+
+  /// No description provided for @sortCopiesAscending.
+  ///
+  /// In zh, this message translates to:
+  /// **'复制次数升序'**
+  String get sortCopiesAscending;
+
+  /// No description provided for @sortCopiesDescending.
+  ///
+  /// In zh, this message translates to:
+  /// **'复制次数降序'**
+  String get sortCopiesDescending;
+
+  /// No description provided for @lockSorting.
+  ///
+  /// In zh, this message translates to:
+  /// **'锁定自定义顺序'**
+  String get lockSorting;
+
+  /// No description provided for @unlockSorting.
+  ///
+  /// In zh, this message translates to:
+  /// **'解锁自定义顺序'**
+  String get unlockSorting;
+
+  /// No description provided for @clearSearchToReorder.
+  ///
+  /// In zh, this message translates to:
+  /// **'清除搜索后可调整账户顺序。'**
+  String get clearSearchToReorder;
+
+  /// No description provided for @reorderFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法调整账户顺序，请重试。'**
+  String get reorderFailed;
+
+  /// No description provided for @dragToReorder.
+  ///
+  /// In zh, this message translates to:
+  /// **'拖动以调整顺序'**
+  String get dragToReorder;
 }
 
 class _AppLocalizationsDelegate

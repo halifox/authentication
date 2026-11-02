@@ -89,5 +89,16 @@
   "resetCopyCountWarning": "Reset this account’s copy count?",
   "copyCount": "Copies: {count}",
   "copyFailed": "Could not copy the code.",
-  "copyRecordFailed": "Code copied, but the count or HOTP counter could not be updated. Check the account before copying again."
+  "copyRecordFailed": "Code copied, but the count or HOTP counter could not be updated. Check the account before copying again.",
+  "sortAccounts": "Sort accounts",
+  "sortCustom": "Custom order",
+  "sortNameAscending": "Name A–Z",
+  "sortNameDescending": "Name Z–A",
+  "sortCopiesAscending": "Fewest copies",
+  "sortCopiesDescending": "Most copies",
+  "lockSorting": "Lock custom order",
+  "unlockSorting": "Unlock custom order",
+  "clearSearchToReorder": "Clear the search to reorder accounts.",
+  "reorderFailed": "Could not reorder accounts. Try again.",
+  "dragToReorder": "Drag to reorder"
 }

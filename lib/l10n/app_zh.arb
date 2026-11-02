@@ -276,5 +276,16 @@
   "copyCount": "复制次数：{count}",
   "copyFailed": "无法复制验证码。",
   "copyRecordFailed": "验证码已复制，但无法更新复制次数或 HOTP 计数器。再次复制前请检查账户。",
-  "@copyCount": {"placeholders": {"count": {"type": "int"}}}
+  "@copyCount": {"placeholders": {"count": {"type": "int"}}},
+  "sortAccounts": "账户排序",
+  "sortCustom": "自定义顺序",
+  "sortNameAscending": "名称升序",
+  "sortNameDescending": "名称降序",
+  "sortCopiesAscending": "复制次数升序",
+  "sortCopiesDescending": "复制次数降序",
+  "lockSorting": "锁定自定义顺序",
+  "unlockSorting": "解锁自定义顺序",
+  "clearSearchToReorder": "清除搜索后可调整账户顺序。",
+  "reorderFailed": "无法调整账户顺序，请重试。",
+  "dragToReorder": "拖动以调整顺序"
 }

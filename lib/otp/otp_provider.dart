@@ -55,6 +55,19 @@ class AccountOperations extends Notifier<AsyncValue<void>> {
     }
   }
 
+  Future<void> reorder(List<int> ids) async {
+    if (state.isLoading)
+      throw StateError('An account operation is already running.');
+    state = const AsyncLoading();
+    try {
+      await ref.read(appDatabaseProvider).reorderAccounts(ids);
+      state = const AsyncData(null);
+    } catch (error, stack) {
+      state = AsyncError(error, stack);
+      rethrow;
+    }
+  }
+
   Future<QrProcessResult> scan(String uri, {bool forceUpdate = false}) async {
     if (state.isLoading)
       throw StateError('An account operation is already running.');

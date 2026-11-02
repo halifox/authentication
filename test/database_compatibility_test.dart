@@ -44,6 +44,7 @@ void main() {
       copyCaptchaOnTapKey: false,
       showAccountNameKey: true,
       advanceHotpOnCopyKey: false,
+      sortLockedKey: true,
     });
     await database.setSetting(showCaptchaOnTapKey, false);
     await database.initializeSettings({
@@ -55,6 +56,7 @@ void main() {
       copyCaptchaOnTapKey: false,
       showAccountNameKey: true,
       advanceHotpOnCopyKey: false,
+      sortLockedKey: true,
     });
     expect((await database.getAllAuthEntries()).single.secret, 'secret');
   });

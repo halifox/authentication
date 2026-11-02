@@ -60,19 +60,54 @@ extension AuthStorage on AppDatabase {
     return entry == null ? null : _decode(this, entry);
   }
 
-  Future<void> addConfig(OtpAccount account) async =>
-      _insertAuthEntry(_encode(this, account));
+  Future<void> addConfig(
+    OtpAccount account, {
+    bool preserveSortOrder = false,
+  }) async {
+    await transaction(() async {
+      if (preserveSortOrder) {
+        await _insertAuthEntry(_encode(this, account));
+        return;
+      }
+      final entries = await getAllAuthEntries();
+      final next =
+          entries.fold<int>(
+            -1,
+            (max, e) => e.sortOrder > max ? e.sortOrder : max,
+          ) +
+          1;
+      await _insertAuthEntry(_encode(this, account.copyWith(sortOrder: next)));
+    });
+  }
+
   Future<void> updateConfig(OtpAccount account) async {
-    final companion = _encode(
-      this,
-      account,
-    ).copyWith(id: Value(account.id), copyCount: const Value.absent());
+    final companion = _encode(this, account).copyWith(
+      id: Value(account.id),
+      copyCount: const Value.absent(),
+      sortOrder: const Value.absent(),
+    );
     await (update(
       authEntries,
     )..where((t) => t.id.equals(account.id))).write(companion);
   }
 
   Future<void> deleteConfig(int id) async => _deleteAuthEntry(id);
+
+  Future<void> reorderAccounts(List<int> ids) async {
+    await transaction(() async {
+      final current = await getAllAuthEntries();
+      final existing = current.map((e) => e.id).toSet();
+      if (ids.length != existing.length ||
+          ids.toSet().length != ids.length ||
+          !ids.every(existing.contains)) {
+        throw StateError('Account list changed during sorting.');
+      }
+      for (var index = 0; index < ids.length; index++) {
+        await (update(authEntries)..where((t) => t.id.equals(ids[index])))
+            .write(AuthEntriesCompanion(sortOrder: Value(index)));
+      }
+    });
+  }
 
   Future<void> recordCopy(
     OtpAccount copied, {
@@ -157,7 +192,10 @@ extension AuthStorage on AppDatabase {
           account.issuer,
         );
         if (existing == null) {
-          await addConfig(account);
+          await addConfig(
+            account,
+            preserveSortOrder: !preserveExistingMetadata,
+          );
         } else {
           await updateConfig(
             account.copyWith(
@@ -174,6 +212,13 @@ extension AuthStorage on AppDatabase {
                   : account.copyCount,
             ),
           );
+          if (!preserveExistingMetadata) {
+            await (update(
+              authEntries,
+            )..where((t) => t.id.equals(existing.id))).write(
+              AuthEntriesCompanion(sortOrder: Value(account.sortOrder)),
+            );
+          }
           if (!preserveExistingCopyCount && !preserveExistingMetadata) {
             await (update(
               authEntries,

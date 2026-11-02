@@ -285,4 +285,37 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get copyRecordFailed => '验证码已复制，但无法更新复制次数或 HOTP 计数器。再次复制前请检查账户。';
+
+  @override
+  String get sortAccounts => '账户排序';
+
+  @override
+  String get sortCustom => '自定义顺序';
+
+  @override
+  String get sortNameAscending => '名称升序';
+
+  @override
+  String get sortNameDescending => '名称降序';
+
+  @override
+  String get sortCopiesAscending => '复制次数升序';
+
+  @override
+  String get sortCopiesDescending => '复制次数降序';
+
+  @override
+  String get lockSorting => '锁定自定义顺序';
+
+  @override
+  String get unlockSorting => '解锁自定义顺序';
+
+  @override
+  String get clearSearchToReorder => '清除搜索后可调整账户顺序。';
+
+  @override
+  String get reorderFailed => '无法调整账户顺序，请重试。';
+
+  @override
+  String get dragToReorder => '拖动以调整顺序';
 }
