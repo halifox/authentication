@@ -923,6 +923,36 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'无法创建文件。请检查所有账户是否支持标准二维码，以及备份是否过大。'**
   String get htmlExportFailed;
+
+  /// No description provided for @migrationTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'扫描迁移二维码'**
+  String get migrationTitle;
+
+  /// No description provided for @migrationNext.
+  ///
+  /// In zh, this message translates to:
+  /// **'已接收 {received}／{total} 个二维码。继续扫描下一个，或取消并放弃本次导入。'**
+  String migrationNext(int received, int total);
+
+  /// No description provided for @migrationConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入 {count} 个账户？发行方和账户名相同的条目将被更新，已有图标、顺序和复制次数会保留。'**
+  String migrationConfirm(int count);
+
+  /// No description provided for @migrationImported.
+  ///
+  /// In zh, this message translates to:
+  /// **'已导入 {count} 个账户。'**
+  String migrationImported(int count);
+
+  /// No description provided for @migrationInvalid.
+  ///
+  /// In zh, this message translates to:
+  /// **'迁移数据无效、不受支持、重复或不完整，未导入任何账户。'**
+  String get migrationInvalid;
 }
 
 class _AppLocalizationsDelegate

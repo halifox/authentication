@@ -47,6 +47,7 @@ dependencies:
   web: ^1.1.2
   pointycastle: ^3.9.1
   qr: ^4.0.1
+  protobuf: ^6.1.0
 
 dev_dependencies:
   # Testing & Linting

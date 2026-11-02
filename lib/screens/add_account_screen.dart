@@ -1,14 +1,14 @@
-import 'package:authentication/screens/auth_error_localization.dart';
-
-import 'package:authentication/l10n/generated/app_localizations.dart';
-import 'package:authentication/backup/backup_provider.dart';
-import 'package:authentication/otp/otp_provider.dart';
 import 'package:authentication/actions/qr_actions.dart';
+
+import 'package:authentication/backup/backup.dart';
+import 'package:authentication/backup/backup_provider.dart';
+import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/otp/migration.dart';
+import 'package:authentication/otp/otp_provider.dart';
 import 'package:authentication/router/app_router.dart';
+import 'package:authentication/screens/auth_error_localization.dart';
 import 'package:authentication/widgets/action_result_sheet.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:authentication/backup/backup.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -114,45 +114,123 @@ class AddAccountScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _handleScan(BuildContext context, WidgetRef ref) async {
-    if (!isQrPlatformSupported) {
-      _showNotSupported(context);
-      return;
-    }
-
-    final BarcodeCapture? barcodeCapture =
-        await Navigator.pushNamed<BarcodeCapture>(context, AppRoutes.scan);
-    if (barcodeCapture != null && barcodeCapture.barcodes.isNotEmpty) {
-      final code = barcodeCapture.barcodes.first.rawValue;
-      if (code != null && context.mounted) {
-        await _processQrCode(context, ref, code);
-      }
-    }
+  Future<String?> _scanNext(BuildContext context) async {
+    final capture = await Navigator.pushNamed<BarcodeCapture>(
+      context,
+      AppRoutes.scan,
+    );
+    if (capture == null || capture.barcodes.isEmpty) return null;
+    return capture.barcodes.first.rawValue;
   }
 
-  Future<void> _handleUpload(BuildContext context, WidgetRef ref) async {
-    if (kIsWeb) {
-      _showNotSupported(context);
-      return;
-    }
-    if (!isQrPlatformSupported) {
-      _showNotSupported(context);
-      return;
-    }
-
-    final PlatformFile? file = await pickQrImage();
-    if (file == null) return;
-
+  Future<String?> _uploadNext(BuildContext context) async {
+    final file = await pickQrImage();
+    if (file == null) return null;
     final codes = await analyzeQrFile(file.xFile.path);
-    if (codes.isNotEmpty && context.mounted) {
-      await _processQrCode(context, ref, codes.first);
-    } else if (context.mounted) {
-      _showResult(
+    if (codes.isNotEmpty) return codes.first;
+    if (context.mounted) {
+      await _showResult(
         context,
         0,
         AppLocalizations.of(context)!.tip,
         AppLocalizations.of(context)!.unsupportedQRCode,
       );
+    }
+    return null;
+  }
+
+  Future<void> _handleScan(BuildContext context, WidgetRef ref) async {
+    if (!ref.read(qrPlatformSupportedProvider)) {
+      await _showNotSupported(context);
+      return;
+    }
+    final code = await _scanNext(context);
+    if (code != null && context.mounted) {
+      await _processQrCode(context, ref, code, next: () => _scanNext(context));
+    }
+  }
+
+  Future<void> _handleUpload(BuildContext context, WidgetRef ref) async {
+    if (kIsWeb || !ref.read(qrPlatformSupportedProvider)) {
+      await _showNotSupported(context);
+      return;
+    }
+    try {
+      final code = await _uploadNext(context);
+      if (code != null && context.mounted) {
+        await _processQrCode(
+          context,
+          ref,
+          code,
+          next: () => _uploadNext(context),
+        );
+      }
+    } catch (_) {
+      if (context.mounted) {
+        await _showResult(
+          context,
+          0,
+          AppLocalizations.of(context)!.tip,
+          AppLocalizations.of(context)!.unsupportedQRCode,
+        );
+      }
+    }
+  }
+
+  Future<void> _handleMigration(
+    BuildContext context,
+    WidgetRef ref,
+    String code,
+    Future<String?> Function()? next,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final collector = MigrationCollector();
+    try {
+      collector.add(parseMigrationUri(code));
+      while (!collector.complete) {
+        if (next == null || !context.mounted) return;
+        final proceed = await showCupertinoModalPopup<bool>(
+          context: context,
+          builder: (_) => ActionResultSheet(
+            state: 0,
+            title: l10n.migrationTitle,
+            message: l10n.migrationNext(collector.received, collector.size),
+            falseButtonVisible: true,
+          ),
+        );
+        if (proceed != true || !context.mounted) return;
+        final nextCode = await next();
+        if (nextCode == null || !context.mounted) return;
+        collector.add(parseMigrationUri(nextCode));
+      }
+      final accounts = collector.finish();
+      if (!context.mounted) return;
+      final proceed = await showCupertinoModalPopup<bool>(
+        context: context,
+        builder: (_) => ActionResultSheet(
+          state: 0,
+          title: l10n.warning,
+          message: l10n.migrationConfirm(accounts.length),
+          falseButtonVisible: true,
+        ),
+      );
+      if (proceed != true || !context.mounted) return;
+      final count = await ref
+          .read(accountOperationsProvider.notifier)
+          .importMigration(accounts);
+      if (context.mounted) {
+        await _showResult(
+          context,
+          1,
+          l10n.importSuccess,
+          l10n.migrationImported(count),
+        );
+        if (context.mounted) Navigator.pop(context);
+      }
+    } catch (_) {
+      if (context.mounted) {
+        await _showResult(context, 0, l10n.importFailed, l10n.migrationInvalid);
+      }
     }
   }
 
@@ -161,7 +239,12 @@ class AddAccountScreen extends ConsumerWidget {
     WidgetRef ref,
     String code, {
     bool forceUpdate = false,
+    Future<String?> Function()? next,
   }) async {
+    if (Uri.tryParse(code)?.scheme.toLowerCase() == 'otpauth-migration') {
+      await _handleMigration(context, ref, code, next);
+      return;
+    }
     final result = await ref
         .read(accountOperationsProvider.notifier)
         .scan(code, forceUpdate: forceUpdate);

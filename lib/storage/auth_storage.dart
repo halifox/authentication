@@ -163,10 +163,10 @@ extension AuthStorage on AppDatabase {
     Map<String, bool>? settings,
     Map<String, int>? integerSettings,
   }) async {
-    final keys = <String>{};
+    final keys = <(String, String)>{};
     for (final account in accounts) {
       account.validate();
-      if (!keys.add('${account.issuer}\u0000${account.account}'))
+      if (!keys.add((account.issuer, account.account)))
         throw const FormatException('Duplicate accounts in backup.');
     }
     final validatedSettings = settings == null

@@ -438,4 +438,26 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get htmlExportFailed =>
       'The file could not be created. Check that all accounts support standard QR codes and the backup is not too large.';
+
+  @override
+  String get migrationTitle => 'Scan migration codes';
+
+  @override
+  String migrationNext(int received, int total) {
+    return 'Received $received of $total codes. Continue to scan the next code, or cancel to discard this import.';
+  }
+
+  @override
+  String migrationConfirm(int count) {
+    return 'Import $count accounts? Accounts with the same issuer and account name will be updated; existing icons, order and copy counts will be retained.';
+  }
+
+  @override
+  String migrationImported(int count) {
+    return 'Imported $count accounts.';
+  }
+
+  @override
+  String get migrationInvalid =>
+      'The migration data is invalid, unsupported, duplicated or incomplete. No accounts were imported.';
 }

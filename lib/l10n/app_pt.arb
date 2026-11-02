@@ -134,5 +134,10 @@
   "exportHtml": "Export HTML backup",
   "htmlBackupTitle": "Account QR backup",
   "htmlPlainWarning": "This unencrypted HTML file contains account secrets in QR codes. Anyone with the file can generate your codes. Store it securely. It does not include categories, icons, settings or statistics, and cannot be restored as a backup file. Some apps may ignore code settings.",
-  "htmlExportFailed": "The file could not be created. Check that all accounts support standard QR codes and the backup is not too large."
+  "htmlExportFailed": "The file could not be created. Check that all accounts support standard QR codes and the backup is not too large.",
+  "migrationTitle": "Scan migration codes",
+  "migrationNext": "Received {received} of {total} codes. Continue to scan the next code, or cancel to discard this import.",
+  "migrationConfirm": "Import {count} accounts? Accounts with the same issuer and account name will be updated; existing icons, order and copy counts will be retained.",
+  "migrationImported": "Imported {count} accounts.",
+  "migrationInvalid": "The migration data is invalid, unsupported, duplicated or incomplete. No accounts were imported."
 }

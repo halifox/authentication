@@ -1,9 +1,13 @@
 import 'package:authentication/actions/account_actions.dart';
 import 'package:authentication/actions/qr_actions.dart';
 import 'package:authentication/otp/account.dart';
-import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/database.dart';
+import 'package:authentication/storage/database_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+final qrPlatformSupportedProvider = Provider<bool>(
+  (ref) => isQrPlatformSupported,
+);
 
 final authEntryListProvider = StreamProvider.autoDispose<List<OtpAccount>>(
   (ref) => ref.watch(appDatabaseProvider).authConfigsStream,
@@ -65,6 +69,28 @@ class AccountOperations extends Notifier<AsyncValue<void>> {
     try {
       await ref.read(appDatabaseProvider).reorderAccounts(ids);
       state = const AsyncData(null);
+    } catch (error, stack) {
+      state = AsyncError(error, stack);
+      rethrow;
+    }
+  }
+
+  Future<int> importMigration(List<OtpAccount> accounts) async {
+    if (state.isLoading)
+      throw StateError('An account operation is already running.');
+    state = const AsyncLoading();
+    try {
+      final now = DateTime.now().millisecondsSinceEpoch;
+      final count = await ref
+          .read(appDatabaseProvider)
+          .importAccounts(
+            accounts
+                .map((account) => account.copyWith(createdAt: now))
+                .toList(),
+            preserveExistingMetadata: true,
+          );
+      state = const AsyncData(null);
+      return count;
     } catch (error, stack) {
       state = AsyncError(error, stack);
       rethrow;
