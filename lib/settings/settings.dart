@@ -24,3 +24,17 @@ Map<String, bool> validateSettings(Object? value) {
   }
   return settings;
 }
+
+const hideCodeAfterKey = 'hide_code_after_seconds';
+const hideCodeDelayOptions = <int>[0, 5, 10, 30, 60];
+const defaultIntegerSettings = <String, int>{hideCodeAfterKey: 0};
+
+Map<String, int> validateIntegerSettings(Object? value) {
+  if (value is! Map ||
+      value.length != 1 ||
+      (value[hideCodeAfterKey] is! int ||
+          !hideCodeDelayOptions.contains(value[hideCodeAfterKey]))) {
+    throw const FormatException('Invalid integer settings.');
+  }
+  return {hideCodeAfterKey: value[hideCodeAfterKey] as int};
+}

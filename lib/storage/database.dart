@@ -12,7 +12,7 @@ part 'auth_storage.dart';
 ///
 /// 使用 Drift 框架构建的数据库访问层，负责管理身份验证条目 (AuthEntries) 的持久化操作。
 /// 该类通过继承 [_$AppDatabase] 提供对底层数据库的 CRUD（增删改查）访问。
-@DriftDatabase(tables: [AuthEntries, AppSettings])
+@DriftDatabase(tables: [AuthEntries, AppSettings, AppIntegerSettings])
 class AppDatabase extends _$AppDatabase {
   late final EncryptionService encryption;
   AppDatabase([QueryExecutor? executor])
@@ -30,12 +30,13 @@ class AppDatabase extends _$AppDatabase {
   /// 数据库架构版本号。
   /// 如果修改了表结构，需要递增此版本并处理迁移逻辑。
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (m, from, to) async {
       if (from < 2) await m.createTable(appSettings);
+      if (from < 3) await m.createTable(appIntegerSettings);
     },
   );
 
@@ -69,6 +70,28 @@ class AppDatabase extends _$AppDatabase {
     }
     await into(appSettings).insertOnConflictUpdate(
       AppSettingsCompanion.insert(key: key, value: value),
+    );
+  }
+
+  Future<Map<String, int>> getIntegerSettings() async =>
+      validateIntegerSettings({
+        ...defaultIntegerSettings,
+        for (final entry in await select(appIntegerSettings).get())
+          entry.key: entry.value,
+      });
+
+  Stream<Map<String, int>> watchIntegerSettings() =>
+      select(appIntegerSettings).watch().map(
+        (entries) => validateIntegerSettings({
+          ...defaultIntegerSettings,
+          for (final entry in entries) entry.key: entry.value,
+        }),
+      );
+
+  Future<void> setIntegerSetting(String key, int value) async {
+    validateIntegerSettings({key: value});
+    await into(appIntegerSettings).insertOnConflictUpdate(
+      AppIntegerSettingsCompanion.insert(key: key, value: value),
     );
   }
 

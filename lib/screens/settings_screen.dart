@@ -36,6 +36,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final settings = ref.watch(settingsProvider);
+    final integerSettings = ref.watch(integerSettingsProvider);
     final busy = ref.watch(settingsOperationsProvider).isLoading;
     ref.listen(settingsOperationsProvider, (previous, next) {
       if (next.hasError && context.mounted) {
@@ -75,22 +76,58 @@ class SettingsScreen extends ConsumerWidget {
       body: settings.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => Center(child: Text(l10n.settingsLoadError)),
-        data: (_) => GridView.builder(
-          physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics(),
+        data: (_) => integerSettings.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (_, _) => Center(child: Text(l10n.settingsLoadError)),
+          data: (values) => GridView.builder(
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 700,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              mainAxisExtent: 90,
+            ),
+            itemCount: options.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == options.length) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: DropdownButtonFormField<int>(
+                    initialValue: values[hideCodeAfterKey],
+                    decoration: InputDecoration(labelText: l10n.hideCodeAfter),
+                    items: [
+                      DropdownMenuItem(value: 0, child: Text(l10n.never)),
+                      for (final seconds in hideCodeDelayOptions.skip(1))
+                        DropdownMenuItem(
+                          value: seconds,
+                          child: Text(l10n.seconds(seconds)),
+                        ),
+                    ],
+                    onChanged: busy
+                        ? null
+                        : (value) {
+                            if (value != null)
+                              ref
+                                  .read(settingsOperationsProvider.notifier)
+                                  .updateInteger(hideCodeAfterKey, value);
+                          },
+                  ),
+                );
+              }
+              final option = options[index];
+              return SettingsSwitchTile(option: option, enabled: !busy);
+            },
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 700,
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
-            mainAxisExtent: 90,
-          ),
-          itemCount: options.length,
-          itemBuilder: (BuildContext context, int index) {
-            final option = options[index];
-            return SettingsSwitchTile(option: option, enabled: !busy);
-          },
         ),
       ),
     );

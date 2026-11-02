@@ -40,6 +40,9 @@ void main() {
         overrides: [
           authEntryListProvider.overrideWith((ref) => entries.stream),
           settingsProvider.overrideWith((ref) => settings.stream),
+          integerSettingsProvider.overrideWith(
+            (ref) => Stream.value(defaultIntegerSettings),
+          ),
         ],
         child: const MaterialApp(
           locale: Locale('en'),

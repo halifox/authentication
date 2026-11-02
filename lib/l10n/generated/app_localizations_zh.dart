@@ -254,4 +254,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get showAccountName => '显示账户名';
+
+  @override
+  String get hideCodeAfter => '显示后自动隐藏验证码';
+
+  @override
+  String get never => '从不';
+
+  @override
+  String seconds(int count) {
+    return '$count 秒';
+  }
 }

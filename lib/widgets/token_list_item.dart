@@ -1,12 +1,13 @@
 import 'dart:async';
 
-import 'package:authentication/otp/account.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/otp/account.dart';
+import 'package:authentication/otp/otp.dart';
 import 'package:authentication/otp/token_item_provider.dart';
 import 'package:authentication/router/app_router.dart';
+import 'package:authentication/settings/settings.dart';
 import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/widgets/action_result_sheet.dart';
-import 'package:authentication/otp/otp.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -89,6 +90,8 @@ class _TokenCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isShowOnTap = ref.watch(isShowCaptchaOnTapProvider);
     final isCopyOnTap = ref.watch(isCopyCaptchaOnTapProvider);
+    final hideAfter =
+        ref.watch(integerSettingsProvider).value?[hideCodeAfterKey] ?? 5;
     final itemState = ref.watch(tokenItemProvider(config.id));
     final controller = ref.read(tokenItemProvider(config.id).notifier);
 
@@ -96,7 +99,7 @@ class _TokenCard extends ConsumerWidget {
 
     return GestureDetector(
       onTap: () {
-        if (isShowOnTap) controller.toggleReveal();
+        if (isShowOnTap) controller.toggleReveal(hideAfter);
         if (isCopyOnTap)
           _handleCopy(context, controller, config.generateCodeString());
       },

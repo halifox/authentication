@@ -66,6 +66,7 @@ extension AuthStorage on AppDatabase {
     List<OtpAccount> accounts, {
     bool preserveExistingMetadata = false,
     Map<String, bool>? settings,
+    Map<String, int>? integerSettings,
   }) async {
     final keys = <String>{};
     for (final account in accounts) {
@@ -76,7 +77,15 @@ extension AuthStorage on AppDatabase {
     final validatedSettings = settings == null
         ? null
         : validateSettings(settings);
+    final validatedIntegers = integerSettings == null
+        ? null
+        : validateIntegerSettings(integerSettings);
     await transaction(() async {
+      if (validatedIntegers != null) {
+        for (final setting in validatedIntegers.entries) {
+          await setIntegerSetting(setting.key, setting.value);
+        }
+      }
       if (validatedSettings != null) {
         for (final setting in validatedSettings.entries) {
           await setSetting(setting.key, setting.value);

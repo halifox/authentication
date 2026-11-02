@@ -599,6 +599,24 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'显示账户名'**
   String get showAccountName;
+
+  /// No description provided for @hideCodeAfter.
+  ///
+  /// In zh, this message translates to:
+  /// **'显示后自动隐藏验证码'**
+  String get hideCodeAfter;
+
+  /// No description provided for @never.
+  ///
+  /// In zh, this message translates to:
+  /// **'从不'**
+  String get never;
+
+  /// No description provided for @seconds.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 秒'**
+  String seconds(int count);
 }
 
 class _AppLocalizationsDelegate

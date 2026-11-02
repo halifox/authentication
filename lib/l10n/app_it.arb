@@ -80,5 +80,8 @@
   "noSearchResults": "No matching accounts",
   "settingsLoadError": "Settings could not be loaded.",
   "backupSettingsWarning": "Accounts with the same issuer and account name will be updated. Settings in the backup will also be restored. Continue?",
-  "showAccountName": "Show account name"
+  "showAccountName": "Show account name",
+  "hideCodeAfter": "Automatically hide revealed codes",
+  "never": "Never",
+  "seconds": "{count} seconds"
 }

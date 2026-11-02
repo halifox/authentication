@@ -62,3 +62,11 @@ class AppSettings extends Table {
   @override
   Set<Column> get primaryKey => {key};
 }
+
+class AppIntegerSettings extends Table {
+  TextColumn get key => text()();
+  IntColumn get value => integer()();
+
+  @override
+  Set<Column> get primaryKey => {key};
+}

@@ -992,11 +992,222 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   }
 }
 
+class $AppIntegerSettingsTable extends AppIntegerSettings
+    with TableInfo<$AppIntegerSettingsTable, AppIntegerSetting> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AppIntegerSettingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _keyMeta = const VerificationMeta('key');
+  @override
+  late final GeneratedColumn<String> key = GeneratedColumn<String>(
+    'key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<int> value = GeneratedColumn<int>(
+    'value',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [key, value];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'app_integer_settings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AppIntegerSetting> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('key')) {
+      context.handle(
+        _keyMeta,
+        key.isAcceptableOrUnknown(data['key']!, _keyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_keyMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {key};
+  @override
+  AppIntegerSetting map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AppIntegerSetting(
+      key: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}key'],
+      )!,
+      value: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}value'],
+      )!,
+    );
+  }
+
+  @override
+  $AppIntegerSettingsTable createAlias(String alias) {
+    return $AppIntegerSettingsTable(attachedDatabase, alias);
+  }
+}
+
+class AppIntegerSetting extends DataClass
+    implements Insertable<AppIntegerSetting> {
+  final String key;
+  final int value;
+  const AppIntegerSetting({required this.key, required this.value});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['key'] = Variable<String>(key);
+    map['value'] = Variable<int>(value);
+    return map;
+  }
+
+  AppIntegerSettingsCompanion toCompanion(bool nullToAbsent) {
+    return AppIntegerSettingsCompanion(key: Value(key), value: Value(value));
+  }
+
+  factory AppIntegerSetting.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AppIntegerSetting(
+      key: serializer.fromJson<String>(json['key']),
+      value: serializer.fromJson<int>(json['value']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'key': serializer.toJson<String>(key),
+      'value': serializer.toJson<int>(value),
+    };
+  }
+
+  AppIntegerSetting copyWith({String? key, int? value}) =>
+      AppIntegerSetting(key: key ?? this.key, value: value ?? this.value);
+  AppIntegerSetting copyWithCompanion(AppIntegerSettingsCompanion data) {
+    return AppIntegerSetting(
+      key: data.key.present ? data.key.value : this.key,
+      value: data.value.present ? data.value.value : this.value,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppIntegerSetting(')
+          ..write('key: $key, ')
+          ..write('value: $value')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(key, value);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AppIntegerSetting &&
+          other.key == this.key &&
+          other.value == this.value);
+}
+
+class AppIntegerSettingsCompanion extends UpdateCompanion<AppIntegerSetting> {
+  final Value<String> key;
+  final Value<int> value;
+  final Value<int> rowid;
+  const AppIntegerSettingsCompanion({
+    this.key = const Value.absent(),
+    this.value = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AppIntegerSettingsCompanion.insert({
+    required String key,
+    required int value,
+    this.rowid = const Value.absent(),
+  }) : key = Value(key),
+       value = Value(value);
+  static Insertable<AppIntegerSetting> custom({
+    Expression<String>? key,
+    Expression<int>? value,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (key != null) 'key': key,
+      if (value != null) 'value': value,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AppIntegerSettingsCompanion copyWith({
+    Value<String>? key,
+    Value<int>? value,
+    Value<int>? rowid,
+  }) {
+    return AppIntegerSettingsCompanion(
+      key: key ?? this.key,
+      value: value ?? this.value,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (key.present) {
+      map['key'] = Variable<String>(key.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<int>(value.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppIntegerSettingsCompanion(')
+          ..write('key: $key, ')
+          ..write('value: $value, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $AuthEntriesTable authEntries = $AuthEntriesTable(this);
   late final $AppSettingsTable appSettings = $AppSettingsTable(this);
+  late final $AppIntegerSettingsTable appIntegerSettings =
+      $AppIntegerSettingsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1004,6 +1215,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     authEntries,
     appSettings,
+    appIntegerSettings,
   ];
 }
 
@@ -1525,6 +1737,173 @@ typedef $$AppSettingsTableProcessedTableManager =
       AppSetting,
       PrefetchHooks Function()
     >;
+typedef $$AppIntegerSettingsTableCreateCompanionBuilder =
+    AppIntegerSettingsCompanion Function({
+      required String key,
+      required int value,
+      Value<int> rowid,
+    });
+typedef $$AppIntegerSettingsTableUpdateCompanionBuilder =
+    AppIntegerSettingsCompanion Function({
+      Value<String> key,
+      Value<int> value,
+      Value<int> rowid,
+    });
+
+class $$AppIntegerSettingsTableFilterComposer
+    extends Composer<_$AppDatabase, $AppIntegerSettingsTable> {
+  $$AppIntegerSettingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AppIntegerSettingsTableOrderingComposer
+    extends Composer<_$AppDatabase, $AppIntegerSettingsTable> {
+  $$AppIntegerSettingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AppIntegerSettingsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AppIntegerSettingsTable> {
+  $$AppIntegerSettingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get key =>
+      $composableBuilder(column: $table.key, builder: (column) => column);
+
+  GeneratedColumn<int> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+}
+
+class $$AppIntegerSettingsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AppIntegerSettingsTable,
+          AppIntegerSetting,
+          $$AppIntegerSettingsTableFilterComposer,
+          $$AppIntegerSettingsTableOrderingComposer,
+          $$AppIntegerSettingsTableAnnotationComposer,
+          $$AppIntegerSettingsTableCreateCompanionBuilder,
+          $$AppIntegerSettingsTableUpdateCompanionBuilder,
+          (
+            AppIntegerSetting,
+            BaseReferences<
+              _$AppDatabase,
+              $AppIntegerSettingsTable,
+              AppIntegerSetting
+            >,
+          ),
+          AppIntegerSetting,
+          PrefetchHooks Function()
+        > {
+  $$AppIntegerSettingsTableTableManager(
+    _$AppDatabase db,
+    $AppIntegerSettingsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AppIntegerSettingsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AppIntegerSettingsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AppIntegerSettingsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> key = const Value.absent(),
+                Value<int> value = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AppIntegerSettingsCompanion(
+                key: key,
+                value: value,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String key,
+                required int value,
+                Value<int> rowid = const Value.absent(),
+              }) => AppIntegerSettingsCompanion.insert(
+                key: key,
+                value: value,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$AppIntegerSettingsTable, AppIntegerSetting>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $AppIntegerSettingsTable,
+                    AppIntegerSetting
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AppIntegerSettingsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AppIntegerSettingsTable,
+      AppIntegerSetting,
+      $$AppIntegerSettingsTableFilterComposer,
+      $$AppIntegerSettingsTableOrderingComposer,
+      $$AppIntegerSettingsTableAnnotationComposer,
+      $$AppIntegerSettingsTableCreateCompanionBuilder,
+      $$AppIntegerSettingsTableUpdateCompanionBuilder,
+      (
+        AppIntegerSetting,
+        BaseReferences<
+          _$AppDatabase,
+          $AppIntegerSettingsTable,
+          AppIntegerSetting
+        >,
+      ),
+      AppIntegerSetting,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1533,4 +1912,6 @@ class $AppDatabaseManager {
       $$AuthEntriesTableTableManager(_db, _db.authEntries);
   $$AppSettingsTableTableManager get appSettings =>
       $$AppSettingsTableTableManager(_db, _db.appSettings);
+  $$AppIntegerSettingsTableTableManager get appIntegerSettings =>
+      $$AppIntegerSettingsTableTableManager(_db, _db.appIntegerSettings);
 }

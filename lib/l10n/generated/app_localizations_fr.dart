@@ -262,4 +262,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get showAccountName => 'Show account name';
+
+  @override
+  String get hideCodeAfter => 'Automatically hide revealed codes';
+
+  @override
+  String get never => 'Never';
+
+  @override
+  String seconds(int count) {
+    return '$count seconds';
+  }
 }

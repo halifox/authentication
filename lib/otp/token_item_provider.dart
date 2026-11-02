@@ -1,5 +1,7 @@
-import 'package:authentication/storage/database.dart';
+import 'dart:async';
+
 import 'package:authentication/otp/account.dart';
+import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -8,14 +10,23 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class TokenItem extends Notifier<TokenItemState> {
   TokenItem(this.id);
   final int id;
+  Timer? _hideTimer;
   @override
   TokenItemState build() {
+    ref.onDispose(() => _hideTimer?.cancel());
     return TokenItemState(id: id);
   }
 
   /// 切换令牌代码的可见性。
-  void toggleReveal() {
-    state = state.copyWith(isRevealed: !state.isRevealed);
+  void toggleReveal(int hideAfterSeconds) {
+    _hideTimer?.cancel();
+    final reveal = !state.isRevealed;
+    state = state.copyWith(isRevealed: reveal);
+    if (reveal && hideAfterSeconds > 0) {
+      _hideTimer = Timer(Duration(seconds: hideAfterSeconds), () {
+        state = state.copyWith(isRevealed: false);
+      });
+    }
   }
 
   /// 增加 HOTP 令牌的计数器。

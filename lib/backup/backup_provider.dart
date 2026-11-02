@@ -47,6 +47,7 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
         () async => (
           accounts: await db.getAllConfigs(),
           settings: await db.getSettings(),
+          integerSettings: await db.getIntegerSettings(),
         ),
       );
       if (snapshot.accounts.isEmpty) throw StateError('No accounts to export.');
@@ -54,6 +55,7 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
         snapshot.accounts,
         password,
         settings: snapshot.settings,
+        integerSettings: snapshot.integerSettings,
       );
       final location = await FilePicker.saveFile(
         fileName: 'authentication-backup.json',
@@ -91,7 +93,11 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
     final db = ref.read(appDatabaseProvider);
     return _run(() async {
       final document = await decodeBackupDocument(bytes, password);
-      return db.importAccounts(document.accounts, settings: document.settings);
+      return db.importAccounts(
+        document.accounts,
+        settings: document.settings,
+        integerSettings: document.integerSettings,
+      );
     });
   }
 }

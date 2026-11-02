@@ -28,14 +28,16 @@ void main() {
     showAccountNameKey: false,
   };
 
-  test('version 2 backups preserve settings and reject damage', () async {
+  test('encrypted version 3 backups preserve settings and reject damage', () async {
     final bytes = await encodeBackupAccounts(
       [account],
       'password',
       settings: settings,
+      integerSettings: {hideCodeAfterKey: 10},
     );
     final decoded = await decodeBackupDocument(bytes, 'password');
     expect(decoded.settings, settings);
+    expect(decoded.integerSettings, {hideCodeAfterKey: 10});
     expect(decoded.accounts.single.counter, 7);
     await expectLater(
       decodeBackupDocument(bytes, 'wrong'),
@@ -72,6 +74,7 @@ void main() {
         [account],
         null,
         settings: settings,
+        integerSettings: {hideCodeAfterKey: 30},
       );
       final invalid = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
       invalid['settings'] = {
@@ -86,6 +89,7 @@ void main() {
         throwsFormatException,
       );
       expect(await db.getSettings(), defaultSettings);
+      expect(await db.getIntegerSettings(), defaultIntegerSettings);
       expect((await db.getAllConfigs()).single.counter, 1);
 
       await db.customStatement('''
@@ -94,10 +98,12 @@ void main() {
     ''');
       await expectLater(operations.import(bytes, null), throwsA(anything));
       expect(await db.getSettings(), defaultSettings);
+      expect(await db.getIntegerSettings(), defaultIntegerSettings);
       expect((await db.getAllConfigs()).single.counter, 1);
       await db.customStatement('DROP TRIGGER reject_account_update');
       await operations.import(bytes, null);
       expect(await db.getSettings(), settings);
+      expect(await db.getIntegerSettings(), {hideCodeAfterKey: 30});
       expect((await db.getAllConfigs()).single.counter, 7);
       final oldV2 = await encodeBackupAccounts(
         [account],
@@ -106,6 +112,18 @@ void main() {
       );
       await operations.import(oldV2, null);
       expect((await db.getSettings())[showAccountNameKey], isFalse);
+      expect((await db.getIntegerSettings())[hideCodeAfterKey], 30);
+      final badIntegers =
+          jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
+      badIntegers['integerSettings'] = {hideCodeAfterKey: 7};
+      await expectLater(
+        operations.import(
+          Uint8List.fromList(utf8.encode(jsonEncode(badIntegers))),
+          null,
+        ),
+        throwsFormatException,
+      );
+      expect((await db.getIntegerSettings())[hideCodeAfterKey], 30);
     },
   );
 }

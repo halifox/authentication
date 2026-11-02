@@ -38,6 +38,11 @@ void main() {
     await tester.tap(find.byIcon(Icons.done).last);
     await tester.pumpAndSettle();
     expect((await db.getSettings())[showAccountNameKey], isFalse);
+    await tester.tap(find.byType(DropdownButtonFormField<int>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('10 seconds').last);
+    await tester.pumpAndSettle();
+    expect((await db.getIntegerSettings())[hideCodeAfterKey], 10);
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 10));
   });
