@@ -28,33 +28,36 @@ void main() {
     showAccountNameKey: false,
   };
 
-  test('encrypted version 3 backups preserve settings and reject damage', () async {
-    final bytes = await encodeBackupAccounts(
-      [account],
-      'password',
-      settings: settings,
-      integerSettings: {hideCodeAfterKey: 10},
-    );
-    final decoded = await decodeBackupDocument(bytes, 'password');
-    expect(decoded.settings, settings);
-    expect(decoded.integerSettings, {hideCodeAfterKey: 10});
-    expect(decoded.accounts.single.counter, 7);
-    await expectLater(
-      decodeBackupDocument(bytes, 'wrong'),
-      throwsFormatException,
-    );
-    final envelope = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
-    envelope['version'] = 1;
-    await expectLater(
-      decodeBackupDocument(
-        Uint8List.fromList(utf8.encode(jsonEncode(envelope))),
+  test(
+    'encrypted version 3 backups preserve settings and reject damage',
+    () async {
+      final bytes = await encodeBackupAccounts(
+        [account],
         'password',
-      ),
-      throwsFormatException,
-    );
-    final oldBytes = await encodeBackupAccounts([account], null);
-    expect((await decodeBackupDocument(oldBytes, null)).settings, isNull);
-  });
+        settings: settings,
+        integerSettings: {hideCodeAfterKey: 10},
+      );
+      final decoded = await decodeBackupDocument(bytes, 'password');
+      expect(decoded.settings, settings);
+      expect(decoded.integerSettings, {hideCodeAfterKey: 10});
+      expect(decoded.accounts.single.counter, 7);
+      await expectLater(
+        decodeBackupDocument(bytes, 'wrong'),
+        throwsFormatException,
+      );
+      final envelope = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
+      envelope['version'] = 1;
+      await expectLater(
+        decodeBackupDocument(
+          Uint8List.fromList(utf8.encode(jsonEncode(envelope))),
+          'password',
+        ),
+        throwsFormatException,
+      );
+      final oldBytes = await encodeBackupAccounts([account], null);
+      expect((await decodeBackupDocument(oldBytes, null)).settings, isNull);
+    },
+  );
 
   test(
     'invalid settings and failed writes leave accounts and settings unchanged',
@@ -102,7 +105,10 @@ void main() {
       expect((await db.getAllConfigs()).single.counter, 1);
       await db.customStatement('DROP TRIGGER reject_account_update');
       await operations.import(bytes, null);
-      expect(await db.getSettings(), settings);
+      expect(await db.getSettings(), {
+        ...settings,
+        advanceHotpOnCopyKey: false,
+      });
       expect(await db.getIntegerSettings(), {hideCodeAfterKey: 30});
       expect((await db.getAllConfigs()).single.counter, 7);
       final oldV2 = await encodeBackupAccounts(

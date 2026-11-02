@@ -30,13 +30,14 @@ class AppDatabase extends _$AppDatabase {
   /// 数据库架构版本号。
   /// 如果修改了表结构，需要递增此版本并处理迁移逻辑。
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (m, from, to) async {
       if (from < 2) await m.createTable(appSettings);
       if (from < 3) await m.createTable(appIntegerSettings);
+      if (from < 4) await m.addColumn(authEntries, authEntries.copyCount);
     },
   );
 

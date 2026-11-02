@@ -617,6 +617,42 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'{count} 秒'**
   String seconds(int count);
+
+  /// No description provided for @advanceHotpOnCopy.
+  ///
+  /// In zh, this message translates to:
+  /// **'复制后前进 HOTP 计数器'**
+  String get advanceHotpOnCopy;
+
+  /// No description provided for @resetCopyCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'重置复制次数'**
+  String get resetCopyCount;
+
+  /// No description provided for @resetCopyCountWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'重置此账户的复制次数？'**
+  String get resetCopyCountWarning;
+
+  /// No description provided for @copyCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'复制次数：{count}'**
+  String copyCount(int count);
+
+  /// No description provided for @copyFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法复制验证码。'**
+  String get copyFailed;
+
+  /// No description provided for @copyRecordFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'验证码已复制，但无法更新复制次数或 HOTP 计数器。再次复制前请检查账户。'**
+  String get copyRecordFailed;
 }
 
 class _AppLocalizationsDelegate

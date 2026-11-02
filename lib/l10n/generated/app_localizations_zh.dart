@@ -265,4 +265,24 @@ class AppLocalizationsZh extends AppLocalizations {
   String seconds(int count) {
     return '$count 秒';
   }
+
+  @override
+  String get advanceHotpOnCopy => '复制后前进 HOTP 计数器';
+
+  @override
+  String get resetCopyCount => '重置复制次数';
+
+  @override
+  String get resetCopyCountWarning => '重置此账户的复制次数？';
+
+  @override
+  String copyCount(int count) {
+    return '复制次数：$count';
+  }
+
+  @override
+  String get copyFailed => '无法复制验证码。';
+
+  @override
+  String get copyRecordFailed => '验证码已复制，但无法更新复制次数或 HOTP 计数器。再次复制前请检查账户。';
 }

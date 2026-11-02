@@ -81,6 +81,7 @@ Future<TokenFormResult> saveAccount(
               id: existing.id,
               sortOrder: existing.sortOrder,
               createdAt: existing.createdAt,
+              copyCount: existing.copyCount,
             ),
           );
           return TokenFormSuccess(isUpdate: true);
@@ -97,6 +98,7 @@ Future<TokenFormResult> saveAccount(
             id: current.id,
             sortOrder: current.sortOrder,
             createdAt: current.createdAt,
+            copyCount: current.copyCount,
           ),
         );
         return TokenFormSuccess(isUpdate: true);

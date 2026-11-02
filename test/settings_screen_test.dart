@@ -27,7 +27,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.byIcon(Icons.close), findsNWidgets(2));
+    expect(find.byIcon(Icons.close), findsNWidgets(3));
     await tester.tap(find.byIcon(Icons.close).first);
     await tester.pumpAndSettle();
     expect((await db.getSettings())[showCaptchaOnTapKey], isTrue);

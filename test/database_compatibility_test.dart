@@ -31,6 +31,7 @@ void main() {
     expect(entries.single.issuer, 'Example');
     expect(entries.single.secret, 'secret');
     expect(entries.single.period, 30);
+    expect(entries.single.copyCount, 0);
     expect(await database.getIntegerSettings(), defaultIntegerSettings);
     await database.setIntegerSetting(hideCodeAfterKey, 10);
     expect((await database.getIntegerSettings())[hideCodeAfterKey], 10);
@@ -42,6 +43,7 @@ void main() {
       showCaptchaOnTapKey: true,
       copyCaptchaOnTapKey: false,
       showAccountNameKey: true,
+      advanceHotpOnCopyKey: false,
     });
     await database.setSetting(showCaptchaOnTapKey, false);
     await database.initializeSettings({
@@ -52,6 +54,7 @@ void main() {
       showCaptchaOnTapKey: false,
       copyCaptchaOnTapKey: false,
       showAccountNameKey: true,
+      advanceHotpOnCopyKey: false,
     });
     expect((await database.getAllAuthEntries()).single.secret, 'secret');
   });

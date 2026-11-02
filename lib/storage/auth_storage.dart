@@ -14,6 +14,7 @@ OtpAccount _decode(AppDatabase db, AuthEntry e) => OtpAccount(
   icon: e.icon,
   sortOrder: e.sortOrder,
   createdAt: e.createdAt,
+  copyCount: e.copyCount,
 );
 
 AuthEntriesCompanion _encode(AppDatabase db, OtpAccount e) {
@@ -32,6 +33,7 @@ AuthEntriesCompanion _encode(AppDatabase db, OtpAccount e) {
     icon: e.icon,
     sortOrder: e.sortOrder,
     createdAt: e.createdAt,
+    copyCount: Value(e.copyCount),
   );
 }
 
@@ -41,6 +43,13 @@ extension AuthStorage on AppDatabase {
   );
   Stream<OtpAccount?> watchConfig(int id) =>
       watchAuthEntry(id).map((e) => e == null ? null : _decode(this, e));
+  Future<OtpAccount?> getConfig(int id) async {
+    final entry = await (select(
+      authEntries,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
+    return entry == null ? null : _decode(this, entry);
+  }
+
   Future<List<OtpAccount>> getAllConfigs() async =>
       (await getAllAuthEntries()).map((e) => _decode(this, e)).toList();
   Future<OtpAccount?> getConfigByAccountAndIssuer(
@@ -54,7 +63,10 @@ extension AuthStorage on AppDatabase {
   Future<void> addConfig(OtpAccount account) async =>
       _insertAuthEntry(_encode(this, account));
   Future<void> updateConfig(OtpAccount account) async {
-    final companion = _encode(this, account).copyWith(id: Value(account.id));
+    final companion = _encode(
+      this,
+      account,
+    ).copyWith(id: Value(account.id), copyCount: const Value.absent());
     await (update(
       authEntries,
     )..where((t) => t.id.equals(account.id))).write(companion);
@@ -62,9 +74,57 @@ extension AuthStorage on AppDatabase {
 
   Future<void> deleteConfig(int id) async => _deleteAuthEntry(id);
 
+  Future<void> recordCopy(
+    OtpAccount copied, {
+    required bool advanceHotp,
+  }) async {
+    await transaction(() async {
+      final current = await getConfig(copied.id);
+      if (current == null ||
+          current.type != copied.type ||
+          current.secret != copied.secret ||
+          current.pin != copied.pin ||
+          current.algorithm != copied.algorithm ||
+          current.digits != copied.digits ||
+          current.period != copied.period ||
+          current.counter != copied.counter) {
+        throw StateError('Account changed during copy.');
+      }
+      final nextCounter = advanceHotp && current.type.toLowerCase() == 'hotp'
+          ? current.counter + 1
+          : current.counter;
+      current
+          .copyWith(counter: nextCounter, copyCount: current.copyCount + 1)
+          .validate();
+      await (update(authEntries)..where((t) => t.id.equals(current.id))).write(
+        AuthEntriesCompanion(
+          counter: Value(nextCounter),
+          copyCount: Value(current.copyCount + 1),
+        ),
+      );
+    });
+  }
+
+  Future<void> resetCopyCount(int id) async {
+    await (update(authEntries)..where((t) => t.id.equals(id))).write(
+      const AuthEntriesCompanion(copyCount: Value(0)),
+    );
+  }
+
+  Future<void> advanceHotp(int id) async {
+    await transaction(() async {
+      final current = await getConfig(id);
+      if (current == null || current.type.toLowerCase() != 'hotp') {
+        throw StateError('HOTP account not found.');
+      }
+      await updateConfig(current.copyWith(counter: current.counter + 1));
+    });
+  }
+
   Future<int> importAccounts(
     List<OtpAccount> accounts, {
     bool preserveExistingMetadata = false,
+    bool preserveExistingCopyCount = false,
     Map<String, bool>? settings,
     Map<String, int>? integerSettings,
   }) async {
@@ -109,8 +169,18 @@ extension AuthStorage on AppDatabase {
               createdAt: preserveExistingMetadata
                   ? existing.createdAt
                   : account.createdAt,
+              copyCount: preserveExistingCopyCount || preserveExistingMetadata
+                  ? existing.copyCount
+                  : account.copyCount,
             ),
           );
+          if (!preserveExistingCopyCount && !preserveExistingMetadata) {
+            await (update(
+              authEntries,
+            )..where((t) => t.id.equals(existing.id))).write(
+              AuthEntriesCompanion(copyCount: Value(account.copyCount)),
+            );
+          }
         }
       }
     });

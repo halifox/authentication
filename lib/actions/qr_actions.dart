@@ -60,6 +60,7 @@ Future<QrProcessResult> processQrCode(
             icon: existing.icon,
             sortOrder: existing.sortOrder,
             createdAt: existing.createdAt,
+            copyCount: existing.copyCount,
           ),
         );
         return QrProcessSuccess(isUpdate: true);

@@ -149,6 +149,18 @@ class $AuthEntriesTable extends AuthEntries
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _copyCountMeta = const VerificationMeta(
+    'copyCount',
+  );
+  @override
+  late final GeneratedColumn<int> copyCount = GeneratedColumn<int>(
+    'copy_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -165,6 +177,7 @@ class $AuthEntriesTable extends AuthEntries
     icon,
     sortOrder,
     createdAt,
+    copyCount,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -285,6 +298,12 @@ class $AuthEntriesTable extends AuthEntries
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('copy_count')) {
+      context.handle(
+        _copyCountMeta,
+        copyCount.isAcceptableOrUnknown(data['copy_count']!, _copyCountMeta),
+      );
+    }
     return context;
   }
 
@@ -354,6 +373,10 @@ class $AuthEntriesTable extends AuthEntries
         DriftSqlType.int,
         data['${effectivePrefix}created_at'],
       )!,
+      copyCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}copy_count'],
+      )!,
     );
   }
 
@@ -378,6 +401,7 @@ class AuthEntry extends DataClass implements Insertable<AuthEntry> {
   final String icon;
   final int sortOrder;
   final int createdAt;
+  final int copyCount;
   const AuthEntry({
     required this.id,
     required this.scheme,
@@ -393,6 +417,7 @@ class AuthEntry extends DataClass implements Insertable<AuthEntry> {
     required this.icon,
     required this.sortOrder,
     required this.createdAt,
+    required this.copyCount,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -411,6 +436,7 @@ class AuthEntry extends DataClass implements Insertable<AuthEntry> {
     map['icon'] = Variable<String>(icon);
     map['sort_order'] = Variable<int>(sortOrder);
     map['created_at'] = Variable<int>(createdAt);
+    map['copy_count'] = Variable<int>(copyCount);
     return map;
   }
 
@@ -430,6 +456,7 @@ class AuthEntry extends DataClass implements Insertable<AuthEntry> {
       icon: Value(icon),
       sortOrder: Value(sortOrder),
       createdAt: Value(createdAt),
+      copyCount: Value(copyCount),
     );
   }
 
@@ -453,6 +480,7 @@ class AuthEntry extends DataClass implements Insertable<AuthEntry> {
       icon: serializer.fromJson<String>(json['icon']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
       createdAt: serializer.fromJson<int>(json['createdAt']),
+      copyCount: serializer.fromJson<int>(json['copyCount']),
     );
   }
   @override
@@ -473,6 +501,7 @@ class AuthEntry extends DataClass implements Insertable<AuthEntry> {
       'icon': serializer.toJson<String>(icon),
       'sortOrder': serializer.toJson<int>(sortOrder),
       'createdAt': serializer.toJson<int>(createdAt),
+      'copyCount': serializer.toJson<int>(copyCount),
     };
   }
 
@@ -491,6 +520,7 @@ class AuthEntry extends DataClass implements Insertable<AuthEntry> {
     String? icon,
     int? sortOrder,
     int? createdAt,
+    int? copyCount,
   }) => AuthEntry(
     id: id ?? this.id,
     scheme: scheme ?? this.scheme,
@@ -506,6 +536,7 @@ class AuthEntry extends DataClass implements Insertable<AuthEntry> {
     icon: icon ?? this.icon,
     sortOrder: sortOrder ?? this.sortOrder,
     createdAt: createdAt ?? this.createdAt,
+    copyCount: copyCount ?? this.copyCount,
   );
   AuthEntry copyWithCompanion(AuthEntriesCompanion data) {
     return AuthEntry(
@@ -523,6 +554,7 @@ class AuthEntry extends DataClass implements Insertable<AuthEntry> {
       icon: data.icon.present ? data.icon.value : this.icon,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      copyCount: data.copyCount.present ? data.copyCount.value : this.copyCount,
     );
   }
 
@@ -542,7 +574,8 @@ class AuthEntry extends DataClass implements Insertable<AuthEntry> {
           ..write('pin: $pin, ')
           ..write('icon: $icon, ')
           ..write('sortOrder: $sortOrder, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('copyCount: $copyCount')
           ..write(')'))
         .toString();
   }
@@ -563,6 +596,7 @@ class AuthEntry extends DataClass implements Insertable<AuthEntry> {
     icon,
     sortOrder,
     createdAt,
+    copyCount,
   );
   @override
   bool operator ==(Object other) =>
@@ -581,7 +615,8 @@ class AuthEntry extends DataClass implements Insertable<AuthEntry> {
           other.pin == this.pin &&
           other.icon == this.icon &&
           other.sortOrder == this.sortOrder &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.copyCount == this.copyCount);
 }
 
 class AuthEntriesCompanion extends UpdateCompanion<AuthEntry> {
@@ -599,6 +634,7 @@ class AuthEntriesCompanion extends UpdateCompanion<AuthEntry> {
   final Value<String> icon;
   final Value<int> sortOrder;
   final Value<int> createdAt;
+  final Value<int> copyCount;
   const AuthEntriesCompanion({
     this.id = const Value.absent(),
     this.scheme = const Value.absent(),
@@ -614,6 +650,7 @@ class AuthEntriesCompanion extends UpdateCompanion<AuthEntry> {
     this.icon = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.copyCount = const Value.absent(),
   });
   AuthEntriesCompanion.insert({
     this.id = const Value.absent(),
@@ -630,6 +667,7 @@ class AuthEntriesCompanion extends UpdateCompanion<AuthEntry> {
     required String icon,
     required int sortOrder,
     required int createdAt,
+    this.copyCount = const Value.absent(),
   }) : scheme = Value(scheme),
        type = Value(type),
        issuer = Value(issuer),
@@ -658,6 +696,7 @@ class AuthEntriesCompanion extends UpdateCompanion<AuthEntry> {
     Expression<String>? icon,
     Expression<int>? sortOrder,
     Expression<int>? createdAt,
+    Expression<int>? copyCount,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -674,6 +713,7 @@ class AuthEntriesCompanion extends UpdateCompanion<AuthEntry> {
       if (icon != null) 'icon': icon,
       if (sortOrder != null) 'sort_order': sortOrder,
       if (createdAt != null) 'created_at': createdAt,
+      if (copyCount != null) 'copy_count': copyCount,
     });
   }
 
@@ -692,6 +732,7 @@ class AuthEntriesCompanion extends UpdateCompanion<AuthEntry> {
     Value<String>? icon,
     Value<int>? sortOrder,
     Value<int>? createdAt,
+    Value<int>? copyCount,
   }) {
     return AuthEntriesCompanion(
       id: id ?? this.id,
@@ -708,6 +749,7 @@ class AuthEntriesCompanion extends UpdateCompanion<AuthEntry> {
       icon: icon ?? this.icon,
       sortOrder: sortOrder ?? this.sortOrder,
       createdAt: createdAt ?? this.createdAt,
+      copyCount: copyCount ?? this.copyCount,
     );
   }
 
@@ -756,6 +798,9 @@ class AuthEntriesCompanion extends UpdateCompanion<AuthEntry> {
     if (createdAt.present) {
       map['created_at'] = Variable<int>(createdAt.value);
     }
+    if (copyCount.present) {
+      map['copy_count'] = Variable<int>(copyCount.value);
+    }
     return map;
   }
 
@@ -775,7 +820,8 @@ class AuthEntriesCompanion extends UpdateCompanion<AuthEntry> {
           ..write('pin: $pin, ')
           ..write('icon: $icon, ')
           ..write('sortOrder: $sortOrder, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('copyCount: $copyCount')
           ..write(')'))
         .toString();
   }
@@ -1235,6 +1281,7 @@ typedef $$AuthEntriesTableCreateCompanionBuilder =
       required String icon,
       required int sortOrder,
       required int createdAt,
+      Value<int> copyCount,
     });
 typedef $$AuthEntriesTableUpdateCompanionBuilder =
     AuthEntriesCompanion Function({
@@ -1252,6 +1299,7 @@ typedef $$AuthEntriesTableUpdateCompanionBuilder =
       Value<String> icon,
       Value<int> sortOrder,
       Value<int> createdAt,
+      Value<int> copyCount,
     });
 
 class $$AuthEntriesTableFilterComposer
@@ -1330,6 +1378,11 @@ class $$AuthEntriesTableFilterComposer
 
   ColumnFilters<int> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get copyCount => $composableBuilder(
+    column: $table.copyCount,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1412,6 +1465,11 @@ class $$AuthEntriesTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get copyCount => $composableBuilder(
+    column: $table.copyCount,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AuthEntriesTableAnnotationComposer
@@ -1464,6 +1522,9 @@ class $$AuthEntriesTableAnnotationComposer
 
   GeneratedColumn<int> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get copyCount =>
+      $composableBuilder(column: $table.copyCount, builder: (column) => column);
 }
 
 class $$AuthEntriesTableTableManager
@@ -1511,6 +1572,7 @@ class $$AuthEntriesTableTableManager
                 Value<String> icon = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<int> createdAt = const Value.absent(),
+                Value<int> copyCount = const Value.absent(),
               }) => AuthEntriesCompanion(
                 id: id,
                 scheme: scheme,
@@ -1526,6 +1588,7 @@ class $$AuthEntriesTableTableManager
                 icon: icon,
                 sortOrder: sortOrder,
                 createdAt: createdAt,
+                copyCount: copyCount,
               ),
           createCompanionCallback:
               ({
@@ -1543,6 +1606,7 @@ class $$AuthEntriesTableTableManager
                 required String icon,
                 required int sortOrder,
                 required int createdAt,
+                Value<int> copyCount = const Value.absent(),
               }) => AuthEntriesCompanion.insert(
                 id: id,
                 scheme: scheme,
@@ -1558,6 +1622,7 @@ class $$AuthEntriesTableTableManager
                 icon: icon,
                 sortOrder: sortOrder,
                 createdAt: createdAt,
+                copyCount: copyCount,
               ),
           withReferenceMapper: (p0) => p0
               .map(

@@ -35,11 +35,9 @@ class TokenItem extends Notifier<TokenItemState> {
 
     state = state.copyWith(isUpdating: true);
     try {
-      final repo = ref.read(appDatabaseProvider);
-      final newCounter = config.counter + 1;
-      await repo.updateConfig(config.copyWith(counter: newCounter));
+      await ref.read(appDatabaseProvider).advanceHotp(config.id);
     } finally {
-      state = state.copyWith(isUpdating: false);
+      if (ref.mounted) state = state.copyWith(isUpdating: false);
     }
   }
 
@@ -50,9 +48,29 @@ class TokenItem extends Notifier<TokenItemState> {
   }
 
   /// 将代码复制到剪贴板。
-  Future<void> copyCode(String code) async {
-    await Clipboard.setData(ClipboardData(text: code));
+  Future<bool> copyCode({required bool advanceHotp}) async {
+    if (state.isUpdating) return false;
+    state = state.copyWith(isUpdating: true);
+    try {
+      final db = ref.read(appDatabaseProvider);
+      final account = await db.getConfig(id);
+      if (account == null) throw StateError('Account not found.');
+      await Clipboard.setData(
+        ClipboardData(text: account.generateCodeString()),
+      );
+      try {
+        await db.recordCopy(account, advanceHotp: advanceHotp);
+        return true;
+      } catch (_) {
+        return false;
+      }
+    } finally {
+      if (ref.mounted) state = state.copyWith(isUpdating: false);
+    }
   }
+
+  Future<void> resetCopyCount() =>
+      ref.read(appDatabaseProvider).resetCopyCount(id);
 }
 
 /// 表示列表中单个令牌项的状态。

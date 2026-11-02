@@ -56,6 +56,7 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
         password,
         settings: snapshot.settings,
         integerSettings: snapshot.integerSettings,
+        includeCopyCounts: true,
       );
       final location = await FilePicker.saveFile(
         fileName: 'authentication-backup.json',
@@ -97,6 +98,7 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
         document.accounts,
         settings: document.settings,
         integerSettings: document.integerSettings,
+        preserveExistingCopyCount: !document.hasCopyCounts,
       );
     });
   }

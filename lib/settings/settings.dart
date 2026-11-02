@@ -1,11 +1,13 @@
 const showCaptchaOnTapKey = 'is_show_captcha_on_tap';
 const copyCaptchaOnTapKey = 'is_copy_captcha_on_tap';
 const showAccountNameKey = 'show_account_name';
+const advanceHotpOnCopyKey = 'advance_hotp_on_copy';
 
 const defaultSettings = <String, bool>{
   showCaptchaOnTapKey: false,
   copyCaptchaOnTapKey: false,
   showAccountNameKey: true,
+  advanceHotpOnCopyKey: false,
 };
 
 Map<String, bool> validateSettings(Object? value) {

@@ -18,10 +18,14 @@ class Backup {
     String? password, {
     Map<String, bool>? settings,
     Map<String, int>? integerSettings,
+    bool includeCopyCounts = false,
   }) async {
     final validatedSettings = settings == null
         ? null
         : validateSettings(settings);
+    if (includeCopyCounts && integerSettings == null) {
+      throw const FormatException('Copy counts require complete settings.');
+    }
     if (integerSettings != null && validatedSettings == null) {
       throw const FormatException('Integer settings require base settings.');
     }
@@ -36,7 +40,9 @@ class Backup {
     final payload = utf8.encode(jsonEncode(contents));
     final Map<String, Object> envelope = {
       'format': 'authentication-backup',
-      'version': validatedIntegers != null
+      'version': includeCopyCounts
+          ? 4
+          : validatedIntegers != null
           ? 3
           : (validatedSettings == null ? 1 : 2),
     };
@@ -72,7 +78,8 @@ class Backup {
         data['format'] != 'authentication-backup' ||
         (data['version'] != 1 &&
             data['version'] != 2 &&
-            data['version'] != 3) ||
+            data['version'] != 3 &&
+            data['version'] != 4) ||
         data['encrypted'] is! bool) {
       throw const FormatException('Unsupported backup format.');
     }
@@ -131,13 +138,13 @@ class Backup {
     }
     final entries = contents['entries'];
     if ((envelope['version'] == 1 && contents.containsKey('settings')) ||
-        (envelope['version'] != 3 && contents.containsKey('integerSettings'))) {
+        (envelope['version'] < 3 && contents.containsKey('integerSettings'))) {
       throw const FormatException('Invalid backup version.');
     }
     final settings = envelope['version'] >= 2
         ? validateSettings(contents['settings'])
         : null;
-    final integerSettings = envelope['version'] == 3
+    final integerSettings = envelope['version'] >= 3
         ? validateIntegerSettings(contents['integerSettings'])
         : null;
     if (entries is! List ||
@@ -149,7 +156,10 @@ class Backup {
               e['uri'] is! String ||
               e['icon'] is! String ||
               e['sortOrder'] is! int ||
-              e['createdAt'] is! int,
+              e['createdAt'] is! int ||
+              (envelope['version'] == 4
+                  ? e['copyCount'] is! int || (e['copyCount'] as int) < 0
+                  : e.containsKey('copyCount')),
         )) {
       throw const FormatException('Invalid backup entries.');
     }
@@ -171,6 +181,7 @@ List<OtpAccount> parseBackupAccounts(List<Map<String, Object>> entries) =>
         icon: icon,
         sortOrder: entry['sortOrder'] as int,
         createdAt: entry['createdAt'] as int,
+        copyCount: entry['copyCount'] as int? ?? 0,
       );
       account.validate();
       return account;
@@ -181,6 +192,7 @@ Future<Uint8List> encodeBackupAccounts(
   String? password, {
   Map<String, bool>? settings,
   Map<String, int>? integerSettings,
+  bool includeCopyCounts = false,
 }) => Backup.encode(
   accounts
       .map(
@@ -189,12 +201,14 @@ Future<Uint8List> encodeBackupAccounts(
           'icon': e.icon,
           'sortOrder': e.sortOrder,
           'createdAt': e.createdAt,
+          if (includeCopyCounts) 'copyCount': e.copyCount,
         },
       )
       .toList(),
   password,
   settings: settings,
   integerSettings: integerSettings,
+  includeCopyCounts: includeCopyCounts,
 );
 
 Future<
@@ -202,6 +216,7 @@ Future<
     List<OtpAccount> accounts,
     Map<String, bool>? settings,
     Map<String, int>? integerSettings,
+    bool hasCopyCounts,
   })
 >
 decodeBackupDocument(Uint8List bytes, String? password) async {
@@ -210,6 +225,7 @@ decodeBackupDocument(Uint8List bytes, String? password) async {
     accounts: parseBackupAccounts(document.entries),
     settings: document.settings,
     integerSettings: document.integerSettings,
+    hasCopyCounts: document.entries.first.containsKey('copyCount'),
   );
 }
 

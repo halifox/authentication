@@ -47,6 +47,7 @@ class SettingsScreen extends ConsumerWidget {
     final isShowCaptchaOnTap = ref.watch(isShowCaptchaOnTapProvider);
     final isCopyCaptchaOnTap = ref.watch(isCopyCaptchaOnTapProvider);
     final showAccountName = ref.watch(showAccountNameProvider);
+    final advanceHotp = settings.value?[advanceHotpOnCopyKey] ?? false;
     final List<SettingsItemModel> options = [
       SettingsItemModel(
         label: AppLocalizations.of(context)!.showCaptchaOnTap,
@@ -68,6 +69,13 @@ class SettingsScreen extends ConsumerWidget {
         onTap: () => ref
             .read(settingsOperationsProvider.notifier)
             .update(showAccountNameKey, !showAccountName),
+      ),
+      SettingsItemModel(
+        label: l10n.advanceHotpOnCopy,
+        value: advanceHotp,
+        onTap: () => ref
+            .read(settingsOperationsProvider.notifier)
+            .update(advanceHotpOnCopyKey, !advanceHotp),
       ),
     ];
 

@@ -32,6 +32,11 @@ class TokenListItem extends ConsumerWidget {
       trailingActions: [
         _buildAction(context, l10n.delete, () => _onDelete(context, ref)),
         _buildAction(context, l10n.edit, () => _onEdit(context)),
+        _buildAction(
+          context,
+          l10n.resetCopyCount,
+          () => _onReset(context, ref),
+        ),
       ],
       child: _TokenCard(config: config),
     );
@@ -43,7 +48,7 @@ class TokenListItem extends ConsumerWidget {
     VoidCallback onTap,
   ) {
     return SwipeAction(
-      widthSpace: 152,
+      widthSpace: 96,
       onTap: (handler) async => onTap(),
       color: Colors.transparent,
       content: Padding(
@@ -54,7 +59,10 @@ class TokenListItem extends ConsumerWidget {
             color: Theme.of(context).colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(24),
           ),
-          child: Text(label),
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text(label, textAlign: TextAlign.center),
+          ),
         ),
       ),
     );
@@ -62,6 +70,28 @@ class TokenListItem extends ConsumerWidget {
 
   void _onEdit(BuildContext context) {
     Navigator.pushNamed(context, AppRoutes.form, arguments: config);
+  }
+
+  Future<void> _onReset(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
+    final result = await showCupertinoModalPopup<bool>(
+      context: context,
+      builder: (_) => ActionResultSheet(
+        state: 0,
+        title: l10n.warning,
+        message: l10n.resetCopyCountWarning,
+        falseButtonVisible: true,
+      ),
+    );
+    if (result == true && context.mounted) {
+      try {
+        await ref.read(tokenItemProvider(config.id).notifier).resetCopyCount();
+      } catch (_) {
+        if (context.mounted)
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(l10n.saveFailed)));
+      }
+    }
   }
 
   Future<void> _onDelete(BuildContext context, WidgetRef ref) async {
@@ -90,6 +120,8 @@ class _TokenCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isShowOnTap = ref.watch(isShowCaptchaOnTapProvider);
     final isCopyOnTap = ref.watch(isCopyCaptchaOnTapProvider);
+    final advanceHotp =
+        ref.watch(settingsProvider).value?[advanceHotpOnCopyKey] ?? false;
     final hideAfter =
         ref.watch(integerSettingsProvider).value?[hideCodeAfterKey] ?? 5;
     final itemState = ref.watch(tokenItemProvider(config.id));
@@ -100,8 +132,9 @@ class _TokenCard extends ConsumerWidget {
     return GestureDetector(
       onTap: () {
         if (isShowOnTap) controller.toggleReveal(hideAfter);
-        if (isCopyOnTap)
-          _handleCopy(context, controller, config.generateCodeString());
+        if (isCopyOnTap && !itemState.isUpdating) {
+          _handleCopy(context, controller, advanceHotp);
+        }
       },
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -123,17 +156,20 @@ class _TokenCard extends ConsumerWidget {
   Future<void> _handleCopy(
     BuildContext context,
     TokenItem controller,
-    String code,
+    bool advanceHotp,
   ) async {
-    await controller.copyCode(code);
+    final l10n = AppLocalizations.of(context)!;
+    String message;
+    try {
+      final recorded = await controller.copyCode(advanceHotp: advanceHotp);
+      message = recorded ? l10n.codeCopied : l10n.copyRecordFailed;
+    } catch (_) {
+      message = l10n.copyFailed;
+    }
     if (!context.mounted) return;
-
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppLocalizations.of(context)!.codeCopied),
-        duration: const Duration(milliseconds: 1200),
-      ),
+      SnackBar(content: Text(message), duration: const Duration(seconds: 3)),
     );
   }
 }
@@ -146,6 +182,7 @@ class _TokenHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
         _TokenIcon(iconPath: config.icon),
@@ -162,6 +199,12 @@ class _TokenHeader extends ConsumerWidget {
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.onPrimaryContainer,
                 ),
+              ),
+              Text(
+                l10n.copyCount(config.copyCount),
+                style: theme.textTheme.bodySmall,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               if (ref.watch(showAccountNameProvider))
                 Text(

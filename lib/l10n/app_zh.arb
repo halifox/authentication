@@ -269,5 +269,12 @@
   "hideCodeAfter": "显示后自动隐藏验证码",
   "never": "从不",
   "seconds": "{count} 秒",
-  "@seconds": {"placeholders": {"count": {"type": "int"}}}
+  "@seconds": {"placeholders": {"count": {"type": "int"}}},
+  "advanceHotpOnCopy": "复制后前进 HOTP 计数器",
+  "resetCopyCount": "重置复制次数",
+  "resetCopyCountWarning": "重置此账户的复制次数？",
+  "copyCount": "复制次数：{count}",
+  "copyFailed": "无法复制验证码。",
+  "copyRecordFailed": "验证码已复制，但无法更新复制次数或 HOTP 计数器。再次复制前请检查账户。",
+  "@copyCount": {"placeholders": {"count": {"type": "int"}}}
 }

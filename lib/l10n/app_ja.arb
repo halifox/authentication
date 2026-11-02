@@ -83,5 +83,11 @@
   "showAccountName": "Show account name",
   "hideCodeAfter": "Automatically hide revealed codes",
   "never": "Never",
-  "seconds": "{count} seconds"
+  "seconds": "{count} seconds",
+  "advanceHotpOnCopy": "Advance HOTP after copying",
+  "resetCopyCount": "Reset copy count",
+  "resetCopyCountWarning": "Reset this account’s copy count?",
+  "copyCount": "Copies: {count}",
+  "copyFailed": "Could not copy the code.",
+  "copyRecordFailed": "Code copied, but the count or HOTP counter could not be updated. Check the account before copying again."
 }

@@ -17,10 +17,11 @@ class OtpAccount {
     this.icon = 'assets/icons/passkey.svg',
     this.sortOrder = 0,
     this.createdAt = 0,
+    this.copyCount = 0,
   });
 
   final String type, issuer, account, secret, algorithm, pin;
-  final int digits, period, counter, id, sortOrder, createdAt;
+  final int digits, period, counter, id, sortOrder, createdAt, copyCount;
   final String icon;
 
   OtpAccount copyWith({
@@ -37,6 +38,7 @@ class OtpAccount {
     String? icon,
     int? sortOrder,
     int? createdAt,
+    int? copyCount,
   }) => OtpAccount(
     id: id ?? this.id,
     type: type ?? this.type,
@@ -51,6 +53,7 @@ class OtpAccount {
     icon: icon ?? this.icon,
     sortOrder: sortOrder ?? this.sortOrder,
     createdAt: createdAt ?? this.createdAt,
+    copyCount: copyCount ?? this.copyCount,
   );
 
   String generateCodeString() {
@@ -107,18 +110,21 @@ class OtpAccount {
     ).toString();
   }
 
-  void validate() => AuthValidator.validate(
-    scheme: 'otpauth',
-    typeStr: type,
-    issuer: issuer,
-    account: account,
-    algorithmStr: algorithm,
-    digits: digits,
-    period: period,
-    counter: counter,
-    secret: secret,
-    pin: pin,
-  );
+  void validate() {
+    if (copyCount < 0) throw const FormatException('Invalid copy count.');
+    AuthValidator.validate(
+      scheme: 'otpauth',
+      typeStr: type,
+      issuer: issuer,
+      account: account,
+      algorithmStr: algorithm,
+      digits: digits,
+      period: period,
+      counter: counter,
+      secret: secret,
+      pin: pin,
+    );
+  }
 }
 
 OtpAccount parseOtpUri(String input) {

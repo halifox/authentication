@@ -49,6 +49,8 @@ class AuthEntries extends Table {
 
   IntColumn get createdAt => integer()();
 
+  IntColumn get copyCount => integer().withDefault(const Constant(0))();
+
   @override
   List<Set<Column>> get uniqueKeys => [
     {issuer, account},

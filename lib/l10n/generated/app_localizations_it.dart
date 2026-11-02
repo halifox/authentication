@@ -272,4 +272,25 @@ class AppLocalizationsIt extends AppLocalizations {
   String seconds(int count) {
     return '$count seconds';
   }
+
+  @override
+  String get advanceHotpOnCopy => 'Advance HOTP after copying';
+
+  @override
+  String get resetCopyCount => 'Reset copy count';
+
+  @override
+  String get resetCopyCountWarning => 'Reset this account’s copy count?';
+
+  @override
+  String copyCount(int count) {
+    return 'Copies: $count';
+  }
+
+  @override
+  String get copyFailed => 'Could not copy the code.';
+
+  @override
+  String get copyRecordFailed =>
+      'Code copied, but the count or HOTP counter could not be updated. Check the account before copying again.';
 }
