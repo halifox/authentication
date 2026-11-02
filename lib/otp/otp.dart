@@ -11,6 +11,66 @@ import 'package:crypto/crypto.dart' as crypto;
 
 /// RFC4226/RFC6238 One-Time Password Library
 class OTP {
+  static String generateSteamCode({
+    required String secret,
+    int? unixMilliseconds,
+  }) {
+    final time = unixMilliseconds ?? DateTime.now().millisecondsSinceEpoch;
+    if (time < 0) throw ArgumentError('unixMilliseconds must be non-negative.');
+    final key = base32.base32.decode(secret.toUpperCase());
+    final digest = crypto.Hmac(
+      crypto.sha1,
+      key,
+    ).convert(_int2bytes(time ~/ 30000)).bytes;
+    final offset = digest.last & 15;
+    var value =
+        ((digest[offset] & 127) << 24) |
+        (digest[offset + 1] << 16) |
+        (digest[offset + 2] << 8) |
+        digest[offset + 3];
+    const alphabet = '23456789BCDFGHJKMNPQRTVWXY';
+    final result = StringBuffer();
+    for (var i = 0; i < 5; i++) {
+      result.write(alphabet[value % alphabet.length]);
+      value ~/= alphabet.length;
+    }
+    return result.toString();
+  }
+
+  static String generateYandexCode({
+    required String secret,
+    required String pin,
+    int? unixMilliseconds,
+  }) {
+    final time = unixMilliseconds ?? DateTime.now().millisecondsSinceEpoch;
+    if (time < 0) throw ArgumentError('unixMilliseconds must be non-negative.');
+    final secretBytes = base32.base32.decode(secret.toUpperCase());
+    if (secretBytes.length < 16)
+      throw ArgumentError('Yandex secret is too short.');
+    var key = crypto.sha256.convert([
+      ...utf8.encode(pin),
+      ...secretBytes.take(16),
+    ]).bytes;
+    if (key.first == 0) key = key.sublist(1);
+    final digest = crypto.Hmac(
+      crypto.sha256,
+      key,
+    ).convert(_int2bytes(time ~/ 30000)).bytes;
+    final offset = digest.last & 15;
+    // Compute modulo as bytes are read to avoid precision loss on the web.
+    const modulus = 208827064576; // 26^8
+    var value = digest[offset] & 127;
+    for (var i = 1; i < 8; i++) {
+      value = (value * 256 + digest[offset + i]) % modulus;
+    }
+    final result = List<String>.filled(8, 'a');
+    for (var i = 7; i >= 0; i--) {
+      result[i] = String.fromCharCode(97 + value % 26);
+      value ~/= 26;
+    }
+    return result.join();
+  }
+
   /// 用于为 HOTP 的 SHA256 和 SHA512 使用启用 TOTP 样式的密钥填充。默认为假。
   static bool useTOTPPaddingForHOTP = false;
 

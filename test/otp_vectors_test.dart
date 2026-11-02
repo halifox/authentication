@@ -2,6 +2,40 @@ import 'package:authentication/otp/otp.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('Steam and Yandex interoperability vectors', () {
+    const steamSecret = '63BEDWCQZKTQWPESARIERL5DTTQFCJTK';
+    expect(
+      OTP.generateSteamCode(
+        secret: steamSecret,
+        unixMilliseconds: 1511200518000,
+      ),
+      'FR8RV',
+    );
+    expect(
+      OTP.generateSteamCode(
+        secret: steamSecret,
+        unixMilliseconds: 1511200714000,
+      ),
+      '9P3VP',
+    );
+    const yandexSecret = 'LA2V6KMCGYMWWVEW64RNP3JA3IAAAAAAHTSG4HRZPI';
+    expect(
+      OTP.generateYandexCode(
+        secret: yandexSecret,
+        pin: '7586',
+        unixMilliseconds: 1581064020000,
+      ),
+      'oactmacq',
+    );
+    expect(
+      OTP.generateYandexCode(
+        secret: yandexSecret,
+        pin: '7586',
+        unixMilliseconds: 1581090810000,
+      ),
+      'wemdwrix',
+    );
+  });
   test('mOTP MD5 vector', () {
     expect(
       OTP.generateMOTPCodeString(
