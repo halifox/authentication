@@ -876,6 +876,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get unlockInvalid => '无法解锁，请检查密码后重试。';
 
   @override
+  String get backupUseAppPassword => '使用应用密码';
+
+  @override
+  String get backupUseAppPasswordHint => '请输入当前应用密码。即使之后修改应用密码，此备份仍使用导出时的密码。';
+
+  @override
+  String get backupAppPasswordInvalid => '应用密码错误或已被移除，未保存备份。';
+
+  @override
   String get unlockUnavailable => '无法安全打开应用，您的数据未被删除。';
 
   @override

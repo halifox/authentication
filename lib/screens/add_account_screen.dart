@@ -18,6 +18,7 @@ import 'package:authentication/otp/migration.dart';
 import 'package:authentication/otp/otp_provider.dart';
 import 'package:authentication/router/app_router.dart';
 import 'package:authentication/screens/auth_error_localization.dart';
+import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/widgets/action_result_sheet.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -381,10 +382,11 @@ class AddAccountScreen extends ConsumerWidget {
     BuildContext context, {
     required bool export,
   }) async {
-    return showDialog<String>(
+    final result = await showDialog<({String password, bool useAppPassword})>(
       context: context,
       builder: (_) => _BackupPasswordDialog(export: export),
     );
+    return result?.password;
   }
 
   Future<void> _handleRestore(BuildContext context, WidgetRef ref) async {
@@ -447,18 +449,36 @@ class AddAccountScreen extends ConsumerWidget {
 
   Future<void> _handleBackup(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context)!;
-    final password = await _passwordDialog(context, export: true);
-    if (password == null || !context.mounted) return;
     try {
+      final enabled = await ref.read(passwordEnabledProvider.future);
+      if (!context.mounted) return;
+      final choice = await showDialog<({String password, bool useAppPassword})>(
+        context: context,
+        builder: (_) =>
+            _BackupPasswordDialog(export: true, canUseAppPassword: enabled),
+      );
+      if (choice == null || !context.mounted) return;
       final saved = await ref
           .read(backupOperationsProvider.notifier)
-          .exportFile(password.isEmpty ? null : password);
+          .exportFile(
+            choice.password.isEmpty ? null : choice.password,
+            useAppPassword: choice.useAppPassword,
+          );
       if (context.mounted && saved) {
         await _showResult(
           context,
           1,
           l10n.exportSuccess,
           kIsWeb ? l10n.backupDownloadStarted : l10n.backupSaved,
+        );
+      }
+    } on InvalidAppPassword {
+      if (context.mounted) {
+        await _showResult(
+          context,
+          0,
+          l10n.exportFailed,
+          l10n.backupAppPasswordInvalid,
         );
       }
     } catch (_) {
@@ -1137,8 +1157,12 @@ class AddMethodTile extends StatelessWidget {
 }
 
 class _BackupPasswordDialog extends HookWidget {
-  const _BackupPasswordDialog({required this.export});
+  const _BackupPasswordDialog({
+    required this.export,
+    this.canUseAppPassword = false,
+  });
   final bool export;
+  final bool canUseAppPassword;
 
   @override
   Widget build(BuildContext context) {
@@ -1146,43 +1170,62 @@ class _BackupPasswordDialog extends HookWidget {
     final password = useTextEditingController();
     final confirmation = useTextEditingController();
     final obscured = useState(true);
+    final useAppPassword = useState(false);
     useListenable(password);
     useListenable(confirmation);
-    final mismatch = export && password.text != confirmation.text;
+    final mismatch =
+        export && !useAppPassword.value && password.text != confirmation.text;
     return AlertDialog(
       title: Text(l10n.backupPasswordTitle),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: password,
-            obscureText: obscured.value,
-            decoration: InputDecoration(
-              labelText: export
-                  ? l10n.backupPasswordHint
-                  : l10n.backupPasswordRequired,
-              suffixIcon: IconButton(
-                tooltip: obscured.value
-                    ? l10n.revealPassword
-                    : l10n.hidePassword,
-                onPressed: () => obscured.value = !obscured.value,
-                icon: Icon(
-                  obscured.value ? Icons.visibility_off : Icons.visibility,
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (canUseAppPassword)
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(l10n.backupUseAppPassword),
+                subtitle: Text(l10n.backupUseAppPasswordHint),
+                value: useAppPassword.value,
+                onChanged: (value) {
+                  useAppPassword.value = value;
+                  password.clear();
+                  confirmation.clear();
+                },
+              ),
+            TextField(
+              controller: password,
+              obscureText: obscured.value,
+              decoration: InputDecoration(
+                labelText: useAppPassword.value
+                    ? l10n.passwordCurrent
+                    : export
+                    ? l10n.backupPasswordHint
+                    : l10n.backupPasswordRequired,
+                suffixIcon: IconButton(
+                  tooltip: obscured.value
+                      ? l10n.revealPassword
+                      : l10n.hidePassword,
+                  onPressed: () => obscured.value = !obscured.value,
+                  icon: Icon(
+                    obscured.value ? Icons.visibility_off : Icons.visibility,
+                  ),
                 ),
               ),
             ),
-          ),
-          if (export)
-            TextField(
-              controller: confirmation,
-              obscureText: obscured.value,
-              decoration: InputDecoration(
-                labelText: l10n.backupPasswordConfirm,
-                errorText: mismatch ? l10n.backupPasswordMismatch : null,
+            if (export && !useAppPassword.value)
+              TextField(
+                controller: confirmation,
+                obscureText: obscured.value,
+                decoration: InputDecoration(
+                  labelText: l10n.backupPasswordConfirm,
+                  errorText: mismatch ? l10n.backupPasswordMismatch : null,
+                ),
               ),
-            ),
-          if (export && password.text.isEmpty) Text(l10n.backupPlainWarning),
-        ],
+            if (export && !useAppPassword.value && password.text.isEmpty)
+              Text(l10n.backupPlainWarning),
+          ],
+        ),
       ),
       actions: [
         TextButton(
@@ -1190,9 +1233,14 @@ class _BackupPasswordDialog extends HookWidget {
           child: Text(l10n.cancel),
         ),
         TextButton(
-          onPressed: mismatch || (!export && password.text.isEmpty)
+          onPressed:
+              mismatch ||
+                  ((!export || useAppPassword.value) && password.text.isEmpty)
               ? null
-              : () => Navigator.pop(context, password.text),
+              : () => Navigator.pop(context, (
+                  password: password.text,
+                  useAppPassword: useAppPassword.value,
+                )),
           child: Text(l10n.ok),
         ),
       ],

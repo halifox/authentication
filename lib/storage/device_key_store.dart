@@ -58,7 +58,10 @@ class DeviceKeyStore {
     return value?.startsWith(_wrappedPrefix) ?? false;
   }
 
-  Future<Uint8List?> readKey({String? password}) async {
+  Future<Uint8List?> readKey({
+    String? password,
+    bool requirePassword = false,
+  }) async {
     final state = await _state();
     final value = await storage.read(key: state.active ?? legacyDeviceKey);
     if (value == null) {
@@ -67,6 +70,7 @@ class DeviceKeyStore {
       }
       return null;
     }
+    if (requirePassword && !value.startsWith(_wrappedPrefix)) return null;
     final key = value.startsWith(_wrappedPrefix)
         ? await unwrapDeviceKey(
             value.substring(_wrappedPrefix.length),

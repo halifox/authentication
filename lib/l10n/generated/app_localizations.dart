@@ -1722,6 +1722,24 @@ abstract class AppLocalizations {
   /// **'Unable to unlock. Check the password and try again.'**
   String get unlockInvalid;
 
+  /// No description provided for @backupUseAppPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Use app password'**
+  String get backupUseAppPassword;
+
+  /// No description provided for @backupUseAppPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your current app password. This backup keeps that password even if you change the app password later.'**
+  String get backupUseAppPasswordHint;
+
+  /// No description provided for @backupAppPasswordInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'The app password is incorrect or has been removed. No backup was saved.'**
+  String get backupAppPasswordInvalid;
+
   /// No description provided for @unlockUnavailable.
   ///
   /// In en, this message translates to:

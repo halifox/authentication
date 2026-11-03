@@ -14,6 +14,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 export 'package:authentication/storage/database.dart' show ImportPreviewExpired;
 
+class InvalidAppPassword implements Exception {
+  const InvalidAppPassword();
+}
+
 /// Captures a consistent, fully encoded backup and its database revision.
 Future<({Uint8List bytes, int revision})> createBackupSnapshot(
   AppDatabase db,
@@ -94,9 +98,13 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
     return buffer.takeBytes();
   });
 
-  Future<bool> exportFile(String? password) {
+  Future<bool> exportFile(String? password, {bool useAppPassword = false}) {
     final db = ref.read(appDatabaseProvider);
     return _run(() async {
+      if (useAppPassword &&
+          (password == null || !await db.encryption.verifyPassword(password))) {
+        throw const InvalidAppPassword();
+      }
       final snapshot = await createBackupSnapshot(db, password);
       final location = await FilePicker.saveFile(
         fileName: 'authentication-backup.json',

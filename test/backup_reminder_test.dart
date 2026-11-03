@@ -4,6 +4,7 @@ import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/backup_provider.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/account.dart';
+import 'package:authentication/screens/add_account_screen.dart';
 import 'package:authentication/screens/settings_screen.dart';
 import 'package:authentication/screens/token_list_screen.dart';
 import 'package:authentication/settings/settings.dart';
@@ -20,6 +21,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class _SavePicker extends FilePickerPlatform {
   Uri? result;
+  Uint8List? savedBytes;
+  int calls = 0;
   Future<void> Function()? onSave;
   @override
   Future<Uri?> saveFile({
@@ -33,12 +36,108 @@ class _SavePicker extends FilePickerPlatform {
     LinuxOptions linuxOptions = const LinuxOptions(),
     WebOptions webOptions = const WebOptions(),
   }) async {
+    calls++;
+    savedBytes = bytes;
     await onSave?.call();
     return result;
   }
 }
 
 void main() {
+  testWidgets('export dialog offers app password and cancellation', (
+    tester,
+  ) async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    await tester.runAsync(() async {
+      db.encryption = await EncryptionService.initialize(db);
+      await db.encryption.changePassword(newPassword: 'app-password');
+    });
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
+        child: const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: AddAccountScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Export file'),
+      200,
+      scrollable: find.byType(Scrollable),
+    );
+    await tester.tap(find.text('Export file'));
+    await tester.pumpAndSettle();
+    expect(find.text('Use app password'), findsOneWidget);
+    await tester.tap(find.byType(SwitchListTile));
+    await tester.pumpAndSettle();
+    expect(find.text('Current password'), findsOneWidget);
+    expect(find.textContaining('unencrypted'), findsNothing);
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    expect(find.text('Use app password'), findsNothing);
+    await tester.pumpWidget(const SizedBox());
+  });
+  test(
+    'app password protects export and later password changes do not alter it',
+    () async {
+      FlutterSecureStorage.setMockInitialValues({});
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
+      db.encryption = await EncryptionService.initialize(db);
+      await db.addConfig(
+        const OtpAccount(
+          type: 'totp',
+          issuer: 'Example',
+          account: 'alice',
+          secret: 'JBSWY3DPEHPK3PXP',
+        ),
+      );
+      await db.encryption.changePassword(newPassword: 'original-password');
+      final original = FilePickerPlatform.instance;
+      final picker = _SavePicker()..result = Uri.file('/tmp/backup.json');
+      FilePickerPlatform.instance = picker;
+      addTearDown(() => FilePickerPlatform.instance = original);
+      final container = ProviderContainer(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
+      );
+      addTearDown(container.dispose);
+      final operations = container.read(backupOperationsProvider.notifier);
+      await expectLater(
+        operations.exportFile('wrong', useAppPassword: true),
+        throwsA(isA<InvalidAppPassword>()),
+      );
+      expect(picker.calls, 0);
+      expect(await db.watchBackupNeeded().first, true);
+      expect(
+        await operations.exportFile('original-password', useAppPassword: true),
+        true,
+      );
+      final bytes = picker.savedBytes!;
+      expect(Backup.isEncrypted(bytes), true);
+      await db.encryption.changePassword(
+        currentPassword: 'original-password',
+        newPassword: 'new-password',
+      );
+      final restored = await decodeBackupDocument(bytes, 'original-password');
+      expect(restored.accounts.single.account, 'alice');
+      await expectLater(
+        decodeBackupDocument(bytes, 'new-password'),
+        throwsFormatException,
+      );
+      await db.encryption.changePassword(currentPassword: 'new-password');
+      await expectLater(
+        operations.exportFile('new-password', useAppPassword: true),
+        throwsA(isA<InvalidAppPassword>()),
+      );
+      expect(picker.calls, 1);
+    },
+  );
   test('revision stream observes trigger-driven data changes', () async {
     FlutterSecureStorage.setMockInitialValues({});
     final db = AppDatabase(NativeDatabase.memory());

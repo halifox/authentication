@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/device_key_store.dart';
 import 'package:encrypt/encrypt.dart';
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Encrypts database fields with a device-specific key held by the platform.
@@ -62,6 +63,22 @@ class EncryptionService {
   }
 
   Future<bool> get passwordEnabled => _store.requiresPassword();
+
+  /// Verifies the current password without retaining it or changing the key.
+  Future<bool> verifyPassword(String password) async {
+    Uint8List? candidate;
+    try {
+      candidate = await _store.readKey(
+        password: password,
+        requirePassword: true,
+      );
+      return candidate != null && listEquals(candidate, _key);
+    } on FormatException {
+      return false;
+    } finally {
+      candidate?.fillRange(0, candidate.length, 0);
+    }
+  }
 
   Future<void> changePassword({String? currentPassword, String? newPassword}) =>
       _store.changePassword(

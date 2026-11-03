@@ -914,6 +914,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Unable to unlock. Check the password and try again.';
 
   @override
+  String get backupUseAppPassword => 'Use app password';
+
+  @override
+  String get backupUseAppPasswordHint =>
+      'Enter your current app password. This backup keeps that password even if you change the app password later.';
+
+  @override
+  String get backupAppPasswordInvalid =>
+      'The app password is incorrect or has been removed. No backup was saved.';
+
+  @override
   String get unlockUnavailable =>
       'Unable to open the app securely. Your data has not been deleted.';
 
