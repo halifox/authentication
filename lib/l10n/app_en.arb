@@ -216,5 +216,9 @@
   "winAuthImport": "Import WinAuth backup",
   "winAuthImportWarning": "Import {count} accounts? Matching accounts are updated and existing metadata is preserved. Missing issuer or account names use the other name. Source icons and other metadata are not imported. Older ZIP encryption uses CRC and cannot authenticate file integrity.",
   "winAuthImportError": "Import failed. Check the file, password and account details. Unsupported, invalid or duplicate entries reject the entire file.",
-  "@winAuthImportWarning": {"placeholders": {"count": {"type": "int"}}}
+  "@winAuthImportWarning": {"placeholders": {"count": {"type": "int"}}},
+  "totpAuthImport": "Import TOTP Authenticator backup",
+  "totpAuthImportWarning": "Import {count} accounts? Matching accounts are updated and existing metadata is preserved. Missing issuer or account names use the other name. Source icons and other metadata are not imported. This older encryption cannot authenticate file integrity.",
+  "totpAuthImportError": "Import failed. Check the password and account details. Invalid, duplicate or unsupported records reject the entire file.",
+  "@totpAuthImportWarning": {"placeholders": {"count": {"type": "int"}}}
 }

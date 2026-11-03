@@ -691,4 +691,15 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get winAuthImportError => '导入失败。请检查文件、密码和账户信息；不支持、无效或重复的记录会导致整批拒绝。';
+
+  @override
+  String get totpAuthImport => '导入 TOTP Authenticator 备份';
+
+  @override
+  String totpAuthImportWarning(int count) {
+    return '导入 $count 个账户？同名账户将更新，已有元数据保留。缺少发行方或账户名时使用另一个名称；来源图标和其他元数据不会导入。此旧加密格式无法验证文件完整性。';
+  }
+
+  @override
+  String get totpAuthImportError => '导入失败。请检查密码和账户信息；无效、重复或不受支持的记录会导致整批拒绝。';
 }

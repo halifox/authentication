@@ -694,4 +694,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get winAuthImportError =>
       'Import failed. Check the file, password and account details. Unsupported, invalid or duplicate entries reject the entire file.';
+
+  @override
+  String get totpAuthImport => 'Import TOTP Authenticator backup';
+
+  @override
+  String totpAuthImportWarning(int count) {
+    return 'Import $count accounts? Matching accounts are updated and existing metadata is preserved. Missing issuer or account names use the other name. Source icons and other metadata are not imported. This older encryption cannot authenticate file integrity.';
+  }
+
+  @override
+  String get totpAuthImportError =>
+      'Import failed. Check the password and account details. Invalid, duplicate or unsupported records reject the entire file.';
 }
