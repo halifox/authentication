@@ -192,6 +192,7 @@ extension AuthStorage on AppDatabase {
     Map<(String, String), List<String>>? importedMemberships,
     bool mergeImportedMemberships = false,
     List<IconPack>? importedIconPacks,
+    int? expectedRevision,
   }) async {
     if (importedIconPacks != null) validateIconPacks(importedIconPacks);
     final keys = <(String, String)>{};
@@ -234,6 +235,10 @@ extension AuthStorage on AppDatabase {
       }
     }
     await transaction(() async {
+      if (expectedRevision != null &&
+          await backupRevision() != expectedRevision) {
+        throw const ImportPreviewExpired();
+      }
       if (importedIconPacks != null) {
         for (final pack in importedIconPacks) {
           await saveIconPack(pack);

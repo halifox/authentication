@@ -5,10 +5,13 @@ import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/html_backup.dart';
 import 'package:authentication/backup/legacy_import.dart';
 import 'package:authentication/storage/database.dart';
+
 import 'package:authentication/storage/database_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+export 'package:authentication/storage/database.dart' show ImportPreviewExpired;
 
 class BackupOperations extends Notifier<AsyncValue<void>> {
   @override
@@ -142,7 +145,30 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
     });
   }
 
-  Future<int> importLegacyAccounts(LegacyImport data) {
+  Future<({int revision, int newCount, int updateCount})> previewLegacyImport(
+    LegacyImport data,
+  ) {
+    final db = ref.read(appDatabaseProvider);
+    return _run(
+      () => db.transaction(() async {
+        final existing = (await db.getAllAuthEntries())
+            .map((entry) => (entry.issuer, entry.account))
+            .toSet();
+        final updates = data.accounts
+            .where(
+              (account) => existing.contains((account.issuer, account.account)),
+            )
+            .length;
+        return (
+          revision: await db.backupRevision(),
+          newCount: data.accounts.length - updates,
+          updateCount: updates,
+        );
+      }),
+    );
+  }
+
+  Future<int> importLegacyAccounts(LegacyImport data, {int? expectedRevision}) {
     final db = ref.read(appDatabaseProvider);
     return _run(() async {
       final icons = await ref.read(allIconsProvider.future);
@@ -158,6 +184,7 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
         importedCategories: data.categories,
         importedMemberships: data.memberships,
         mergeImportedMemberships: true,
+        expectedRevision: expectedRevision,
       );
     });
   }

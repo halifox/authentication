@@ -725,4 +725,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get freeOtpImportError => '导入失败。请检查密码和备份文件；不支持、无效或重复的记录会导致整批拒绝。';
+
+  @override
+  String importAccountCounts(int newCount, int updateCount) {
+    return '新增账户：$newCount 个；更新已有账户：$updateCount 个。';
+  }
+
+  @override
+  String get importPreviewExpired => '账户或设置已更改，请重新选择文件并确认更新后的数量。';
 }

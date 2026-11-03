@@ -1445,6 +1445,18 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'导入失败。请检查密码和备份文件；不支持、无效或重复的记录会导致整批拒绝。'**
   String get freeOtpImportError;
+
+  /// No description provided for @importAccountCounts.
+  ///
+  /// In zh, this message translates to:
+  /// **'新增账户：{newCount} 个；更新已有账户：{updateCount} 个。'**
+  String importAccountCounts(int newCount, int updateCount);
+
+  /// No description provided for @importPreviewExpired.
+  ///
+  /// In zh, this message translates to:
+  /// **'账户或设置已更改，请重新选择文件并确认更新后的数量。'**
+  String get importPreviewExpired;
 }
 
 class _AppLocalizationsDelegate

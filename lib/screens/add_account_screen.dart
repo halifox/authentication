@@ -819,19 +819,38 @@ class AddAccountScreen extends ConsumerWidget {
     String? warning,
   }) async {
     final l10n = AppLocalizations.of(context)!;
+    final preview = await ref
+        .read(backupOperationsProvider.notifier)
+        .previewLegacyImport(document);
+    if (!context.mounted) return;
     final proceed = await showCupertinoModalPopup<bool>(
       context: context,
       builder: (_) => ActionResultSheet(
         state: 0,
         title: l10n.warning,
-        message: warning ?? l10n.legacyImportWarning(document.accounts.length),
+        message:
+            '${warning ?? l10n.legacyImportWarning(document.accounts.length)}\n\n'
+            '${l10n.importAccountCounts(preview.newCount, preview.updateCount)}',
         falseButtonVisible: true,
       ),
     );
     if (proceed != true || !context.mounted) return;
-    final count = await ref
-        .read(backupOperationsProvider.notifier)
-        .importLegacyAccounts(document);
+    late final int count;
+    try {
+      count = await ref
+          .read(backupOperationsProvider.notifier)
+          .importLegacyAccounts(document, expectedRevision: preview.revision);
+    } on ImportPreviewExpired {
+      if (context.mounted) {
+        await _showResult(
+          context,
+          0,
+          l10n.importFailed,
+          l10n.importPreviewExpired,
+        );
+      }
+      return;
+    }
     if (context.mounted) {
       await _showResult(
         context,

@@ -654,6 +654,60 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 10));
   });
+  test('import preview rejects changes before transactional writes', () async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    final container = ProviderContainer(
+      overrides: [
+        appDatabaseProvider.overrideWithValue(db),
+        allIconsProvider.overrideWith((ref) async => []),
+      ],
+    );
+    addTearDown(container.dispose);
+    const existing = OtpAccount(
+      type: 'totp',
+      issuer: 'Example',
+      account: 'one',
+      secret: 'JBSWY3DPEHPK3PXP',
+    );
+    const incoming = OtpAccount(
+      type: 'totp',
+      issuer: 'Example',
+      account: 'two',
+      secret: 'GEZDGNBVGY3TQOJQ',
+    );
+    await db.addConfig(existing);
+    final document = (
+      accounts: [existing, incoming],
+      categories: <AccountCategory>[],
+      memberships: {
+        ('Example', 'one'): <String>[],
+        ('Example', 'two'): <String>[],
+      },
+    );
+    final operations = container.read(backupOperationsProvider.notifier);
+    final preview = await operations.previewLegacyImport(document);
+    expect(preview.newCount, 1);
+    expect(preview.updateCount, 1);
+    await db.createCategory('Changed');
+    await expectLater(
+      operations.importLegacyAccounts(
+        document,
+        expectedRevision: preview.revision,
+      ),
+      throwsA(isA<ImportPreviewExpired>()),
+    );
+    expect((await db.getAllConfigs()).length, 1);
+    final refreshed = await operations.previewLegacyImport(document);
+    await operations.importLegacyAccounts(
+      document,
+      expectedRevision: refreshed.revision,
+    );
+    expect((await db.getAllConfigs()).length, 2);
+  });
+
   testWidgets('grouped backup shows conflict policy before importing', (
     tester,
   ) async {
@@ -700,6 +754,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       find.textContaining('Source groups merge into categories'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('New accounts: 7. Existing accounts to update: 0.'),
       findsOneWidget,
     );
     expect(await db.getAllConfigs(), isEmpty);

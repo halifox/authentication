@@ -751,4 +751,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get freeOtpImportError =>
       'Import failed. Check the password and backup. Unsupported, invalid or duplicate records reject the entire file.';
+
+  @override
+  String importAccountCounts(int newCount, int updateCount) {
+    return 'New accounts: $newCount. Existing accounts to update: $updateCount.';
+  }
+
+  @override
+  String get importPreviewExpired =>
+      'Accounts or settings changed. Select the file again to review the updated counts.';
 }

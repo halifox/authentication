@@ -426,5 +426,8 @@
   "freeOtpImport": "导入 FreeOTP 备份",
   "freeOtpImportWarning": "导入 {count} 个账户？同名账户将更新，已有元数据保留；缺少发行方时使用账户标签。来源图标和排序不会导入。",
   "freeOtpImportError": "导入失败。请检查密码和备份文件；不支持、无效或重复的记录会导致整批拒绝。",
-  "@freeOtpImportWarning": {"placeholders": {"count": {"type": "int"}}}
+  "@freeOtpImportWarning": {"placeholders": {"count": {"type": "int"}}},
+  "importAccountCounts": "新增账户：{newCount} 个；更新已有账户：{updateCount} 个。",
+  "@importAccountCounts": {"placeholders": {"newCount": {"type": "int"}, "updateCount": {"type": "int"}}},
+  "importPreviewExpired": "账户或设置已更改，请重新选择文件并确认更新后的数量。"
 }

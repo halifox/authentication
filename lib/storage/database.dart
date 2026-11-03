@@ -14,6 +14,10 @@ import 'package:drift_flutter/drift_flutter.dart';
 part 'database.g.dart';
 part 'auth_storage.dart';
 
+class ImportPreviewExpired implements Exception {
+  const ImportPreviewExpired();
+}
+
 /// 应用数据库类 (AppDatabase)
 ///
 /// 使用 Drift 框架构建的数据库访问层，负责管理身份验证条目 (AuthEntries) 的持久化操作。
