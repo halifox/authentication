@@ -1301,6 +1301,24 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'PIN 必须为 {count} 个字符'**
   String pinLengthRequired(int count);
+
+  /// No description provided for @twoFasImport.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入 2FAS 备份'**
+  String get twoFasImport;
+
+  /// No description provided for @twoFasImportWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入 {count} 个账户？同名账户将更新，已有元数据保留；分组按名称合并为分类。加密文件中的分组名称没有完整性认证。缺少账户名时使用服务名称；来源图标和显示顺序不会导入。'**
+  String twoFasImportWarning(int count);
+
+  /// No description provided for @twoFasImportError.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入失败。请检查文件、密码和账户信息；无效、重复或不受支持的记录会导致整批拒绝。'**
+  String get twoFasImportError;
 }
 
 class _AppLocalizationsDelegate

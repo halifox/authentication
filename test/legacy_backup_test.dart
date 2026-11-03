@@ -61,6 +61,49 @@ class _MemoryPicker extends FilePickerPlatform {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  testWidgets('2FAS backup imports only after confirmation', (tester) async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    final bytes = File('test/fixtures/twofas/unencrypted.json')
+        .readAsBytesSync();
+    final original = FilePickerPlatform.instance;
+    FilePickerPlatform.instance = _MemoryPicker(bytes);
+    addTearDown(() => FilePickerPlatform.instance = original);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          allIconsProvider.overrideWith((ref) async => []),
+        ],
+        child: const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: AddAccountScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Import 2FAS backup'),
+      200,
+      scrollable: find.byType(Scrollable),
+    );
+    await tester.tap(find.text('Import 2FAS backup'));
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('group names are not authenticated'),
+      findsOneWidget,
+    );
+    expect(await db.getAllConfigs(), isEmpty);
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect((await db.getAllConfigs()).length, 6);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 10));
+  });
   testWidgets('URI backup decrypts and imports only after confirmation', (
     tester,
   ) async {

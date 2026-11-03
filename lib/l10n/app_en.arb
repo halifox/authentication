@@ -204,5 +204,9 @@
   "authproLegacyWarning": "Import {count} accounts? Matching accounts are updated; existing categories and metadata remain. Source categories are merged. Unnamed accounts use the issuer as their name. Source icons and category-specific ordering are not imported. This legacy encryption cannot verify file integrity.",
   "@authproLegacyWarning": {"placeholders": {"count": {"type": "int"}}},
   "pinLengthRequired": "PIN must contain {count} characters",
-  "@pinLengthRequired": {"placeholders": {"count": {"type": "int"}}}
+  "@pinLengthRequired": {"placeholders": {"count": {"type": "int"}}},
+  "twoFasImport": "Import 2FAS backup",
+  "twoFasImportWarning": "Import {count} accounts? Matching accounts are updated and existing metadata is preserved. Groups merge into categories; group names are not authenticated in encrypted files. Missing account names use the service name. Source icons and display order are not imported.",
+  "twoFasImportError": "Import failed. Check the file, password, and account details. Invalid, duplicate, or unsupported entries reject the entire file.",
+  "@twoFasImportWarning": {"placeholders": {"count": {"type": "int"}}}
 }

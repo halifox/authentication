@@ -657,4 +657,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String pinLengthRequired(int count) {
     return 'PIN 必须为 $count 个字符';
   }
+
+  @override
+  String get twoFasImport => '导入 2FAS 备份';
+
+  @override
+  String twoFasImportWarning(int count) {
+    return '导入 $count 个账户？同名账户将更新，已有元数据保留；分组按名称合并为分类。加密文件中的分组名称没有完整性认证。缺少账户名时使用服务名称；来源图标和显示顺序不会导入。';
+  }
+
+  @override
+  String get twoFasImportError => '导入失败。请检查文件、密码和账户信息；无效、重复或不受支持的记录会导致整批拒绝。';
 }

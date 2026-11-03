@@ -658,4 +658,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String pinLengthRequired(int count) {
     return 'PIN must contain $count characters';
   }
+
+  @override
+  String get twoFasImport => 'Import 2FAS backup';
+
+  @override
+  String twoFasImportWarning(int count) {
+    return 'Import $count accounts? Matching accounts are updated and existing metadata is preserved. Groups merge into categories; group names are not authenticated in encrypted files. Missing account names use the service name. Source icons and display order are not imported.';
+  }
+
+  @override
+  String get twoFasImportError =>
+      'Import failed. Check the file, password, and account details. Invalid, duplicate, or unsupported entries reject the entire file.';
 }

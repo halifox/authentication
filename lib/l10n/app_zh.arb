@@ -395,5 +395,9 @@
   "authproLegacyWarning": "导入 {count} 个账户？同名账户将更新，已有分类和元数据保留，来源分类按名称合并。空账户名使用发行方名称；来源图标和分类内顺序不会导入。 此旧版加密无法验证文件完整性。",
   "@authproLegacyWarning": {"placeholders": {"count": {"type": "int"}}},
   "pinLengthRequired": "PIN 必须为 {count} 个字符",
-  "@pinLengthRequired": {"placeholders": {"count": {"type": "int"}}}
+  "@pinLengthRequired": {"placeholders": {"count": {"type": "int"}}},
+  "twoFasImport": "导入 2FAS 备份",
+  "twoFasImportWarning": "导入 {count} 个账户？同名账户将更新，已有元数据保留；分组按名称合并为分类。加密文件中的分组名称没有完整性认证。缺少账户名时使用服务名称；来源图标和显示顺序不会导入。",
+  "twoFasImportError": "导入失败。请检查文件、密码和账户信息；无效、重复或不受支持的记录会导致整批拒绝。",
+  "@twoFasImportWarning": {"placeholders": {"count": {"type": "int"}}}
 }
