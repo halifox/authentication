@@ -13,6 +13,7 @@ void main() {
       expect(localized.migrationGuides, english.migrationGuides);
       expect(localized.migrationGuideIntro, english.migrationGuideIntro);
       expect(localized.authyGuide, english.authyGuide);
+      expect(localized.googleGuide, english.googleGuide);
     }
     expect(lookupAppLocalizations(const Locale('de')).add, 'Hinzufügen');
   });
@@ -44,9 +45,28 @@ void main() {
     await tester.tap(find.text('Migration guides'));
     await tester.pumpAndSettle();
     expect(
-      find.textContaining('do not import accounts automatically'),
+      find.textContaining('Keep your existing access and recovery options'),
       findsOneWidget,
     );
+    await tester.scrollUntilVisible(
+      find.text('Google Authenticator'),
+      150,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.ensureVisible(find.text('Google Authenticator'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Google Authenticator'));
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('Scan every code from the same export'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('QR codes contain account secrets'),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Google Authenticator'));
+    await tester.pumpAndSettle();
     await tester.scrollUntilVisible(
       find.text('Authy'),
       150,

@@ -138,6 +138,7 @@ class MigrationGuideScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final guides = [
+      (title: 'Google Authenticator', body: l10n.googleGuide),
       (title: 'Authy', body: l10n.authyGuide),
       (title: 'Steam', body: l10n.steamGuide),
       (title: 'Blizzard', body: l10n.blizzardGuide),

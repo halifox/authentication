@@ -766,7 +766,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get migrationGuideIntro =>
-      'These guides explain steps performed with each service. They do not import accounts automatically. Keep your existing access and recovery options until the new setup works.';
+      'Follow the steps for your existing service. Keep your existing access and recovery options until the new setup works.';
 
   @override
   String get authyGuide =>
@@ -837,4 +837,8 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get aboutPrivacy =>
       'Account secrets are encrypted on this device. Exported files and QR codes may reveal them.';
+
+  @override
+  String get googleGuide =>
+      'On the old device, open Google Authenticator, choose the menu, then Transfer codes (or Transfer accounts) and Export. Unlock the device, select the accounts, and continue to display the QR code.\n\nIn this app, return to Add and choose Scan QR code. Scan every code from the same export; this app asks for confirmation after the complete batch is received. Check the import summary and verify codes with the services before removing the old setup.\n\nThe QR codes contain account secrets. Keep them private. Camera support varies by platform; unsupported or incomplete batches are not imported. If the old device is unavailable, use each service’s recovery options.\n\nOfficial help: https://support.google.com/accounts/answer/1066447';
 }

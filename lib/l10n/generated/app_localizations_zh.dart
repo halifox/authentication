@@ -738,8 +738,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get migrationGuides => '迁移指南';
 
   @override
-  String get migrationGuideIntro =>
-      '以下指南说明需要在各服务中完成的操作，不会自动导入账户。在新设置验证成功前，请保留现有登录方式和恢复选项。';
+  String get migrationGuideIntro => '请按原服务的步骤操作。在新设置验证成功前，请保留现有登录方式和恢复选项。';
 
   @override
   String get authyGuide =>
@@ -806,4 +805,8 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get aboutPrivacy => '账户密钥在此设备上加密存储。导出文件和二维码可能暴露密钥。';
+
+  @override
+  String get googleGuide =>
+      '在旧设备上打开 Google Authenticator，选择菜单中的“转移验证码”（或“转移账户”），然后选择导出。解锁设备，选择账户并继续，显示二维码。\n\n在本应用返回“添加”，选择扫描二维码。扫描同一次导出产生的所有二维码；收齐后本应用会要求确认。检查导入摘要，并在移除旧设置前向各服务验证验证码。\n\n二维码包含账户密钥，请妥善保密。相机支持因平台而异；不支持或不完整的批次不会导入。如果无法使用旧设备，请使用各服务的账户恢复选项。\n\n官方帮助：https://support.google.com/accounts/answer/1066447';
 }
