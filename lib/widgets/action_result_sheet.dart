@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:flutter/material.dart';
 
 /// 操作结果底面菜单，用于向用户展示成功或失败的反馈。
 class ActionResultSheet extends StatelessWidget {
@@ -35,80 +34,80 @@ class ActionResultSheet extends StatelessWidget {
     return Scaffold(
       appBar: const CustomAppBar(title: ''),
       body: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Spacer(),
-              switch (state) {
-                0 => const Icon(Icons.error, size: 80, color: Colors.red),
-                1 => const Icon(
-                  Icons.check_circle,
-                  size: 80,
-                  color: Colors.green,
-                ),
-                int() => throw UnimplementedError(),
-              },
-              const SizedBox(height: 16),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                message,
-                style: const TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,
-              ),
-              const Spacer(flex: 2),
-              FilledButton.tonal(
-                onPressed: () {
-                  Navigator.pop(context, true);
-                },
-                child: Container(
-                  width: double.infinity,
-                  height: 56,
-                  alignment: Alignment.center,
-                  child: Text(
-                    AppLocalizations.of(context)!.ok,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Visibility(
-                visible: falseButtonVisible,
-                child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.pop(context, false);
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    height: 56,
-                    alignment: Alignment.center,
-                    child: Text(
-                      AppLocalizations.of(context)!.cancel,
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Spacer(),
+                    switch (state) {
+                      0 => Icon(
+                        Icons.error,
+                        size: 80,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                      1 => Icon(
+                        Icons.check_circle,
+                        size: 80,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      int() => throw UnimplementedError(),
+                    },
+                    const SizedBox(height: 16),
+                    Text(
+                      title,
                       style: const TextStyle(
-                        fontSize: 18,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    Text(
+                      message,
+                      style: const TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                    const Spacer(flex: 2),
+                    const SizedBox(height: 16),
+                    FilledButton.tonal(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size.fromHeight(56),
+                      ),
+                      child: Text(
+                        AppLocalizations.of(context)!.ok,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    if (falseButtonVisible) ...[
+                      const SizedBox(height: 8),
+                      OutlinedButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(56),
+                        ),
+                        child: Text(
+                          AppLocalizations.of(context)!.cancel,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 8),
+                  ],
                 ),
               ),
-              Visibility(
-                visible: falseButtonVisible,
-                child: const SizedBox(height: 8),
-              ),
-            ],
+            ),
           ),
         ),
       ),
