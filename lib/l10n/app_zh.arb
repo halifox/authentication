@@ -464,5 +464,9 @@
   "autoBackupRetry": "立即备份",
   "autoBackupDisable": "关闭",
   "autoBackupLocalOnly": "请选择设备本地存储文件夹，不要选择云存储。",
-  "autoBackupSaved": "加密备份已保存并校验。"
+  "autoBackupSaved": "加密备份已保存并校验。",
+  "screenProtection": "阻止屏幕捕获",
+  "screenProtectionUnsupported": "屏幕捕获保护仅在 Android 上可用。",
+  "screenProtectionFailure": "无法应用屏幕捕获保护。请重试后继续。",
+  "screenProtectionRetry": "重试"
 }

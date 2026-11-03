@@ -6,6 +6,7 @@ const sortLockedKey = 'sort_locked';
 const dynamicColorKey = 'dynamic_color';
 const backupRemindersKey = 'backup_reminders';
 const systemCodeFontKey = 'system_code_font';
+const screenProtectionKey = 'screen_protection';
 
 const defaultSettings = <String, bool>{
   showCaptchaOnTapKey: false,
@@ -16,6 +17,7 @@ const defaultSettings = <String, bool>{
   dynamicColorKey: true,
   backupRemindersKey: true,
   systemCodeFontKey: false,
+  screenProtectionKey: true,
 };
 
 Map<String, bool> validateSettings(Object? value) {

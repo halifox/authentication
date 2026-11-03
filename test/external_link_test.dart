@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:authentication/app.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/router/app_router.dart';
+import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
@@ -38,7 +39,10 @@ void main() {
     );
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [appDatabaseProvider.overrideWithValue(db)],
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          screenProtectionApplyProvider.overrideWithValue((_) async {}),
+        ],
         child: const AuthApp(),
       ),
     );
@@ -80,6 +84,7 @@ void main() {
         overrides: [
           appDatabaseProvider.overrideWithValue(db),
           externalLinksProvider.overrideWithValue(links.stream),
+          screenProtectionApplyProvider.overrideWithValue((_) async {}),
         ],
         child: const AuthApp(),
       ),

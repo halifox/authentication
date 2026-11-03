@@ -338,5 +338,9 @@
   "autoBackupRetry": "Back up now",
   "autoBackupDisable": "Turn off",
   "autoBackupLocalOnly": "Choose a local device storage folder, not a cloud provider.",
-  "autoBackupSaved": "Encrypted backup saved and verified."
+  "autoBackupSaved": "Encrypted backup saved and verified.",
+  "screenProtection": "Block screen capture",
+  "screenProtectionUnsupported": "Screen capture protection is available on Android only.",
+  "screenProtectionFailure": "Could not apply screen capture protection. Try again before continuing.",
+  "screenProtectionRetry": "Try again"
 }

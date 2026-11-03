@@ -55,6 +55,8 @@ class SettingsScreen extends ConsumerWidget {
     final dynamicColor = settings.value?[dynamicColorKey] ?? true;
     final backupReminders = settings.value?[backupRemindersKey] ?? true;
     final systemCodeFont = settings.value?[systemCodeFontKey] ?? false;
+    final screenSupported = ref.watch(screenProtectionSupportedProvider);
+    final screenProtected = settings.value?[screenProtectionKey] ?? true;
     final List<SettingsItemModel> options = [
       SettingsItemModel(
         label: AppLocalizations.of(context)!.showCaptchaOnTap,
@@ -105,6 +107,14 @@ class SettingsScreen extends ConsumerWidget {
             .read(settingsOperationsProvider.notifier)
             .update(systemCodeFontKey, !systemCodeFont),
       ),
+      if (screenSupported)
+        SettingsItemModel(
+          label: l10n.screenProtection,
+          value: screenProtected,
+          onTap: () => ref
+              .read(settingsOperationsProvider.notifier)
+              .update(screenProtectionKey, !screenProtected),
+        ),
     ];
 
     return Scaffold(
@@ -120,14 +130,27 @@ class SettingsScreen extends ConsumerWidget {
               parent: AlwaysScrollableScrollPhysics(),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 700,
               mainAxisSpacing: 16,
               crossAxisSpacing: 16,
-              mainAxisExtent: 90,
+              mainAxisExtent:
+                  90 +
+                  (MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.0) -
+                          1) *
+                      60,
             ),
-            itemCount: options.length + 10,
+            itemCount: options.length + 10 + (screenSupported ? 0 : 1),
             itemBuilder: (BuildContext context, int index) {
+              if (!screenSupported && index == options.length + 10) {
+                return Material(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(24),
+                  child: ListTile(
+                    title: Text(l10n.screenProtectionUnsupported),
+                  ),
+                );
+              }
               if (index == options.length + 9) {
                 return Material(
                   color: Theme.of(context).colorScheme.primaryContainer,

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:authentication/app.dart';
+import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
@@ -24,6 +25,7 @@ void main() {
       ProviderScope(
         overrides: [
           appDatabaseProvider.overrideWithValue(database),
+          screenProtectionApplyProvider.overrideWithValue((_) async {}),
           introductionPreferencesProvider.overrideWithValue(preferences),
           completeIntroductionProvider.overrideWithValue(() async {
             attempts++;
@@ -64,6 +66,7 @@ void main() {
     Widget app() => ProviderScope(
       overrides: [
         appDatabaseProvider.overrideWithValue(database),
+        screenProtectionApplyProvider.overrideWithValue((_) async {}),
         introductionPreferencesProvider.overrideWithValue(preferences),
         externalLinksProvider.overrideWithValue(links.stream),
       ],

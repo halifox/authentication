@@ -2,6 +2,7 @@ import 'package:authentication/app.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/screens/token_list_screen.dart';
 import 'package:authentication/settings/settings.dart';
+import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
@@ -43,7 +44,10 @@ void main() {
     await db.initializeSettings(defaultSettings);
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [appDatabaseProvider.overrideWithValue(db)],
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          screenProtectionApplyProvider.overrideWithValue((_) async {}),
+        ],
         child: const AuthApp(),
       ),
     );

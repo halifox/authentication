@@ -53,13 +53,14 @@ final externalLinksProvider = Provider<Stream<String>>((ref) {
   return AppLinks().stringLinkStream;
 });
 
-class _AuthAppState extends ConsumerState<AuthApp> {
+class _AuthAppState extends ConsumerState<AuthApp> with WidgetsBindingObserver {
   final navigatorKey = GlobalKey<NavigatorState>();
   StreamSubscription<String>? links;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     links = ref
         .read(externalLinksProvider)
         .listen(
@@ -84,8 +85,17 @@ class _AuthAppState extends ConsumerState<AuthApp> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     links?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed &&
+        ref.read(screenProtectionSupportedProvider)) {
+      ref.invalidate(screenProtectionProvider);
+    }
   }
 
   void _handleLink(String link) {
@@ -120,6 +130,10 @@ class _AuthAppState extends ConsumerState<AuthApp> {
     final accent = integers?[accentColorKey] ?? 0;
     final language = integers?[languageKey] ?? 0;
     final dynamicEnabled = settings?[dynamicColorKey] ?? true;
+    final protectSupported = ref.watch(screenProtectionSupportedProvider);
+    final protection = protectSupported
+        ? ref.watch(screenProtectionProvider)
+        : null;
     return DynamicColorBuilder(
       builder: (lightDynamic, darkDynamic) => MaterialApp(
         navigatorKey: navigatorKey,
@@ -156,6 +170,54 @@ class _AuthAppState extends ConsumerState<AuthApp> {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: AppLocalizations.supportedLocales,
+        builder: (context, child) {
+          if (protection == null ||
+              (!protection.isLoading &&
+                  !protection.hasError &&
+                  protection.hasValue)) {
+            return child!;
+          }
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              ExcludeSemantics(
+                child: ExcludeFocus(
+                  child: TickerMode(
+                    enabled: false,
+                    child: IgnorePointer(child: child!),
+                  ),
+                ),
+              ),
+              Material(
+                color: Theme.of(context).colorScheme.surface,
+                child: Center(
+                  child: protection.hasError
+                      ? Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Text(
+                                AppLocalizations.of(context)!
+                                    .screenProtectionFailure,
+                              ),
+                            ),
+                            FilledButton(
+                              onPressed: () =>
+                                  ref.invalidate(screenProtectionProvider),
+                              child: Text(
+                                AppLocalizations.of(context)!
+                                    .screenProtectionRetry,
+                              ),
+                            ),
+                          ],
+                        )
+                      : const CircularProgressIndicator(),
+                ),
+              ),
+            ],
+          );
+        },
         localeResolutionCallback: (locale, supportedLocales) {
           // 如果当前系统语言在支持的语言列表中，直接返回
           if (locale != null) {

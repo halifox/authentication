@@ -1667,6 +1667,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Encrypted backup saved and verified.'**
   String get autoBackupSaved;
+
+  /// No description provided for @screenProtection.
+  ///
+  /// In en, this message translates to:
+  /// **'Block screen capture'**
+  String get screenProtection;
+
+  /// No description provided for @screenProtectionUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Screen capture protection is available on Android only.'**
+  String get screenProtectionUnsupported;
+
+  /// No description provided for @screenProtectionFailure.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not apply screen capture protection. Try again before continuing.'**
+  String get screenProtectionFailure;
+
+  /// No description provided for @screenProtectionRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get screenProtectionRetry;
 }
 
 class _AppLocalizationsDelegate

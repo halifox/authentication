@@ -846,4 +846,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get autoBackupSaved => '加密备份已保存并校验。';
+
+  @override
+  String get screenProtection => '阻止屏幕捕获';
+
+  @override
+  String get screenProtectionUnsupported => '屏幕捕获保护仅在 Android 上可用。';
+
+  @override
+  String get screenProtectionFailure => '无法应用屏幕捕获保护。请重试后继续。';
+
+  @override
+  String get screenProtectionRetry => '重试';
 }

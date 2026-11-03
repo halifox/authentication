@@ -28,6 +28,36 @@ void main() {
     showAccountNameKey: false,
   };
 
+  test(
+    'screen protection setting is backed up and old files preserve it',
+    () async {
+      FlutterSecureStorage.setMockInitialValues({});
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
+      db.encryption = await EncryptionService.initialize(db);
+      await db.setSetting(screenProtectionKey, false);
+      final older = await encodeBackupAccounts(
+        [account],
+        null,
+        settings: settings,
+      );
+      final olderDocument = await decodeBackupDocument(older, null);
+      await db.importAccounts(
+        olderDocument.accounts,
+        settings: olderDocument.settings,
+      );
+      expect((await db.getSettings())[screenProtectionKey], false);
+      final current = await encodeBackupAccounts(
+        [account],
+        null,
+        settings: {...defaultSettings, screenProtectionKey: true},
+      );
+      final document = await decodeBackupDocument(current, null);
+      await db.importAccounts(document.accounts, settings: document.settings);
+      expect((await db.getSettings())[screenProtectionKey], true);
+    },
+  );
+
   test('system code font setting survives backup round trips', () async {
     final bytes = await encodeBackupAccounts(
       [account],
@@ -128,6 +158,7 @@ void main() {
         dynamicColorKey: true,
         backupRemindersKey: true,
         systemCodeFontKey: false,
+        screenProtectionKey: true,
       });
       expect(await db.getIntegerSettings(), {
         hideCodeAfterKey: 30,

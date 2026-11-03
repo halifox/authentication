@@ -881,4 +881,18 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get autoBackupSaved => 'Encrypted backup saved and verified.';
+
+  @override
+  String get screenProtection => 'Block screen capture';
+
+  @override
+  String get screenProtectionUnsupported =>
+      'Screen capture protection is available on Android only.';
+
+  @override
+  String get screenProtectionFailure =>
+      'Could not apply screen capture protection. Try again before continuing.';
+
+  @override
+  String get screenProtectionRetry => 'Try again';
 }

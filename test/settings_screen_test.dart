@@ -131,6 +131,8 @@ void main() {
       150,
       scrollable: find.byType(Scrollable).first,
     );
+    await tester.ensureVisible(find.text('Using the app'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Using the app'));
     await tester.pumpAndSettle();
     expect(find.text('Add an account'), findsOneWidget);
