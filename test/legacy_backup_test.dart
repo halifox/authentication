@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:authentication/actions/icon_pack_provider.dart';
 import 'package:authentication/actions/icon_selection_provider.dart';
+import 'package:authentication/actions/qr_actions.dart';
 import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/backup_provider.dart';
 import 'package:authentication/backup/legacy_import.dart';
@@ -27,6 +28,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image/image.dart' as image;
 import 'package:protobuf/protobuf.dart';
+import 'package:qr/qr.dart';
 
 final class _MemoryFile extends PlatformFile {
   _MemoryFile(this.bytes);
@@ -68,6 +70,67 @@ class _MemoryPicker extends FilePickerPlatform {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  testWidgets('image import reads a QR code on desktop', (tester) async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    const uri =
+        'otpauth://totp/Example:user?secret=JBSWY3DPEHPK3PXP&issuer=Example';
+    final qr = QrImage(QrCode(payload: QrPayload.fromString(uri)));
+    const scale = 5;
+    final bitmap = image.Image(
+      width: (qr.moduleCount + 8) * scale,
+      height: (qr.moduleCount + 8) * scale,
+    );
+    image.fill(bitmap, color: image.ColorRgb8(255, 255, 255));
+    for (var y = 0; y < qr.moduleCount; y++) {
+      for (var x = 0; x < qr.moduleCount; x++) {
+        if (qr.isDark(y, x)) {
+          image.fillRect(
+            bitmap,
+            x1: (x + 4) * scale,
+            y1: (y + 4) * scale,
+            x2: (x + 5) * scale - 1,
+            y2: (y + 5) * scale - 1,
+            color: image.ColorRgb8(0, 0, 0),
+          );
+        }
+      }
+    }
+    final bytes = Uint8List.fromList(image.encodePng(bitmap));
+    expect(decodeQrImage(bytes), uri);
+    expect(decodeQrImage(Uint8List.fromList(image.encodeJpg(bitmap))), uri);
+    expect(
+      () => decodeQrImage(Uint8List.fromList([1, 2, 3])),
+      throwsFormatException,
+    );
+    final original = FilePickerPlatform.instance;
+    FilePickerPlatform.instance = _MemoryPicker(bytes);
+    addTearDown(() => FilePickerPlatform.instance = original);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
+        child: const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: AddAccountScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Import QR Code'));
+    await tester.runAsync(() async {
+      for (var i = 0; i < 50 && (await db.getAllConfigs()).isEmpty; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+      }
+    });
+    await tester.pumpAndSettle();
+    expect((await db.getAllConfigs()).single.account, 'user');
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 10));
+  });
   testWidgets('compatible backup imports a custom image after confirmation', (
     tester,
   ) async {

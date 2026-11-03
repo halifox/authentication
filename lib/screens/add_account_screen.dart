@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:authentication/actions/qr_actions.dart';
 
 import 'package:authentication/backup/authpro_import.dart';
@@ -196,17 +198,18 @@ class AddAccountScreen extends ConsumerWidget {
   Future<String?> _uploadNext(BuildContext context) async {
     final file = await pickQrImage();
     if (file == null) return null;
-    final codes = await analyzeQrFile(file.xFile.path);
-    if (codes.isNotEmpty) return codes.first;
-    if (context.mounted) {
-      await _showResult(
-        context,
-        0,
-        AppLocalizations.of(context)!.tip,
-        AppLocalizations.of(context)!.unsupportedQRCode,
-      );
+    final size = await file.length();
+    if (size != null && size > maxQrImageBytes) {
+      throw const FormatException('Image too large.');
     }
-    return null;
+    final buffer = BytesBuilder(copy: false);
+    await for (final chunk in file.readAsByteStream()) {
+      if (buffer.length + chunk.length > maxQrImageBytes) {
+        throw const FormatException('Image too large.');
+      }
+      buffer.add(chunk);
+    }
+    return compute(decodeQrImage, buffer.takeBytes());
   }
 
   Future<void> _handleScan(BuildContext context, WidgetRef ref) async {
@@ -221,10 +224,6 @@ class AddAccountScreen extends ConsumerWidget {
   }
 
   Future<void> _handleUpload(BuildContext context, WidgetRef ref) async {
-    if (kIsWeb || !ref.read(qrPlatformSupportedProvider)) {
-      await _showNotSupported(context);
-      return;
-    }
     try {
       final code = await _uploadNext(context);
       if (code != null && context.mounted) {

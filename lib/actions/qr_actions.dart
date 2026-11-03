@@ -6,7 +6,8 @@ import 'package:authentication/otp/validation.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:image/image.dart' as image;
+import 'package:zxing2/qrcode.dart';
 
 sealed class QrProcessResult {}
 
@@ -82,20 +83,44 @@ Future<QrProcessResult> processQrCode(
   }
 }
 
-/// 分析图片文件中的二维码（仅逻辑，文件选择由 UI 传入）。
-Future<List<String>> analyzeQrFile(String path) async {
-  final controller = MobileScannerController();
+const maxQrImageBytes = 10 * 1024 * 1024;
+
+/// Decode a single QR code without sending the image to a network service.
+String decodeQrImage(Uint8List bytes) {
+  if (bytes.isEmpty || bytes.length > maxQrImageBytes) {
+    throw const FormatException('Invalid image size.');
+  }
   try {
-    final BarcodeCapture? barcodeCapture = await controller.analyzeImage(path);
-    if (barcodeCapture != null && barcodeCapture.barcodes.isNotEmpty) {
-      return barcodeCapture.barcodes
-          .map((e) => e.rawValue)
-          .whereType<String>()
-          .toList();
+    final decoder = image.findDecoderForData(bytes);
+    final info = decoder?.startDecode(bytes);
+    if (info == null ||
+        info.width < 1 ||
+        info.height < 1 ||
+        info.width > 4096 ||
+        info.height > 4096 ||
+        info.width * info.height > 16000000 ||
+        info.numFrames != 1) {
+      throw const FormatException();
     }
-    return [];
-  } finally {
-    controller.dispose();
+    final decoded = decoder!.decodeFrame(0);
+    if (decoded == null) throw const FormatException();
+    final background = image.Image(
+      width: decoded.width,
+      height: decoded.height,
+    );
+    image.fill(background, color: image.ColorRgb8(255, 255, 255));
+    image.compositeImage(background, decoded);
+    final rgba = background
+        .convert(numChannels: 4)
+        .getBytes(order: image.ChannelOrder.abgr);
+    final source = RGBLuminanceSource(
+      decoded.width,
+      decoded.height,
+      rgba.buffer.asInt32List(),
+    );
+    return QRCodeReader().decode(BinaryBitmap(HybridBinarizer(source))).text;
+  } catch (_) {
+    throw const FormatException('Invalid or unsupported QR image.');
   }
 }
 
