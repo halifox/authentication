@@ -317,5 +317,8 @@
   "guideBackupTitle": "Keep a backup",
   "guideBackupBody": "Export a password-protected backup and store it safely. Test recovery before replacing your device. Unencrypted exports and QR codes reveal account secrets.",
   "guideMigrationTitle": "Move existing accounts",
-  "guideMigrationBody": "Choose Add to import a supported file or follow the migration guides. Imports show a confirmation and conflict policy before saving."
+  "guideMigrationBody": "Choose Add to import a supported file or follow the migration guides. Imports show a confirmation and conflict policy before saving.",
+  "welcomeTitle": "Welcome",
+  "welcomeIntro": "Set up verification codes, keep a protected backup, and retain recovery options for your accounts.",
+  "getStarted": "Get started"
 }

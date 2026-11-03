@@ -25,6 +25,7 @@ void main() async {
     runApp(
       ProviderScope(
         overrides: [
+          introductionPreferencesProvider.overrideWithValue(preferences),
           appDatabaseProvider.overrideWith((ref) {
             ref.onDispose(db.close);
             return db;

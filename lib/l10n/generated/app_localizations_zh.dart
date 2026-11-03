@@ -782,4 +782,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get guideMigrationBody => '选择添加以导入受支持的文件或查看迁移指南。保存前会显示确认和冲突处理方式。';
+
+  @override
+  String get welcomeTitle => '欢迎使用';
+
+  @override
+  String get welcomeIntro => '设置验证码，保存受保护的备份，并保留账户的恢复方式。';
+
+  @override
+  String get getStarted => '开始使用';
 }

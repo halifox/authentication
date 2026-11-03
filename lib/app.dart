@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/router/app_router.dart';
+import 'package:authentication/screens/migration_guide_screen.dart';
+import 'package:authentication/screens/token_list_screen.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/settings/settings_provider.dart';
 import 'package:dynamic_color/dynamic_color.dart';
@@ -12,6 +14,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_ui/material_ui.dart' as material_ui;
+import 'package:shared_preferences/shared_preferences.dart';
+
+const introductionSeenKey = 'introduction_seen';
+final introductionPreferencesProvider = Provider<SharedPreferences?>(
+  (ref) => null,
+);
 
 class AuthApp extends ConsumerStatefulWidget {
   const AuthApp({super.key});
@@ -140,8 +148,54 @@ class _AuthAppState extends ConsumerState<AuthApp> {
           // 如果不支持当前语言，回退到英文
           return const Locale('en');
         },
-        onGenerateRoute: onGenerateRoute,
+        onGenerateRoute: (settings) => settings.name == AppRoutes.home
+            ? MaterialPageRoute<void>(
+                settings: settings,
+                builder: (_) => const _InitialScreen(),
+              )
+            : onGenerateRoute(settings),
       ),
+    );
+  }
+}
+
+class _InitialScreen extends ConsumerStatefulWidget {
+  const _InitialScreen();
+
+  @override
+  ConsumerState<_InitialScreen> createState() => _InitialScreenState();
+}
+
+class _InitialScreenState extends ConsumerState<_InitialScreen> {
+  bool? seen;
+  bool saving = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final preferences = ref.watch(introductionPreferencesProvider);
+    seen ??= preferences?.getBool(introductionSeenKey) ?? (preferences == null);
+    if (seen!) return const TokenListScreen();
+    return IntroductionScreen(
+      saving: saving,
+      onContinue: () async {
+        setState(() => saving = true);
+        var saved = false;
+        try {
+          saved = await preferences!.setBool(introductionSeenKey, true);
+        } catch (_) {
+          // Keep the introduction visible when the completion marker fails.
+        }
+        if (!context.mounted) return;
+        setState(() {
+          saving = false;
+          seen = saved;
+        });
+        if (!saved) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(AppLocalizations.of(context)!.saveFailed)),
+          );
+        }
+      },
     );
   }
 }

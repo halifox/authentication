@@ -443,5 +443,8 @@
   "guideBackupTitle": "保存备份",
   "guideBackupBody": "导出受密码保护的备份并妥善保管。更换设备前请测试恢复。未加密导出文件和二维码会暴露账户密钥。",
   "guideMigrationTitle": "迁移已有账户",
-  "guideMigrationBody": "选择添加以导入受支持的文件或查看迁移指南。保存前会显示确认和冲突处理方式。"
+  "guideMigrationBody": "选择添加以导入受支持的文件或查看迁移指南。保存前会显示确认和冲突处理方式。",
+  "welcomeTitle": "欢迎使用",
+  "welcomeIntro": "设置验证码，保存受保护的备份，并保留账户的恢复方式。",
+  "getStarted": "开始使用"
 }

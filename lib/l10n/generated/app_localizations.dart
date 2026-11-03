@@ -1541,6 +1541,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose Add to import a supported file or follow the migration guides. Imports show a confirmation and conflict policy before saving.'**
   String get guideMigrationBody;
+
+  /// No description provided for @welcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome'**
+  String get welcomeTitle;
+
+  /// No description provided for @welcomeIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up verification codes, keep a protected backup, and retain recovery options for your accounts.'**
+  String get welcomeIntro;
+
+  /// No description provided for @getStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get started'**
+  String get getStarted;
 }
 
 class _AppLocalizationsDelegate

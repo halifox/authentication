@@ -2,6 +2,51 @@ import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 
+class IntroductionScreen extends StatelessWidget {
+  const IntroductionScreen({
+    required this.saving,
+    required this.onContinue,
+    super.key,
+  });
+
+  final bool saving;
+  final VoidCallback onContinue;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Scaffold(
+      appBar: CustomAppBar(title: l10n.welcomeTitle),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(
+              l10n.welcomeIntro,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 24),
+            for (final section in [
+              (l10n.guideAddTitle, l10n.guideAddBody),
+              (l10n.guideBackupTitle, l10n.guideBackupBody),
+              (l10n.guideMigrationTitle, l10n.guideMigrationBody),
+            ]) ...[
+              Text(section.$1, style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 8),
+              Text(section.$2, style: Theme.of(context).textTheme.bodyLarge),
+              const SizedBox(height: 24),
+            ],
+            FilledButton(
+              onPressed: saving ? null : onContinue,
+              child: Text(l10n.getStarted),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class UserGuideScreen extends StatelessWidget {
   const UserGuideScreen({super.key});
 

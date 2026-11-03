@@ -810,4 +810,14 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get guideMigrationBody =>
       'Choose Add to import a supported file or follow the migration guides. Imports show a confirmation and conflict policy before saving.';
+
+  @override
+  String get welcomeTitle => 'Welcome';
+
+  @override
+  String get welcomeIntro =>
+      'Set up verification codes, keep a protected backup, and retain recovery options for your accounts.';
+
+  @override
+  String get getStarted => 'Get started';
 }
