@@ -1,6 +1,7 @@
 import 'package:authentication/app.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/settings/settings.dart';
+import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/device_key_store.dart';
@@ -25,12 +26,14 @@ class AppBootstrap extends StatefulWidget {
     this.database,
     this.storage,
     this.protectScreen,
+    this.applyScreenProtection,
     this.now,
     super.key,
   });
   final AppDatabase? database;
   final FlutterSecureStorage? storage;
   final Future<void> Function()? protectScreen;
+  final Future<void> Function(bool)? applyScreenProtection;
   final DateTime Function()? now;
 
   @override
@@ -55,6 +58,34 @@ class _AppBootstrapState extends State<AppBootstrap>
   DateTime? hiddenAt;
   Stopwatch? hiddenElapsed;
   int lifecycleGeneration = 0;
+  bool protectionGate = true;
+  Future<void> protectionQueue = Future.value();
+
+  Future<void> _applyScreenProtection(bool enabled) {
+    final next = protectionQueue.then((_) async {
+      final effective = enabled || protectionGate;
+      if (widget.applyScreenProtection != null) {
+        await widget.applyScreenProtection!(effective);
+      } else if (widget.protectScreen != null) {
+        if (effective) await widget.protectScreen!();
+      } else if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+        final security = ScreenSecurity();
+        if (effective) {
+          await security.enable();
+        } else {
+          await security.disable();
+        }
+      }
+    });
+    protectionQueue = next.catchError((Object _) {});
+    return next;
+  }
+
+  Future<void> _restoreScreenProtection() async {
+    protectionGate = false;
+    final settings = await db.getSettings();
+    await _applyScreenProtection(settings[screenProtectionKey] ?? true);
+  }
 
   @override
   void initState() {
@@ -76,11 +107,7 @@ class _AppBootstrapState extends State<AppBootstrap>
         storage,
       ).requiresPassword();
       if (needsPassword) {
-        if (widget.protectScreen != null) {
-          await widget.protectScreen!();
-        } else if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-          await ScreenSecurity().enable();
-        }
+        await _applyScreenProtection(true);
         if (mounted) {
           setState(() {
             locked = true;
@@ -106,10 +133,23 @@ class _AppBootstrapState extends State<AppBootstrap>
         final valid =
             value != null && await db.encryption.verifyPassword(value);
         if (!valid) throw const FormatException();
+        if (!foreground) {
+          if (mounted) setState(() => busy = false);
+          return;
+        }
+        password.clear();
+        if (mounted) setState(() => covered = true);
+        await WidgetsBinding.instance.endOfFrame;
+        if (!mounted) return;
+        if (!foreground) {
+          setState(() => busy = false);
+          return;
+        }
+        await _restoreScreenProtection();
         if (mounted) {
-          password.clear();
           setState(() {
             sessionLocked = false;
+            covered = !foreground;
             failed = false;
             busy = false;
           });
@@ -127,6 +167,7 @@ class _AppBootstrapState extends State<AppBootstrap>
           setting.key: prefs.getBool(setting.key) ?? setting.value,
       });
       db.encryption = encryption;
+      protectionGate = false;
       if (mounted) {
         password.clear();
         setState(() {
@@ -139,6 +180,7 @@ class _AppBootstrapState extends State<AppBootstrap>
       if (mounted) {
         setState(() {
           busy = false;
+          if (foreground) covered = false;
           if (value == null || error is! FormatException) {
             unavailable = true;
             locked = false;
@@ -166,6 +208,7 @@ class _AppBootstrapState extends State<AppBootstrap>
       if (foreground) {
         FocusManager.instance.primaryFocus?.unfocus();
         foreground = false;
+        protectionGate = true;
         hiddenAt = widget.now?.call() ?? DateTime.now();
         hiddenElapsed = Stopwatch()..start();
         lifecycleGeneration++;
@@ -196,6 +239,12 @@ class _AppBootstrapState extends State<AppBootstrap>
                   elapsed >= Duration(seconds: seconds) ||
                   wall >= Duration(seconds: seconds)));
       final needsPassword = expired && await db.encryption.passwordEnabled;
+      if (!mounted || !foreground || generation != lifecycleGeneration) return;
+      if (sessionLocked || needsPassword) {
+        await _applyScreenProtection(true);
+      } else {
+        await _restoreScreenProtection();
+      }
       if (!mounted || !foreground || generation != lifecycleGeneration) return;
       setState(() {
         sessionLocked = sessionLocked || needsPassword;
@@ -229,6 +278,9 @@ class _AppBootstrapState extends State<AppBootstrap>
               child: ProviderScope(
                 overrides: [
                   introductionPreferencesProvider.overrideWithValue(prefs),
+                  screenProtectionApplyProvider.overrideWithValue(
+                    _applyScreenProtection,
+                  ),
                   appDatabaseProvider.overrideWith((ref) {
                     ref.onDispose(db.close);
                     return db;

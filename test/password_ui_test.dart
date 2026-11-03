@@ -53,15 +53,21 @@ void main() {
           ),
         );
         await setup.setIntegerSetting(autoLockKey, 60);
+        await setup.setSetting(screenProtectionKey, false);
         await setup.encryption.changePassword(newPassword: 'first-password');
         await setup.close();
       });
       var now = DateTime(2026);
+      final protection = <bool>[];
+      var failProtection = false;
       final reopened = AppDatabase(NativeDatabase(path));
       await tester.pumpWidget(
         AppBootstrap(
           database: reopened,
-          protectScreen: () async {},
+          applyScreenProtection: (enabled) async {
+            protection.add(enabled);
+            if (enabled && failProtection) throw StateError('Unavailable');
+          },
           now: () => now,
         ),
       );
@@ -85,15 +91,29 @@ void main() {
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
       await tester.pump();
       await waitFor(tester, () => find.text('alice').evaluate().isNotEmpty);
+      expect(protection.last, false);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
       await tester.pump();
       now = now.add(const Duration(seconds: 60));
+      failProtection = true;
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pump();
+      await waitFor(
+        tester,
+        () => find
+            .textContaining('Unable to open the app securely')
+            .evaluate()
+            .isNotEmpty,
+      );
+      expect(find.text('alice'), findsNothing);
+      failProtection = false;
+      await tester.tap(find.text('Try again'));
       await tester.pump();
       await waitFor(
         tester,
         () => find.widgetWithText(FilledButton, 'Unlock').evaluate().isNotEmpty,
       );
+      expect(protection.last, true);
       expect(find.text('alice'), findsNothing);
       await tester.enterText(find.byType(TextField), 'wrong');
       await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
@@ -107,6 +127,7 @@ void main() {
       await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
       await tester.pump();
       await waitFor(tester, () => find.text('alice').evaluate().isNotEmpty);
+      expect(protection.last, false);
       await tester.runAsync(() => reopened.setIntegerSetting(autoLockKey, -1));
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
       await tester.pump();
