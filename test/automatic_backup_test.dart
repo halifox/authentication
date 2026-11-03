@@ -327,4 +327,64 @@ void main() {
     }
     await operation.disable();
   });
+
+  test(
+    'retry after a missing startup grant resumes automatic scheduling',
+    () async {
+      FlutterSecureStorage.setMockInitialValues({});
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
+      db.encryption = await EncryptionService.initialize(db);
+      final original = SafPlatform.instance;
+      final saf = MemorySaf();
+      SafPlatform.instance = saf;
+      addTearDown(() => SafPlatform.instance = original);
+      ProviderContainer makeContainer() => ProviderContainer(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          automaticBackupSupportedProvider.overrideWithValue(true),
+          automaticBackupDesktopProvider.overrideWithValue(false),
+        ],
+      );
+      final first = makeContainer();
+      final firstOperation = first.read(automaticBackupProvider.notifier);
+      await Future<void>.delayed(const Duration(milliseconds: 30));
+      expect(await firstOperation.configure('secure-password'), true);
+      first.dispose();
+      saf.grant = false;
+      final restored = makeContainer();
+      addTearDown(restored.dispose);
+      final operation = restored.read(automaticBackupProvider.notifier);
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(
+        restored.read(automaticBackupProvider),
+        AutomaticBackupStatus.failed,
+      );
+      await operation.runNow();
+      expect(saf.files, isEmpty);
+      saf.grant = true;
+      await operation.runNow();
+      expect(
+        restored.read(automaticBackupProvider),
+        AutomaticBackupStatus.saved,
+      );
+      expect(saf.files.length, 1);
+      await db.createCategory('After recovery');
+      for (var i = 0; i < 100 && saf.files.length < 2; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+      expect(saf.files.length, 2);
+      for (
+        var i = 0;
+        i < 50 &&
+            restored.read(automaticBackupProvider) ==
+                AutomaticBackupStatus.saving;
+        i++
+      ) {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+      expect(await db.watchBackupNeeded().first, false);
+      await operation.disable();
+    },
+  );
 }

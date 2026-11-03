@@ -240,6 +240,7 @@ class AutomaticBackup extends Notifier<AutomaticBackupStatus> {
     state = AutomaticBackupStatus.saving;
     int? snapshotRevision;
     try {
+      if (!await _hasPermission(_directory!)) throw const FormatException();
       final db = ref.read(appDatabaseProvider);
       final snapshot = await createBackupSnapshot(db, _password);
       snapshotRevision = snapshot.revision;
@@ -276,6 +277,7 @@ class AutomaticBackup extends Notifier<AutomaticBackupStatus> {
       }
       await db.markBackupSaved(snapshot.revision);
       _lastRevision = snapshot.revision;
+      if (_subscription == null) _listen();
       if (ref.mounted) state = AutomaticBackupStatus.saved;
     } catch (_) {
       if (ref.mounted) state = AutomaticBackupStatus.failed;

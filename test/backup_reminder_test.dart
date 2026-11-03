@@ -39,6 +39,44 @@ class _SavePicker extends FilePickerPlatform {
 }
 
 void main() {
+  test('revision stream observes trigger-driven data changes', () async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    final revisions = <int>[];
+    final subscription = db.watchBackupRevision().listen(revisions.add);
+    addTearDown(subscription.cancel);
+    Future<void> waitForCount(int count) async {
+      for (var i = 0; i < 100 && revisions.length < count; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      }
+      expect(revisions.length, count);
+    }
+
+    await waitForCount(1);
+    await db.addConfig(
+      const OtpAccount(
+        type: 'totp',
+        issuer: 'Example',
+        account: 'alice',
+        secret: 'JBSWY3DPEHPK3PXP',
+      ),
+    );
+    await waitForCount(2);
+    await db.createCategory('Work');
+    await waitForCount(3);
+    await db.setSetting(showAccountNameKey, false);
+    await waitForCount(4);
+    await db.setIntegerSetting(themeModeKey, 1);
+    await waitForCount(5);
+    final account = (await db.getAllConfigs()).single;
+    final category = (await db.getCategories()).single;
+    await db.setAccountCategories(account.id, {category.id});
+    await waitForCount(6);
+    expect(revisions, orderedEquals([...revisions]..sort()));
+    expect(revisions.toSet().length, revisions.length);
+  });
   test(
     'encrypted snapshot captures account metadata and its revision',
     () async {
