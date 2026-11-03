@@ -142,6 +142,11 @@ class AddAccountScreen extends ConsumerWidget {
       ),
       AddMethodOption(
         Icons.file_open_outlined,
+        l10n.plusImport,
+        () => _handleWinAuthImport(context, ref, accountsZip: true),
+      ),
+      AddMethodOption(
+        Icons.file_open_outlined,
         l10n.lastPassImport,
         () => _handleLastPassImport(context, ref),
       ),
@@ -713,7 +718,11 @@ class AddAccountScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _handleWinAuthImport(BuildContext context, WidgetRef ref) async {
+  Future<void> _handleWinAuthImport(
+    BuildContext context,
+    WidgetRef ref, {
+    bool accountsZip = false,
+  }) async {
     final l10n = AppLocalizations.of(context)!;
     try {
       final bytes = await ref
@@ -721,22 +730,28 @@ class AddAccountScreen extends ConsumerWidget {
           .pickFile();
       if (bytes == null || !context.mounted) return;
       String? password;
-      if (isWinAuthZip(bytes)) {
+      if (isWinAuthZip(bytes) || accountsZip) {
         password = await _passwordDialog(context, export: false);
         if (password == null || !context.mounted) return;
       }
       final document = password == null
-          ? parseWinAuthBackup(bytes)
+          ? parseWinAuthBackup(bytes, accountsZip: accountsZip)
           : await _decryptWithProgress(
               context,
-              () => parseWinAuthBackupAsync(bytes, password: password),
+              () => parseWinAuthBackupAsync(
+                bytes,
+                password: password,
+                accountsZip: accountsZip,
+              ),
             );
       if (!context.mounted) return;
       await _confirmImportedAccounts(
         context,
         ref,
         document,
-        warning: l10n.winAuthImportWarning(document.accounts.length),
+        warning: accountsZip
+            ? l10n.plusImportWarning(document.accounts.length)
+            : l10n.winAuthImportWarning(document.accounts.length),
       );
     } catch (_) {
       if (context.mounted) {

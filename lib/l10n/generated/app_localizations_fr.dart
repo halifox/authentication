@@ -695,6 +695,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get winAuthImport => 'Import WinAuth backup';
 
   @override
+  String get plusImport => 'Import Authenticator Plus ZIP';
+
+  @override
+  String plusImportWarning(int count) {
+    return 'Import $count accounts? Matching accounts are updated and existing metadata is preserved. Categories, icons and ordering are not imported. Traditional ZIP encryption cannot authenticate file integrity.';
+  }
+
+  @override
   String winAuthImportWarning(int count) {
     return 'Import $count accounts? Matching accounts are updated and existing metadata is preserved. Missing issuer or account names use the other name. Source icons and other metadata are not imported. Older ZIP encryption uses CRC and cannot authenticate file integrity.';
   }

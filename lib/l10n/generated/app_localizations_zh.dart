@@ -673,6 +673,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get winAuthImport => '导入 WinAuth 备份';
 
   @override
+  String get plusImport => '导入 Authenticator Plus ZIP';
+
+  @override
+  String plusImportWarning(int count) {
+    return '导入 $count 个账户？同名账户将更新并保留已有元数据，不导入分类、图标和顺序。传统 ZIP 加密不能认证文件完整性。';
+  }
+
+  @override
   String winAuthImportWarning(int count) {
     return '导入 $count 个账户？同名账户将更新，已有元数据保留。缺少发行方或账户名时使用另一个名称；来源图标和其他元数据不会导入。旧版 ZIP 加密使用 CRC，无法验证文件的密码学完整性。';
   }

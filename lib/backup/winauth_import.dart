@@ -14,12 +14,17 @@ bool isWinAuthZip(Uint8List bytes) =>
     bytes[2] == 0x03 &&
     bytes[3] == 0x04;
 
-LegacyImport parseWinAuthBackup(Uint8List bytes, {String? password}) {
+LegacyImport parseWinAuthBackup(
+  Uint8List bytes, {
+  String? password,
+  bool accountsZip = false,
+}) {
   if (bytes.isEmpty || bytes.length > maxBackupBytes) {
     throw const FormatException('Invalid backup size.');
   }
   try {
     var plaintext = bytes;
+    if (accountsZip && !isWinAuthZip(bytes)) throw const FormatException();
     if (isWinAuthZip(bytes)) {
       if (password == null || password.isEmpty || password.length > 1024) {
         throw const FormatException();
@@ -30,6 +35,9 @@ LegacyImport parseWinAuthBackup(Uint8List bytes, {String? password}) {
           .toList();
       if (headers.length != 1) throw const FormatException();
       final header = headers.single;
+      if (accountsZip && header.filename.split('/').last != 'Accounts.txt') {
+        throw const FormatException();
+      }
       final mode = header.externalFileAttributes >> 16;
       if (header.uncompressedSize <= 0 ||
           header.uncompressedSize > maxBackupBytes ||
@@ -89,10 +97,11 @@ LegacyImport parseWinAuthBackup(Uint8List bytes, {String? password}) {
   }
 }
 
-LegacyImport _parseWinAuthInBackground((Uint8List, String?) input) =>
-    parseWinAuthBackup(input.$1, password: input.$2);
+LegacyImport _parseWinAuthInBackground((Uint8List, String?, bool) input) =>
+    parseWinAuthBackup(input.$1, password: input.$2, accountsZip: input.$3);
 
 Future<LegacyImport> parseWinAuthBackupAsync(
   Uint8List bytes, {
   String? password,
-}) => compute(_parseWinAuthInBackground, (bytes, password));
+  bool accountsZip = false,
+}) => compute(_parseWinAuthInBackground, (bytes, password, accountsZip));

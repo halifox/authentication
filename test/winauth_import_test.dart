@@ -5,6 +5,36 @@ import 'package:authentication/backup/winauth_import.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('independent accounts ZIP requires password and validates the file', () {
+    final bytes = File('test/fixtures/plus.zip').readAsBytesSync();
+    expect(
+      () => parseWinAuthBackup(bytes, password: 'wrong', accountsZip: true),
+      throwsFormatException,
+    );
+    final result = parseWinAuthBackup(
+      bytes,
+      password: 'testtesttest',
+      accountsZip: true,
+    );
+    expect(result.accounts, isNotEmpty);
+    expect(
+      () => parseWinAuthBackup(
+        File('test/fixtures/winauth.zip').readAsBytesSync(),
+        password: 'test',
+        accountsZip: true,
+      ),
+      throwsFormatException,
+    );
+    final damaged = Uint8List.fromList(bytes)..[80] ^= 1;
+    expect(
+      () => parseWinAuthBackup(
+        damaged,
+        password: 'testtesttest',
+        accountsZip: true,
+      ),
+      throwsFormatException,
+    );
+  });
   test('independent encrypted ZIP sample requires correct password', () {
     final bytes = File('test/fixtures/winauth.zip').readAsBytesSync();
     expect(isWinAuthZip(bytes), isTrue);

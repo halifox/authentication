@@ -488,6 +488,8 @@
   "passwordCleanupFailed": "新密码设置已生效，但无法删除旧密钥。请重新启动应用以重试清理；如果设置了密码，请使用新密码解锁。",
   "backupUseAppPassword": "使用应用密码",
   "encryptedUriImport": "导入加密的 Ente 导出文件",
+  "plusImport": "导入 Authenticator Plus ZIP",
+  "plusImportWarning": "导入 {count} 个账户？同名账户将更新并保留已有元数据，不导入分类、图标和顺序。传统 ZIP 加密不能认证文件完整性。",
   "encryptedUriWarning": "不会导入来源标签、图标、备注、顺序和使用统计。不支持密钥派生需要超过 256 MiB 内存的文件。",
   "autoLockTitle": "离开应用后锁定",
   "autoLockImmediately": "立即锁定",

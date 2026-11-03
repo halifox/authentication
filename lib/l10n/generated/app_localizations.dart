@@ -1356,6 +1356,18 @@ abstract class AppLocalizations {
   /// **'Import WinAuth backup'**
   String get winAuthImport;
 
+  /// No description provided for @plusImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Authenticator Plus ZIP'**
+  String get plusImport;
+
+  /// No description provided for @plusImportWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Import {count} accounts? Matching accounts are updated and existing metadata is preserved. Categories, icons and ordering are not imported. Traditional ZIP encryption cannot authenticate file integrity.'**
+  String plusImportWarning(int count);
+
   /// No description provided for @winAuthImportWarning.
   ///
   /// In en, this message translates to:
