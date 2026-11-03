@@ -553,12 +553,27 @@ class AddAccountScreen extends ConsumerWidget {
           .read(backupOperationsProvider.notifier)
           .pickFile();
       if (bytes == null || !context.mounted) return;
-      final document = parseAuthpro(bytes);
+      final kind = authproEncryption(bytes);
+      String? password;
+      if (kind != AuthproEncryption.none) {
+        password = await _passwordDialog(context, export: false);
+        if (password == null || !context.mounted) return;
+      }
+      final plaintext = password == null
+          ? bytes
+          : await _decryptWithProgress(
+              context,
+              () => decryptAuthpro(bytes, password: password),
+            );
+      final document = parseAuthpro(plaintext);
+      if (!context.mounted) return;
       await _confirmImportedAccounts(
         context,
         ref,
         document,
-        warning: l10n.authproImportWarning(document.accounts.length),
+        warning: kind == AuthproEncryption.legacy
+            ? l10n.authproLegacyWarning(document.accounts.length)
+            : l10n.authproImportWarning(document.accounts.length),
       );
     } catch (_) {
       if (context.mounted) {

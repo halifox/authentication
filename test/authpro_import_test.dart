@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:authentication/backup/authpro_import.dart';
@@ -47,6 +48,69 @@ Map<String, Object?> sample() => {
 };
 
 void main() {
+  test('decrypts independent encrypted format samples', () async {
+    const strong = [
+      65,
+      85,
+      84,
+      72,
+      69,
+      78,
+      84,
+      73,
+      67,
+      65,
+      84,
+      79,
+      82,
+      80,
+      82,
+      79,
+    ];
+    const legacy = [
+      65,
+      117,
+      116,
+      104,
+      101,
+      110,
+      116,
+      105,
+      99,
+      97,
+      116,
+      111,
+      114,
+      80,
+      114,
+      111,
+    ];
+    for (final variant in [('strong', strong), ('legacy', legacy)]) {
+      final body = await File('test/fixtures/authpro_${variant.$1}.bin')
+          .readAsBytes();
+      final bytes = Uint8List.fromList([...variant.$2, ...body]);
+      final decoded = jsonDecode(
+        utf8.decode(await decryptAuthpro(bytes, password: 'test')),
+      );
+      expect((decoded as Map)['Authenticators'], isA<List>());
+      await expectLater(
+        decryptAuthpro(bytes, password: 'wrong'),
+        throwsFormatException,
+      );
+      await expectLater(
+        decryptAuthpro(bytes.sublist(0, 20), password: 'test'),
+        throwsFormatException,
+      );
+      if (variant.$1 == 'strong') {
+        bytes[bytes.length - 1] ^= 1;
+        await expectLater(
+          decryptAuthpro(bytes, password: 'test'),
+          throwsFormatException,
+        );
+      }
+    }
+  });
+
   test('imports ordering, membership, counters and statistics', () {
     final result = parseAuthpro(encode(sample()));
     expect(result.accounts.map((a) => a.account), ['Other', 'person']);

@@ -6,8 +6,124 @@ import 'package:authentication/backup/legacy_import.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/category.dart';
 import 'package:base32/base32.dart';
+import 'package:encrypt/encrypt.dart' as enc;
+import 'package:flutter/foundation.dart' show compute;
+import 'package:pointycastle/export.dart' as pc;
 
-/// Reads the unencrypted variant. Encrypted variants must be explicitly rejected.
+import 'backup_key.dart' if (dart.library.js_interop) 'backup_key_web.dart';
+
+const _strong = [
+  65,
+  85,
+  84,
+  72,
+  69,
+  78,
+  84,
+  73,
+  67,
+  65,
+  84,
+  79,
+  82,
+  80,
+  82,
+  79,
+];
+const _legacy = [
+  65,
+  117,
+  116,
+  104,
+  101,
+  110,
+  116,
+  105,
+  99,
+  97,
+  116,
+  111,
+  114,
+  80,
+  114,
+  111,
+];
+
+enum AuthproEncryption { none, strong, legacy }
+
+AuthproEncryption authproEncryption(Uint8List bytes) {
+  if (bytes.isEmpty || bytes.length > maxBackupBytes) {
+    throw const FormatException('Invalid backup size.');
+  }
+  bool starts(List<int> header) =>
+      bytes.length >= header.length &&
+      List.generate(
+        header.length,
+        (i) => bytes[i] == header[i],
+      ).every((v) => v);
+  if (starts(_strong)) return AuthproEncryption.strong;
+  if (starts(_legacy)) return AuthproEncryption.legacy;
+  return AuthproEncryption.none;
+}
+
+Uint8List _argon(List<Object> args) {
+  final generator = pc.Argon2BytesGenerator()
+    ..init(
+      pc.Argon2Parameters(
+        pc.Argon2Parameters.ARGON2_id,
+        args[1] as Uint8List,
+        desiredKeyLength: 32,
+        iterations: 3,
+        memory: 65536,
+        lanes: 4,
+        version: pc.Argon2Parameters.ARGON2_VERSION_13,
+      ),
+    );
+  return generator.process(Uint8List.fromList(utf8.encode(args[0] as String)));
+}
+
+Future<Uint8List> decryptAuthpro(Uint8List bytes, {String? password}) async {
+  final kind = authproEncryption(bytes);
+  if (kind == AuthproEncryption.none) return bytes;
+  if (password == null || password.isEmpty || password.length > 1024) {
+    throw const FormatException('Password required.');
+  }
+  try {
+    if (kind == AuthproEncryption.strong) {
+      if (bytes.length < 60) throw const FormatException();
+      final key = await compute(_argon, [password, bytes.sublist(16, 32)]);
+      final cipher = enc.Encrypter(
+        enc.AES(enc.Key(key), mode: enc.AESMode.gcm),
+      );
+      return Uint8List.fromList(
+        cipher.decryptBytes(
+          enc.Encrypted(bytes.sublist(44)),
+          iv: enc.IV(bytes.sublist(32, 44)),
+        ),
+      );
+    }
+    if (bytes.length < 68 || (bytes.length - 52) % 16 != 0) {
+      throw const FormatException();
+    }
+    final key = await deriveBackupKey(
+      password,
+      bytes.sublist(16, 36),
+      64000,
+      sha1: true,
+    );
+    final cipher = enc.Encrypter(enc.AES(enc.Key(key), mode: enc.AESMode.cbc));
+    return Uint8List.fromList(
+      cipher.decryptBytes(
+        enc.Encrypted(bytes.sublist(52)),
+        iv: enc.IV(bytes.sublist(36, 52)),
+      ),
+    );
+  } catch (_) {
+    throw const FormatException('Incorrect password or damaged backup.');
+  }
+}
+
+/// Parses plaintext after optional decryption.
 LegacyImport parseAuthpro(Uint8List bytes) {
   if (bytes.isEmpty || bytes.length > maxBackupBytes) {
     throw const FormatException('Invalid backup size.');

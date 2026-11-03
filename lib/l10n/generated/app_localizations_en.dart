@@ -638,7 +638,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Import failed. Check the file, password, and account names. Duplicate, invalid, or unsupported records reject the entire file.';
 
   @override
-  String get authproImport => 'Import unencrypted .authpro file';
+  String get authproImport => 'Import .authpro file';
 
   @override
   String authproImportWarning(int count) {
@@ -647,5 +647,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authproImportError =>
-      'Import failed. Only unencrypted files with supported accounts are accepted. Check the file and account parameters; invalid or duplicate records reject the entire file.';
+      'Import failed. Check the file, password, and account parameters. Invalid, duplicate, or unsupported records reject the entire file.';
+
+  @override
+  String authproLegacyWarning(int count) {
+    return 'Import $count accounts? Matching accounts are updated; existing categories and metadata remain. Source categories are merged. Unnamed accounts use the issuer as their name. Source icons and category-specific ordering are not imported. This legacy encryption cannot verify file integrity.';
+  }
 }

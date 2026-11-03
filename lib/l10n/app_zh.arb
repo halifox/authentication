@@ -388,8 +388,10 @@
   "uriBackupImportWarning": "导入 {count} 个账户？同名账户将更新，已有分类和元数据保留。没有名称的 Steam 账户将使用“Steam”作为账户名；来源备注不会导入。",
   "uriBackupImportError": "无法导入。请检查文件、密码及账户名称；重复、无效或不受支持的记录会导致整批拒绝。",
   "@uriBackupImportWarning": {"placeholders": {"count": {"type": "int"}}},
-  "authproImport": "导入未加密的 .authpro 文件",
+  "authproImport": "导入 .authpro 文件",
   "authproImportWarning": "导入 {count} 个账户？同名账户将更新，已有分类和元数据保留，来源分类按名称合并。空账户名使用发行方名称；来源图标和分类内顺序不会导入。",
-  "authproImportError": "导入失败。仅支持未加密且账户参数受支持的文件；无效或重复记录会导致整批拒绝。",
-  "@authproImportWarning": {"placeholders": {"count": {"type": "int"}}}
+  "authproImportError": "导入失败。请检查文件、密码及账户参数；无效、重复或不受支持的记录会导致整批拒绝。",
+  "@authproImportWarning": {"placeholders": {"count": {"type": "int"}}},
+  "authproLegacyWarning": "导入 {count} 个账户？同名账户将更新，已有分类和元数据保留，来源分类按名称合并。空账户名使用发行方名称；来源图标和分类内顺序不会导入。 此旧版加密无法验证文件完整性。",
+  "@authproLegacyWarning": {"placeholders": {"count": {"type": "int"}}}
 }
