@@ -432,11 +432,19 @@ List<OtpAccount> decodeUriList(Uint8List bytes, {bool detectSteam = false}) {
   if (lines.isEmpty || lines.length > 10000) {
     throw const FormatException('Invalid URI list.');
   }
-  final accounts = lines
-      .map((line) => parseOtpUri(line, detectSteam: detectSteam))
-      .toList();
-  for (final account in accounts) {
+  final accounts = <OtpAccount>[];
+  final keys = <(String, String)>{};
+  for (final line in lines) {
+    final uri = Uri.parse(line);
+    if (uri.queryParametersAll.values.any((values) => values.length != 1)) {
+      throw const FormatException('Ambiguous URI parameters.');
+    }
+    final account = parseOtpUri(line, detectSteam: detectSteam);
     account.validate();
+    if (!keys.add((account.issuer, account.account))) {
+      throw const FormatException('Duplicate accounts in URI list.');
+    }
+    accounts.add(account);
   }
   return accounts;
 }

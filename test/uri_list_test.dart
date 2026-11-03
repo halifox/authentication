@@ -35,6 +35,19 @@ void main() {
       throwsFormatException,
     );
     final valid = accounts.first.toOtpUri();
+    final ambiguous = '$valid&secret=AAAAAAAAAAAAAAAA';
+    expect(
+      () => decodeUriList(
+        Uint8List.fromList(
+          utf8.encode('${accounts.last.toOtpUri()}\n$ambiguous'),
+        ),
+      ),
+      throwsFormatException,
+    );
+    expect(
+      () => decodeUriList(Uint8List.fromList(utf8.encode('$valid\n$valid'))),
+      throwsFormatException,
+    );
     expect(
       () => decodeUriList(Uint8List.fromList(utf8.encode('$valid\ninvalid'))),
       throwsA(anything),

@@ -70,6 +70,27 @@ class _MemoryPicker extends FilePickerPlatform {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('ambiguous URI list is rejected before database writes', () async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    final container = ProviderContainer(
+      overrides: [appDatabaseProvider.overrideWithValue(db)],
+    );
+    addTearDown(container.dispose);
+    const valid =
+        'otpauth://totp/Example:alice?secret=JBSWY3DPEHPK3PXP&issuer=Example';
+    const ambiguous =
+        'otpauth://totp/Example:bob?secret=JBSWY3DPEHPK3PXP&secret=AAAAAAAAAAAAAAAA&issuer=Example';
+    await expectLater(
+      container
+          .read(backupOperationsProvider.notifier)
+          .importUriFile(Uint8List.fromList(utf8.encode('$valid\n$ambiguous'))),
+      throwsFormatException,
+    );
+    expect(await db.getAllConfigs(), isEmpty);
+  });
   testWidgets('encrypted URI export imports only after confirmation', (
     tester,
   ) async {
