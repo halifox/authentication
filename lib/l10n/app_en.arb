@@ -183,5 +183,9 @@
   "revealPassword": "Show password",
   "hidePassword": "Hide password",
   "tokenListImport": "Import FreeOTP+ backup",
-  "tokenListImportError": "Import failed. Check the plain JSON file. Accounts, order, secrets, categories, and OTP parameters must be valid; duplicates, missing records, or unsupported entries reject the entire file."
+  "tokenListImportError": "Import failed. Check the plain JSON file. Accounts, order, secrets, categories, and OTP parameters must be valid; duplicates, missing records, or unsupported entries reject the entire file.",
+  "vaultImport": "Import Bitwarden JSON",
+  "vaultImportWarning": "Import {count} verification accounts and skip {skipped} non-login or no-code items? Matching accounts are updated, existing categories and metadata are preserved, and folders merge into categories. Passwords, notes, attachments, and other data are not imported.",
+  "vaultImportError": "Import failed. Choose an unencrypted JSON export and check the codes, folders, and account names. Duplicate or unsupported codes reject the entire file.",
+  "@vaultImportWarning": {"placeholders": {"count": {"type": "int"}, "skipped": {"type": "int"}}}
 }

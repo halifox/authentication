@@ -61,6 +61,120 @@ class _MemoryPicker extends FilePickerPlatform {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('vault JSON extracts codes, folders and skipped item counts', () {
+    Uint8List bytes(Object value) =>
+        Uint8List.fromList(utf8.encode(jsonEncode(value)));
+    final vault = {
+      'encrypted': false,
+      'folders': [
+        {'id': 'folder1', 'name': 'Work'},
+      ],
+      'items': [
+        {
+          'type': 1,
+          'name': 'Example',
+          'folderId': 'folder1',
+          'login': {
+            'username': 'user',
+            'password': 'not imported',
+            'totp': 'otpauth://totp/Example:user?secret=JBSWY3DPEHPK3PXP&issuer=Example',
+          },
+        },
+        {
+          'type': 1,
+          'name': 'Other',
+          'login': {'username': 'other', 'totp': 'JBSWY3DPEHPK3PXP'},
+        },
+        {
+          'type': 1,
+          'name': 'No code',
+          'login': {'totp': null},
+        },
+        {'type': 2, 'name': 'Secure note'},
+      ],
+    };
+    final parsed = parseVaultBackup(bytes(vault));
+    expect(parsed.document.accounts.length, 2);
+    expect(parsed.skipped, 2);
+    expect(parsed.document.memberships[('Example', 'user')], ['Work']);
+    expect(parsed.document.accounts.last.issuer, 'Other');
+    expect(parsed.document.accounts.last.account, 'other');
+    expect(
+      () => parseVaultBackup(bytes({...vault, 'encrypted': true})),
+      throwsFormatException,
+    );
+    final first = (vault['items'] as List).first;
+    expect(
+      () => parseVaultBackup(
+        bytes({
+          ...vault,
+          'items': [first, first],
+        }),
+      ),
+      throwsFormatException,
+    );
+    expect(
+      () => parseVaultBackup(bytes({...vault, 'folders': []})),
+      throwsFormatException,
+    );
+  });
+  testWidgets(
+    'vault import explains skipped items and only writes after confirmation',
+    (tester) async {
+      FlutterSecureStorage.setMockInitialValues({});
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
+      db.encryption = await EncryptionService.initialize(db);
+      final json = {
+        'encrypted': false,
+        'items': [
+          {
+            'type': 1,
+            'name': 'Example',
+            'login': {'username': 'user', 'totp': 'JBSWY3DPEHPK3PXP'},
+          },
+          {'type': 2, 'name': 'note'},
+        ],
+      };
+      final original = FilePickerPlatform.instance;
+      FilePickerPlatform.instance = _MemoryPicker(
+        Uint8List.fromList(utf8.encode(jsonEncode(json))),
+      );
+      addTearDown(() => FilePickerPlatform.instance = original);
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            appDatabaseProvider.overrideWithValue(db),
+            allIconsProvider.overrideWith((ref) async => []),
+          ],
+          child: const MaterialApp(
+            locale: Locale('en'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: AddAccountScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Import Bitwarden JSON'),
+        200,
+        scrollable: find.byType(Scrollable),
+      );
+      await tester.tap(find.text('Import Bitwarden JSON'));
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('Import 1 verification accounts and skip 1'),
+        findsOneWidget,
+      );
+      expect(await db.getAllConfigs(), isEmpty);
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+      expect((await db.getAllConfigs()).single.account, 'user');
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(const Duration(milliseconds: 10));
+    },
+  );
   test('token list format validates ordering, signed bytes and metadata', () {
     Uint8List data(Object value) =>
         Uint8List.fromList(utf8.encode(jsonEncode(value)));

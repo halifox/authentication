@@ -597,4 +597,16 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get tokenListImportError =>
       'Import failed. Check the plain JSON file. Accounts, order, secrets, categories, and OTP parameters must be valid; duplicates, missing records, or unsupported entries reject the entire file.';
+
+  @override
+  String get vaultImport => 'Import Bitwarden JSON';
+
+  @override
+  String vaultImportWarning(int count, int skipped) {
+    return 'Import $count verification accounts and skip $skipped non-login or no-code items? Matching accounts are updated, existing categories and metadata are preserved, and folders merge into categories. Passwords, notes, attachments, and other data are not imported.';
+  }
+
+  @override
+  String get vaultImportError =>
+      'Import failed. Choose an unencrypted JSON export and check the codes, folders, and account names. Duplicate or unsupported codes reject the entire file.';
 }

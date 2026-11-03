@@ -284,3 +284,123 @@ LegacyImport parseTokenListBackup(Uint8List bytes) {
     throw const FormatException('Invalid or unsupported backup contents.');
   }
 }
+
+({LegacyImport document, int skipped}) parseVaultBackup(Uint8List bytes) {
+  if (bytes.isEmpty || bytes.length > maxBackupBytes) {
+    throw const FormatException('Invalid backup size.');
+  }
+  try {
+    final data = jsonDecode(utf8.decode(bytes));
+    if (data is! Map<String, dynamic> ||
+        data['encrypted'] != false ||
+        data['items'] is! List) {
+      throw const FormatException();
+    }
+    final items = data['items'] as List;
+    if (items.isEmpty || items.length > 10000) throw const FormatException();
+    final folderValues = data['folders'] ?? const [];
+    if (folderValues is! List || folderValues.length > 1000) {
+      throw const FormatException();
+    }
+    final folders = <String, String>{};
+    for (final folder in folderValues) {
+      if (folder is! Map<String, dynamic> ||
+          folder['id'] is! String ||
+          folder['name'] is! String) {
+        throw const FormatException();
+      }
+      final id = folder['id'] as String;
+      final name = folder['name'] as String;
+      if (id.isEmpty ||
+          folders.containsKey(id) ||
+          validateCategoryName(name) != name) {
+        throw const FormatException();
+      }
+      folders[id] = name;
+    }
+    final accounts = <OtpAccount>[];
+    final categories = <String>{};
+    final memberships = <(String, String), List<String>>{};
+    final keys = <(String, String)>{};
+    var skipped = 0;
+    for (final item in items) {
+      if (item is! Map<String, dynamic> || item['type'] is! int) {
+        throw const FormatException();
+      }
+      if (item['type'] != 1) {
+        skipped++;
+        continue;
+      }
+      final login = item['login'];
+      if (login is! Map<String, dynamic>) throw const FormatException();
+      final otp = login['totp'];
+      if (otp == null || otp == '') {
+        skipped++;
+        continue;
+      }
+      if (otp is! String ||
+          item['name'] is! String ||
+          (login['username'] != null && login['username'] is! String)) {
+        throw const FormatException();
+      }
+      if (otp.toLowerCase().startsWith('otpauth:') &&
+          Uri.parse(otp).queryParametersAll.values
+              .any((values) => values.length != 1)) {
+        throw const FormatException();
+      }
+      final name = item['name'] as String;
+      final username = login['username'] as String?;
+      final account = otp.toLowerCase().startsWith('otpauth:')
+          ? parseOtpUri(otp)
+          : otp.contains('://')
+          ? (throw const FormatException())
+          : OtpAccount(
+              type: 'totp',
+              issuer: name,
+              account: username == null || username.trim().isEmpty
+                  ? name
+                  : username,
+              secret: otp.trim().replaceAll(RegExp(r'\s+'), '').toUpperCase(),
+            );
+      final resolved = account.copyWith(
+        issuer: account.issuer.trim().isEmpty ? name : account.issuer,
+        account: account.account.trim().isEmpty
+            ? (username == null || username.trim().isEmpty ? name : username)
+            : account.account,
+      );
+      if (resolved.type.toLowerCase() != 'totp') throw const FormatException();
+      resolved.validate();
+      if (!keys.add((resolved.issuer, resolved.account))) {
+        throw const FormatException();
+      }
+      final folderId = item['folderId'];
+      if (folderId != null && folderId is! String) {
+        throw const FormatException();
+      }
+      final names = <String>[];
+      if (folderId is String) {
+        final name = folders[folderId];
+        if (name == null) throw const FormatException();
+        names.add(name);
+        categories.add(name);
+      }
+      accounts.add(resolved);
+      memberships[(resolved.issuer, resolved.account)] = names;
+    }
+    if (accounts.isEmpty) throw const FormatException();
+    final categoryList = [
+      for (final name in categories) AccountCategory(name: name),
+    ];
+    validateCategories(categoryList);
+    return (
+      document: (
+        accounts: accounts,
+        categories: categoryList,
+        memberships: memberships,
+      ),
+      skipped: skipped,
+    );
+  } catch (_) {
+    throw const FormatException('Invalid or unsupported backup contents.');
+  }
+}

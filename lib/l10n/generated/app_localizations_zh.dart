@@ -579,4 +579,16 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get tokenListImportError =>
       '无法导入：请检查明文 JSON 文件。账户、顺序表、密钥、分类和验证码参数必须有效；重复、缺失或不支持的记录会导致整批拒绝。';
+
+  @override
+  String get vaultImport => '导入 Bitwarden JSON';
+
+  @override
+  String vaultImportWarning(int count, int skipped) {
+    return '将导入 $count 个验证码账户，跳过 $skipped 个不含验证码或非登录条目。同名账户将更新，已有分类和其他账户元数据保留；文件夹会合并为分类。密码、笔记、附件和其他资料不会导入。确认继续？';
+  }
+
+  @override
+  String get vaultImportError =>
+      '无法导入。请选择未加密 JSON，并检查验证码、文件夹及账户名称；重复或不支持的验证码会导致整批拒绝。';
 }

@@ -89,6 +89,11 @@ class AddAccountScreen extends ConsumerWidget {
         () => _handleTokenListImport(context, ref),
       ),
       AddMethodOption(
+        Icons.file_open_outlined,
+        l10n.vaultImport,
+        () => _handleVaultImport(context, ref),
+      ),
+      AddMethodOption(
         Icons.list_alt,
         l10n.exportUriList,
         () => _handleUriExport(context, ref),
@@ -444,18 +449,43 @@ class AddAccountScreen extends ConsumerWidget {
     }
   }
 
+  Future<void> _handleVaultImport(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final bytes = await ref
+          .read(backupOperationsProvider.notifier)
+          .pickFile();
+      if (bytes == null || !context.mounted) return;
+      final result = parseVaultBackup(bytes);
+      await _confirmImportedAccounts(
+        context,
+        ref,
+        result.document,
+        warning: l10n.vaultImportWarning(
+          result.document.accounts.length,
+          result.skipped,
+        ),
+      );
+    } catch (_) {
+      if (context.mounted) {
+        await _showResult(context, 0, l10n.importFailed, l10n.vaultImportError);
+      }
+    }
+  }
+
   Future<void> _confirmImportedAccounts(
     BuildContext context,
     WidgetRef ref,
-    LegacyImport document,
-  ) async {
+    LegacyImport document, {
+    String? warning,
+  }) async {
     final l10n = AppLocalizations.of(context)!;
     final proceed = await showCupertinoModalPopup<bool>(
       context: context,
       builder: (_) => ActionResultSheet(
         state: 0,
         title: l10n.warning,
-        message: l10n.legacyImportWarning(document.accounts.length),
+        message: warning ?? l10n.legacyImportWarning(document.accounts.length),
         falseButtonVisible: true,
       ),
     );
