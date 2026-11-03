@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 
+import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/backup_provider.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/screens/settings_screen.dart';
 import 'package:authentication/screens/token_list_screen.dart';
+import 'package:authentication/settings/settings.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
@@ -37,6 +39,45 @@ class _SavePicker extends FilePickerPlatform {
 }
 
 void main() {
+  test(
+    'encrypted snapshot captures account metadata and its revision',
+    () async {
+      FlutterSecureStorage.setMockInitialValues({});
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
+      db.encryption = await EncryptionService.initialize(db);
+      await db.addConfig(
+        const OtpAccount(
+          type: 'totp',
+          issuer: 'Example',
+          account: 'alice',
+          secret: 'JBSWY3DPEHPK3PXP',
+        ),
+      );
+      final account = (await db.getAllConfigs()).single;
+      await db.createCategory('Work');
+      final category = (await db.getCategories()).single;
+      await db.setAccountCategories(account.id, {category.id});
+      await db.setSetting(showAccountNameKey, false);
+      final snapshot = await createBackupSnapshot(db, 'test-password');
+      expect(snapshot.revision, await db.backupRevision());
+      await db.createCategory('Added later');
+      final document = await decodeBackupDocument(
+        snapshot.bytes,
+        'test-password',
+      );
+      expect(document.accounts.single.secret, account.secret);
+      expect(document.categories!.map((item) => item.name), ['Work']);
+      expect(document.memberships![('Example', 'alice')], ['Work']);
+      expect(document.settings![showAccountNameKey], false);
+      await expectLater(
+        decodeBackupDocument(snapshot.bytes, 'wrong-password'),
+        throwsFormatException,
+      );
+      await db.markBackupSaved(snapshot.revision);
+      expect(await db.watchBackupNeeded().first, true);
+    },
+  );
   TestWidgetsFlutterBinding.ensureInitialized();
   testWidgets('reminder follows data changes and its setting', (tester) async {
     FlutterSecureStorage.setMockInitialValues({});
