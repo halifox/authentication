@@ -52,6 +52,28 @@ void main() {
       throwsA(isA<AuthFailure>()),
     );
   });
+  test('validates PIN-bearing provisioning links without retaining a PIN', () {
+    const uri =
+        'otpauth://yaotp/person?secret=LA2V6KMCGYMWWVEW64RNP3JA3IAAAAAAHTSG4HRZPI&pin_length=4';
+    final parsed = parseYandexProvisioning(uri);
+    expect(parsed.pinLength, 4);
+    expect(parsed.account.pin, isEmpty);
+    expect(parsed.account.account, 'person');
+    expect(
+      () => parseYandexProvisioning('$uri&pin_length=5'),
+      throwsFormatException,
+    );
+    expect(
+      () => parseYandexProvisioning('$uri&pin=1234'),
+      throwsFormatException,
+    );
+    expect(
+      () => parseYandexProvisioning(
+        uri.replaceAll('pin_length=4', 'pin_length=3'),
+      ),
+      throwsFormatException,
+    );
+  });
   test('parses and validates an OTP URI without a database', () {
     final account = parseOtpUri(
       'otpauth://totp/Example:user?secret=jbswy3dpehpk3pxp&issuer=Example',

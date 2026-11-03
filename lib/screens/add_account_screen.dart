@@ -280,6 +280,12 @@ class AddAccountScreen extends ConsumerWidget {
       await _handleMigration(context, ref, code, next);
       return;
     }
+    final uri = Uri.tryParse(code);
+    if (uri?.scheme.toLowerCase() == 'otpauth' &&
+        uri?.host.toLowerCase() == 'yaotp') {
+      await Navigator.push(context, externalAccountRoute(code));
+      return;
+    }
     final result = await ref
         .read(accountOperationsProvider.notifier)
         .scan(code, forceUpdate: forceUpdate);

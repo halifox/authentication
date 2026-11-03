@@ -652,4 +652,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String authproLegacyWarning(int count) {
     return '导入 $count 个账户？同名账户将更新，已有分类和元数据保留，来源分类按名称合并。空账户名使用发行方名称；来源图标和分类内顺序不会导入。 此旧版加密无法验证文件完整性。';
   }
+
+  @override
+  String pinLengthRequired(int count) {
+    return 'PIN 必须为 $count 个字符';
+  }
 }

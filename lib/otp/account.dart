@@ -211,3 +211,48 @@ String toStandardOtpQrUri(OtpAccount account) {
     },
   ).toString();
 }
+
+/// Parses a provisioning link whose PIN must be supplied separately.
+({OtpAccount account, int pinLength}) parseYandexProvisioning(String input) {
+  final uri = Uri.parse(input);
+  if (uri.scheme.toLowerCase() != 'otpauth' ||
+      uri.host.toLowerCase() != 'yaotp' ||
+      uri.userInfo.isNotEmpty ||
+      uri.hasPort ||
+      uri.hasFragment ||
+      uri.queryParametersAll.values.any((values) => values.length != 1)) {
+    throw const FormatException('Invalid provisioning link.');
+  }
+  final params = uri.queryParameters;
+  final pinLength = int.tryParse(params['pin_length'] ?? '');
+  final secret = params['secret'];
+  final label = uri.pathSegments.length == 1 ? uri.pathSegments.single : '';
+  if (pinLength == null ||
+      pinLength < 4 ||
+      pinLength > 16 ||
+      secret == null ||
+      secret.isEmpty ||
+      label.trim().isEmpty ||
+      params.containsKey('pin') ||
+      (params['period'] != null && params['period'] != '30') ||
+      (params['digits'] != null && params['digits'] != '8') ||
+      (params['algorithm'] != null &&
+          !const [
+            'sha1',
+            'sha256',
+          ].contains(params['algorithm']!.toLowerCase()))) {
+    throw const FormatException('Invalid provisioning link.');
+  }
+  final account = OtpAccount(
+    type: 'yandex',
+    issuer: 'Yandex',
+    account: label,
+    secret: secret.toUpperCase(),
+    algorithm: 'sha1',
+    digits: 8,
+    period: 30,
+  );
+  // Validate all non-PIN fields before presenting the form.
+  account.copyWith(pin: '0' * pinLength).validate();
+  return (account: account, pinLength: pinLength);
+}

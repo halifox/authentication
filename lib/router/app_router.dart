@@ -23,9 +23,16 @@ class AppRoutes {
 
 Route<void> externalAccountRoute(String name) {
   OtpAccount? account;
+  int? pinLength;
   try {
     if (name.length > 65536) throw const FormatException();
-    account = parseOtpUri(name, detectSteam: true)..validate();
+    if (Uri.parse(name).host.toLowerCase() == 'yaotp') {
+      final parsed = parseYandexProvisioning(name);
+      account = parsed.account;
+      pinLength = parsed.pinLength;
+    } else {
+      account = parseOtpUri(name, detectSteam: true)..validate();
+    }
   } catch (_) {
     // Never include an external URI or parsing exception in the UI or route.
   }
@@ -41,7 +48,10 @@ Route<void> externalAccountRoute(String name) {
               child: Text(AppLocalizations.of(context)!.externalAccountInvalid),
             ),
           )
-        : TokenFormScreen(initialEntry: parsedAccount),
+        : TokenFormScreen(
+            initialEntry: parsedAccount,
+            expectedPinLength: pinLength,
+          ),
   );
 }
 

@@ -19,9 +19,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// 令牌编辑/表单页面，用于手动输入或编辑 2FA 账号的详细配置信息。
 class TokenFormScreen extends HookConsumerWidget {
-  const TokenFormScreen({super.key, this.initialEntry});
+  const TokenFormScreen({super.key, this.initialEntry, this.expectedPinLength});
 
   final OtpAccount? initialEntry;
+  final int? expectedPinLength;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -60,6 +61,7 @@ class TokenFormScreen extends HookConsumerWidget {
         matchBuiltInIcon(issuerController.text, icons.value ?? const []) ??
         'assets/icons/passkey.svg';
     final obscureText = useState(true);
+    final obscurePin = useState(true);
 
     final typeLabels = useMemoized(
       () => {
@@ -84,6 +86,19 @@ class TokenFormScreen extends HookConsumerWidget {
         rightOnPressed: busy || (icon.value == null && icons.isLoading)
             ? null
             : (_) async {
+                if (type.value == 'yandex' &&
+                    expectedPinLength != null &&
+                    pinController.text.length != expectedPinLength) {
+                  await showCupertinoModalPopup<void>(
+                    context: context,
+                    builder: (_) => ActionResultSheet(
+                      state: 0,
+                      title: l10n.saveFailed,
+                      message: l10n.pinLengthRequired(expectedPinLength!),
+                    ),
+                  );
+                  return;
+                }
                 await _handleSave(
                   context: context,
                   ref: ref,
@@ -150,9 +165,12 @@ class TokenFormScreen extends HookConsumerWidget {
                     algorithmLabels,
                     (value) => algorithm.value = value,
                   ),
-                  'motp' || 'yandex' => _buildTextField(
-                    label: l10n.pin,
-                    controller: pinController,
+                  'motp' || 'yandex' => _buildPasswordTextField(
+                    pinController,
+                    expectedPinLength != null && type.value == 'yandex'
+                        ? l10n.pinLengthRequired(expectedPinLength!)
+                        : l10n.pin,
+                    obscurePin,
                   ),
                   String() => const SizedBox.shrink(),
                 },

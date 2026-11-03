@@ -653,4 +653,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String authproLegacyWarning(int count) {
     return 'Import $count accounts? Matching accounts are updated; existing categories and metadata remain. Source categories are merged. Unnamed accounts use the issuer as their name. Source icons and category-specific ordering are not imported. This legacy encryption cannot verify file integrity.';
   }
+
+  @override
+  String pinLengthRequired(int count) {
+    return 'PIN must contain $count characters';
+  }
 }

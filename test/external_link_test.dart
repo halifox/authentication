@@ -118,6 +118,54 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 10));
   });
+  testWidgets('Yandex link requires a PIN before saving', (tester) async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => Navigator.push(
+                context,
+                externalAccountRoute(
+                  'otpauth://yaotp/person?secret=LA2V6KMCGYMWWVEW64RNP3JA3IAAAAAAHTSG4HRZPI&pin_length=4',
+                ),
+              ),
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    expect(await db.getAllConfigs(), isEmpty);
+    final pin = find.widgetWithText(TextField, 'PIN must contain 4 characters');
+    expect(pin, findsOneWidget);
+    expect(tester.widget<TextField>(pin).obscureText, isTrue);
+    await tester.tap(find.byIcon(Icons.save));
+    await tester.pumpAndSettle();
+    expect(await db.getAllConfigs(), isEmpty);
+    await tester.tap(find.text('OK').last);
+    await tester.pumpAndSettle();
+    await tester.enterText(pin, '7586');
+    await tester.tap(find.byIcon(Icons.save));
+    await tester.pumpAndSettle();
+    final account = (await db.getAllConfigs()).single;
+    expect(account.type, 'yandex');
+    expect(account.pin, '7586');
+    expect(account.generateCodeString().length, 8);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 10));
+  });
+
   testWidgets('invalid external link shows a safe error', (tester) async {
     FlutterSecureStorage.setMockInitialValues({});
     final db = AppDatabase(NativeDatabase.memory());

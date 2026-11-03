@@ -202,5 +202,7 @@
   "authproImportError": "Import failed. Check the file, password, and account parameters. Invalid, duplicate, or unsupported records reject the entire file.",
   "@authproImportWarning": {"placeholders": {"count": {"type": "int"}}},
   "authproLegacyWarning": "Import {count} accounts? Matching accounts are updated; existing categories and metadata remain. Source categories are merged. Unnamed accounts use the issuer as their name. Source icons and category-specific ordering are not imported. This legacy encryption cannot verify file integrity.",
-  "@authproLegacyWarning": {"placeholders": {"count": {"type": "int"}}}
+  "@authproLegacyWarning": {"placeholders": {"count": {"type": "int"}}},
+  "pinLengthRequired": "PIN must contain {count} characters",
+  "@pinLengthRequired": {"placeholders": {"count": {"type": "int"}}}
 }
