@@ -67,6 +67,11 @@ class AddAccountScreen extends ConsumerWidget {
         () => _handleUpload(context, ref),
       ),
       AddMethodOption(
+        Icons.help_outline,
+        l10n.migrationGuides,
+        () => Navigator.pushNamed(context, AppRoutes.migrationGuides),
+      ),
+      AddMethodOption(
         Icons.keyboard,
         l10n.enterKey,
         () => Navigator.pushNamed(context, AppRoutes.form),

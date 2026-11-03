@@ -760,4 +760,23 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get importPreviewExpired =>
       'Accounts or settings changed. Select the file again to review the updated counts.';
+
+  @override
+  String get migrationGuides => 'Migration guides';
+
+  @override
+  String get migrationGuideIntro =>
+      'These guides explain steps performed with each service. They do not import accounts automatically. Keep your existing access and recovery options until the new setup works.';
+
+  @override
+  String get authyGuide =>
+      'Authy does not provide token export. For each service:\n\n1. Sign in using your existing verification method.\n2. In that service’s security settings, turn off two-factor authentication and enable it again.\n3. Scan the new QR code in this app, or enter the new setup key manually.\n4. Verify a new code with the service before removing the old entry.\n\nServices may offer different recovery options. If you cannot sign in, contact that service’s support.\n\nOfficial help: https://help.twilio.com/hc/en-us/articles/19753420684059-Export-or-Import-Tokens-in-the-Authy-app-Not-Supported';
+
+  @override
+  String get steamGuide =>
+      'Steam’s official transfer moves its mobile authenticator to the Steam app on a new device; it does not export its secret to this app.\n\n1. Install Steam Mobile on the new phone and sign in.\n2. On the Steam Guard screen, choose Move Authenticator and follow the confirmation steps.\n3. Store the new recovery code safely. If the old device is unavailable, follow Steam’s recovery instructions or contact Steam Support.\n\nThis app can generate Steam codes if you already have a compatible secret, but this guide does not retrieve one. Steam’s official transfer may impose temporary trading restrictions.\n\nOfficial help: https://help.steampowered.com/en/faqs/view/29A9-9EEE-09F0-75F9';
+
+  @override
+  String get blizzardGuide =>
+      'Blizzard account authentication is managed through its official mobile app. This guide does not extract or import its secret.\n\n1. Keep your existing authenticator and recovery information available.\n2. On the new device, sign in to the official app and follow its authenticator setup or recovery prompts.\n3. If you cannot approve the sign-in or restore access, use Blizzard Support’s account recovery process before removing the old authenticator.\n\nCheck the provider’s current instructions before making changes: https://us.support.blizzard.com/';
 }

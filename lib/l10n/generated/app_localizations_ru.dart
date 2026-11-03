@@ -752,4 +752,23 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get importPreviewExpired => '账户或设置已更改，请重新选择文件并确认更新后的数量。';
+
+  @override
+  String get migrationGuides => '迁移指南';
+
+  @override
+  String get migrationGuideIntro =>
+      '以下指南说明需要在各服务中完成的操作，不会自动导入账户。在新设置验证成功前，请保留现有登录方式和恢复选项。';
+
+  @override
+  String get authyGuide =>
+      'Authy 不提供令牌导出。请对每个服务分别操作：\n\n1. 使用现有验证方式登录该服务。\n2. 在该服务的安全设置中关闭双重验证，然后重新启用。\n3. 使用本应用扫描新二维码，或手动输入新的设置密钥。\n4. 使用新验证码完成服务端验证后，再移除旧条目。\n\n不同服务的恢复方式可能不同；无法登录时请联系对应服务的支持。\n\n官方帮助：https://help.twilio.com/hc/en-us/articles/19753420684059-Export-or-Import-Tokens-in-the-Authy-app-Not-Supported';
+
+  @override
+  String get steamGuide =>
+      'Steam 官方迁移会将移动验证器转移到新设备的 Steam 应用，不会向本应用导出密钥。\n\n1. 在新手机安装 Steam Mobile 并登录。\n2. 在 Steam Guard 页面选择转移验证器（Move Authenticator），按提示完成确认。\n3. 妥善保存新的恢复代码。无法使用旧设备时，请按 Steam 的恢复说明操作或联系 Steam 支持。\n\n如果已拥有兼容密钥，本应用可以生成 Steam 验证码；本指南不会提取密钥。官方迁移可能导致暂时的交易限制。\n\n官方帮助：https://help.steampowered.com/en/faqs/view/29A9-9EEE-09F0-75F9';
+
+  @override
+  String get blizzardGuide =>
+      'Blizzard 账户验证通过其官方移动应用管理，本指南不会提取或导入密钥。\n\n1. 保留现有验证器和恢复信息。\n2. 在新设备登录官方应用，按提示设置或恢复验证器。\n3. 无法批准登录或恢复访问时，请先通过 Blizzard 支持的账户恢复流程处理，再移除旧验证器。\n\n操作前请查看服务提供方的最新说明：https://us.support.blizzard.com/';
 }

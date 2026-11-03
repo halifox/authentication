@@ -537,6 +537,8 @@ void main() {
       200,
       scrollable: find.byType(Scrollable),
     );
+    await tester.ensureVisible(find.text('Import 2FAS backup'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Import 2FAS backup'));
     await tester.pumpAndSettle();
     expect(

@@ -3,6 +3,7 @@ import 'package:authentication/otp/account.dart';
 import 'package:authentication/screens/add_account_screen.dart';
 import 'package:authentication/screens/categories_screen.dart';
 import 'package:authentication/screens/icon_selection_screen.dart';
+import 'package:authentication/screens/migration_guide_screen.dart';
 import 'package:authentication/screens/qr_scanner_screen.dart';
 import 'package:authentication/screens/settings_screen.dart';
 import 'package:authentication/screens/token_form_screen.dart';
@@ -19,6 +20,7 @@ class AppRoutes {
   static const form = '/form';
   static const scan = '/scan';
   static const icons = '/icons';
+  static const migrationGuides = '/migration-guides';
 }
 
 Route<void> externalAccountRoute(String name) {
@@ -65,6 +67,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     ),
     AppRoutes.scan => const QrScannerScreen(),
     AppRoutes.icons => const IconSelectionScreen(),
+    AppRoutes.migrationGuides => const MigrationGuideScreen(),
     _ => const TokenListScreen(),
   };
   if (settings.name == AppRoutes.icons) {
