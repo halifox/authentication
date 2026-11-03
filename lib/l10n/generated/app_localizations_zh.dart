@@ -791,4 +791,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get getStarted => '开始使用';
+
+  @override
+  String get aboutApp => '关于';
+
+  @override
+  String get aboutDescription => '用于管理验证码的离线应用。';
+
+  @override
+  String get sourceCode => '源代码';
+
+  @override
+  String get openSourceLicenses => '开源许可';
+
+  @override
+  String get aboutPrivacy => '账户密钥在此设备上加密存储。导出文件和二维码可能暴露密钥。';
 }

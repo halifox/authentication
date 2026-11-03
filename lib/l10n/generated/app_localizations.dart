@@ -1559,6 +1559,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Get started'**
   String get getStarted;
+
+  /// No description provided for @aboutApp.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get aboutApp;
+
+  /// No description provided for @aboutDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'An offline app for managing verification codes.'**
+  String get aboutDescription;
+
+  /// No description provided for @sourceCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Source code'**
+  String get sourceCode;
+
+  /// No description provided for @openSourceLicenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Open-source licenses'**
+  String get openSourceLicenses;
+
+  /// No description provided for @aboutPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Account secrets are encrypted on this device. Exported files and QR codes may reveal them.'**
+  String get aboutPrivacy;
 }
 
 class _AppLocalizationsDelegate

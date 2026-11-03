@@ -820,4 +820,21 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get getStarted => 'Get started';
+
+  @override
+  String get aboutApp => 'About';
+
+  @override
+  String get aboutDescription =>
+      'An offline app for managing verification codes.';
+
+  @override
+  String get sourceCode => 'Source code';
+
+  @override
+  String get openSourceLicenses => 'Open-source licenses';
+
+  @override
+  String get aboutPrivacy =>
+      'Account secrets are encrypted on this device. Exported files and QR codes may reveal them.';
 }

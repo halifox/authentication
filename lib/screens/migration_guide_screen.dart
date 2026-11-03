@@ -2,6 +2,46 @@ import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 
+class AboutScreen extends StatelessWidget {
+  const AboutScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Scaffold(
+      appBar: CustomAppBar(title: l10n.aboutApp),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+        children: [
+          Text(
+            l10n.aboutDescription,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(height: 16),
+          Text(l10n.aboutPrivacy, style: Theme.of(context).textTheme.bodyLarge),
+          const SizedBox(height: 24),
+          Text(l10n.sourceCode, style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 8),
+          const SelectableText('https://github.com/halifox/authentication'),
+          const SizedBox(height: 24),
+          Material(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(24),
+            child: ListTile(
+              title: Text(l10n.openSourceLicenses),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => showLicensePage(
+                context: context,
+                applicationName: 'Authentication',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class IntroductionScreen extends StatelessWidget {
   const IntroductionScreen({
     required this.saving,

@@ -123,8 +123,19 @@ class SettingsScreen extends ConsumerWidget {
               crossAxisSpacing: 16,
               mainAxisExtent: 90,
             ),
-            itemCount: options.length + 8,
+            itemCount: options.length + 9,
             itemBuilder: (BuildContext context, int index) {
+              if (index == options.length + 8) {
+                return Material(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(24),
+                  child: ListTile(
+                    title: Text(l10n.aboutApp),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => Navigator.pushNamed(context, AppRoutes.about),
+                  ),
+                );
+              }
               if (index == options.length + 7) {
                 return Material(
                   color: Theme.of(context).colorScheme.primaryContainer,

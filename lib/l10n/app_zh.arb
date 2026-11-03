@@ -446,5 +446,10 @@
   "guideMigrationBody": "选择添加以导入受支持的文件或查看迁移指南。保存前会显示确认和冲突处理方式。",
   "welcomeTitle": "欢迎使用",
   "welcomeIntro": "设置验证码，保存受保护的备份，并保留账户的恢复方式。",
-  "getStarted": "开始使用"
+  "getStarted": "开始使用",
+  "aboutApp": "关于",
+  "aboutDescription": "用于管理验证码的离线应用。",
+  "sourceCode": "源代码",
+  "openSourceLicenses": "开源许可",
+  "aboutPrivacy": "账户密钥在此设备上加密存储。导出文件和二维码可能暴露密钥。"
 }

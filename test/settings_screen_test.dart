@@ -10,6 +10,43 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() {
+  testWidgets('about page shows source and opens licenses', (tester) async {
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    await db.initializeSettings(defaultSettings);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
+        child: const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          onGenerateRoute: onGenerateRoute,
+          home: SettingsScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('About'),
+      150,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.ensureVisible(find.text('About'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('About'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('https://github.com/halifox/authentication'),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Open-source licenses'));
+    await tester.pumpAndSettle();
+    expect(find.byType(LicensePage), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 10));
+  });
+
   testWidgets('usage guide is accessible from settings at large text sizes', (
     tester,
   ) async {

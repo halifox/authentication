@@ -320,5 +320,10 @@
   "guideMigrationBody": "Choose Add to import a supported file or follow the migration guides. Imports show a confirmation and conflict policy before saving.",
   "welcomeTitle": "Welcome",
   "welcomeIntro": "Set up verification codes, keep a protected backup, and retain recovery options for your accounts.",
-  "getStarted": "Get started"
+  "getStarted": "Get started",
+  "aboutApp": "About",
+  "aboutDescription": "An offline app for managing verification codes.",
+  "sourceCode": "Source code",
+  "openSourceLicenses": "Open-source licenses",
+  "aboutPrivacy": "Account secrets are encrypted on this device. Exported files and QR codes may reveal them."
 }
