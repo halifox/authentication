@@ -6,10 +6,61 @@ import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() {
+  testWidgets('settings toggle exposes state and a semantic action', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    var enabled = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: StatefulBuilder(
+          builder: (context, setState) => Scaffold(
+            body: SettingsSwitchTile(
+              option: SettingsItemModel(
+                label: 'Example setting',
+                value: enabled,
+                onTap: () => setState(() => enabled = !enabled),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    final toggle = find.bySemanticsLabel('Example setting').last;
+    expect(
+      tester.getSemantics(toggle),
+      matchesSemantics(
+        label: 'Example setting',
+        hasEnabledState: true,
+        isEnabled: true,
+        hasToggledState: true,
+        isToggled: false,
+        hasTapAction: true,
+      ),
+    );
+    final node = tester.getSemantics(toggle);
+    node.owner!.performAction(node.id, SemanticsAction.tap);
+    await tester.pump();
+    expect(enabled, isTrue);
+    expect(
+      tester.getSemantics(toggle),
+      matchesSemantics(
+        label: 'Example setting',
+        hasEnabledState: true,
+        isEnabled: true,
+        hasToggledState: true,
+        isToggled: true,
+        hasTapAction: true,
+      ),
+    );
+    semantics.dispose();
+  });
+
   testWidgets('about page shows source and opens licenses', (tester) async {
     final db = AppDatabase(NativeDatabase.memory());
     addTearDown(db.close);

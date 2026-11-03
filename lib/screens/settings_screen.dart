@@ -368,22 +368,32 @@ class SettingsSwitchTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
-          GestureDetector(
+          Semantics(
+            label: option.label,
+            toggled: option.value,
+            enabled: enabled,
+            button: false,
             onTap: enabled ? option.onTap : null,
-            child: Container(
-              height: 48,
-              width: 48,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: option.value
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.inversePrimary,
-                borderRadius: const BorderRadius.all(Radius.circular(12)),
-              ),
-              child: Icon(
-                option.value ? Icons.done : Icons.close,
-                size: 36,
-                color: Theme.of(context).colorScheme.onPrimary,
+            child: ExcludeSemantics(
+              child: InkWell(
+                onTap: enabled ? option.onTap : null,
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  height: 48,
+                  width: 48,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: option.value
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.inversePrimary,
+                    borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  ),
+                  child: Icon(
+                    option.value ? Icons.done : Icons.close,
+                    size: 36,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
               ),
             ),
           ),
