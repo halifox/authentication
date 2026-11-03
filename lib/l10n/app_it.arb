@@ -170,5 +170,6 @@
   "viewTiles": "Tiles",
   "externalAccount": "External account link",
   "externalAccountInvalid": "The link is invalid or unsupported. No account was imported.",
-  "externalAccountUnavailable": "Could not receive external account links."
+  "externalAccountUnavailable": "Could not receive external account links.",
+  "systemCodeFont": "Use system font for codes"
 }

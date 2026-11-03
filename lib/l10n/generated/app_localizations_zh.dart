@@ -539,4 +539,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get externalAccountUnavailable => '无法接收外部账户链接。';
+
+  @override
+  String get systemCodeFont => '验证码使用系统字体';
 }

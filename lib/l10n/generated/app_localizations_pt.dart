@@ -557,4 +557,7 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get externalAccountUnavailable =>
       'Could not receive external account links.';
+
+  @override
+  String get systemCodeFont => 'Use system font for codes';
 }

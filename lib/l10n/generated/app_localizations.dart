@@ -1139,6 +1139,12 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'无法接收外部账户链接。'**
   String get externalAccountUnavailable;
+
+  /// No description provided for @systemCodeFont.
+  ///
+  /// In zh, this message translates to:
+  /// **'验证码使用系统字体'**
+  String get systemCodeFont;
 }
 
 class _AppLocalizationsDelegate

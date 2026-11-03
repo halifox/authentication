@@ -301,6 +301,8 @@ class _TokenCodeRow extends StatelessWidget {
         config: config,
         isVisible: isVisible,
         compact: compact,
+        systemFont:
+            ref.watch(settingsProvider).value?[systemCodeFontKey] ?? false,
         grouping:
             ref.watch(integerSettingsProvider).value?[codeGroupingKey] ?? 0,
       ),
@@ -314,12 +316,14 @@ class _OtpDisplay extends StatefulWidget {
     required this.isVisible,
     required this.grouping,
     required this.compact,
+    required this.systemFont,
   });
 
   final OtpAccount config;
   final bool isVisible;
   final int grouping;
   final bool compact;
+  final bool systemFont;
 
   @override
   State<_OtpDisplay> createState() => _OtpDisplayState();
@@ -364,6 +368,7 @@ class _OtpDisplayState extends State<_OtpDisplay> {
                   char: chars[i],
                   isVisible: widget.isVisible,
                   compact: widget.compact,
+                  systemFont: widget.systemFont,
                 ),
               ),
             ],
@@ -379,11 +384,13 @@ class _DigitBox extends StatelessWidget {
     required this.char,
     required this.isVisible,
     required this.compact,
+    required this.systemFont,
   });
 
   final String char;
   final bool isVisible;
   final bool compact;
+  final bool systemFont;
 
   @override
   Widget build(BuildContext context) {
@@ -403,7 +410,7 @@ class _DigitBox extends StatelessWidget {
             fontSize: compact ? 28 : 38,
             color: theme.colorScheme.onTertiary,
             fontWeight: FontWeight.w900,
-            fontFamily: 'VarelaRound',
+            fontFamily: systemFont ? null : 'VarelaRound',
             height: 1.0, // 强制行高与字号一致
           ),
           textHeightBehavior: const TextHeightBehavior(

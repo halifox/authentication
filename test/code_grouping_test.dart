@@ -26,6 +26,8 @@ void main() {
     (tester) async {
       final settings = StreamController<Map<String, int>>.broadcast();
       addTearDown(settings.close);
+      final booleanSettings = StreamController<Map<String, bool>>.broadcast();
+      addTearDown(booleanSettings.close);
       const account = OtpAccount(
         id: 1,
         type: 'hotp',
@@ -38,10 +40,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            settingsProvider.overrideWith(
-              (ref) =>
-                  Stream.value({...defaultSettings, showCaptchaOnTapKey: true}),
-            ),
+            settingsProvider.overrideWith((ref) => booleanSettings.stream),
             integerSettingsProvider.overrideWith((ref) => settings.stream),
           ],
           child: const MaterialApp(
@@ -61,11 +60,26 @@ void main() {
         ),
       );
       settings.add({...defaultIntegerSettings, codeGroupingKey: 3});
+      booleanSettings.add({...defaultSettings, showCaptchaOnTapKey: true});
       await tester.pumpAndSettle();
       expect(find.byKey(const ValueKey('group_3')), findsOneWidget);
       expect(find.byKey(const ValueKey('group_6')), findsOneWidget);
       expect(find.bySemanticsLabel(RegExp('Code hidden')), findsOneWidget);
       expect(find.text('-'), findsNWidgets(8));
+      expect(
+        tester.widget<Text>(find.text('-').first).style!.fontFamily,
+        'VarelaRound',
+      );
+      booleanSettings.add({
+        ...defaultSettings,
+        showCaptchaOnTapKey: true,
+        systemCodeFontKey: true,
+      });
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<Text>(find.text('-').first).style!.fontFamily,
+        isNull,
+      );
       settings.add({...defaultIntegerSettings, codeGroupingKey: 5});
       await tester.pumpAndSettle();
       expect(find.byKey(const ValueKey('group_4')), findsOneWidget);

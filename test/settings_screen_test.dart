@@ -27,8 +27,17 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.byIcon(Icons.close), findsNWidgets(3));
-    await tester.tap(find.byIcon(Icons.close).first);
+    final revealSwitch = find.ancestor(
+      of: find.text('Tap to Reveal Code'),
+      matching: find.byType(SettingsSwitchTile),
+    );
+    expect(
+      find.descendant(of: revealSwitch, matching: find.byIcon(Icons.close)),
+      findsOneWidget,
+    );
+    await tester.tap(
+      find.descendant(of: revealSwitch, matching: find.byIcon(Icons.close)),
+    );
     await tester.pumpAndSettle();
     expect((await db.getSettings())[showCaptchaOnTapKey], isTrue);
     expect(
@@ -64,6 +73,25 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect((await db.getSettings())[showAccountNameKey], isFalse);
+    await tester.scrollUntilVisible(
+      find.text('Use system font for codes'),
+      150,
+      scrollable: find.byType(Scrollable),
+    );
+    final fontSwitch = find.ancestor(
+      of: find.text('Use system font for codes'),
+      matching: find.byType(SettingsSwitchTile),
+    );
+    await tester.tap(
+      find.descendant(of: fontSwitch, matching: find.byIcon(Icons.close)),
+    );
+    await tester.pumpAndSettle();
+    expect((await db.getSettings())[systemCodeFontKey], isTrue);
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey(hideCodeAfterKey)),
+      150,
+      scrollable: find.byType(Scrollable),
+    );
     await tester.tap(find.byKey(const ValueKey(hideCodeAfterKey)));
     await tester.pumpAndSettle();
     await tester.tap(find.text('10 seconds').last);

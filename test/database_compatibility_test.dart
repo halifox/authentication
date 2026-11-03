@@ -123,6 +123,7 @@ void main() {
       sortLockedKey: true,
       dynamicColorKey: true,
       backupRemindersKey: true,
+      systemCodeFontKey: false,
     });
     await database.setSetting(showCaptchaOnTapKey, false);
     await database.initializeSettings({
@@ -137,6 +138,7 @@ void main() {
       sortLockedKey: true,
       dynamicColorKey: true,
       backupRemindersKey: true,
+      systemCodeFontKey: false,
     });
     expect((await database.getAllAuthEntries()).single.secret, 'secret');
   });

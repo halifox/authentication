@@ -28,6 +28,22 @@ void main() {
     showAccountNameKey: false,
   };
 
+  test('system code font setting survives backup round trips', () async {
+    final bytes = await encodeBackupAccounts(
+      [account],
+      null,
+      settings: {...defaultSettings, systemCodeFontKey: true},
+    );
+    final decoded = await decodeBackupDocument(bytes, null);
+    expect(decoded.settings![systemCodeFontKey], true);
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    await db.importAccounts(decoded.accounts, settings: decoded.settings);
+    expect((await db.getSettings())[systemCodeFontKey], true);
+  });
+
   test(
     'encrypted version 3 backups preserve settings and reject damage',
     () async {
@@ -111,6 +127,7 @@ void main() {
         sortLockedKey: true,
         dynamicColorKey: true,
         backupRemindersKey: true,
+        systemCodeFontKey: false,
       });
       expect(await db.getIntegerSettings(), {
         hideCodeAfterKey: 30,

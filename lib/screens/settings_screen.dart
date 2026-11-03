@@ -51,6 +51,7 @@ class SettingsScreen extends ConsumerWidget {
     final advanceHotp = settings.value?[advanceHotpOnCopyKey] ?? false;
     final dynamicColor = settings.value?[dynamicColorKey] ?? true;
     final backupReminders = settings.value?[backupRemindersKey] ?? true;
+    final systemCodeFont = settings.value?[systemCodeFontKey] ?? false;
     final List<SettingsItemModel> options = [
       SettingsItemModel(
         label: AppLocalizations.of(context)!.showCaptchaOnTap,
@@ -93,6 +94,13 @@ class SettingsScreen extends ConsumerWidget {
         onTap: () => ref
             .read(settingsOperationsProvider.notifier)
             .update(backupRemindersKey, !backupReminders),
+      ),
+      SettingsItemModel(
+        label: l10n.systemCodeFont,
+        value: systemCodeFont,
+        onTap: () => ref
+            .read(settingsOperationsProvider.notifier)
+            .update(systemCodeFontKey, !systemCodeFont),
       ),
     ];
 

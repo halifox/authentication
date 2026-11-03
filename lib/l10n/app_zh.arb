@@ -361,5 +361,6 @@
   "viewTiles": "平铺",
   "externalAccount": "外部账户链接",
   "externalAccountInvalid": "链接无效或不受支持，未导入任何账户。",
-  "externalAccountUnavailable": "无法接收外部账户链接。"
+  "externalAccountUnavailable": "无法接收外部账户链接。",
+  "systemCodeFont": "验证码使用系统字体"
 }
