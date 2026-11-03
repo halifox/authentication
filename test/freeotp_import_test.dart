@@ -68,38 +68,30 @@ Uint8List sha1Variant(Uint8List bytes) {
 }
 
 void main() {
-  test(
-    'decrypts independent sample and rejects unsupported complete file',
-    () async {
-      final supported = await File('test/fixtures/freeotp/supported.bin')
-          .readAsBytes();
-      final source = await File('test/fixtures/freeotp/source.bin')
-          .readAsBytes();
-      final result = await parseFreeOtpBackup(supported, 'test');
-      expect(result.accounts.length, 6);
-      expect(
-        (await parseFreeOtpBackup(
-          sha1Variant(supported),
-          'test',
-        )).accounts.length,
-        6,
-      );
-      expect(result.accounts.any((a) => a.type == 'hotp'), isTrue);
-      await expectLater(
-        parseFreeOtpBackup(source, 'test'),
-        throwsFormatException,
-      );
-      await expectLater(
-        parseFreeOtpBackup(supported, 'wrong'),
-        throwsFormatException,
-      );
-      await expectLater(
-        parseFreeOtpBackup(
-          Uint8List.fromList(supported.sublist(0, 100)),
-          'test',
-        ),
-        throwsFormatException,
-      );
-    },
-  );
+  test('decrypts independent sample including nine-digit accounts', () async {
+    final supported = await File('test/fixtures/freeotp/supported.bin')
+        .readAsBytes();
+    final source = await File('test/fixtures/freeotp/source.bin').readAsBytes();
+    final result = await parseFreeOtpBackup(supported, 'test');
+    expect(result.accounts.length, 6);
+    expect(
+      (await parseFreeOtpBackup(
+        sha1Variant(supported),
+        'test',
+      )).accounts.length,
+      6,
+    );
+    expect(result.accounts.any((a) => a.type == 'hotp'), isTrue);
+    final all = await parseFreeOtpBackup(source, 'test');
+    expect(all.accounts.length, 7);
+    expect(all.accounts.any((account) => account.digits == 9), isTrue);
+    await expectLater(
+      parseFreeOtpBackup(supported, 'wrong'),
+      throwsFormatException,
+    );
+    await expectLater(
+      parseFreeOtpBackup(Uint8List.fromList(supported.sublist(0, 100)), 'test'),
+      throwsFormatException,
+    );
+  });
 }

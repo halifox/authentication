@@ -678,7 +678,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get lastPassImportError =>
-      '导入失败。仅支持版本 3 和受支持的 6–8 位账户；无效、重复或不受支持的记录会导致整批拒绝。';
+      '导入失败。仅支持版本 3 和受支持的 6–10 位账户；无效、重复或不受支持的记录会导致整批拒绝。';
 
   @override
   String get winAuthImport => '导入 WinAuth 备份';

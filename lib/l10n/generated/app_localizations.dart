@@ -1335,7 +1335,7 @@ abstract class AppLocalizations {
   /// No description provided for @lastPassImportError.
   ///
   /// In zh, this message translates to:
-  /// **'导入失败。仅支持版本 3 和受支持的 6–8 位账户；无效、重复或不受支持的记录会导致整批拒绝。'**
+  /// **'导入失败。仅支持版本 3 和受支持的 6–10 位账户；无效、重复或不受支持的记录会导致整批拒绝。'**
   String get lastPassImportError;
 
   /// No description provided for @winAuthImport.

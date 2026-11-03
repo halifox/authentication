@@ -58,7 +58,7 @@ class AuthValidator {
 
     switch (type) {
       case 'totp':
-        if (digits < 6 || digits > 8)
+        if (digits < 6 || digits > 10)
           throw AuthFailure(AuthErrorCode.invalidDigits);
         if (period <= 0) throw AuthFailure(AuthErrorCode.invalidPeriod);
       case 'hotp':

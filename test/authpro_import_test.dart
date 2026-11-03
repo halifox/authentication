@@ -149,7 +149,7 @@ void main() {
     });
     expect(() => parseAuthpro(encode(badLink)), throwsFormatException);
     final badDigits = sample();
-    (badDigits['Authenticators'] as List).first['Digits'] = 10;
+    (badDigits['Authenticators'] as List).first['Digits'] = 11;
     expect(() => parseAuthpro(encode(badDigits)), throwsFormatException);
     expect(
       () => parseAuthpro(Uint8List.fromList([1, 2, 3])),

@@ -1,3 +1,4 @@
+import 'package:authentication/backup/backup.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/validation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -72,6 +73,28 @@ void main() {
         uri.replaceAll('pin_length=4', 'pin_length=3'),
       ),
       throwsFormatException,
+    );
+  });
+  test('ten-digit TOTP survives URI and backup round trips', () async {
+    const account = OtpAccount(
+      type: 'totp',
+      issuer: 'Example',
+      account: 'person',
+      secret: 'JBSWY3DPEHPK3PXP',
+      digits: 10,
+    );
+    account.validate();
+    final uri = parseOtpUri(account.toOtpUri())..validate();
+    expect(uri.digits, 10);
+    final bytes = await encodeBackupAccounts([account], null);
+    expect((await decodeBackupAccounts(bytes, null)).single.digits, 10);
+    expect(
+      () => account.copyWith(digits: 11).validate(),
+      throwsA(isA<AuthFailure>()),
+    );
+    expect(
+      () => account.copyWith(type: 'hotp', digits: 9).validate(),
+      throwsA(isA<AuthFailure>()),
     );
   });
   test('parses and validates an OTP URI without a database', () {

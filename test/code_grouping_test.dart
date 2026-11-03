@@ -21,6 +21,39 @@ void main() {
     expect(codeGroupBreaks(5, 6), [2, 4]);
     expect(() => codeGroupBreaks(6, 7), throwsArgumentError);
   });
+  testWidgets('ten-digit account remains visible on a narrow screen', (
+    tester,
+  ) async {
+    const account = OtpAccount(
+      id: 1,
+      type: 'totp',
+      issuer: 'Example',
+      account: 'user',
+      secret: 'JBSWY3DPEHPK3PXP',
+      digits: 10,
+    );
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: SizedBox(
+              width: 280,
+              height: 150,
+              child: TokenListItem(config: account),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+    expect(find.text('-'), findsNWidgets(10));
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 10));
+  });
   testWidgets(
     'account card changes group spacing without exposing hidden code',
     (tester) async {

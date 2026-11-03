@@ -53,7 +53,7 @@ void main() {
     },
   );
   test(
-    'rejects independent encrypted backup with unsupported account',
+    'rejects independent encrypted backup with unsupported image',
     () async {
       final data = await File(
         'test/fixtures/grouped_backup/icon_encrypted.json',

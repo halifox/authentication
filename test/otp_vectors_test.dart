@@ -36,6 +36,26 @@ void main() {
       'wemdwrix',
     );
   });
+  test('TOTP supports nine and ten digits with leading zeros', () {
+    expect(
+      OTP.generateTOTPCodeString(
+        secret: '12345678901234567890',
+        unixMilliseconds: 59000,
+        digits: 9,
+        algorithm: Algorithm.sha1,
+      ),
+      '094287082',
+    );
+    expect(
+      OTP.generateTOTPCodeString(
+        secret: '12345678901234567890',
+        unixMilliseconds: 1111111109000,
+        digits: 10,
+        algorithm: Algorithm.sha1,
+      ),
+      '0907081804',
+    );
+  });
   test('mOTP MD5 vector', () {
     expect(
       OTP.generateMOTPCodeString(

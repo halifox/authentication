@@ -466,7 +466,6 @@ void main() {
     final data = jsonDecode(
       File('test/fixtures/lastpass/sample.json').readAsStringSync(),
     ) as Map<String, dynamic>;
-    (data['accounts'] as List).removeWhere((entry) => entry['digits'] == 9);
     final original = FilePickerPlatform.instance;
     FilePickerPlatform.instance = _MemoryPicker(
       Uint8List.fromList(utf8.encode(jsonEncode(data))),
@@ -501,7 +500,7 @@ void main() {
     expect(await db.getAllConfigs(), isEmpty);
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
-    expect((await db.getAllConfigs()).length, 5);
+    expect((await db.getAllConfigs()).length, 6);
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 10));
   });
