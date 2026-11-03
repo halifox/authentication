@@ -53,6 +53,7 @@ dependencies:
   image: ^4.12.0
   xml: ^7.0.1
   zxing2: ^0.2.4
+  saf: ^2.1.2
 
 dev_dependencies:
   # Testing & Linting

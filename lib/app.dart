@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app_links/app_links.dart';
+import 'package:authentication/backup/automatic_backup.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/router/app_router.dart';
 import 'package:authentication/screens/migration_guide_screen.dart';
@@ -102,6 +103,7 @@ class _AuthAppState extends ConsumerState<AuthApp> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(automaticBackupProvider);
     const pageTransitionsTheme = PageTransitionsTheme(
       builders: {
         TargetPlatform.android: CupertinoPageTransitionsBuilder(),

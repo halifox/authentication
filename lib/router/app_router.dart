@@ -23,6 +23,7 @@ class AppRoutes {
   static const migrationGuides = '/migration-guides';
   static const userGuide = '/user-guide';
   static const about = '/about';
+  static const automaticBackup = '/automatic-backup';
 }
 
 Route<void> externalAccountRoute(String name) {
@@ -72,6 +73,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     AppRoutes.migrationGuides => const MigrationGuideScreen(),
     AppRoutes.userGuide => const UserGuideScreen(),
     AppRoutes.about => const AboutScreen(),
+    AppRoutes.automaticBackup => const AutomaticBackupScreen(),
     _ => const TokenListScreen(),
   };
   if (settings.name == AppRoutes.icons) {

@@ -1595,6 +1595,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'On the old device, open Google Authenticator, choose the menu, then Transfer codes (or Transfer accounts) and Export. Unlock the device, select the accounts, and continue to display the QR code.\n\nIn this app, return to Add and choose Scan QR code. Scan every code from the same export; this app asks for confirmation after the complete batch is received. Check the import summary and verify codes with the services before removing the old setup.\n\nThe QR codes contain account secrets. Keep them private. Camera support varies by platform; unsupported or incomplete batches are not imported. If the old device is unavailable, use each service’s recovery options.\n\nOfficial help: https://support.google.com/accounts/answer/1066447'**
   String get googleGuide;
+
+  /// No description provided for @automaticBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic backup'**
+  String get automaticBackup;
+
+  /// No description provided for @autoBackupIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an Android local storage folder and a backup password. The app saves a new encrypted file after changes while it is running. Keep the password separately; losing it prevents recovery. Old files are not deleted and keep their original password.'**
+  String get autoBackupIntro;
+
+  /// No description provided for @autoBackupUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic backup is not available on this platform.'**
+  String get autoBackupUnsupported;
+
+  /// No description provided for @autoBackupDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic backup is off.'**
+  String get autoBackupDisabled;
+
+  /// No description provided for @autoBackupReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic backup is enabled.'**
+  String get autoBackupReady;
+
+  /// No description provided for @autoBackupSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving an encrypted backup…'**
+  String get autoBackupSaving;
+
+  /// No description provided for @autoBackupFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic backup failed. Check storage permission and try again or choose the folder again.'**
+  String get autoBackupFailed;
+
+  /// No description provided for @autoBackupConfigure.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose folder and enable'**
+  String get autoBackupConfigure;
+
+  /// No description provided for @autoBackupRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Back up now'**
+  String get autoBackupRetry;
+
+  /// No description provided for @autoBackupDisable.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off'**
+  String get autoBackupDisable;
+
+  /// No description provided for @autoBackupLocalOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a local device storage folder, not a cloud provider.'**
+  String get autoBackupLocalOnly;
+
+  /// No description provided for @autoBackupSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Encrypted backup saved and verified.'**
+  String get autoBackupSaved;
 }
 
 class _AppLocalizationsDelegate

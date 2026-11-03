@@ -141,6 +141,9 @@ class AppDatabase extends _$AppDatabase {
   Future<int> backupRevision() async =>
       (await select(backupState).getSingle()).revision;
 
+  Stream<int> watchBackupRevision() =>
+      select(backupState).watchSingle().map((row) => row.revision).distinct();
+
   Future<void> markBackupSaved(int revision) async {
     await transaction(() async {
       final state = await select(backupState).getSingle();

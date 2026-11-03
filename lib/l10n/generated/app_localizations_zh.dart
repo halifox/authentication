@@ -809,4 +809,41 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get googleGuide =>
       '在旧设备上打开 Google Authenticator，选择菜单中的“转移验证码”（或“转移账户”），然后选择导出。解锁设备，选择账户并继续，显示二维码。\n\n在本应用返回“添加”，选择扫描二维码。扫描同一次导出产生的所有二维码；收齐后本应用会要求确认。检查导入摘要，并在移除旧设置前向各服务验证验证码。\n\n二维码包含账户密钥，请妥善保密。相机支持因平台而异；不支持或不完整的批次不会导入。如果无法使用旧设备，请使用各服务的账户恢复选项。\n\n官方帮助：https://support.google.com/accounts/answer/1066447';
+
+  @override
+  String get automaticBackup => '自动备份';
+
+  @override
+  String get autoBackupIntro =>
+      '选择 Android 本地存储文件夹和备份密码。应用运行时，数据更改后会保存新的加密文件。请单独保管密码；丢失密码将无法恢复。旧文件不会自动删除，仍需使用原来的密码解密。';
+
+  @override
+  String get autoBackupUnsupported => '此平台暂不支持自动备份。';
+
+  @override
+  String get autoBackupDisabled => '自动备份已关闭。';
+
+  @override
+  String get autoBackupReady => '自动备份已开启。';
+
+  @override
+  String get autoBackupSaving => '正在保存加密备份…';
+
+  @override
+  String get autoBackupFailed => '自动备份失败。请检查存储权限并重试，或重新选择文件夹。';
+
+  @override
+  String get autoBackupConfigure => '选择文件夹并开启';
+
+  @override
+  String get autoBackupRetry => '立即备份';
+
+  @override
+  String get autoBackupDisable => '关闭';
+
+  @override
+  String get autoBackupLocalOnly => '请选择设备本地存储文件夹，不要选择云存储。';
+
+  @override
+  String get autoBackupSaved => '加密备份已保存并校验。';
 }

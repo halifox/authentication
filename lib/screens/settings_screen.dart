@@ -1,10 +1,13 @@
+import 'package:authentication/backup/automatic_backup.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/router/app_router.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart' show HookConsumerWidget;
 
 /// 设置项的数据模型。
 class SettingsItemModel {
@@ -123,8 +126,20 @@ class SettingsScreen extends ConsumerWidget {
               crossAxisSpacing: 16,
               mainAxisExtent: 90,
             ),
-            itemCount: options.length + 9,
+            itemCount: options.length + 10,
             itemBuilder: (BuildContext context, int index) {
+              if (index == options.length + 9) {
+                return Material(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(24),
+                  child: ListTile(
+                    title: Text(l10n.automaticBackup),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () =>
+                        Navigator.pushNamed(context, AppRoutes.automaticBackup),
+                  ),
+                );
+              }
               if (index == options.length + 8) {
                 return Material(
                   color: Theme.of(context).colorScheme.primaryContainer,
@@ -323,6 +338,110 @@ class SettingsScreen extends ConsumerWidget {
             },
           ),
         ),
+      ),
+    );
+  }
+}
+
+class AutomaticBackupScreen extends HookConsumerWidget {
+  const AutomaticBackupScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final status = ref.watch(automaticBackupProvider);
+    final password = useTextEditingController();
+    final confirmation = useTextEditingController();
+    final obscure = useState(true);
+    useListenable(password);
+    useListenable(confirmation);
+    final busy =
+        status == AutomaticBackupStatus.loading ||
+        status == AutomaticBackupStatus.saving;
+    final supported = status != AutomaticBackupStatus.unsupported;
+    final message = switch (status) {
+      AutomaticBackupStatus.loading => l10n.autoBackupSaving,
+      AutomaticBackupStatus.unsupported => l10n.autoBackupUnsupported,
+      AutomaticBackupStatus.disabled => l10n.autoBackupDisabled,
+      AutomaticBackupStatus.ready => l10n.autoBackupReady,
+      AutomaticBackupStatus.saving => l10n.autoBackupSaving,
+      AutomaticBackupStatus.saved => l10n.autoBackupSaved,
+      AutomaticBackupStatus.failed => l10n.autoBackupFailed,
+    };
+    return Scaffold(
+      appBar: CustomAppBar(title: l10n.automaticBackup),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Text(supported ? l10n.autoBackupIntro : l10n.autoBackupUnsupported),
+          const SizedBox(height: 16),
+          Text(message, semanticsLabel: message),
+          if (supported) ...[
+            const SizedBox(height: 16),
+            Text(l10n.autoBackupLocalOnly),
+            const SizedBox(height: 16),
+            TextField(
+              controller: password,
+              obscureText: obscure.value,
+              decoration: InputDecoration(
+                labelText: l10n.backupPasswordRequired,
+                suffixIcon: IconButton(
+                  tooltip: obscure.value
+                      ? l10n.revealPassword
+                      : l10n.hidePassword,
+                  onPressed: () => obscure.value = !obscure.value,
+                  icon: Icon(
+                    obscure.value ? Icons.visibility_off : Icons.visibility,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: confirmation,
+              obscureText: obscure.value,
+              decoration: InputDecoration(
+                labelText: l10n.backupPasswordConfirm,
+                errorText:
+                    confirmation.text.isNotEmpty &&
+                        confirmation.text != password.text
+                    ? l10n.backupPasswordMismatch
+                    : null,
+              ),
+            ),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed:
+                  busy ||
+                      password.text.isEmpty ||
+                      password.text.length > 1024 ||
+                      password.text != confirmation.text
+                  ? null
+                  : () async {
+                      final success = await ref
+                          .read(automaticBackupProvider.notifier)
+                          .configure(password.text);
+                      if (success) {
+                        password.clear();
+                        confirmation.clear();
+                      }
+                    },
+              child: Text(l10n.autoBackupConfigure),
+            ),
+            TextButton(
+              onPressed: busy || status == AutomaticBackupStatus.disabled
+                  ? null
+                  : () => ref.read(automaticBackupProvider.notifier).runNow(),
+              child: Text(l10n.autoBackupRetry),
+            ),
+            TextButton(
+              onPressed: busy || status == AutomaticBackupStatus.disabled
+                  ? null
+                  : () => ref.read(automaticBackupProvider.notifier).disable(),
+              child: Text(l10n.autoBackupDisable),
+            ),
+          ],
+        ],
       ),
     );
   }
