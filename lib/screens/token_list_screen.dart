@@ -34,8 +34,10 @@ class TokenListScreen extends HookConsumerWidget {
     final categories = ref.watch(categoriesProvider);
     final memberships = ref.watch(categoryMembershipsProvider);
     final backupNeeded = ref.watch(backupNeededProvider).value ?? false;
+    final autoBackupStatus = ref.watch(automaticBackupProvider);
     final autoBackupFailed =
-        ref.watch(automaticBackupProvider) == AutomaticBackupStatus.failed;
+        autoBackupStatus == AutomaticBackupStatus.failed ||
+        autoBackupStatus == AutomaticBackupStatus.configurationFailed;
     final backupReminders =
         ref.watch(settingsProvider).value?[backupRemindersKey] ?? true;
     final categoryList = categories.value ?? [];
@@ -79,7 +81,12 @@ class TokenListScreen extends HookConsumerWidget {
                 color: Theme.of(context).colorScheme.errorContainer,
                 borderRadius: BorderRadius.circular(24),
                 child: ListTile(
-                  title: Text(l10n.autoBackupFailed),
+                  title: Text(
+                    autoBackupStatus ==
+                            AutomaticBackupStatus.configurationFailed
+                        ? l10n.autoBackupConfigFailed
+                        : l10n.autoBackupFailed,
+                  ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () =>
                       Navigator.pushNamed(context, AppRoutes.automaticBackup),

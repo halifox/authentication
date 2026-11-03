@@ -185,7 +185,7 @@ void main() {
     expect(await operation.configure('secure-password'), false);
     expect(
       container.read(automaticBackupProvider),
-      AutomaticBackupStatus.failed,
+      AutomaticBackupStatus.configurationFailed,
     );
     expect(saf.files, isEmpty);
     saf.directory = localDirectory;
@@ -327,6 +327,54 @@ void main() {
     }
     await operation.disable();
   });
+
+  test(
+    'failed reconfiguration pauses old credentials until configured again',
+    () async {
+      FlutterSecureStorage.setMockInitialValues({});
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
+      db.encryption = await EncryptionService.initialize(db);
+      final original = SafPlatform.instance;
+      final saf = MemorySaf();
+      SafPlatform.instance = saf;
+      addTearDown(() => SafPlatform.instance = original);
+      final container = ProviderContainer(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          automaticBackupSupportedProvider.overrideWithValue(true),
+          automaticBackupDesktopProvider.overrideWithValue(false),
+        ],
+      );
+      addTearDown(container.dispose);
+      final operation = container.read(automaticBackupProvider.notifier);
+      await Future<void>.delayed(const Duration(milliseconds: 30));
+      expect(await operation.configure('old-password'), true);
+      await operation.runNow();
+      expect(saf.files.length, 1);
+      saf.directory = 'content://example.cloud/tree/remote';
+      expect(await operation.configure('new-password'), false);
+      expect(
+        container.read(automaticBackupProvider),
+        AutomaticBackupStatus.configurationFailed,
+      );
+      await db.createCategory('Changed');
+      await operation.runNow();
+      await Future<void>.delayed(const Duration(milliseconds: 1200));
+      expect(saf.files.length, 1);
+      expect(await db.watchBackupNeeded().first, true);
+      saf.directory = 'content://com.android.externalstorage.documents/tree/primary%3ADocuments/document/primary%3ADocuments';
+      expect(await operation.configure('new-password'), true);
+      await operation.runNow();
+      expect(saf.files.length, 2);
+      final newest = await decodeBackupDocument(
+        saf.files.values.last,
+        'new-password',
+      );
+      expect(newest.categories!.single.name, 'Changed');
+      await operation.disable();
+    },
+  );
 
   test(
     'retry after a missing startup grant resumes automatic scheduling',

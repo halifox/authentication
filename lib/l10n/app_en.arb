@@ -342,5 +342,6 @@
   "screenProtection": "Block screen capture",
   "screenProtectionUnsupported": "Screen capture protection is available on Android only.",
   "screenProtectionFailure": "Could not apply screen capture protection. Try again before continuing.",
-  "screenProtectionRetry": "Try again"
+  "screenProtectionRetry": "Try again",
+  "autoBackupConfigFailed": "Could not change automatic backup settings. Automatic backups are paused until you restart the app. Select a folder and password again or turn them off."
 }

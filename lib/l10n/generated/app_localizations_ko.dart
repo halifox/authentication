@@ -894,4 +894,8 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get screenProtectionRetry => 'Try again';
+
+  @override
+  String get autoBackupConfigFailed =>
+      'Could not change automatic backup settings. Automatic backups are paused until you restart the app. Select a folder and password again or turn them off.';
 }

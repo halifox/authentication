@@ -1691,6 +1691,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try again'**
   String get screenProtectionRetry;
+
+  /// No description provided for @autoBackupConfigFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not change automatic backup settings. Automatic backups are paused until you restart the app. Select a folder and password again or turn them off.'**
+  String get autoBackupConfigFailed;
 }
 
 class _AppLocalizationsDelegate

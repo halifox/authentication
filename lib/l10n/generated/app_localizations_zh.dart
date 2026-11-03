@@ -858,4 +858,8 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get screenProtectionRetry => '重试';
+
+  @override
+  String get autoBackupConfigFailed =>
+      '无法更改自动备份设置。自动备份已暂停至应用重新启动；请重新选择文件夹和密码，或关闭自动备份。';
 }

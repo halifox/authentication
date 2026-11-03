@@ -389,6 +389,7 @@ class AutomaticBackupScreen extends HookConsumerWidget {
       AutomaticBackupStatus.ready => l10n.autoBackupReady,
       AutomaticBackupStatus.saving => l10n.autoBackupSaving,
       AutomaticBackupStatus.saved => l10n.autoBackupSaved,
+      AutomaticBackupStatus.configurationFailed => l10n.autoBackupConfigFailed,
       AutomaticBackupStatus.failed => l10n.autoBackupFailed,
     };
     return Scaffold(
@@ -452,7 +453,10 @@ class AutomaticBackupScreen extends HookConsumerWidget {
               child: Text(l10n.autoBackupConfigure),
             ),
             TextButton(
-              onPressed: busy || status == AutomaticBackupStatus.disabled
+              onPressed:
+                  busy ||
+                      status == AutomaticBackupStatus.disabled ||
+                      status == AutomaticBackupStatus.configurationFailed
                   ? null
                   : () => ref.read(automaticBackupProvider.notifier).runNow(),
               child: Text(l10n.autoBackupRetry),

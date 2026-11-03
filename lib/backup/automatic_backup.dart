@@ -37,6 +37,7 @@ enum AutomaticBackupStatus {
   ready,
   saving,
   saved,
+  configurationFailed,
   failed,
 }
 
@@ -146,7 +147,11 @@ class AutomaticBackup extends Notifier<AutomaticBackupStatus> {
   }
 
   void _schedule() {
-    if (_directory == null || _password == null) return;
+    if (_directory == null ||
+        _password == null ||
+        state == AutomaticBackupStatus.configurationFailed) {
+      return;
+    }
     if (_running) {
       _pending = true;
       return;
@@ -194,11 +199,14 @@ class AutomaticBackup extends Notifier<AutomaticBackupStatus> {
       _listen();
       return true;
     } catch (_) {
-      if (ref.mounted) state = AutomaticBackupStatus.failed;
+      if (ref.mounted) state = AutomaticBackupStatus.configurationFailed;
       return false;
     } finally {
       _running = false;
-      if (ref.mounted && _pending && state != AutomaticBackupStatus.failed) {
+      if (ref.mounted &&
+          _pending &&
+          state != AutomaticBackupStatus.failed &&
+          state != AutomaticBackupStatus.configurationFailed) {
         _schedule();
       }
     }
@@ -233,7 +241,12 @@ class AutomaticBackup extends Notifier<AutomaticBackupStatus> {
   }
 
   Future<void> runNow() async {
-    if (_running || _directory == null || _password == null) return;
+    if (_running ||
+        _directory == null ||
+        _password == null ||
+        state == AutomaticBackupStatus.configurationFailed) {
+      return;
+    }
     _timer?.cancel();
     _running = true;
     _pending = false;

@@ -468,5 +468,6 @@
   "screenProtection": "阻止屏幕捕获",
   "screenProtectionUnsupported": "屏幕捕获保护仅在 Android 上可用。",
   "screenProtectionFailure": "无法应用屏幕捕获保护。请重试后继续。",
-  "screenProtectionRetry": "重试"
+  "screenProtectionRetry": "重试",
+  "autoBackupConfigFailed": "无法更改自动备份设置。自动备份已暂停至应用重新启动；请重新选择文件夹和密码，或关闭自动备份。"
 }
