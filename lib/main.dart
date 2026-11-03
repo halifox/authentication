@@ -33,16 +33,16 @@ void main() async {
         child: const AuthApp(),
       ),
     );
-  } catch (error) {
+  } catch (_) {
     await database?.close();
     runApp(
-      MaterialApp(
+      const MaterialApp(
         home: Scaffold(
           body: Center(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24),
               child: Text(
-                'Unable to open the authenticator securely. Your data has not been deleted. $error',
+                'Unable to open the authenticator securely. Your data has not been deleted.',
               ),
             ),
           ),
