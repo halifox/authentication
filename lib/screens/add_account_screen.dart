@@ -4,6 +4,7 @@ import 'package:authentication/backup/authpro_import.dart';
 import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/backup_provider.dart';
 import 'package:authentication/backup/grouped_import.dart';
+import 'package:authentication/backup/lastpass_import.dart';
 import 'package:authentication/backup/legacy_import.dart';
 import 'package:authentication/backup/twofas_import.dart';
 import 'package:authentication/backup/uri_backup_import.dart';
@@ -106,6 +107,11 @@ class AddAccountScreen extends ConsumerWidget {
         Icons.file_open_outlined,
         l10n.uriBackupImport,
         () => _handleUriBackupImport(context, ref),
+      ),
+      AddMethodOption(
+        Icons.file_open_outlined,
+        l10n.lastPassImport,
+        () => _handleLastPassImport(context, ref),
       ),
       AddMethodOption(
         Icons.file_open_outlined,
@@ -553,6 +559,35 @@ class AddAccountScreen extends ConsumerWidget {
           0,
           l10n.importFailed,
           l10n.groupedImportError,
+        );
+      }
+    }
+  }
+
+  Future<void> _handleLastPassImport(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final bytes = await ref
+          .read(backupOperationsProvider.notifier)
+          .pickFile();
+      if (bytes == null || !context.mounted) return;
+      final document = parseLastPassBackup(bytes);
+      await _confirmImportedAccounts(
+        context,
+        ref,
+        document,
+        warning: l10n.lastPassImportWarning(document.accounts.length),
+      );
+    } catch (_) {
+      if (context.mounted) {
+        await _showResult(
+          context,
+          0,
+          l10n.importFailed,
+          l10n.lastPassImportError,
         );
       }
     }

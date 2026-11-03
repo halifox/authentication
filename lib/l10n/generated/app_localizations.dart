@@ -1319,6 +1319,24 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'导入失败。请检查文件、密码和账户信息；无效、重复或不受支持的记录会导致整批拒绝。'**
   String get twoFasImportError;
+
+  /// No description provided for @lastPassImport.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入 LastPass Authenticator 备份'**
+  String get lastPassImport;
+
+  /// No description provided for @lastPassImportWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入 {count} 个账户？同名账户将更新，已有元数据保留；文件夹按名称合并为分类。缺少发行方或账户名时使用另一个名称；来源收藏、图标及文件夹内顺序不会导入。'**
+  String lastPassImportWarning(int count);
+
+  /// No description provided for @lastPassImportError.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入失败。仅支持版本 3 和受支持的 6–8 位账户；无效、重复或不受支持的记录会导致整批拒绝。'**
+  String get lastPassImportError;
 }
 
 class _AppLocalizationsDelegate

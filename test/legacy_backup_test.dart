@@ -61,6 +61,53 @@ class _MemoryPicker extends FilePickerPlatform {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  testWidgets('version 3 backup imports after confirmation', (tester) async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    final data = jsonDecode(
+      File('test/fixtures/lastpass/sample.json').readAsStringSync(),
+    ) as Map<String, dynamic>;
+    (data['accounts'] as List).removeWhere((entry) => entry['digits'] == 9);
+    final original = FilePickerPlatform.instance;
+    FilePickerPlatform.instance = _MemoryPicker(
+      Uint8List.fromList(utf8.encode(jsonEncode(data))),
+    );
+    addTearDown(() => FilePickerPlatform.instance = original);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          allIconsProvider.overrideWith((ref) async => []),
+        ],
+        child: const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: AddAccountScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Import LastPass Authenticator backup'),
+      200,
+      scrollable: find.byType(Scrollable),
+    );
+    await tester.tap(find.text('Import LastPass Authenticator backup'));
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('Folders merge into categories'),
+      findsOneWidget,
+    );
+    expect(await db.getAllConfigs(), isEmpty);
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect((await db.getAllConfigs()).length, 5);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 10));
+  });
   testWidgets('2FAS backup imports only after confirmation', (tester) async {
     FlutterSecureStorage.setMockInitialValues({});
     final db = AppDatabase(NativeDatabase.memory());

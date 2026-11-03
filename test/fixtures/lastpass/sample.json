@@ -1,0 +1,124 @@
+{
+  "version": 3,
+  "accounts": [
+    {
+      "issuerName": "Standard",
+      "originalIssuerName": "Standard",
+      "userName": "Totp",
+      "originalUserName": "Totp",
+      "pushNotification": false,
+      "secret": "54VEGZFJHM3BGDONFERMPUOKNGDJETGM",
+      "timeStep": 30,
+      "digits": 6,
+      "creationTimestamp": 1682843408613,
+      "isFavorite": true,
+      "algorithm": "SHA1",
+      "folderData": {
+        "folderId": 1,
+        "position": 0
+      }
+    },
+    {
+      "issuerName": "Long",
+      "originalIssuerName": "Long",
+      "userName": "Period",
+      "originalUserName": "Period",
+      "pushNotification": false,
+      "secret": "JGRMXBLPPYQIFMRBFQDHNP3MPPYQYNUN",
+      "timeStep": 60,
+      "digits": 6,
+      "creationTimestamp": 1682843426708,
+      "isFavorite": true,
+      "algorithm": "SHA1",
+      "folderData": {
+        "folderId": 1,
+        "position": 1
+      }
+    },
+    {
+      "issuerName": "Many",
+      "originalIssuerName": "Many",
+      "userName": "Digits",
+      "originalUserName": "Digits",
+      "pushNotification": false,
+      "secret": "WEV2GHDH4EAU7D5SZGCIQOFBNQ35EHBS",
+      "timeStep": 30,
+      "digits": 9,
+      "creationTimestamp": 1682843432717,
+      "isFavorite": false,
+      "algorithm": "SHA1",
+      "folderData": {
+        "folderId": 2,
+        "position": 0
+      }
+    },
+    {
+      "issuerName": "",
+      "originalIssuerName": "",
+      "userName": "NoIssuer",
+      "originalUserName": "NoIssuer",
+      "pushNotification": false,
+      "secret": "KY2QJPMNQLSGSZE2C5F7AYBLBVEEDHFX",
+      "timeStep": 30,
+      "digits": 6,
+      "creationTimestamp": 1682843438269,
+      "isFavorite": false,
+      "algorithm": "SHA1",
+      "folderData": {
+        "folderId": 2,
+        "position": 1
+      }
+    },
+    {
+      "issuerName": "Sha",
+      "originalIssuerName": "Sha",
+      "userName": "256",
+      "originalUserName": "256",
+      "pushNotification": false,
+      "secret": "RJNZJM7PAGJUBG32XHQWHFZVLYOMGIUQ",
+      "timeStep": 30,
+      "digits": 6,
+      "creationTimestamp": 1682843443560,
+      "isFavorite": false,
+      "algorithm": "SHA256",
+      "folderData": {
+        "folderId": 0,
+        "position": 0
+      }
+    },
+    {
+      "issuerName": "Sha",
+      "originalIssuerName": "Sha",
+      "userName": "512",
+      "originalUserName": "512",
+      "pushNotification": false,
+      "secret": "UW33SR5O4EKTDXNCBBS5FSPUKAYXIWOH",
+      "timeStep": 30,
+      "digits": 6,
+      "creationTimestamp": 1682843448472,
+      "isFavorite": false,
+      "algorithm": "SHA512",
+      "folderData": {
+        "folderId": 0,
+        "position": 1
+      }
+    }
+  ],
+  "folders": [
+    {
+      "id": 1,
+      "name": "Favorites",
+      "isOpened": true
+    },
+    {
+      "id": 2,
+      "name": "Group",
+      "isOpened": true
+    },
+    {
+      "id": 0,
+      "name": "Other accounts",
+      "isOpened": true
+    }
+  ]
+}

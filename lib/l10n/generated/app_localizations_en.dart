@@ -670,4 +670,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get twoFasImportError =>
       'Import failed. Check the file, password, and account details. Invalid, duplicate, or unsupported entries reject the entire file.';
+
+  @override
+  String get lastPassImport => 'Import LastPass Authenticator backup';
+
+  @override
+  String lastPassImportWarning(int count) {
+    return 'Import $count accounts? Matching accounts are updated; existing metadata remains. Folders merge into categories. Missing issuer or account names use the other name. Source favorites, icons and folder ordering are not imported.';
+  }
+
+  @override
+  String get lastPassImportError =>
+      'Import failed. Only version 3 files with supported 6–8 digit accounts can be imported. Invalid, duplicate or unsupported entries reject the entire file.';
 }
