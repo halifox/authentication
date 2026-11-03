@@ -50,7 +50,7 @@ class AppDatabase extends _$AppDatabase {
   /// 数据库架构版本号。
   /// 如果修改了表结构，需要递增此版本并处理迁移逻辑。
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -58,6 +58,7 @@ class AppDatabase extends _$AppDatabase {
       await m.createAll();
       await _initializeBackupTracking(false);
       await _createIconPackTriggers();
+      await _createKeyState();
     },
     onUpgrade: (m, from, to) async {
       if (from < 2) await m.createTable(appSettings);
@@ -75,8 +76,16 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(iconPacks);
         await _createIconPackTriggers();
       }
+      if (from < 8) await _createKeyState();
     },
   );
+
+  Future<void> _createKeyState() async {
+    await customStatement(
+      'CREATE TABLE key_state (id INTEGER PRIMARY KEY CHECK (id = 1), active TEXT, previous TEXT, pending TEXT)',
+    );
+    await customStatement('INSERT INTO key_state (id) VALUES (1)');
+  }
 
   Future<void> _initializeBackupTracking(bool existing) async {
     await customStatement(

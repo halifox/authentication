@@ -235,8 +235,11 @@ void main() {
     await tester.tap(find.text('10 seconds').last);
     await tester.pumpAndSettle();
     expect((await db.getIntegerSettings())[hideCodeAfterKey], 10);
-    await tester.drag(find.byType(GridView), const Offset(0, -400));
-    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey(codeGroupingKey)),
+      150,
+      scrollable: find.byType(Scrollable),
+    );
     await tester.tap(find.byKey(const ValueKey(codeGroupingKey)));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Every 3 characters').last);

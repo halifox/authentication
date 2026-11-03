@@ -35,6 +35,36 @@ final settingsProvider = StreamProvider<Map<String, bool>>(
   (ref) => ref.watch(appDatabaseProvider).watchSettings(),
 );
 
+final passwordEnabledProvider = FutureProvider<bool>(
+  (ref) => ref.watch(appDatabaseProvider).encryption.passwordEnabled,
+);
+
+class PasswordOperations extends Notifier<AsyncValue<void>> {
+  @override
+  AsyncValue<void> build() => const AsyncData(null);
+
+  Future<bool> change({String? currentPassword, String? newPassword}) async {
+    if (state.isLoading) return false;
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => ref
+          .read(appDatabaseProvider)
+          .encryption
+          .changePassword(
+            currentPassword: currentPassword,
+            newPassword: newPassword,
+          ),
+    );
+    ref.invalidate(passwordEnabledProvider);
+    return !state.hasError;
+  }
+}
+
+final passwordOperationsProvider =
+    NotifierProvider<PasswordOperations, AsyncValue<void>>(
+      PasswordOperations.new,
+    );
+
 final integerSettingsProvider = StreamProvider<Map<String, int>>(
   (ref) => ref.watch(appDatabaseProvider).watchIntegerSettings(),
 );

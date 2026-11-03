@@ -3,6 +3,7 @@ import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/router/app_router.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/settings/settings_provider.dart';
+import 'package:authentication/storage/device_key_store.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -140,9 +141,21 @@ class SettingsScreen extends ConsumerWidget {
                           1) *
                       60,
             ),
-            itemCount: options.length + 10 + (screenSupported ? 0 : 1),
+            itemCount: options.length + 11 + (screenSupported ? 0 : 1),
             itemBuilder: (BuildContext context, int index) {
-              if (!screenSupported && index == options.length + 10) {
+              if (index == options.length + 10) {
+                return Material(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(24),
+                  child: ListTile(
+                    title: Text(l10n.passwordTitle),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () =>
+                        Navigator.pushNamed(context, AppRoutes.password),
+                  ),
+                );
+              }
+              if (!screenSupported && index == options.length + 11) {
                 return Material(
                   color: Theme.of(context).colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(24),
@@ -360,6 +373,145 @@ class SettingsScreen extends ConsumerWidget {
               return SettingsSwitchTile(option: option, enabled: !busy);
             },
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class PasswordScreen extends HookConsumerWidget {
+  const PasswordScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final enabled = ref.watch(passwordEnabledProvider);
+    final operation = ref.watch(passwordOperationsProvider);
+    final current = useTextEditingController();
+    final next = useTextEditingController();
+    final confirmation = useTextEditingController();
+    final hidden = useState(true);
+    useListenable(current);
+    useListenable(next);
+    useListenable(confirmation);
+
+    Future<void> change(bool remove) async {
+      if (remove) {
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(l10n.passwordRemove),
+            content: Text(l10n.passwordRemoveWarning),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(l10n.passwordRemove),
+              ),
+            ],
+          ),
+        );
+        if (confirmed != true || !context.mounted) return;
+      }
+      final success = await ref
+          .read(passwordOperationsProvider.notifier)
+          .change(
+            currentPassword: enabled.value == true ? current.text : null,
+            newPassword: remove ? null : next.text,
+          );
+      if (!context.mounted) return;
+      final error = ref.read(passwordOperationsProvider).error;
+      final cleanupFailed = error is KeyChangeCleanupFailed;
+      if (success || cleanupFailed) {
+        current.clear();
+        next.clear();
+        confirmation.clear();
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            success
+                ? l10n.passwordSaved
+                : cleanupFailed
+                ? l10n.passwordCleanupFailed
+                : l10n.passwordFailed,
+          ),
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: CustomAppBar(title: l10n.passwordTitle),
+      body: enabled.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (_, _) => Center(child: Text(l10n.passwordFailed)),
+        data: (hasPassword) => ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(l10n.passwordIntro),
+            const SizedBox(height: 16),
+            if (hasPassword) ...[
+              TextField(
+                controller: current,
+                obscureText: hidden.value,
+                maxLength: 1024,
+                decoration: InputDecoration(labelText: l10n.passwordCurrent),
+              ),
+              const SizedBox(height: 16),
+            ],
+            TextField(
+              controller: next,
+              obscureText: hidden.value,
+              maxLength: 1024,
+              decoration: InputDecoration(
+                labelText: l10n.passwordNew,
+                suffixIcon: IconButton(
+                  tooltip: hidden.value
+                      ? l10n.revealPassword
+                      : l10n.hidePassword,
+                  onPressed: () => hidden.value = !hidden.value,
+                  icon: Icon(
+                    hidden.value ? Icons.visibility_off : Icons.visibility,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: confirmation,
+              obscureText: hidden.value,
+              maxLength: 1024,
+              decoration: InputDecoration(
+                labelText: l10n.passwordConfirm,
+                errorText:
+                    confirmation.text.isNotEmpty &&
+                        confirmation.text != next.text
+                    ? l10n.backupPasswordMismatch
+                    : null,
+              ),
+            ),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed:
+                  operation.isLoading ||
+                      (hasPassword && current.text.isEmpty) ||
+                      next.text.isEmpty ||
+                      next.text != confirmation.text
+                  ? null
+                  : () => change(false),
+              child: Text(hasPassword ? l10n.passwordChange : l10n.passwordSet),
+            ),
+            if (hasPassword)
+              TextButton(
+                onPressed: operation.isLoading || current.text.isEmpty
+                    ? null
+                    : () => change(true),
+                child: Text(l10n.passwordRemove),
+              ),
+          ],
         ),
       ),
     );

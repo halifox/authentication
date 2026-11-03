@@ -899,4 +899,61 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get autoBackupConfigFailed =>
       'Could not change automatic backup settings. Automatic backups are paused until you restart the app. Select a folder and password again or turn them off.';
+
+  @override
+  String get unlockTitle => 'Unlock';
+
+  @override
+  String get unlockPassword => 'App password';
+
+  @override
+  String get unlockButton => 'Unlock';
+
+  @override
+  String get unlockInvalid =>
+      'Unable to unlock. Check the password and try again.';
+
+  @override
+  String get unlockUnavailable =>
+      'Unable to open the app securely. Your data has not been deleted.';
+
+  @override
+  String get passwordTitle => 'App password';
+
+  @override
+  String get passwordIntro =>
+      'The app password protects the device key used to encrypt account secrets. Keep a separate encrypted backup: losing the password may prevent access to this device’s accounts.';
+
+  @override
+  String get passwordCurrent => 'Current password';
+
+  @override
+  String get passwordNew => 'New password';
+
+  @override
+  String get passwordConfirm => 'Confirm new password';
+
+  @override
+  String get passwordSet => 'Set password';
+
+  @override
+  String get passwordChange => 'Change password';
+
+  @override
+  String get passwordRemove => 'Remove password';
+
+  @override
+  String get passwordSaved => 'Password updated.';
+
+  @override
+  String get passwordFailed =>
+      'Password could not be updated. Check your current password and try again.';
+
+  @override
+  String get passwordCleanupFailed =>
+      'The new password setting is active, but the old key could not be removed. Restart the app to retry cleanup; if you set a password, use the new password to unlock.';
+
+  @override
+  String get passwordRemoveWarning =>
+      'Removing the password allows this device to open the app without it. Continue?';
 }

@@ -1697,6 +1697,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not change automatic backup settings. Automatic backups are paused until you restart the app. Select a folder and password again or turn them off.'**
   String get autoBackupConfigFailed;
+
+  /// No description provided for @unlockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get unlockTitle;
+
+  /// No description provided for @unlockPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'App password'**
+  String get unlockPassword;
+
+  /// No description provided for @unlockButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get unlockButton;
+
+  /// No description provided for @unlockInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to unlock. Check the password and try again.'**
+  String get unlockInvalid;
+
+  /// No description provided for @unlockUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open the app securely. Your data has not been deleted.'**
+  String get unlockUnavailable;
+
+  /// No description provided for @passwordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App password'**
+  String get passwordTitle;
+
+  /// No description provided for @passwordIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'The app password protects the device key used to encrypt account secrets. Keep a separate encrypted backup: losing the password may prevent access to this device’s accounts.'**
+  String get passwordIntro;
+
+  /// No description provided for @passwordCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Current password'**
+  String get passwordCurrent;
+
+  /// No description provided for @passwordNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get passwordNew;
+
+  /// No description provided for @passwordConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new password'**
+  String get passwordConfirm;
+
+  /// No description provided for @passwordSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Set password'**
+  String get passwordSet;
+
+  /// No description provided for @passwordChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get passwordChange;
+
+  /// No description provided for @passwordRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove password'**
+  String get passwordRemove;
+
+  /// No description provided for @passwordSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Password updated.'**
+  String get passwordSaved;
+
+  /// No description provided for @passwordFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Password could not be updated. Check your current password and try again.'**
+  String get passwordFailed;
+
+  /// No description provided for @passwordCleanupFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The new password setting is active, but the old key could not be removed. Restart the app to retry cleanup; if you set a password, use the new password to unlock.'**
+  String get passwordCleanupFailed;
+
+  /// No description provided for @passwordRemoveWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Removing the password allows this device to open the app without it. Continue?'**
+  String get passwordRemoveWarning;
 }
 
 class _AppLocalizationsDelegate

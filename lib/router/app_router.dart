@@ -24,6 +24,7 @@ class AppRoutes {
   static const userGuide = '/user-guide';
   static const about = '/about';
   static const automaticBackup = '/automatic-backup';
+  static const password = '/password';
 }
 
 Route<void> externalAccountRoute(String name) {
@@ -74,6 +75,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     AppRoutes.userGuide => const UserGuideScreen(),
     AppRoutes.about => const AboutScreen(),
     AppRoutes.automaticBackup => const AutomaticBackupScreen(),
+    AppRoutes.password => const PasswordScreen(),
     _ => const TokenListScreen(),
   };
   if (settings.name == AppRoutes.icons) {

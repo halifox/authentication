@@ -862,4 +862,57 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get autoBackupConfigFailed =>
       '无法更改自动备份设置。自动备份已暂停至应用重新启动；请重新选择文件夹和密码，或关闭自动备份。';
+
+  @override
+  String get unlockTitle => '解锁';
+
+  @override
+  String get unlockPassword => '应用密码';
+
+  @override
+  String get unlockButton => '解锁';
+
+  @override
+  String get unlockInvalid => '无法解锁，请检查密码后重试。';
+
+  @override
+  String get unlockUnavailable => '无法安全打开应用，您的数据未被删除。';
+
+  @override
+  String get passwordTitle => '应用密码';
+
+  @override
+  String get passwordIntro =>
+      '应用密码保护用于加密账户密钥的设备密钥。请另存加密备份；丢失密码可能导致无法访问此设备上的账户。';
+
+  @override
+  String get passwordCurrent => '当前密码';
+
+  @override
+  String get passwordNew => '新密码';
+
+  @override
+  String get passwordConfirm => '确认新密码';
+
+  @override
+  String get passwordSet => '设置密码';
+
+  @override
+  String get passwordChange => '更改密码';
+
+  @override
+  String get passwordRemove => '移除密码';
+
+  @override
+  String get passwordSaved => '密码已更新。';
+
+  @override
+  String get passwordFailed => '无法更新密码，请检查当前密码后重试。';
+
+  @override
+  String get passwordCleanupFailed =>
+      '新密码设置已生效，但无法删除旧密钥。请重新启动应用以重试清理；如果设置了密码，请使用新密码解锁。';
+
+  @override
+  String get passwordRemoveWarning => '移除密码后，此设备无需密码即可打开应用。是否继续？';
 }

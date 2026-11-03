@@ -343,5 +343,22 @@
   "screenProtectionUnsupported": "Screen capture protection is available on Android only.",
   "screenProtectionFailure": "Could not apply screen capture protection. Try again before continuing.",
   "screenProtectionRetry": "Try again",
-  "autoBackupConfigFailed": "Could not change automatic backup settings. Automatic backups are paused until you restart the app. Select a folder and password again or turn them off."
+  "autoBackupConfigFailed": "Could not change automatic backup settings. Automatic backups are paused until you restart the app. Select a folder and password again or turn them off.",
+  "unlockTitle": "Unlock",
+  "unlockPassword": "App password",
+  "unlockButton": "Unlock",
+  "unlockInvalid": "Unable to unlock. Check the password and try again.",
+  "unlockUnavailable": "Unable to open the app securely. Your data has not been deleted.",
+  "passwordTitle": "App password",
+  "passwordIntro": "The app password protects the device key used to encrypt account secrets. Keep a separate encrypted backup: losing the password may prevent access to this device’s accounts.",
+  "passwordCurrent": "Current password",
+  "passwordNew": "New password",
+  "passwordConfirm": "Confirm new password",
+  "passwordSet": "Set password",
+  "passwordChange": "Change password",
+  "passwordRemove": "Remove password",
+  "passwordSaved": "Password updated.",
+  "passwordFailed": "Password could not be updated. Check your current password and try again.",
+  "passwordCleanupFailed": "The new password setting is active, but the old key could not be removed. Restart the app to retry cleanup; if you set a password, use the new password to unlock.",
+  "passwordRemoveWarning": "Removing the password allows this device to open the app without it. Continue?"
 }
