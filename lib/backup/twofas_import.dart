@@ -5,10 +5,10 @@ import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/legacy_import.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/category.dart';
+import 'package:authentication/storage/key_derivation.dart'
+    if (dart.library.js_interop) 'package:authentication/storage/key_derivation_web.dart';
 import 'package:base32/base32.dart';
 import 'package:encrypt/encrypt.dart' as enc;
-
-import 'backup_key.dart' if (dart.library.js_interop) 'backup_key_web.dart';
 
 Map<String, dynamic> _readTwoFas(Uint8List bytes) {
   if (bytes.isEmpty || bytes.length > maxBackupBytes) {
@@ -59,7 +59,7 @@ Future<LegacyImport> parseTwoFasBackup(
       if (ciphertext.length < 16 || salt.length != 256 || nonce.length != 12) {
         throw const FormatException();
       }
-      final key = await deriveBackupKey(password, salt, 10000);
+      final key = await derivePbkdf2Key(password, salt, 10000);
       final cipher = enc.Encrypter(
         enc.AES(enc.Key(key), mode: enc.AESMode.gcm),
       );

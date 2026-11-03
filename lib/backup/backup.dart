@@ -6,10 +6,10 @@ import 'package:authentication/otp/category.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/storage/icon_data.dart';
 import 'package:authentication/storage/icon_pack.dart';
+import 'package:authentication/storage/key_derivation.dart'
+    if (dart.library.js_interop) 'package:authentication/storage/key_derivation_web.dart';
 
 import 'package:encrypt/encrypt.dart' as enc;
-
-import 'backup_key.dart' if (dart.library.js_interop) 'backup_key_web.dart';
 
 const _iterations = 600000;
 const maxBackupBytes = 10 * 1024 * 1024;
@@ -115,7 +115,7 @@ class Backup {
       }
       final salt = enc.IV.fromSecureRandom(16);
       final nonce = enc.IV.fromSecureRandom(12);
-      final key = await deriveBackupKey(password, salt.bytes, _iterations);
+      final key = await derivePbkdf2Key(password, salt.bytes, _iterations);
       final cipher = enc.Encrypter(
         enc.AES(enc.Key(key), mode: enc.AESMode.gcm),
       );
@@ -192,7 +192,7 @@ class Backup {
         if (salt.length != 16 || nonce.length != 12) {
           throw const FormatException();
         }
-        final key = await deriveBackupKey(password, salt, _iterations);
+        final key = await derivePbkdf2Key(password, salt, _iterations);
         final cipher = enc.Encrypter(
           enc.AES(enc.Key(key), mode: enc.AESMode.gcm),
         );

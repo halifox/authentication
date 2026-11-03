@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show compute;
 import 'package:pointycastle/export.dart' as pc;
 
 Uint8List _derive(List<Object> args) {
@@ -11,7 +11,7 @@ Uint8List _derive(List<Object> args) {
   return derivator.process(Uint8List.fromList(utf8.encode(args[0] as String)));
 }
 
-Future<Uint8List> deriveBackupKey(
+Future<Uint8List> derivePbkdf2Key(
   String password,
   Uint8List salt,
   int iterations, {

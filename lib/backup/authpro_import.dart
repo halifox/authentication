@@ -6,12 +6,12 @@ import 'package:authentication/backup/legacy_import.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/category.dart';
 import 'package:authentication/storage/icon_data.dart';
+import 'package:authentication/storage/key_derivation.dart'
+    if (dart.library.js_interop) 'package:authentication/storage/key_derivation_web.dart';
 import 'package:base32/base32.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 import 'package:flutter/foundation.dart' show compute;
 import 'package:pointycastle/export.dart' as pc;
-
-import 'backup_key.dart' if (dart.library.js_interop) 'backup_key_web.dart';
 
 const _strong = [
   65,
@@ -106,7 +106,7 @@ Future<Uint8List> decryptAuthpro(Uint8List bytes, {String? password}) async {
     if (bytes.length < 68 || (bytes.length - 52) % 16 != 0) {
       throw const FormatException();
     }
-    final key = await deriveBackupKey(
+    final key = await derivePbkdf2Key(
       password,
       bytes.sublist(16, 36),
       64000,

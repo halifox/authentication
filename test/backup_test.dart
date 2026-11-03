@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:authentication/backup/backup.dart';
-import 'package:authentication/backup/backup_key.dart'
-    if (dart.library.js_interop) 'package:authentication/backup/backup_key_web.dart';
+import 'package:authentication/storage/key_derivation.dart'
+    if (dart.library.js_interop) 'package:authentication/storage/key_derivation_web.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -16,7 +16,7 @@ void main() {
     },
   ];
   test('PBKDF2 matches the native and web interoperability vector', () async {
-    final key = await deriveBackupKey(
+    final key = await derivePbkdf2Key(
       'password',
       Uint8List.fromList(utf8.encode('1234567890123456')),
       600000,

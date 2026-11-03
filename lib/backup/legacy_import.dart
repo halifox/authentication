@@ -4,11 +4,11 @@ import 'dart:typed_data';
 import 'package:authentication/backup/backup.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/category.dart';
+import 'package:authentication/storage/key_derivation.dart'
+    if (dart.library.js_interop) 'package:authentication/storage/key_derivation_web.dart';
 import 'package:base32/base32.dart';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as enc;
-
-import 'backup_key.dart' if (dart.library.js_interop) 'backup_key_web.dart';
 
 enum LegacyBackupFormat { plain, encrypted, encryptedOld }
 
@@ -40,7 +40,7 @@ Future<Uint8List> decryptLegacyBackup(
         if (iterations == 0 || iterations > 1000000) {
           throw const FormatException();
         }
-        key = await deriveBackupKey(
+        key = await derivePbkdf2Key(
           password,
           bytes.sublist(4, 16),
           iterations,

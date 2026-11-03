@@ -15,7 +15,7 @@ extension type _Pbkdf2Params._(JSObject _) implements JSObject {
   });
 }
 
-Future<Uint8List> deriveBackupKey(
+Future<Uint8List> derivePbkdf2Key(
   String password,
   Uint8List salt,
   int iterations, {
