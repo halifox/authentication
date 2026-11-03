@@ -1179,7 +1179,7 @@ abstract class AppLocalizations {
   /// No description provided for @legacyImportWarning.
   ///
   /// In zh, this message translates to:
-  /// **'导入 {count} 个账户？发行方和账户名相同的账户将更新，已有图标、排序、复制次数和分类会保留。来源标签按名称合并为分类；来源图标和使用统计不会导入。'**
+  /// **'导入 {count} 个账户？发行方和账户名相同的账户将更新，已有图标、排序、复制次数和分类会保留。来源分类按名称合并；来源图标和使用统计不会导入。'**
   String legacyImportWarning(int count);
 
   /// No description provided for @legacyImportError.
@@ -1199,6 +1199,18 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'隐藏密码'**
   String get hidePassword;
+
+  /// No description provided for @tokenListImport.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入 FreeOTP+ 备份'**
+  String get tokenListImport;
+
+  /// No description provided for @tokenListImportError.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法导入：请检查明文 JSON 文件。账户、顺序表、密钥、分类和验证码参数必须有效；重复、缺失或不支持的记录会导致整批拒绝。'**
+  String get tokenListImportError;
 }
 
 class _AppLocalizationsDelegate

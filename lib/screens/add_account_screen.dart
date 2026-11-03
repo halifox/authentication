@@ -84,6 +84,11 @@ class AddAccountScreen extends ConsumerWidget {
         () => _handleLegacyImport(context, ref),
       ),
       AddMethodOption(
+        Icons.file_open_outlined,
+        l10n.tokenListImport,
+        () => _handleTokenListImport(context, ref),
+      ),
+      AddMethodOption(
         Icons.list_alt,
         l10n.exportUriList,
         () => _handleUriExport(context, ref),
@@ -402,27 +407,7 @@ class AddAccountScreen extends ConsumerWidget {
       );
       final document = parseLegacyBackup(plaintext);
       if (!context.mounted) return;
-      final proceed = await showCupertinoModalPopup<bool>(
-        context: context,
-        builder: (_) => ActionResultSheet(
-          state: 0,
-          title: l10n.warning,
-          message: l10n.legacyImportWarning(document.accounts.length),
-          falseButtonVisible: true,
-        ),
-      );
-      if (proceed != true || !context.mounted) return;
-      final count = await ref
-          .read(backupOperationsProvider.notifier)
-          .importLegacyAccounts(document);
-      if (context.mounted) {
-        await _showResult(
-          context,
-          1,
-          l10n.importSuccess,
-          l10n.migrationImported(count),
-        );
-      }
+      await _confirmImportedAccounts(context, ref, document);
     } catch (_) {
       if (context.mounted) {
         await _showResult(
@@ -432,6 +417,59 @@ class AddAccountScreen extends ConsumerWidget {
           l10n.legacyImportError,
         );
       }
+    }
+  }
+
+  Future<void> _handleTokenListImport(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final bytes = await ref
+          .read(backupOperationsProvider.notifier)
+          .pickFile();
+      if (bytes == null || !context.mounted) return;
+      final document = parseTokenListBackup(bytes);
+      await _confirmImportedAccounts(context, ref, document);
+    } catch (_) {
+      if (context.mounted) {
+        await _showResult(
+          context,
+          0,
+          l10n.importFailed,
+          l10n.tokenListImportError,
+        );
+      }
+    }
+  }
+
+  Future<void> _confirmImportedAccounts(
+    BuildContext context,
+    WidgetRef ref,
+    LegacyImport document,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final proceed = await showCupertinoModalPopup<bool>(
+      context: context,
+      builder: (_) => ActionResultSheet(
+        state: 0,
+        title: l10n.warning,
+        message: l10n.legacyImportWarning(document.accounts.length),
+        falseButtonVisible: true,
+      ),
+    );
+    if (proceed != true || !context.mounted) return;
+    final count = await ref
+        .read(backupOperationsProvider.notifier)
+        .importLegacyAccounts(document);
+    if (context.mounted) {
+      await _showResult(
+        context,
+        1,
+        l10n.importSuccess,
+        l10n.migrationImported(count),
+      );
     }
   }
 

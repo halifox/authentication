@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:authentication/backup/backup.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/category.dart';
+import 'package:base32/base32.dart';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 
@@ -141,6 +142,142 @@ LegacyImport parseLegacyBackup(Uint8List plaintext) {
     return (
       accounts: accounts,
       categories: categories,
+      memberships: memberships,
+    );
+  } catch (_) {
+    throw const FormatException('Invalid or unsupported backup contents.');
+  }
+}
+
+LegacyImport parseTokenListBackup(Uint8List bytes) {
+  if (bytes.isEmpty || bytes.length > maxBackupBytes) {
+    throw const FormatException('Invalid backup size.');
+  }
+  try {
+    final data = jsonDecode(utf8.decode(bytes));
+    if (data is! Map<String, dynamic> ||
+        data['tokens'] is! List ||
+        data['tokenOrder'] is! List) {
+      throw const FormatException();
+    }
+    final tokens = data['tokens'] as List;
+    final order = data['tokenOrder'] as List;
+    if (tokens.isEmpty ||
+        tokens.length > 10000 ||
+        tokens.length != order.length ||
+        order.any((value) => value is! String)) {
+      throw const FormatException();
+    }
+    final indexed = <String, Map<String, dynamic>>{};
+    for (final item in tokens) {
+      if (item is! Map<String, dynamic>) throw const FormatException();
+      final label = item['label'];
+      final internal = item['issuerInt'];
+      final external = item['issuerExt'];
+      if (label is! String ||
+          (internal != null && internal is! String) ||
+          (external != null && external is! String)) {
+        throw const FormatException();
+      }
+      final issuerId = internal is String && internal.isNotEmpty
+          ? internal
+          : external is String && external.isNotEmpty
+          ? external
+          : null;
+      final id = issuerId == null ? label : '$issuerId:$label';
+      if (indexed.containsKey(id)) throw const FormatException();
+      indexed[id] = item;
+    }
+    final accounts = <OtpAccount>[];
+    final categories = <String>{};
+    final memberships = <(String, String), List<String>>{};
+    final seenOrder = <String>{};
+    final seenAccounts = <(String, String)>{};
+    for (final id in order.cast<String>()) {
+      if (!seenOrder.add(id)) throw const FormatException();
+      final item = indexed[id];
+      if (item == null) throw const FormatException();
+      final altIssuer = item['issuerAlt'];
+      final external = item['issuerExt'];
+      final internal = item['issuerInt'];
+      final altLabel = item['labelAlt'];
+      if ((altIssuer != null && altIssuer is! String) ||
+          (altLabel != null && altLabel is! String)) {
+        throw const FormatException();
+      }
+      final issuer = altIssuer is String && altIssuer.isNotEmpty
+          ? altIssuer
+          : external is String && external.isNotEmpty
+          ? external
+          : internal is String
+          ? internal
+          : '';
+      final label = altLabel is String ? altLabel : item['label'] as String;
+      final typeValue = item['type'];
+      final algorithm = item['algo'] ?? 'SHA1';
+      final secretBytes = item['secret'];
+      final digits = item['digits'];
+      final counter = item['counter'] ?? 0;
+      final period = item['period'] ?? 0;
+      if (typeValue is! String ||
+          algorithm is! String ||
+          secretBytes is! List ||
+          secretBytes.isEmpty ||
+          digits is! int ||
+          counter is! int ||
+          period is! int ||
+          secretBytes.any(
+            (byte) => byte is! int || byte < -128 || byte > 255,
+          )) {
+        throw const FormatException();
+      }
+      if (period <= 0) throw const FormatException();
+      var type = typeValue.toLowerCase();
+      if (!const ['totp', 'hotp'].contains(type)) throw const FormatException();
+      if (issuer == 'Steam') {
+        if (type != 'totp' || algorithm.toLowerCase() != 'sha1') {
+          throw const FormatException();
+        }
+        type = 'steam';
+      }
+      final account = OtpAccount(
+        type: type,
+        issuer: issuer,
+        account: label,
+        secret: base32.encode(
+          Uint8List.fromList(
+            secretBytes.cast<int>().map((byte) => byte & 255).toList(),
+          ),
+        ),
+        algorithm: algorithm.toLowerCase(),
+        digits: digits,
+        counter: counter,
+        period: period,
+      );
+      account.validate();
+      if (!seenAccounts.add((issuer, label))) throw const FormatException();
+      final category = item['category'];
+      if (category != null && category is! String) {
+        throw const FormatException();
+      }
+      final names = <String>[];
+      if (category is String && category.isNotEmpty) {
+        if (validateCategoryName(category) != category) {
+          throw const FormatException();
+        }
+        categories.add(category);
+        names.add(category);
+      }
+      accounts.add(account);
+      memberships[(issuer, label)] = names;
+    }
+    final categoryList = [
+      for (final name in categories) AccountCategory(name: name),
+    ];
+    validateCategories(categoryList);
+    return (
+      accounts: accounts,
+      categories: categoryList,
       memberships: memberships,
     );
   } catch (_) {

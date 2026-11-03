@@ -560,7 +560,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String legacyImportWarning(int count) {
-    return '导入 $count 个账户？发行方和账户名相同的账户将更新，已有图标、排序、复制次数和分类会保留。来源标签按名称合并为分类；来源图标和使用统计不会导入。';
+    return '导入 $count 个账户？发行方和账户名相同的账户将更新，已有图标、排序、复制次数和分类会保留。来源分类按名称合并；来源图标和使用统计不会导入。';
   }
 
   @override
@@ -572,4 +572,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get hidePassword => '隐藏密码';
+
+  @override
+  String get tokenListImport => '导入 FreeOTP+ 备份';
+
+  @override
+  String get tokenListImportError =>
+      '无法导入：请检查明文 JSON 文件。账户、顺序表、密钥、分类和验证码参数必须有效；重复、缺失或不支持的记录会导致整批拒绝。';
 }

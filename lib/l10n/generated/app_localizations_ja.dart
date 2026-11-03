@@ -577,7 +577,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String legacyImportWarning(int count) {
-    return 'Import $count accounts? Matching issuer and account names will be updated; existing icons, order, copy counts, and categories are preserved. Source tags are merged into categories by name; source icons and usage statistics are not imported.';
+    return 'Import $count accounts? Matching issuer and account names will be updated; existing icons, order, copy counts, and categories are preserved. Source categories are merged by name; source icons and usage statistics are not imported.';
   }
 
   @override
@@ -589,4 +589,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get hidePassword => 'Hide password';
+
+  @override
+  String get tokenListImport => 'Import FreeOTP+ backup';
+
+  @override
+  String get tokenListImportError =>
+      'Import failed. Check the plain JSON file. Accounts, order, secrets, categories, and OTP parameters must be valid; duplicates, missing records, or unsupported entries reject the entire file.';
 }

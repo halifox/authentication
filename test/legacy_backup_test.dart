@@ -12,6 +12,7 @@ import 'package:authentication/screens/add_account_screen.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
+import 'package:base32/base32.dart';
 import 'package:drift/native.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -60,6 +61,143 @@ class _MemoryPicker extends FilePickerPlatform {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('token list format validates ordering, signed bytes and metadata', () {
+    Uint8List data(Object value) =>
+        Uint8List.fromList(utf8.encode(jsonEncode(value)));
+    final first = {
+      'issuerInt': 'internal',
+      'issuerExt': 'External',
+      'issuerAlt': 'Displayed',
+      'label': 'raw',
+      'labelAlt': 'shown',
+      'type': 'HOTP',
+      'algo': 'SHA1',
+      'digits': 6,
+      'counter': 7,
+      'period': 30,
+      'secret': [-128, -1, 0, 1, 127],
+      'category': 'Work',
+    };
+    final second = {
+      'issuerExt': 'Other',
+      'label': 'user',
+      'type': 'TOTP',
+      'algo': 'SHA256',
+      'digits': 8,
+      'counter': 0,
+      'period': 60,
+      'secret': [1, 2, 3, 4, 5],
+      'category': '',
+    };
+    final backup = {
+      'tokens': [first, second],
+      'tokenOrder': ['Other:user', 'internal:raw'],
+    };
+    final result = parseTokenListBackup(data(backup));
+    expect(result.accounts.map((account) => account.account), [
+      'user',
+      'shown',
+    ]);
+    expect(result.accounts.last.issuer, 'Displayed');
+    expect(result.accounts.last.counter, 7);
+    expect(base32.decode(result.accounts.last.secret), [128, 255, 0, 1, 127]);
+    expect(result.memberships[('Displayed', 'shown')], ['Work']);
+    expect(
+      () => parseTokenListBackup(
+        data({
+          ...backup,
+          'tokenOrder': ['Other:user', 'missing'],
+        }),
+      ),
+      throwsFormatException,
+    );
+    expect(
+      () => parseTokenListBackup(
+        data({
+          ...backup,
+          'tokenOrder': ['Other:user', 'Other:user'],
+        }),
+      ),
+      throwsFormatException,
+    );
+    expect(
+      () => parseTokenListBackup(
+        data({
+          ...backup,
+          'tokens': [
+            first,
+            {
+              ...second,
+              'secret': [256],
+            },
+          ],
+        }),
+      ),
+      throwsFormatException,
+    );
+  });
+  testWidgets('token list file imports only after confirmation', (
+    tester,
+  ) async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    final json = {
+      'tokens': [
+        {
+          'issuerExt': 'Example',
+          'label': 'user',
+          'type': 'HOTP',
+          'algo': 'SHA1',
+          'digits': 6,
+          'counter': 2,
+          'period': 30,
+          'secret': [1, 2, 3, 4, 5],
+          'category': 'Work',
+        },
+      ],
+      'tokenOrder': ['Example:user'],
+    };
+    final original = FilePickerPlatform.instance;
+    FilePickerPlatform.instance = _MemoryPicker(
+      Uint8List.fromList(utf8.encode(jsonEncode(json))),
+    );
+    addTearDown(() => FilePickerPlatform.instance = original);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          allIconsProvider.overrideWith((ref) async => []),
+        ],
+        child: const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: AddAccountScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Import FreeOTP+ backup'),
+      200,
+      scrollable: find.byType(Scrollable),
+    );
+    await tester.tap(find.text('Import FreeOTP+ backup'));
+    await tester.pumpAndSettle();
+    expect(await db.getAllConfigs(), isEmpty);
+    expect(find.textContaining('Source categories are merged'), findsOneWidget);
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    final account = (await db.getAllConfigs()).single;
+    expect(account.counter, 2);
+    final category = (await db.getCategories()).single;
+    expect(category.name, 'Work');
+    expect((await db.getCategoryMemberships())[account.id], {category.id});
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 10));
+  });
   testWidgets(
     'plain file import requires confirmation before database writes',
     (tester) async {
@@ -111,7 +249,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(
         find.textContaining(
-          'Source tags are merged into categories by name; source icons and usage statistics are not imported.',
+          'Source categories are merged by name; source icons and usage statistics are not imported.',
         ),
         findsOneWidget,
       );

@@ -368,9 +368,11 @@
   "legacyPlain": "明文 JSON",
   "legacyEncrypted": "加密备份（0.6.3 及以上）",
   "legacyEncryptedOld": "旧版加密备份（0.6.2 及以下）",
-  "legacyImportWarning": "导入 {count} 个账户？发行方和账户名相同的账户将更新，已有图标、排序、复制次数和分类会保留。来源标签按名称合并为分类；来源图标和使用统计不会导入。",
+  "legacyImportWarning": "导入 {count} 个账户？发行方和账户名相同的账户将更新，已有图标、排序、复制次数和分类会保留。来源分类按名称合并；来源图标和使用统计不会导入。",
   "legacyImportError": "无法导入：请检查文件、密码和格式。仅支持发行方及账户名均非空的 TOTP、HOTP 和 Steam；重复账户、无效标签或含不支持条目的文件会整批拒绝。",
   "@legacyImportWarning": {"placeholders": {"count": {"type": "int"}}},
   "revealPassword": "显示密码",
-  "hidePassword": "隐藏密码"
+  "hidePassword": "隐藏密码",
+  "tokenListImport": "导入 FreeOTP+ 备份",
+  "tokenListImportError": "无法导入：请检查明文 JSON 文件。账户、顺序表、密钥、分类和验证码参数必须有效；重复、缺失或不支持的记录会导致整批拒绝。"
 }
