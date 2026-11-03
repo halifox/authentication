@@ -3,3 +3,5 @@ https://github.com/beemdevelopment/Aegis/tree/d6f4e5925a97e4e91593f1542085eae034
 
 The encrypted fixture password is `test`. The repository's root LICENSE contains
 the applicable GPL text.
+
+The synthetic PNG and encrypted image-bearing backup come from a public GPL-3.0 test suite; the backup password is `test`.

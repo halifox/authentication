@@ -461,7 +461,7 @@ void main() {
     await tester.tap(find.text('OK'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text('Decrypting backup. Please wait.'), findsOneWidget);
+    expect(find.text('Processing backup. Please wait.'), findsOneWidget);
     expect(await db.getAllConfigs(), isEmpty);
     await tester.runAsync(() async {
       await Future<void>.delayed(const Duration(seconds: 2));
@@ -484,8 +484,14 @@ void main() {
     final db = AppDatabase(NativeDatabase.memory());
     addTearDown(db.close);
     db.encryption = await EncryptionService.initialize(db);
-    final bytes = File('test/fixtures/grouped_backup/grouped-v2.json')
-        .readAsBytesSync();
+    final data = jsonDecode(
+      File('test/fixtures/grouped_backup/grouped-v2.json').readAsStringSync(),
+    ) as Map<String, dynamic>;
+    final entries = (data['db'] as Map<String, dynamic>)['entries'] as List;
+    (entries.first as Map)['icon'] = base64Encode(
+      File('test/fixtures/grouped_backup/icon.png').readAsBytesSync(),
+    );
+    final bytes = Uint8List.fromList(utf8.encode(jsonEncode(data)));
     final original = FilePickerPlatform.instance;
     FilePickerPlatform.instance = _MemoryPicker(bytes);
     addTearDown(() => FilePickerPlatform.instance = original);
@@ -510,6 +516,10 @@ void main() {
       scrollable: find.byType(Scrollable),
     );
     await tester.tap(find.text('Import Aegis backup'));
+    await tester.pump();
+    await tester.runAsync(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+    });
     await tester.pumpAndSettle();
     expect(
       find.textContaining('Source groups merge into categories'),
@@ -518,7 +528,9 @@ void main() {
     expect(await db.getAllConfigs(), isEmpty);
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
-    expect((await db.getAllConfigs()).length, 7);
+    final accounts = await db.getAllConfigs();
+    expect(accounts.length, 7);
+    expect(accounts.where((account) => isCustomIcon(account.icon)).length, 1);
     expect(
       (await db.getCategories()).map((c) => c.name),
       containsAll(['group1', 'group2']),

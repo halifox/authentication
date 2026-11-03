@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:authentication/backup/grouped_import.dart';
 import 'package:authentication/otp/otp.dart';
+import 'package:authentication/storage/icon_data.dart';
 import 'package:base32/base32.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -51,6 +52,37 @@ void main() {
       );
     },
   );
+  test(
+    'rejects independent encrypted backup with unsupported account',
+    () async {
+      final data = await File(
+        'test/fixtures/grouped_backup/icon_encrypted.json',
+      ).readAsBytes();
+      await expectLater(
+        parseGroupedBackup(data, password: 'test'),
+        throwsFormatException,
+      );
+    },
+  );
+
+  test(
+    'imports independent icon image and rejects invalid image data',
+    () async {
+      final bytes = await File('test/fixtures/grouped_backup/plain.json')
+          .readAsBytes();
+      final data = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
+      final entries = (data['db'] as Map<String, dynamic>)['entries'] as List;
+      final image = await File('test/fixtures/grouped_backup/icon.png')
+          .readAsBytes();
+      (entries.first as Map)['icon'] = base64Encode(image);
+      Uint8List encode() => Uint8List.fromList(utf8.encode(jsonEncode(data)));
+      final result = await parseGroupedBackup(encode());
+      expect(validateIcon(result.accounts.first.icon), isNotEmpty);
+      (entries.first as Map)['icon'] = base64Encode([1, 2, 3]);
+      await expectLater(parseGroupedBackup(encode()), throwsFormatException);
+    },
+  );
+
   test('version 2 groups are converted to category memberships', () async {
     final bytes = await File('test/fixtures/grouped_backup/grouped-v2.json')
         .readAsBytes();

@@ -597,7 +597,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String groupedImportWarning(int count) {
-    return '导入 $count 个账户？同名账户将更新，已有分类和账户元数据保留；来源分组按名称合并为分类。来源图标、备注和收藏状态不会导入。';
+    return '导入 $count 个账户？同名账户将更新，已有分类和账户元数据保留；来源分组按名称合并为分类；新账户保留受支持的自定义图片，已有账户图标不变。备注和收藏状态不会导入。';
   }
 
   @override

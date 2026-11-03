@@ -551,12 +551,11 @@ class AddAccountScreen extends ConsumerWidget {
         password = await _passwordDialog(context, export: false);
         if (password == null || !context.mounted) return;
       }
-      final document = password == null
-          ? await parseGroupedBackup(bytes)
-          : await _decryptWithProgress(
-              context,
-              () => parseGroupedBackup(bytes, password: password),
-            );
+      final document = await _decryptWithProgress(
+        context,
+        () => parseGroupedBackupAsync(bytes, password: password),
+        message: l10n.backupProcessing,
+      );
       if (!context.mounted) return;
       await _confirmImportedAccounts(
         context,

@@ -5,6 +5,7 @@ import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/legacy_import.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/category.dart';
+import 'package:authentication/storage/icon_data.dart';
 import 'package:base32/base32.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 import 'package:flutter/foundation.dart' show compute;
@@ -228,7 +229,15 @@ Future<LegacyImport> parseGroupedBackup(
           throw const FormatException();
         }
       }
+      final sourceIcon = entry['icon'];
+      if (sourceIcon != null && sourceIcon is! String) {
+        throw const FormatException();
+      }
+      final icon = sourceIcon == null
+          ? 'assets/icons/passkey.svg'
+          : makeCustomIcon(base64Decode(sourceIcon as String));
       final account = OtpAccount(
+        icon: icon,
         type: type,
         issuer: entry['issuer'] as String,
         account: entry['name'] as String,
@@ -280,3 +289,11 @@ Future<LegacyImport> parseGroupedBackup(
     throw const FormatException('Invalid or unsupported backup contents.');
   }
 }
+
+Future<LegacyImport> _parseGroupedInput((Uint8List, String?) input) =>
+    parseGroupedBackup(input.$1, password: input.$2);
+
+Future<LegacyImport> parseGroupedBackupAsync(
+  Uint8List bytes, {
+  String? password,
+}) => compute(_parseGroupedInput, (bytes, password));
