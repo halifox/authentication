@@ -637,137 +637,145 @@ class AppLocalizationsKo extends AppLocalizations {
       'Import failed. Check the file, password, and account names. Duplicate, invalid, or unsupported records reject the entire file.';
 
   @override
-  String get authproImport => '导入 .authpro 文件';
+  String get authproImport => 'Import .authpro file';
 
   @override
   String authproImportWarning(int count) {
-    return '导入 $count 个账户？同名账户将更新，已有分类和元数据保留，来源分类按名称合并。空账户名使用发行方名称；新账户保留受支持的自定义图片，已有账户图标不变；来源内置图标和分类内顺序不会导入。';
+    return 'Import $count accounts? Matching accounts are updated; existing categories and metadata remain. Source categories are merged. Unnamed accounts use the issuer as their name. New accounts keep supported custom images; existing account icons remain. Source built-in icons and category-specific ordering are not imported.';
   }
 
   @override
-  String get authproImportError => '导入失败。请检查文件、密码及账户参数；无效、重复或不受支持的记录会导致整批拒绝。';
+  String get authproImportError =>
+      'Import failed. Check the file, password, and account parameters. Invalid, duplicate, or unsupported records reject the entire file.';
 
   @override
   String authproLegacyWarning(int count) {
-    return '导入 $count 个账户？同名账户将更新，已有分类和元数据保留，来源分类按名称合并。空账户名使用发行方名称；新账户保留受支持的自定义图片，已有账户图标不变；来源内置图标和分类内顺序不会导入。 此旧版加密无法验证文件完整性。';
+    return 'Import $count accounts? Matching accounts are updated; existing categories and metadata remain. Source categories are merged. Unnamed accounts use the issuer as their name. New accounts keep supported custom images; existing account icons remain. Source built-in icons and category-specific ordering are not imported. This legacy encryption cannot verify file integrity.';
   }
 
   @override
   String pinLengthRequired(int count) {
-    return 'PIN 必须为 $count 个字符';
+    return 'PIN must contain $count characters';
   }
 
   @override
-  String get twoFasImport => '导入 2FAS 备份';
+  String get twoFasImport => 'Import 2FAS backup';
 
   @override
   String twoFasImportWarning(int count) {
-    return '导入 $count 个账户？同名账户将更新，已有元数据保留；分组按名称合并为分类。加密文件中的分组名称没有完整性认证。缺少账户名时使用服务名称；来源图标和显示顺序不会导入。';
+    return 'Import $count accounts? Matching accounts are updated and existing metadata is preserved. Groups merge into categories; group names are not authenticated in encrypted files. Missing account names use the service name. Source icons and display order are not imported.';
   }
 
   @override
-  String get twoFasImportError => '导入失败。请检查文件、密码和账户信息；无效、重复或不受支持的记录会导致整批拒绝。';
+  String get twoFasImportError =>
+      'Import failed. Check the file, password, and account details. Invalid, duplicate, or unsupported entries reject the entire file.';
 
   @override
-  String get lastPassImport => '导入 LastPass Authenticator 备份';
+  String get lastPassImport => 'Import LastPass Authenticator backup';
 
   @override
   String lastPassImportWarning(int count) {
-    return '导入 $count 个账户？同名账户将更新，已有元数据保留；文件夹按名称合并为分类。缺少发行方或账户名时使用另一个名称；来源收藏、图标及文件夹内顺序不会导入。';
+    return 'Import $count accounts? Matching accounts are updated; existing metadata remains. Folders merge into categories. Missing issuer or account names use the other name. Source favorites, icons and folder ordering are not imported.';
   }
 
   @override
   String get lastPassImportError =>
-      '导入失败。仅支持版本 3 和受支持的 6–10 位账户；无效、重复或不受支持的记录会导致整批拒绝。';
+      'Import failed. Only version 3 files with supported 6–10 digit accounts can be imported. Invalid, duplicate or unsupported entries reject the entire file.';
 
   @override
-  String get winAuthImport => '导入 WinAuth 备份';
+  String get winAuthImport => 'Import WinAuth backup';
 
   @override
   String winAuthImportWarning(int count) {
-    return '导入 $count 个账户？同名账户将更新，已有元数据保留。缺少发行方或账户名时使用另一个名称；来源图标和其他元数据不会导入。旧版 ZIP 加密使用 CRC，无法验证文件的密码学完整性。';
+    return 'Import $count accounts? Matching accounts are updated and existing metadata is preserved. Missing issuer or account names use the other name. Source icons and other metadata are not imported. Older ZIP encryption uses CRC and cannot authenticate file integrity.';
   }
 
   @override
-  String get winAuthImportError => '导入失败。请检查文件、密码和账户信息；不支持、无效或重复的记录会导致整批拒绝。';
+  String get winAuthImportError =>
+      'Import failed. Check the file, password and account details. Unsupported, invalid or duplicate entries reject the entire file.';
 
   @override
-  String get totpAuthImport => '导入 TOTP Authenticator 备份';
+  String get totpAuthImport => 'Import TOTP Authenticator backup';
 
   @override
   String totpAuthImportWarning(int count) {
-    return '导入 $count 个账户？同名账户将更新，已有元数据保留。缺少发行方或账户名时使用另一个名称；来源图标和其他元数据不会导入。此旧加密格式无法验证文件完整性。';
+    return 'Import $count accounts? Matching accounts are updated and existing metadata is preserved. Missing issuer or account names use the other name. Source icons and other metadata are not imported. This older encryption cannot authenticate file integrity.';
   }
 
   @override
-  String get totpAuthImportError => '导入失败。请检查密码和账户信息；无效、重复或不受支持的记录会导致整批拒绝。';
+  String get totpAuthImportError =>
+      'Import failed. Check the password and account details. Invalid, duplicate or unsupported records reject the entire file.';
 
   @override
-  String get chooseCustomIcon => '选择图片';
+  String get chooseCustomIcon => 'Choose image';
 
   @override
-  String get invalidCustomIcon => '请选择有效的 PNG 或 JPEG 图片，边长不得超过 4096 像素。';
+  String get invalidCustomIcon =>
+      'Choose a valid PNG or JPEG image up to 4096 pixels per side.';
 
   @override
-  String get backupProcessing => '正在处理备份，请稍候。';
+  String get backupProcessing => 'Processing backup. Please wait.';
 
   @override
-  String get importIconPack => '导入图标包';
+  String get importIconPack => 'Import icon pack';
 
   @override
-  String get iconLoadError => '无法加载图标。';
+  String get iconLoadError => 'Could not load icons.';
 
   @override
   String iconPackImportConfirm(String name, int count) {
-    return '导入包含 $count 个图标的“$name”？同名图标包将被替换。';
+    return 'Import “$name” with $count icons? An existing pack with the same name will be replaced.';
   }
 
   @override
-  String get iconPackImported => '图标包已导入。';
+  String get iconPackImported => 'Icon pack imported.';
 
   @override
-  String get iconPackError => '无法处理图标包，请检查文件格式和图片。';
+  String get iconPackError =>
+      'Could not process the icon pack. Check its format and images.';
 
   @override
   String iconPackDeleteConfirm(String name) {
-    return '删除“$name”？已分配给账户的图标会保留。';
+    return 'Delete “$name”? Icons already assigned to accounts will remain.';
   }
 
   @override
-  String get freeOtpImport => '导入 FreeOTP 备份';
+  String get freeOtpImport => 'Import FreeOTP backup';
 
   @override
   String freeOtpImportWarning(int count) {
-    return '导入 $count 个账户？同名账户将更新，已有元数据保留；缺少发行方时使用账户标签。来源图标和排序不会导入。';
+    return 'Import $count accounts? Matching accounts are updated and existing metadata is preserved. Missing issuers use the account label; source icons and ordering are not imported.';
   }
 
   @override
-  String get freeOtpImportError => '导入失败。请检查密码和备份文件；不支持、无效或重复的记录会导致整批拒绝。';
+  String get freeOtpImportError =>
+      'Import failed. Check the password and backup. Unsupported, invalid or duplicate records reject the entire file.';
 
   @override
   String importAccountCounts(int newCount, int updateCount) {
-    return '新增账户：$newCount 个；更新已有账户：$updateCount 个。';
+    return 'New accounts: $newCount. Existing accounts to update: $updateCount.';
   }
 
   @override
-  String get importPreviewExpired => '账户或设置已更改，请重新选择文件并确认更新后的数量。';
+  String get importPreviewExpired =>
+      'Accounts or settings changed. Select the file again to review the updated counts.';
 
   @override
-  String get migrationGuides => '迁移指南';
+  String get migrationGuides => 'Migration guides';
 
   @override
   String get migrationGuideIntro =>
-      '以下指南说明需要在各服务中完成的操作，不会自动导入账户。在新设置验证成功前，请保留现有登录方式和恢复选项。';
+      'These guides explain steps performed with each service. They do not import accounts automatically. Keep your existing access and recovery options until the new setup works.';
 
   @override
   String get authyGuide =>
-      'Authy 不提供令牌导出。请对每个服务分别操作：\n\n1. 使用现有验证方式登录该服务。\n2. 在该服务的安全设置中关闭双重验证，然后重新启用。\n3. 使用本应用扫描新二维码，或手动输入新的设置密钥。\n4. 使用新验证码完成服务端验证后，再移除旧条目。\n\n不同服务的恢复方式可能不同；无法登录时请联系对应服务的支持。\n\n官方帮助：https://help.twilio.com/hc/en-us/articles/19753420684059-Export-or-Import-Tokens-in-the-Authy-app-Not-Supported';
+      'Authy does not provide token export. For each service:\n\n1. Sign in using your existing verification method.\n2. In that service’s security settings, turn off two-factor authentication and enable it again.\n3. Scan the new QR code in this app, or enter the new setup key manually.\n4. Verify a new code with the service before removing the old entry.\n\nServices may offer different recovery options. If you cannot sign in, contact that service’s support.\n\nOfficial help: https://help.twilio.com/hc/en-us/articles/19753420684059-Export-or-Import-Tokens-in-the-Authy-app-Not-Supported';
 
   @override
   String get steamGuide =>
-      'Steam 官方迁移会将移动验证器转移到新设备的 Steam 应用，不会向本应用导出密钥。\n\n1. 在新手机安装 Steam Mobile 并登录。\n2. 在 Steam Guard 页面选择转移验证器（Move Authenticator），按提示完成确认。\n3. 妥善保存新的恢复代码。无法使用旧设备时，请按 Steam 的恢复说明操作或联系 Steam 支持。\n\n如果已拥有兼容密钥，本应用可以生成 Steam 验证码；本指南不会提取密钥。官方迁移可能导致暂时的交易限制。\n\n官方帮助：https://help.steampowered.com/en/faqs/view/29A9-9EEE-09F0-75F9';
+      'Steam’s official transfer moves its mobile authenticator to the Steam app on a new device; it does not export its secret to this app.\n\n1. Install Steam Mobile on the new phone and sign in.\n2. On the Steam Guard screen, choose Move Authenticator and follow the confirmation steps.\n3. Store the new recovery code safely. If the old device is unavailable, follow Steam’s recovery instructions or contact Steam Support.\n\nThis app can generate Steam codes if you already have a compatible secret, but this guide does not retrieve one. Steam’s official transfer may impose temporary trading restrictions.\n\nOfficial help: https://help.steampowered.com/en/faqs/view/29A9-9EEE-09F0-75F9';
 
   @override
   String get blizzardGuide =>
-      'Blizzard 账户验证通过其官方移动应用管理，本指南不会提取或导入密钥。\n\n1. 保留现有验证器和恢复信息。\n2. 在新设备登录官方应用，按提示设置或恢复验证器。\n3. 无法批准登录或恢复访问时，请先通过 Blizzard 支持的账户恢复流程处理，再移除旧验证器。\n\n操作前请查看服务提供方的最新说明：https://us.support.blizzard.com/';
+      'Blizzard account authentication is managed through its official mobile app. This guide does not extract or import its secret.\n\n1. Keep your existing authenticator and recovery information available.\n2. On the new device, sign in to the official app and follow its authenticator setup or recovery prompts.\n3. If you cannot approve the sign-in or restore access, use Blizzard Support’s account recovery process before removing the old authenticator.\n\nCheck the provider’s current instructions before making changes: https://us.support.blizzard.com/';
 }

@@ -6,6 +6,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() {
+  test('untranslated guide text falls back to English', () {
+    final english = lookupAppLocalizations(const Locale('en'));
+    for (final language in ['de', 'es', 'fr', 'it', 'ja', 'ko', 'pt', 'ru']) {
+      final localized = lookupAppLocalizations(Locale(language));
+      expect(localized.migrationGuides, english.migrationGuides);
+      expect(localized.migrationGuideIntro, english.migrationGuideIntro);
+      expect(localized.authyGuide, english.authyGuide);
+    }
+    expect(lookupAppLocalizations(const Locale('de')).add, 'Hinzufügen');
+  });
+
   testWidgets('guides explain manual steps without importing accounts', (
     tester,
   ) async {

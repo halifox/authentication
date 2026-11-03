@@ -116,1376 +116,1376 @@ abstract class AppLocalizations {
 
   /// 应用程序主标题，显示在应用栏和应用名称
   ///
-  /// In zh, this message translates to:
+  /// In en, this message translates to:
   /// **'Authentication'**
   String get appTitle;
 
   /// 主界面添加新认证器的浮动操作按钮文本
   ///
-  /// In zh, this message translates to:
-  /// **'添加'**
+  /// In en, this message translates to:
+  /// **'Add'**
   String get add;
 
   /// 添加页面扫描二维码的操作按钮文本
   ///
-  /// In zh, this message translates to:
-  /// **'扫描'**
+  /// In en, this message translates to:
+  /// **'Scan'**
   String get scan;
 
   /// 主界面底部导航栏设置选项卡标签
   ///
-  /// In zh, this message translates to:
-  /// **'设置'**
+  /// In en, this message translates to:
+  /// **'Settings'**
   String get settings;
 
   /// 扫描页面的页面标题，指引用户扫描二维码
   ///
-  /// In zh, this message translates to:
-  /// **'扫描二维码'**
+  /// In en, this message translates to:
+  /// **'Scan QR Code'**
   String get scanQRCode;
 
   /// 手动输入页面密钥字段的标签，用于输入认证器的密钥
   ///
-  /// In zh, this message translates to:
-  /// **'密钥'**
+  /// In en, this message translates to:
+  /// **'Secret'**
   String get secret;
 
   /// 认证器配置页面算法选择字段的标签
   ///
-  /// In zh, this message translates to:
-  /// **'算法'**
+  /// In en, this message translates to:
+  /// **'Algorithm'**
   String get algorithm;
 
   /// 认证器配置页面代码位数选择字段的标签
   ///
-  /// In zh, this message translates to:
-  /// **'位数'**
+  /// In en, this message translates to:
+  /// **'Digits'**
   String get digits;
 
   /// 对话框和表单中取消操作的按钮文本
   ///
-  /// In zh, this message translates to:
-  /// **'取消'**
+  /// In en, this message translates to:
+  /// **'Cancel'**
   String get cancel;
 
   /// 认证器项目滑动操作中删除按钮的文本
   ///
-  /// In zh, this message translates to:
-  /// **'删除'**
+  /// In en, this message translates to:
+  /// **'Delete'**
   String get delete;
 
   /// 认证器项目滑动操作中编辑按钮的文本
   ///
-  /// In zh, this message translates to:
-  /// **'编辑'**
+  /// In en, this message translates to:
+  /// **'Edit'**
   String get edit;
 
   /// 对话框和确认弹窗中确认操作的按钮文本
   ///
-  /// In zh, this message translates to:
-  /// **'确定'**
+  /// In en, this message translates to:
+  /// **'OK'**
   String get ok;
 
   /// 复制验证码后显示的成功提示消息
   ///
-  /// In zh, this message translates to:
-  /// **'代码已复制'**
+  /// In en, this message translates to:
+  /// **'Code Copied'**
   String get codeCopied;
 
   /// 成功操作结果弹窗的标题
   ///
-  /// In zh, this message translates to:
-  /// **'提示'**
+  /// In en, this message translates to:
+  /// **'Tip'**
   String get tip;
 
   /// 警告类型结果弹窗的标题
   ///
-  /// In zh, this message translates to:
-  /// **'警告'**
+  /// In en, this message translates to:
+  /// **'Warning'**
   String get warning;
 
   /// 数据导入操作失败时的结果弹窗标题
   ///
-  /// In zh, this message translates to:
-  /// **'导入失败'**
+  /// In en, this message translates to:
+  /// **'Import Failed'**
   String get importFailed;
 
   /// 数据导入操作成功时的结果弹窗标题
   ///
-  /// In zh, this message translates to:
-  /// **'导入成功'**
+  /// In en, this message translates to:
+  /// **'Import Successful'**
   String get importSuccess;
 
   /// 数据导出操作成功时的结果弹窗标题
   ///
-  /// In zh, this message translates to:
-  /// **'导出成功'**
+  /// In en, this message translates to:
+  /// **'Export Successful'**
   String get exportSuccess;
 
   /// 成功添加新认证器后的成功提示消息
   ///
-  /// In zh, this message translates to:
-  /// **'添加成功'**
+  /// In en, this message translates to:
+  /// **'Added Successfully'**
   String get addSuccess;
 
   /// 成功更新认证器配置后的成功提示消息
   ///
-  /// In zh, this message translates to:
-  /// **'更新成功'**
+  /// In en, this message translates to:
+  /// **'Updated Successfully'**
   String get updateSuccess;
 
   /// 保存认证器配置失败时的错误弹窗标题
   ///
-  /// In zh, this message translates to:
-  /// **'保存失败'**
+  /// In en, this message translates to:
+  /// **'Save Failed'**
   String get saveFailed;
 
   /// 当前平台不支持某功能时的错误提示消息
   ///
-  /// In zh, this message translates to:
-  /// **'该功能当前仅支持 Android 和 iOS 平台。'**
+  /// In en, this message translates to:
+  /// **'This feature is currently only supported on Android and iOS platforms.'**
   String get platformNotSupported;
 
   /// 扫描到不支持的二维码格式时的错误提示消息
   ///
-  /// In zh, this message translates to:
-  /// **'不支持此类型的二维码'**
+  /// In en, this message translates to:
+  /// **'This type of QR code is not supported.'**
   String get unsupportedQRCode;
 
   /// 添加已存在的认证器时询问是否覆盖的确认对话框消息
   ///
-  /// In zh, this message translates to:
-  /// **'令牌{issuer}:{account}已存在，是否覆盖？'**
+  /// In en, this message translates to:
+  /// **'Token {issuer}:{account} already exists. Do you want to overwrite it?'**
   String tokenExists(String issuer, String account);
 
   /// 删除认证器前显示的安全警告消息，提醒用户注意风险
   ///
-  /// In zh, this message translates to:
-  /// **'您即将删除当前的两步验证器。\n此操作将使您无法使用该验证器进行身份验证。\n请确保您已准备好其他身份验证方式以保障账户安全。'**
+  /// In en, this message translates to:
+  /// **'You are about to delete the current two-factor authenticator.\nThis action will prevent you from using this authenticator for authentication.\nPlease make sure you have other authentication methods ready to ensure account security.'**
   String get deleteWarning;
 
   /// 添加页面通过上传图片导入二维码的选项按钮文本
   ///
-  /// In zh, this message translates to:
-  /// **'导入二维码'**
+  /// In en, this message translates to:
+  /// **'Import QR Code'**
   String get uploadQRCode;
 
   /// 添加页面手动输入密钥的选项按钮文本
   ///
-  /// In zh, this message translates to:
-  /// **'输入密钥'**
+  /// In en, this message translates to:
+  /// **'Enter Secret Code'**
   String get enterKey;
 
   /// 手动配置认证器页面的页面标题
   ///
-  /// In zh, this message translates to:
-  /// **'输入密钥'**
+  /// In en, this message translates to:
+  /// **'Enter Secret Key'**
   String get enterProvidedKey;
 
   /// 认证器配置页面选择认证器类型的字段标签
   ///
-  /// In zh, this message translates to:
-  /// **'类型'**
+  /// In en, this message translates to:
+  /// **'Type'**
   String get type;
 
   /// 认证器配置页面发行方名称的输入字段标签
   ///
-  /// In zh, this message translates to:
-  /// **'发行方'**
+  /// In en, this message translates to:
+  /// **'Issuer'**
   String get issuer;
 
   /// 认证器配置页面账户名称的输入字段标签
   ///
-  /// In zh, this message translates to:
-  /// **'用户名'**
+  /// In en, this message translates to:
+  /// **'Account'**
   String get account;
 
   /// mOTP类型认证器配置页面PIN码的输入字段标签
   ///
-  /// In zh, this message translates to:
-  /// **'PIN码'**
+  /// In en, this message translates to:
+  /// **'PIN Code'**
   String get pin;
 
   /// TOTP类型认证器配置页面时间间隔的输入字段标签
   ///
-  /// In zh, this message translates to:
-  /// **'时间间隔(秒)'**
+  /// In en, this message translates to:
+  /// **'Period (seconds)'**
   String get period;
 
   /// HOTP类型认证器配置页面计数器的输入字段标签
   ///
-  /// In zh, this message translates to:
-  /// **'计数器'**
+  /// In en, this message translates to:
+  /// **'Counter'**
   String get counter;
 
   /// 认证器类型选择器中TOTP选项的显示文本
   ///
-  /// In zh, this message translates to:
-  /// **'TOTP（基于时间）'**
+  /// In en, this message translates to:
+  /// **'TOTP (Time-based)'**
   String get totp;
 
   /// 认证器类型选择器中HOTP选项的显示文本
   ///
-  /// In zh, this message translates to:
-  /// **'HOTP（基于计数器）'**
+  /// In en, this message translates to:
+  /// **'HOTP (Counter-based)'**
   String get hotp;
 
   /// 认证器类型选择器中mOTP选项的显示文本
   ///
-  /// In zh, this message translates to:
-  /// **'mOTP（Mobile-OTP）'**
+  /// In en, this message translates to:
+  /// **'mOTP (Mobile-OTP)'**
   String get motp;
 
   /// 设置页面控制点击验证码时显示/隐藏的选项文本
   ///
-  /// In zh, this message translates to:
-  /// **'轻触显示代码'**
+  /// In en, this message translates to:
+  /// **'Tap to Reveal Code'**
   String get showCaptchaOnTap;
 
   /// 设置页面控制点击验证码时自动复制的选项文本
   ///
-  /// In zh, this message translates to:
-  /// **'轻触复制代码'**
+  /// In en, this message translates to:
+  /// **'Tap to Copy Code'**
   String get copyCaptchaOnTap;
 
   /// 算法选择器中SHA1加密算法选项的显示文本
   ///
-  /// In zh, this message translates to:
+  /// In en, this message translates to:
   /// **'SHA1'**
   String get sha1;
 
   /// 算法选择器中SHA256加密算法选项的显示文本
   ///
-  /// In zh, this message translates to:
+  /// In en, this message translates to:
   /// **'SHA256'**
   String get sha256;
 
   /// 算法选择器中SHA512加密算法选项的显示文本
   ///
-  /// In zh, this message translates to:
+  /// In en, this message translates to:
   /// **'SHA512'**
   String get sha512;
 
   /// 图标选择器页面的页面标题
   ///
-  /// In zh, this message translates to:
-  /// **'选择图标'**
+  /// In en, this message translates to:
+  /// **'Select Icon'**
   String get selectIcon;
 
   /// 密钥格式不正确时的表单验证错误消息
   ///
-  /// In zh, this message translates to:
-  /// **'无效的密钥'**
+  /// In en, this message translates to:
+  /// **'Invalid secret'**
   String get invalidSecret;
 
   /// 模态对话框和弹窗中关闭按钮的文本
   ///
-  /// In zh, this message translates to:
-  /// **'关闭'**
+  /// In en, this message translates to:
+  /// **'Dismiss'**
   String get dismiss;
 
   /// 二维码URL格式不正确时的验证错误消息
   ///
-  /// In zh, this message translates to:
-  /// **'非法的scheme'**
+  /// In en, this message translates to:
+  /// **'Invalid scheme'**
   String get invalidScheme;
 
   /// 认证器类型参数无效时的验证错误消息
   ///
-  /// In zh, this message translates to:
-  /// **'非法的类型'**
+  /// In en, this message translates to:
+  /// **'Invalid type'**
   String get invalidType;
 
   /// 发行方字段为空时的表单验证错误消息
   ///
-  /// In zh, this message translates to:
-  /// **'发行方不能为空'**
+  /// In en, this message translates to:
+  /// **'Issuer cannot be empty'**
   String get issuerCannotBeEmpty;
 
   /// 用户名字段为空时的表单验证错误消息
   ///
-  /// In zh, this message translates to:
-  /// **'用户名不能为空'**
+  /// In en, this message translates to:
+  /// **'Account cannot be empty'**
   String get accountCannotBeEmpty;
 
   /// 加密算法参数无效时的验证错误消息
   ///
-  /// In zh, this message translates to:
-  /// **'非法的算法'**
+  /// In en, this message translates to:
+  /// **'Invalid algorithm'**
   String get invalidAlgorithm;
 
   /// 验证码位数参数无效时的验证错误消息
   ///
-  /// In zh, this message translates to:
-  /// **'非法的位数'**
+  /// In en, this message translates to:
+  /// **'Invalid digits'**
   String get invalidDigits;
 
   /// TOTP时间间隔参数无效时的验证错误消息
   ///
-  /// In zh, this message translates to:
-  /// **'非法的时间间隔'**
+  /// In en, this message translates to:
+  /// **'Invalid period'**
   String get invalidPeriod;
 
   /// HOTP计数器参数无效时的验证错误消息
   ///
-  /// In zh, this message translates to:
-  /// **'非法的计数器'**
+  /// In en, this message translates to:
+  /// **'Invalid counter'**
   String get invalidCounter;
 
   /// mOTP的PIN码参数无效时的验证错误消息
   ///
-  /// In zh, this message translates to:
-  /// **'非法的PIN码'**
+  /// In en, this message translates to:
+  /// **'Invalid PIN code'**
   String get invalidPin;
 
   /// 密钥参数无效或格式错误时的验证错误消息
   ///
-  /// In zh, this message translates to:
-  /// **'非法的密钥'**
+  /// In en, this message translates to:
+  /// **'Invalid secret key'**
   String get invalidSecretKey;
 
   /// 主页列表为空时显示的提示文本
   ///
-  /// In zh, this message translates to:
-  /// **'暂无数据'**
+  /// In en, this message translates to:
+  /// **'No data'**
   String get noData;
 
   /// 搜索框的提示文本或标签
   ///
-  /// In zh, this message translates to:
-  /// **'搜索'**
+  /// In en, this message translates to:
+  /// **'Search'**
   String get search;
 
   /// 导出失败标题
   ///
-  /// In zh, this message translates to:
-  /// **'导出失败'**
+  /// In en, this message translates to:
+  /// **'Export Failed'**
   String get exportFailed;
 
   /// 没有数据可导出时的提示
   ///
-  /// In zh, this message translates to:
-  /// **'没有可导出的数据'**
+  /// In en, this message translates to:
+  /// **'No data available to export'**
   String get noDataToExport;
 
   /// No description provided for @importFile.
   ///
-  /// In zh, this message translates to:
-  /// **'从文件导入'**
+  /// In en, this message translates to:
+  /// **'Import file'**
   String get importFile;
 
   /// No description provided for @exportFile.
   ///
-  /// In zh, this message translates to:
-  /// **'导出到文件'**
+  /// In en, this message translates to:
+  /// **'Export file'**
   String get exportFile;
 
   /// No description provided for @backupPasswordTitle.
   ///
-  /// In zh, this message translates to:
-  /// **'备份密码'**
+  /// In en, this message translates to:
+  /// **'Backup password'**
   String get backupPasswordTitle;
 
   /// No description provided for @backupPasswordHint.
   ///
-  /// In zh, this message translates to:
-  /// **'留空则导出未加密文件'**
+  /// In en, this message translates to:
+  /// **'Leave empty for an unencrypted file'**
   String get backupPasswordHint;
 
   /// No description provided for @backupPasswordRequired.
   ///
-  /// In zh, this message translates to:
-  /// **'请输入备份密码'**
+  /// In en, this message translates to:
+  /// **'Enter backup password'**
   String get backupPasswordRequired;
 
   /// No description provided for @backupPasswordConfirm.
   ///
-  /// In zh, this message translates to:
-  /// **'确认密码'**
+  /// In en, this message translates to:
+  /// **'Confirm password'**
   String get backupPasswordConfirm;
 
   /// No description provided for @backupPasswordMismatch.
   ///
-  /// In zh, this message translates to:
-  /// **'两次输入的密码不一致'**
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
   String get backupPasswordMismatch;
 
   /// No description provided for @backupPlainWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'不设置密码时，文件会明文包含所有密钥。请安全保管。'**
+  /// In en, this message translates to:
+  /// **'Without a password, this file contains all your secret keys in plain text. Keep it in a safe place.'**
   String get backupPlainWarning;
 
   /// No description provided for @backupReplaceWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'导入将覆盖发行者和账户名相同的条目。是否继续？'**
+  /// In en, this message translates to:
+  /// **'Importing replaces accounts with the same issuer and account name. Continue?'**
   String get backupReplaceWarning;
 
   /// No description provided for @backupFileTooLarge.
   ///
-  /// In zh, this message translates to:
-  /// **'备份文件过大。'**
+  /// In en, this message translates to:
+  /// **'The backup file is too large.'**
   String get backupFileTooLarge;
 
   /// No description provided for @backupFileError.
   ///
-  /// In zh, this message translates to:
-  /// **'无法导入文件，请检查密码和文件内容。'**
+  /// In en, this message translates to:
+  /// **'The file could not be imported. Check the password and file contents.'**
   String get backupFileError;
 
   /// No description provided for @backupSaved.
   ///
-  /// In zh, this message translates to:
-  /// **'备份文件已保存。'**
+  /// In en, this message translates to:
+  /// **'Backup file saved.'**
   String get backupSaved;
 
   /// No description provided for @backupImported.
   ///
-  /// In zh, this message translates to:
-  /// **'备份文件已导入。'**
+  /// In en, this message translates to:
+  /// **'Backup file imported.'**
   String get backupImported;
 
   /// No description provided for @backupDownloadStarted.
   ///
-  /// In zh, this message translates to:
-  /// **'已请求浏览器下载备份文件。请确认下载完成。'**
+  /// In en, this message translates to:
+  /// **'The browser was asked to download the backup. Check that the download completed.'**
   String get backupDownloadStarted;
 
   /// No description provided for @importUriList.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 URI 列表'**
+  /// In en, this message translates to:
+  /// **'Import URI list'**
   String get importUriList;
 
   /// No description provided for @exportUriList.
   ///
-  /// In zh, this message translates to:
-  /// **'导出 URI 列表'**
+  /// In en, this message translates to:
+  /// **'Export URI list'**
   String get exportUriList;
 
   /// No description provided for @uriPlainWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'此文件明文包含账户密钥。任何取得文件的人都可以生成验证码，请安全保管。'**
+  /// In en, this message translates to:
+  /// **'This file contains account secrets in plain text. Anyone with the file can generate your codes. Store it securely.'**
   String get uriPlainWarning;
 
   /// No description provided for @clearSearch.
   ///
-  /// In zh, this message translates to:
-  /// **'清除搜索'**
+  /// In en, this message translates to:
+  /// **'Clear search'**
   String get clearSearch;
 
   /// No description provided for @noSearchResults.
   ///
-  /// In zh, this message translates to:
-  /// **'没有匹配的账户'**
+  /// In en, this message translates to:
+  /// **'No matching accounts'**
   String get noSearchResults;
 
   /// No description provided for @settingsLoadError.
   ///
-  /// In zh, this message translates to:
-  /// **'无法加载设置。'**
+  /// In en, this message translates to:
+  /// **'Settings could not be loaded.'**
   String get settingsLoadError;
 
   /// No description provided for @backupSettingsWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'发行者和账户名相同的条目将被更新。若备份包含分类和设置，将按名称合并分类、替换导入账户的分类，并恢复设置和默认分类。同名图标包将被替换。是否继续？'**
+  /// In en, this message translates to:
+  /// **'Accounts with the same issuer and account name will be updated. If included, categories will be merged by name, memberships for imported accounts replaced, settings and default category restored, and same-name icon packs replaced. Continue?'**
   String get backupSettingsWarning;
 
   /// No description provided for @showAccountName.
   ///
-  /// In zh, this message translates to:
-  /// **'显示账户名'**
+  /// In en, this message translates to:
+  /// **'Show account name'**
   String get showAccountName;
 
   /// No description provided for @hideCodeAfter.
   ///
-  /// In zh, this message translates to:
-  /// **'显示后自动隐藏验证码'**
+  /// In en, this message translates to:
+  /// **'Automatically hide revealed codes'**
   String get hideCodeAfter;
 
   /// No description provided for @never.
   ///
-  /// In zh, this message translates to:
-  /// **'从不'**
+  /// In en, this message translates to:
+  /// **'Never'**
   String get never;
 
   /// No description provided for @seconds.
   ///
-  /// In zh, this message translates to:
-  /// **'{count} 秒'**
+  /// In en, this message translates to:
+  /// **'{count} seconds'**
   String seconds(int count);
 
   /// No description provided for @advanceHotpOnCopy.
   ///
-  /// In zh, this message translates to:
-  /// **'复制后前进 HOTP 计数器'**
+  /// In en, this message translates to:
+  /// **'Advance HOTP after copying'**
   String get advanceHotpOnCopy;
 
   /// No description provided for @resetCopyCount.
   ///
-  /// In zh, this message translates to:
-  /// **'重置复制次数'**
+  /// In en, this message translates to:
+  /// **'Reset copy count'**
   String get resetCopyCount;
 
   /// No description provided for @resetCopyCountWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'重置此账户的复制次数？'**
+  /// In en, this message translates to:
+  /// **'Reset this account’s copy count?'**
   String get resetCopyCountWarning;
 
   /// No description provided for @copyCount.
   ///
-  /// In zh, this message translates to:
-  /// **'复制次数：{count}'**
+  /// In en, this message translates to:
+  /// **'Copies: {count}'**
   String copyCount(int count);
 
   /// No description provided for @copyFailed.
   ///
-  /// In zh, this message translates to:
-  /// **'无法复制验证码。'**
+  /// In en, this message translates to:
+  /// **'Could not copy the code.'**
   String get copyFailed;
 
   /// No description provided for @copyRecordFailed.
   ///
-  /// In zh, this message translates to:
-  /// **'验证码已复制，但无法更新复制次数或 HOTP 计数器。再次复制前请检查账户。'**
+  /// In en, this message translates to:
+  /// **'Code copied, but the count or HOTP counter could not be updated. Check the account before copying again.'**
   String get copyRecordFailed;
 
   /// No description provided for @sortAccounts.
   ///
-  /// In zh, this message translates to:
-  /// **'账户排序'**
+  /// In en, this message translates to:
+  /// **'Sort accounts'**
   String get sortAccounts;
 
   /// No description provided for @sortCustom.
   ///
-  /// In zh, this message translates to:
-  /// **'自定义顺序'**
+  /// In en, this message translates to:
+  /// **'Custom order'**
   String get sortCustom;
 
   /// No description provided for @sortNameAscending.
   ///
-  /// In zh, this message translates to:
-  /// **'名称升序'**
+  /// In en, this message translates to:
+  /// **'Name A–Z'**
   String get sortNameAscending;
 
   /// No description provided for @sortNameDescending.
   ///
-  /// In zh, this message translates to:
-  /// **'名称降序'**
+  /// In en, this message translates to:
+  /// **'Name Z–A'**
   String get sortNameDescending;
 
   /// No description provided for @sortCopiesAscending.
   ///
-  /// In zh, this message translates to:
-  /// **'复制次数升序'**
+  /// In en, this message translates to:
+  /// **'Fewest copies'**
   String get sortCopiesAscending;
 
   /// No description provided for @sortCopiesDescending.
   ///
-  /// In zh, this message translates to:
-  /// **'复制次数降序'**
+  /// In en, this message translates to:
+  /// **'Most copies'**
   String get sortCopiesDescending;
 
   /// No description provided for @lockSorting.
   ///
-  /// In zh, this message translates to:
-  /// **'锁定自定义顺序'**
+  /// In en, this message translates to:
+  /// **'Lock custom order'**
   String get lockSorting;
 
   /// No description provided for @unlockSorting.
   ///
-  /// In zh, this message translates to:
-  /// **'解锁自定义顺序'**
+  /// In en, this message translates to:
+  /// **'Unlock custom order'**
   String get unlockSorting;
 
   /// No description provided for @clearSearchToReorder.
   ///
-  /// In zh, this message translates to:
-  /// **'清除搜索后可调整账户顺序。'**
+  /// In en, this message translates to:
+  /// **'Clear the search to reorder accounts.'**
   String get clearSearchToReorder;
 
   /// No description provided for @reorderFailed.
   ///
-  /// In zh, this message translates to:
-  /// **'无法调整账户顺序，请重试。'**
+  /// In en, this message translates to:
+  /// **'Could not reorder accounts. Try again.'**
   String get reorderFailed;
 
   /// No description provided for @dragToReorder.
   ///
-  /// In zh, this message translates to:
-  /// **'拖动以调整顺序'**
+  /// In en, this message translates to:
+  /// **'Drag to reorder'**
   String get dragToReorder;
 
   /// No description provided for @codeGrouping.
   ///
-  /// In zh, this message translates to:
-  /// **'验证码分组'**
+  /// In en, this message translates to:
+  /// **'Code grouping'**
   String get codeGrouping;
 
   /// No description provided for @groupNone.
   ///
-  /// In zh, this message translates to:
-  /// **'不分组'**
+  /// In en, this message translates to:
+  /// **'No grouping'**
   String get groupNone;
 
   /// No description provided for @groupEvery.
   ///
-  /// In zh, this message translates to:
-  /// **'每 {count} 位'**
+  /// In en, this message translates to:
+  /// **'Every {count} characters'**
   String groupEvery(int count);
 
   /// No description provided for @groupHalves.
   ///
-  /// In zh, this message translates to:
-  /// **'分成两组'**
+  /// In en, this message translates to:
+  /// **'Two equal groups'**
   String get groupHalves;
 
   /// No description provided for @groupThirds.
   ///
-  /// In zh, this message translates to:
-  /// **'分成三组'**
+  /// In en, this message translates to:
+  /// **'Three equal groups'**
   String get groupThirds;
 
   /// No description provided for @codeHidden.
   ///
-  /// In zh, this message translates to:
-  /// **'验证码已隐藏'**
+  /// In en, this message translates to:
+  /// **'Code hidden'**
   String get codeHidden;
 
   /// No description provided for @dynamicColor.
   ///
-  /// In zh, this message translates to:
-  /// **'使用系统动态配色'**
+  /// In en, this message translates to:
+  /// **'Use system dynamic colors'**
   String get dynamicColor;
 
   /// No description provided for @themeChoice.
   ///
-  /// In zh, this message translates to:
-  /// **'主题'**
+  /// In en, this message translates to:
+  /// **'Theme'**
   String get themeChoice;
 
   /// No description provided for @themeSystem.
   ///
-  /// In zh, this message translates to:
-  /// **'跟随系统'**
+  /// In en, this message translates to:
+  /// **'Follow system'**
   String get themeSystem;
 
   /// No description provided for @themeLight.
   ///
-  /// In zh, this message translates to:
-  /// **'浅色'**
+  /// In en, this message translates to:
+  /// **'Light'**
   String get themeLight;
 
   /// No description provided for @themeDark.
   ///
-  /// In zh, this message translates to:
-  /// **'深色'**
+  /// In en, this message translates to:
+  /// **'Dark'**
   String get themeDark;
 
   /// No description provided for @themeBlack.
   ///
-  /// In zh, this message translates to:
-  /// **'纯黑'**
+  /// In en, this message translates to:
+  /// **'Black'**
   String get themeBlack;
 
   /// No description provided for @themeSystemBlack.
   ///
-  /// In zh, this message translates to:
-  /// **'跟随系统（深色时纯黑）'**
+  /// In en, this message translates to:
+  /// **'System with black dark mode'**
   String get themeSystemBlack;
 
   /// No description provided for @accentChoice.
   ///
-  /// In zh, this message translates to:
-  /// **'强调色'**
+  /// In en, this message translates to:
+  /// **'Accent color'**
   String get accentChoice;
 
   /// No description provided for @accentDefault.
   ///
-  /// In zh, this message translates to:
-  /// **'默认'**
+  /// In en, this message translates to:
+  /// **'Default'**
   String get accentDefault;
 
   /// No description provided for @accentRed.
   ///
-  /// In zh, this message translates to:
-  /// **'红色'**
+  /// In en, this message translates to:
+  /// **'Red'**
   String get accentRed;
 
   /// No description provided for @accentOrange.
   ///
-  /// In zh, this message translates to:
-  /// **'橙色'**
+  /// In en, this message translates to:
+  /// **'Orange'**
   String get accentOrange;
 
   /// No description provided for @accentGreen.
   ///
-  /// In zh, this message translates to:
-  /// **'绿色'**
+  /// In en, this message translates to:
+  /// **'Green'**
   String get accentGreen;
 
   /// No description provided for @accentTeal.
   ///
-  /// In zh, this message translates to:
-  /// **'青色'**
+  /// In en, this message translates to:
+  /// **'Teal'**
   String get accentTeal;
 
   /// No description provided for @accentBlue.
   ///
-  /// In zh, this message translates to:
-  /// **'蓝色'**
+  /// In en, this message translates to:
+  /// **'Blue'**
   String get accentBlue;
 
   /// No description provided for @accentIndigo.
   ///
-  /// In zh, this message translates to:
-  /// **'靛蓝'**
+  /// In en, this message translates to:
+  /// **'Indigo'**
   String get accentIndigo;
 
   /// No description provided for @accentPink.
   ///
-  /// In zh, this message translates to:
-  /// **'粉色'**
+  /// In en, this message translates to:
+  /// **'Pink'**
   String get accentPink;
 
   /// No description provided for @accentPriority.
   ///
-  /// In zh, this message translates to:
-  /// **'系统动态配色可用且启用时优先使用动态配色。'**
+  /// In en, this message translates to:
+  /// **'System dynamic colors take priority when enabled and available.'**
   String get accentPriority;
 
   /// No description provided for @showSavedAccountQr.
   ///
-  /// In zh, this message translates to:
-  /// **'显示已保存账户的二维码'**
+  /// In en, this message translates to:
+  /// **'Show saved account QR code'**
   String get showSavedAccountQr;
 
   /// No description provided for @qrSecretWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'二维码明文包含已保存的账户密钥。扫描或拍摄它的人都可以生成验证码，请仅向可信设备展示。未保存的修改不会包含在内。接收应用可能忽略部分验证码设置，扫码后请核对。'**
+  /// In en, this message translates to:
+  /// **'This QR code contains the saved account secret in plain text. Anyone who scans or photographs it can generate your codes. Show it only to a trusted device. Unsaved edits are not included. The receiving app may ignore some code settings; verify them after scanning.'**
   String get qrSecretWarning;
 
   /// No description provided for @qrUnsupportedAccount.
   ///
-  /// In zh, this message translates to:
-  /// **'仅支持为时间型和计数器型账户展示二维码。'**
+  /// In en, this message translates to:
+  /// **'QR export is available only for time-based and counter-based accounts.'**
   String get qrUnsupportedAccount;
 
   /// No description provided for @qrAccountUnavailable.
   ///
-  /// In zh, this message translates to:
-  /// **'无法加载已保存的账户。'**
+  /// In en, this message translates to:
+  /// **'The saved account could not be loaded.'**
   String get qrAccountUnavailable;
 
   /// No description provided for @qrTooLarge.
   ///
-  /// In zh, this message translates to:
-  /// **'无法以可扫描的尺寸显示二维码。'**
+  /// In en, this message translates to:
+  /// **'The QR code cannot be displayed at a scannable size.'**
   String get qrTooLarge;
 
   /// No description provided for @qrSecretSemantics.
   ///
-  /// In zh, this message translates to:
-  /// **'包含账户密钥的二维码'**
+  /// In en, this message translates to:
+  /// **'QR code containing an account secret'**
   String get qrSecretSemantics;
 
   /// No description provided for @qrUnsupportedParameters.
   ///
-  /// In zh, this message translates to:
-  /// **'标准二维码要求账户名和发行方不含冒号，且验证码为 6 位或 8 位。'**
+  /// In en, this message translates to:
+  /// **'Standard QR codes require account and issuer names without colons and a 6- or 8-digit code.'**
   String get qrUnsupportedParameters;
 
   /// No description provided for @exportHtml.
   ///
-  /// In zh, this message translates to:
-  /// **'导出 HTML 备份'**
+  /// In en, this message translates to:
+  /// **'Export HTML backup'**
   String get exportHtml;
 
   /// No description provided for @htmlBackupTitle.
   ///
-  /// In zh, this message translates to:
-  /// **'账户二维码备份'**
+  /// In en, this message translates to:
+  /// **'Account QR backup'**
   String get htmlBackupTitle;
 
   /// No description provided for @htmlPlainWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'此未加密的 HTML 文件以二维码包含账户密钥。任何取得文件的人都可以生成验证码，请安全保管。文件不包含分类、图标、设置或统计，不能作为备份文件恢复。部分应用可能忽略验证码设置。'**
+  /// In en, this message translates to:
+  /// **'This unencrypted HTML file contains account secrets in QR codes. Anyone with the file can generate your codes. Store it securely. It does not include categories, icons, settings or statistics, and cannot be restored as a backup file. Some apps may ignore code settings.'**
   String get htmlPlainWarning;
 
   /// No description provided for @htmlExportFailed.
   ///
-  /// In zh, this message translates to:
-  /// **'无法创建文件。请检查所有账户是否支持标准二维码，以及备份是否过大。'**
+  /// In en, this message translates to:
+  /// **'The file could not be created. Check that all accounts support standard QR codes and the backup is not too large.'**
   String get htmlExportFailed;
 
   /// No description provided for @migrationTitle.
   ///
-  /// In zh, this message translates to:
-  /// **'扫描迁移二维码'**
+  /// In en, this message translates to:
+  /// **'Scan migration codes'**
   String get migrationTitle;
 
   /// No description provided for @migrationNext.
   ///
-  /// In zh, this message translates to:
-  /// **'已接收 {received}／{total} 个二维码。继续扫描下一个，或取消并放弃本次导入。'**
+  /// In en, this message translates to:
+  /// **'Received {received} of {total} codes. Continue to scan the next code, or cancel to discard this import.'**
   String migrationNext(int received, int total);
 
   /// No description provided for @migrationConfirm.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 {count} 个账户？发行方和账户名相同的条目将被更新，已有图标、顺序和复制次数会保留。'**
+  /// In en, this message translates to:
+  /// **'Import {count} accounts? Accounts with the same issuer and account name will be updated; existing icons, order and copy counts will be retained.'**
   String migrationConfirm(int count);
 
   /// No description provided for @migrationImported.
   ///
-  /// In zh, this message translates to:
-  /// **'已导入 {count} 个账户。'**
+  /// In en, this message translates to:
+  /// **'Imported {count} accounts.'**
   String migrationImported(int count);
 
   /// No description provided for @migrationInvalid.
   ///
-  /// In zh, this message translates to:
-  /// **'迁移数据无效、不受支持、重复或不完整，未导入任何账户。'**
+  /// In en, this message translates to:
+  /// **'The migration data is invalid, unsupported, duplicated or incomplete. No accounts were imported.'**
   String get migrationInvalid;
 
   /// No description provided for @languageChoice.
   ///
-  /// In zh, this message translates to:
-  /// **'语言'**
+  /// In en, this message translates to:
+  /// **'Language'**
   String get languageChoice;
 
   /// No description provided for @languageSystem.
   ///
-  /// In zh, this message translates to:
-  /// **'跟随系统'**
+  /// In en, this message translates to:
+  /// **'Follow system'**
   String get languageSystem;
 
   /// No description provided for @categories.
   ///
-  /// In zh, this message translates to:
-  /// **'分类'**
+  /// In en, this message translates to:
+  /// **'Categories'**
   String get categories;
 
   /// No description provided for @categoryCreate.
   ///
-  /// In zh, this message translates to:
-  /// **'创建分类'**
+  /// In en, this message translates to:
+  /// **'Create category'**
   String get categoryCreate;
 
   /// No description provided for @categoryRename.
   ///
-  /// In zh, this message translates to:
-  /// **'重命名分类'**
+  /// In en, this message translates to:
+  /// **'Rename category'**
   String get categoryRename;
 
   /// No description provided for @categoryName.
   ///
-  /// In zh, this message translates to:
-  /// **'分类名称'**
+  /// In en, this message translates to:
+  /// **'Category name'**
   String get categoryName;
 
   /// No description provided for @categoryOperationFailed.
   ///
-  /// In zh, this message translates to:
-  /// **'无法保存分类，请检查名称后重试。'**
+  /// In en, this message translates to:
+  /// **'Could not save the category. Check its name and try again.'**
   String get categoryOperationFailed;
 
   /// No description provided for @categoryLoadFailed.
   ///
-  /// In zh, this message translates to:
-  /// **'无法加载分类。'**
+  /// In en, this message translates to:
+  /// **'Could not load categories.'**
   String get categoryLoadFailed;
 
   /// No description provided for @categoryEmpty.
   ///
-  /// In zh, this message translates to:
-  /// **'尚无分类。'**
+  /// In en, this message translates to:
+  /// **'No categories yet.'**
   String get categoryEmpty;
 
   /// No description provided for @categoryDefault.
   ///
-  /// In zh, this message translates to:
-  /// **'默认'**
+  /// In en, this message translates to:
+  /// **'Default'**
   String get categoryDefault;
 
   /// No description provided for @categoryActions.
   ///
-  /// In zh, this message translates to:
-  /// **'分类操作'**
+  /// In en, this message translates to:
+  /// **'Category actions'**
   String get categoryActions;
 
   /// No description provided for @categoryClearDefault.
   ///
-  /// In zh, this message translates to:
-  /// **'取消默认分类'**
+  /// In en, this message translates to:
+  /// **'Clear default'**
   String get categoryClearDefault;
 
   /// No description provided for @categorySetDefault.
   ///
-  /// In zh, this message translates to:
-  /// **'设为默认分类'**
+  /// In en, this message translates to:
+  /// **'Set as default'**
   String get categorySetDefault;
 
   /// No description provided for @categoryDelete.
   ///
-  /// In zh, this message translates to:
-  /// **'删除分类'**
+  /// In en, this message translates to:
+  /// **'Delete category'**
   String get categoryDelete;
 
   /// No description provided for @categoryDeleteWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'删除此分类？账户会保留。'**
+  /// In en, this message translates to:
+  /// **'Delete this category? Accounts will remain.'**
   String get categoryDeleteWarning;
 
   /// No description provided for @assignCategories.
   ///
-  /// In zh, this message translates to:
-  /// **'分配分类'**
+  /// In en, this message translates to:
+  /// **'Assign categories'**
   String get assignCategories;
 
   /// No description provided for @assignAccounts.
   ///
-  /// In zh, this message translates to:
-  /// **'分配账户'**
+  /// In en, this message translates to:
+  /// **'Assign accounts'**
   String get assignAccounts;
 
   /// No description provided for @categorySelectionEmpty.
   ///
-  /// In zh, this message translates to:
-  /// **'没有可选择的项目。'**
+  /// In en, this message translates to:
+  /// **'Nothing to select.'**
   String get categorySelectionEmpty;
 
   /// No description provided for @allCategories.
   ///
-  /// In zh, this message translates to:
-  /// **'全部账户'**
+  /// In en, this message translates to:
+  /// **'All accounts'**
   String get allCategories;
 
   /// No description provided for @uncategorized.
   ///
-  /// In zh, this message translates to:
-  /// **'未分类'**
+  /// In en, this message translates to:
+  /// **'Uncategorized'**
   String get uncategorized;
 
   /// No description provided for @categoryFilter.
   ///
-  /// In zh, this message translates to:
-  /// **'筛选分类'**
+  /// In en, this message translates to:
+  /// **'Filter categories'**
   String get categoryFilter;
 
   /// No description provided for @clearFilterToReorder.
   ///
-  /// In zh, this message translates to:
-  /// **'显示全部账户并清除搜索后可调整顺序。'**
+  /// In en, this message translates to:
+  /// **'Show all accounts and clear search to reorder.'**
   String get clearFilterToReorder;
 
   /// No description provided for @backupReminders.
   ///
-  /// In zh, this message translates to:
-  /// **'备份提醒'**
+  /// In en, this message translates to:
+  /// **'Backup reminders'**
   String get backupReminders;
 
   /// No description provided for @backupReminderMessage.
   ///
-  /// In zh, this message translates to:
-  /// **'数据已更改，请创建备份'**
+  /// In en, this message translates to:
+  /// **'Your data has changed. Create a backup.'**
   String get backupReminderMessage;
 
   /// No description provided for @accountView.
   ///
-  /// In zh, this message translates to:
-  /// **'账户视图'**
+  /// In en, this message translates to:
+  /// **'Account view'**
   String get accountView;
 
   /// No description provided for @viewDefault.
   ///
-  /// In zh, this message translates to:
-  /// **'默认'**
+  /// In en, this message translates to:
+  /// **'Default'**
   String get viewDefault;
 
   /// No description provided for @viewCompact.
   ///
-  /// In zh, this message translates to:
-  /// **'紧凑'**
+  /// In en, this message translates to:
+  /// **'Compact'**
   String get viewCompact;
 
   /// No description provided for @viewTiles.
   ///
-  /// In zh, this message translates to:
-  /// **'平铺'**
+  /// In en, this message translates to:
+  /// **'Tiles'**
   String get viewTiles;
 
   /// No description provided for @externalAccount.
   ///
-  /// In zh, this message translates to:
-  /// **'外部账户链接'**
+  /// In en, this message translates to:
+  /// **'External account link'**
   String get externalAccount;
 
   /// No description provided for @externalAccountInvalid.
   ///
-  /// In zh, this message translates to:
-  /// **'链接无效或不受支持，未导入任何账户。'**
+  /// In en, this message translates to:
+  /// **'The link is invalid or unsupported. No account was imported.'**
   String get externalAccountInvalid;
 
   /// No description provided for @externalAccountUnavailable.
   ///
-  /// In zh, this message translates to:
-  /// **'无法接收外部账户链接。'**
+  /// In en, this message translates to:
+  /// **'Could not receive external account links.'**
   String get externalAccountUnavailable;
 
   /// No description provided for @systemCodeFont.
   ///
-  /// In zh, this message translates to:
-  /// **'验证码使用系统字体'**
+  /// In en, this message translates to:
+  /// **'Use system font for codes'**
   String get systemCodeFont;
 
   /// No description provided for @legacyImport.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 andOTP 备份'**
+  /// In en, this message translates to:
+  /// **'Import andOTP backup'**
   String get legacyImport;
 
   /// No description provided for @legacyImportFormat.
   ///
-  /// In zh, this message translates to:
-  /// **'选择备份格式'**
+  /// In en, this message translates to:
+  /// **'Choose backup format'**
   String get legacyImportFormat;
 
   /// No description provided for @legacyPlain.
   ///
-  /// In zh, this message translates to:
-  /// **'明文 JSON'**
+  /// In en, this message translates to:
+  /// **'Plain JSON'**
   String get legacyPlain;
 
   /// No description provided for @legacyEncrypted.
   ///
-  /// In zh, this message translates to:
-  /// **'加密备份（0.6.3 及以上）'**
+  /// In en, this message translates to:
+  /// **'Encrypted backup (0.6.3 or later)'**
   String get legacyEncrypted;
 
   /// No description provided for @legacyEncryptedOld.
   ///
-  /// In zh, this message translates to:
-  /// **'旧版加密备份（0.6.2 及以下）'**
+  /// In en, this message translates to:
+  /// **'Old encrypted backup (0.6.2 or earlier)'**
   String get legacyEncryptedOld;
 
   /// No description provided for @legacyImportWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 {count} 个账户？发行方和账户名相同的账户将更新，已有图标、排序、复制次数和分类会保留。来源分类按名称合并；来源图标和使用统计不会导入。'**
+  /// In en, this message translates to:
+  /// **'Import {count} accounts? Matching issuer and account names will be updated; existing icons, order, copy counts, and categories are preserved. Source categories are merged by name; source icons and usage statistics are not imported.'**
   String legacyImportWarning(int count);
 
   /// No description provided for @legacyImportError.
   ///
-  /// In zh, this message translates to:
-  /// **'无法导入：请检查文件、密码和格式。仅支持发行方及账户名均非空的 TOTP、HOTP 和 Steam；重复账户、无效标签或含不支持条目的文件会整批拒绝。'**
+  /// In en, this message translates to:
+  /// **'Import failed. Check the file, password, and format. Only TOTP, HOTP, and Steam accounts with an issuer and account name are supported; duplicate accounts, invalid tags, or unsupported entries reject the entire file.'**
   String get legacyImportError;
 
   /// No description provided for @revealPassword.
   ///
-  /// In zh, this message translates to:
-  /// **'显示密码'**
+  /// In en, this message translates to:
+  /// **'Show password'**
   String get revealPassword;
 
   /// No description provided for @hidePassword.
   ///
-  /// In zh, this message translates to:
-  /// **'隐藏密码'**
+  /// In en, this message translates to:
+  /// **'Hide password'**
   String get hidePassword;
 
   /// No description provided for @tokenListImport.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 FreeOTP+ 备份'**
+  /// In en, this message translates to:
+  /// **'Import FreeOTP+ backup'**
   String get tokenListImport;
 
   /// No description provided for @tokenListImportError.
   ///
-  /// In zh, this message translates to:
-  /// **'无法导入：请检查明文 JSON 文件。账户、顺序表、密钥、分类和验证码参数必须有效；重复、缺失或不支持的记录会导致整批拒绝。'**
+  /// In en, this message translates to:
+  /// **'Import failed. Check the plain JSON file. Accounts, order, secrets, categories, and OTP parameters must be valid; duplicates, missing records, or unsupported entries reject the entire file.'**
   String get tokenListImportError;
 
   /// No description provided for @vaultImport.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 Bitwarden JSON'**
+  /// In en, this message translates to:
+  /// **'Import Bitwarden JSON'**
   String get vaultImport;
 
   /// No description provided for @vaultImportWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'将导入 {count} 个验证码账户，跳过 {skipped} 个不含验证码或非登录条目。同名账户将更新，已有分类和其他账户元数据保留；文件夹会合并为分类。密码、笔记、附件和其他资料不会导入。确认继续？'**
+  /// In en, this message translates to:
+  /// **'Import {count} verification accounts and skip {skipped} non-login or no-code items? Matching accounts are updated, existing categories and metadata are preserved, and folders merge into categories. Passwords, notes, attachments, and other data are not imported.'**
   String vaultImportWarning(int count, int skipped);
 
   /// No description provided for @vaultImportError.
   ///
-  /// In zh, this message translates to:
-  /// **'无法导入。请选择未加密 JSON，并检查验证码、文件夹及账户名称；重复或不支持的验证码会导致整批拒绝。'**
+  /// In en, this message translates to:
+  /// **'Import failed. Choose an unencrypted JSON export and check the codes, folders, and account names. Duplicate or unsupported codes reject the entire file.'**
   String get vaultImportError;
 
   /// No description provided for @groupedImport.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 Aegis 备份'**
+  /// In en, this message translates to:
+  /// **'Import Aegis backup'**
   String get groupedImport;
 
   /// No description provided for @groupedImportWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 {count} 个账户？同名账户将更新，已有分类和账户元数据保留；来源分组按名称合并为分类，缺少发行方时使用账户名称；新账户保留受支持的自定义图片，已有账户图标不变。备注和收藏状态不会导入。'**
+  /// In en, this message translates to:
+  /// **'Import {count} accounts? Matching accounts are updated; existing categories and account metadata are preserved. Source groups merge into categories; missing issuers use the account name. New accounts retain supported custom images, while existing icons remain. Notes and favorites are not imported.'**
   String groupedImportWarning(int count);
 
   /// No description provided for @groupedImportError.
   ///
-  /// In zh, this message translates to:
-  /// **'无法导入。请检查文件、密码、分组和验证码参数；不支持的加密参数、无效或重复记录会导致整批拒绝。'**
+  /// In en, this message translates to:
+  /// **'Import failed. Check the file, password, groups, and OTP parameters. Unsupported encryption parameters, invalid entries, or duplicates reject the entire file.'**
   String get groupedImportError;
 
   /// No description provided for @backupDecrypting.
   ///
-  /// In zh, this message translates to:
-  /// **'正在解密备份，请稍候。'**
+  /// In en, this message translates to:
+  /// **'Decrypting backup. Please wait.'**
   String get backupDecrypting;
 
   /// No description provided for @uriBackupImport.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 Proton Authenticator 备份'**
+  /// In en, this message translates to:
+  /// **'Import Proton Authenticator backup'**
   String get uriBackupImport;
 
   /// No description provided for @uriBackupImportWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 {count} 个账户？同名账户将更新，已有分类和元数据保留。没有名称的 Steam 账户将使用“Steam”作为账户名；来源备注不会导入。'**
+  /// In en, this message translates to:
+  /// **'Import {count} accounts? Matching accounts are updated and existing categories and metadata are preserved. Unnamed Steam accounts use “Steam” as their account name; source notes are not imported.'**
   String uriBackupImportWarning(int count);
 
   /// No description provided for @uriBackupImportError.
   ///
-  /// In zh, this message translates to:
-  /// **'无法导入。请检查文件、密码及账户名称；重复、无效或不受支持的记录会导致整批拒绝。'**
+  /// In en, this message translates to:
+  /// **'Import failed. Check the file, password, and account names. Duplicate, invalid, or unsupported records reject the entire file.'**
   String get uriBackupImportError;
 
   /// No description provided for @authproImport.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 .authpro 文件'**
+  /// In en, this message translates to:
+  /// **'Import .authpro file'**
   String get authproImport;
 
   /// No description provided for @authproImportWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 {count} 个账户？同名账户将更新，已有分类和元数据保留，来源分类按名称合并。空账户名使用发行方名称；新账户保留受支持的自定义图片，已有账户图标不变；来源内置图标和分类内顺序不会导入。'**
+  /// In en, this message translates to:
+  /// **'Import {count} accounts? Matching accounts are updated; existing categories and metadata remain. Source categories are merged. Unnamed accounts use the issuer as their name. New accounts keep supported custom images; existing account icons remain. Source built-in icons and category-specific ordering are not imported.'**
   String authproImportWarning(int count);
 
   /// No description provided for @authproImportError.
   ///
-  /// In zh, this message translates to:
-  /// **'导入失败。请检查文件、密码及账户参数；无效、重复或不受支持的记录会导致整批拒绝。'**
+  /// In en, this message translates to:
+  /// **'Import failed. Check the file, password, and account parameters. Invalid, duplicate, or unsupported records reject the entire file.'**
   String get authproImportError;
 
   /// No description provided for @authproLegacyWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 {count} 个账户？同名账户将更新，已有分类和元数据保留，来源分类按名称合并。空账户名使用发行方名称；新账户保留受支持的自定义图片，已有账户图标不变；来源内置图标和分类内顺序不会导入。 此旧版加密无法验证文件完整性。'**
+  /// In en, this message translates to:
+  /// **'Import {count} accounts? Matching accounts are updated; existing categories and metadata remain. Source categories are merged. Unnamed accounts use the issuer as their name. New accounts keep supported custom images; existing account icons remain. Source built-in icons and category-specific ordering are not imported. This legacy encryption cannot verify file integrity.'**
   String authproLegacyWarning(int count);
 
   /// No description provided for @pinLengthRequired.
   ///
-  /// In zh, this message translates to:
-  /// **'PIN 必须为 {count} 个字符'**
+  /// In en, this message translates to:
+  /// **'PIN must contain {count} characters'**
   String pinLengthRequired(int count);
 
   /// No description provided for @twoFasImport.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 2FAS 备份'**
+  /// In en, this message translates to:
+  /// **'Import 2FAS backup'**
   String get twoFasImport;
 
   /// No description provided for @twoFasImportWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 {count} 个账户？同名账户将更新，已有元数据保留；分组按名称合并为分类。加密文件中的分组名称没有完整性认证。缺少账户名时使用服务名称；来源图标和显示顺序不会导入。'**
+  /// In en, this message translates to:
+  /// **'Import {count} accounts? Matching accounts are updated and existing metadata is preserved. Groups merge into categories; group names are not authenticated in encrypted files. Missing account names use the service name. Source icons and display order are not imported.'**
   String twoFasImportWarning(int count);
 
   /// No description provided for @twoFasImportError.
   ///
-  /// In zh, this message translates to:
-  /// **'导入失败。请检查文件、密码和账户信息；无效、重复或不受支持的记录会导致整批拒绝。'**
+  /// In en, this message translates to:
+  /// **'Import failed. Check the file, password, and account details. Invalid, duplicate, or unsupported entries reject the entire file.'**
   String get twoFasImportError;
 
   /// No description provided for @lastPassImport.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 LastPass Authenticator 备份'**
+  /// In en, this message translates to:
+  /// **'Import LastPass Authenticator backup'**
   String get lastPassImport;
 
   /// No description provided for @lastPassImportWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 {count} 个账户？同名账户将更新，已有元数据保留；文件夹按名称合并为分类。缺少发行方或账户名时使用另一个名称；来源收藏、图标及文件夹内顺序不会导入。'**
+  /// In en, this message translates to:
+  /// **'Import {count} accounts? Matching accounts are updated; existing metadata remains. Folders merge into categories. Missing issuer or account names use the other name. Source favorites, icons and folder ordering are not imported.'**
   String lastPassImportWarning(int count);
 
   /// No description provided for @lastPassImportError.
   ///
-  /// In zh, this message translates to:
-  /// **'导入失败。仅支持版本 3 和受支持的 6–10 位账户；无效、重复或不受支持的记录会导致整批拒绝。'**
+  /// In en, this message translates to:
+  /// **'Import failed. Only version 3 files with supported 6–10 digit accounts can be imported. Invalid, duplicate or unsupported entries reject the entire file.'**
   String get lastPassImportError;
 
   /// No description provided for @winAuthImport.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 WinAuth 备份'**
+  /// In en, this message translates to:
+  /// **'Import WinAuth backup'**
   String get winAuthImport;
 
   /// No description provided for @winAuthImportWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 {count} 个账户？同名账户将更新，已有元数据保留。缺少发行方或账户名时使用另一个名称；来源图标和其他元数据不会导入。旧版 ZIP 加密使用 CRC，无法验证文件的密码学完整性。'**
+  /// In en, this message translates to:
+  /// **'Import {count} accounts? Matching accounts are updated and existing metadata is preserved. Missing issuer or account names use the other name. Source icons and other metadata are not imported. Older ZIP encryption uses CRC and cannot authenticate file integrity.'**
   String winAuthImportWarning(int count);
 
   /// No description provided for @winAuthImportError.
   ///
-  /// In zh, this message translates to:
-  /// **'导入失败。请检查文件、密码和账户信息；不支持、无效或重复的记录会导致整批拒绝。'**
+  /// In en, this message translates to:
+  /// **'Import failed. Check the file, password and account details. Unsupported, invalid or duplicate entries reject the entire file.'**
   String get winAuthImportError;
 
   /// No description provided for @totpAuthImport.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 TOTP Authenticator 备份'**
+  /// In en, this message translates to:
+  /// **'Import TOTP Authenticator backup'**
   String get totpAuthImport;
 
   /// No description provided for @totpAuthImportWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 {count} 个账户？同名账户将更新，已有元数据保留。缺少发行方或账户名时使用另一个名称；来源图标和其他元数据不会导入。此旧加密格式无法验证文件完整性。'**
+  /// In en, this message translates to:
+  /// **'Import {count} accounts? Matching accounts are updated and existing metadata is preserved. Missing issuer or account names use the other name. Source icons and other metadata are not imported. This older encryption cannot authenticate file integrity.'**
   String totpAuthImportWarning(int count);
 
   /// No description provided for @totpAuthImportError.
   ///
-  /// In zh, this message translates to:
-  /// **'导入失败。请检查密码和账户信息；无效、重复或不受支持的记录会导致整批拒绝。'**
+  /// In en, this message translates to:
+  /// **'Import failed. Check the password and account details. Invalid, duplicate or unsupported records reject the entire file.'**
   String get totpAuthImportError;
 
   /// No description provided for @chooseCustomIcon.
   ///
-  /// In zh, this message translates to:
-  /// **'选择图片'**
+  /// In en, this message translates to:
+  /// **'Choose image'**
   String get chooseCustomIcon;
 
   /// No description provided for @invalidCustomIcon.
   ///
-  /// In zh, this message translates to:
-  /// **'请选择有效的 PNG 或 JPEG 图片，边长不得超过 4096 像素。'**
+  /// In en, this message translates to:
+  /// **'Choose a valid PNG or JPEG image up to 4096 pixels per side.'**
   String get invalidCustomIcon;
 
   /// No description provided for @backupProcessing.
   ///
-  /// In zh, this message translates to:
-  /// **'正在处理备份，请稍候。'**
+  /// In en, this message translates to:
+  /// **'Processing backup. Please wait.'**
   String get backupProcessing;
 
   /// No description provided for @importIconPack.
   ///
-  /// In zh, this message translates to:
-  /// **'导入图标包'**
+  /// In en, this message translates to:
+  /// **'Import icon pack'**
   String get importIconPack;
 
   /// No description provided for @iconLoadError.
   ///
-  /// In zh, this message translates to:
-  /// **'无法加载图标。'**
+  /// In en, this message translates to:
+  /// **'Could not load icons.'**
   String get iconLoadError;
 
   /// No description provided for @iconPackImportConfirm.
   ///
-  /// In zh, this message translates to:
-  /// **'导入包含 {count} 个图标的“{name}”？同名图标包将被替换。'**
+  /// In en, this message translates to:
+  /// **'Import “{name}” with {count} icons? An existing pack with the same name will be replaced.'**
   String iconPackImportConfirm(String name, int count);
 
   /// No description provided for @iconPackImported.
   ///
-  /// In zh, this message translates to:
-  /// **'图标包已导入。'**
+  /// In en, this message translates to:
+  /// **'Icon pack imported.'**
   String get iconPackImported;
 
   /// No description provided for @iconPackError.
   ///
-  /// In zh, this message translates to:
-  /// **'无法处理图标包，请检查文件格式和图片。'**
+  /// In en, this message translates to:
+  /// **'Could not process the icon pack. Check its format and images.'**
   String get iconPackError;
 
   /// No description provided for @iconPackDeleteConfirm.
   ///
-  /// In zh, this message translates to:
-  /// **'删除“{name}”？已分配给账户的图标会保留。'**
+  /// In en, this message translates to:
+  /// **'Delete “{name}”? Icons already assigned to accounts will remain.'**
   String iconPackDeleteConfirm(String name);
 
   /// No description provided for @freeOtpImport.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 FreeOTP 备份'**
+  /// In en, this message translates to:
+  /// **'Import FreeOTP backup'**
   String get freeOtpImport;
 
   /// No description provided for @freeOtpImportWarning.
   ///
-  /// In zh, this message translates to:
-  /// **'导入 {count} 个账户？同名账户将更新，已有元数据保留；缺少发行方时使用账户标签。来源图标和排序不会导入。'**
+  /// In en, this message translates to:
+  /// **'Import {count} accounts? Matching accounts are updated and existing metadata is preserved. Missing issuers use the account label; source icons and ordering are not imported.'**
   String freeOtpImportWarning(int count);
 
   /// No description provided for @freeOtpImportError.
   ///
-  /// In zh, this message translates to:
-  /// **'导入失败。请检查密码和备份文件；不支持、无效或重复的记录会导致整批拒绝。'**
+  /// In en, this message translates to:
+  /// **'Import failed. Check the password and backup. Unsupported, invalid or duplicate records reject the entire file.'**
   String get freeOtpImportError;
 
   /// No description provided for @importAccountCounts.
   ///
-  /// In zh, this message translates to:
-  /// **'新增账户：{newCount} 个；更新已有账户：{updateCount} 个。'**
+  /// In en, this message translates to:
+  /// **'New accounts: {newCount}. Existing accounts to update: {updateCount}.'**
   String importAccountCounts(int newCount, int updateCount);
 
   /// No description provided for @importPreviewExpired.
   ///
-  /// In zh, this message translates to:
-  /// **'账户或设置已更改，请重新选择文件并确认更新后的数量。'**
+  /// In en, this message translates to:
+  /// **'Accounts or settings changed. Select the file again to review the updated counts.'**
   String get importPreviewExpired;
 
   /// No description provided for @migrationGuides.
   ///
-  /// In zh, this message translates to:
-  /// **'迁移指南'**
+  /// In en, this message translates to:
+  /// **'Migration guides'**
   String get migrationGuides;
 
   /// No description provided for @migrationGuideIntro.
   ///
-  /// In zh, this message translates to:
-  /// **'以下指南说明需要在各服务中完成的操作，不会自动导入账户。在新设置验证成功前，请保留现有登录方式和恢复选项。'**
+  /// In en, this message translates to:
+  /// **'These guides explain steps performed with each service. They do not import accounts automatically. Keep your existing access and recovery options until the new setup works.'**
   String get migrationGuideIntro;
 
   /// No description provided for @authyGuide.
   ///
-  /// In zh, this message translates to:
-  /// **'Authy 不提供令牌导出。请对每个服务分别操作：\n\n1. 使用现有验证方式登录该服务。\n2. 在该服务的安全设置中关闭双重验证，然后重新启用。\n3. 使用本应用扫描新二维码，或手动输入新的设置密钥。\n4. 使用新验证码完成服务端验证后，再移除旧条目。\n\n不同服务的恢复方式可能不同；无法登录时请联系对应服务的支持。\n\n官方帮助：https://help.twilio.com/hc/en-us/articles/19753420684059-Export-or-Import-Tokens-in-the-Authy-app-Not-Supported'**
+  /// In en, this message translates to:
+  /// **'Authy does not provide token export. For each service:\n\n1. Sign in using your existing verification method.\n2. In that service’s security settings, turn off two-factor authentication and enable it again.\n3. Scan the new QR code in this app, or enter the new setup key manually.\n4. Verify a new code with the service before removing the old entry.\n\nServices may offer different recovery options. If you cannot sign in, contact that service’s support.\n\nOfficial help: https://help.twilio.com/hc/en-us/articles/19753420684059-Export-or-Import-Tokens-in-the-Authy-app-Not-Supported'**
   String get authyGuide;
 
   /// No description provided for @steamGuide.
   ///
-  /// In zh, this message translates to:
-  /// **'Steam 官方迁移会将移动验证器转移到新设备的 Steam 应用，不会向本应用导出密钥。\n\n1. 在新手机安装 Steam Mobile 并登录。\n2. 在 Steam Guard 页面选择转移验证器（Move Authenticator），按提示完成确认。\n3. 妥善保存新的恢复代码。无法使用旧设备时，请按 Steam 的恢复说明操作或联系 Steam 支持。\n\n如果已拥有兼容密钥，本应用可以生成 Steam 验证码；本指南不会提取密钥。官方迁移可能导致暂时的交易限制。\n\n官方帮助：https://help.steampowered.com/en/faqs/view/29A9-9EEE-09F0-75F9'**
+  /// In en, this message translates to:
+  /// **'Steam’s official transfer moves its mobile authenticator to the Steam app on a new device; it does not export its secret to this app.\n\n1. Install Steam Mobile on the new phone and sign in.\n2. On the Steam Guard screen, choose Move Authenticator and follow the confirmation steps.\n3. Store the new recovery code safely. If the old device is unavailable, follow Steam’s recovery instructions or contact Steam Support.\n\nThis app can generate Steam codes if you already have a compatible secret, but this guide does not retrieve one. Steam’s official transfer may impose temporary trading restrictions.\n\nOfficial help: https://help.steampowered.com/en/faqs/view/29A9-9EEE-09F0-75F9'**
   String get steamGuide;
 
   /// No description provided for @blizzardGuide.
   ///
-  /// In zh, this message translates to:
-  /// **'Blizzard 账户验证通过其官方移动应用管理，本指南不会提取或导入密钥。\n\n1. 保留现有验证器和恢复信息。\n2. 在新设备登录官方应用，按提示设置或恢复验证器。\n3. 无法批准登录或恢复访问时，请先通过 Blizzard 支持的账户恢复流程处理，再移除旧验证器。\n\n操作前请查看服务提供方的最新说明：https://us.support.blizzard.com/'**
+  /// In en, this message translates to:
+  /// **'Blizzard account authentication is managed through its official mobile app. This guide does not extract or import its secret.\n\n1. Keep your existing authenticator and recovery information available.\n2. On the new device, sign in to the official app and follow its authenticator setup or recovery prompts.\n3. If you cannot approve the sign-in or restore access, use Blizzard Support’s account recovery process before removing the old authenticator.\n\nCheck the provider’s current instructions before making changes: https://us.support.blizzard.com/'**
   String get blizzardGuide;
 }
 
