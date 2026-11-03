@@ -390,6 +390,12 @@ abstract class AppLocalizations {
   /// **'Invalid scheme'**
   String get invalidScheme;
 
+  /// No description provided for @duplicateParameters.
+  ///
+  /// In en, this message translates to:
+  /// **'The account link contains repeated parameters and cannot be imported.'**
+  String get duplicateParameters;
+
   /// 认证器类型参数无效时的验证错误消息
   ///
   /// In en, this message translates to:

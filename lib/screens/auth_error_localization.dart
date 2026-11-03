@@ -9,6 +9,7 @@ extension AuthErrorLocalization on AuthErrorCode {
     final l10n = AppLocalizations.of(context)!;
     return switch (this) {
       AuthErrorCode.invalidScheme => l10n.invalidScheme,
+      AuthErrorCode.duplicateParameters => l10n.duplicateParameters,
       AuthErrorCode.invalidType => l10n.invalidType,
       AuthErrorCode.issuerCannotBeEmpty => l10n.issuerCannotBeEmpty,
       AuthErrorCode.accountCannotBeEmpty => l10n.accountCannotBeEmpty,

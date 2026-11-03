@@ -152,6 +152,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get invalidScheme => 'Schema non valido';
 
   @override
+  String get duplicateParameters =>
+      'The account link contains repeated parameters and cannot be imported.';
+
+  @override
   String get invalidType => 'Tipo non valido';
 
   @override

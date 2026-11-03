@@ -151,6 +151,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get invalidScheme => '유효하지 않은 스킴';
 
   @override
+  String get duplicateParameters =>
+      'The account link contains repeated parameters and cannot be imported.';
+
+  @override
   String get invalidType => '유효하지 않은 타입';
 
   @override

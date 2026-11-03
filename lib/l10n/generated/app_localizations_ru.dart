@@ -152,6 +152,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get invalidScheme => 'Неверная схема';
 
   @override
+  String get duplicateParameters =>
+      'The account link contains repeated parameters and cannot be imported.';
+
+  @override
   String get invalidType => 'Неверный тип';
 
   @override

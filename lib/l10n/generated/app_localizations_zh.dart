@@ -151,6 +151,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get invalidScheme => '非法的scheme';
 
   @override
+  String get duplicateParameters => '账户链接包含重复参数，无法导入。';
+
+  @override
   String get invalidType => '非法的类型';
 
   @override

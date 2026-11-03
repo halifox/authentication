@@ -2,6 +2,7 @@ import 'package:base32/base32.dart';
 
 enum AuthErrorCode {
   invalidScheme,
+  duplicateParameters,
   invalidType,
   issuerCannotBeEmpty,
   accountCannotBeEmpty,

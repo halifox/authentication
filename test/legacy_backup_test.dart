@@ -11,6 +11,7 @@ import 'package:authentication/backup/legacy_import.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/category.dart';
+import 'package:authentication/otp/validation.dart';
 import 'package:authentication/screens/add_account_screen.dart';
 import 'package:authentication/screens/icon_selection_screen.dart';
 import 'package:authentication/storage/database.dart';
@@ -70,6 +71,25 @@ class _MemoryPicker extends FilePickerPlatform {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('ambiguous scanned link does not write an account', () async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    final result = await processQrCode(
+      db,
+      'otpauth://totp/Example:user?secret=JBSWY3DPEHPK3PXP&secret=AAAAAAAAAAAAAAAA&issuer=Example',
+    );
+    expect(
+      result,
+      isA<QrProcessError>().having(
+        (e) => e.code,
+        'code',
+        AuthErrorCode.duplicateParameters,
+      ),
+    );
+    expect(await db.getAllConfigs(), isEmpty);
+  });
   test('ambiguous URI list is rejected before database writes', () async {
     FlutterSecureStorage.setMockInitialValues({});
     final db = AppDatabase(NativeDatabase.memory());

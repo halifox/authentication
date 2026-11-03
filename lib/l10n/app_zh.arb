@@ -189,6 +189,7 @@
     "description": "模态对话框和弹窗中关闭按钮的文本"
   },
   "invalidScheme": "非法的scheme",
+  "duplicateParameters": "账户链接包含重复参数，无法导入。",
   "@invalidScheme": {
     "description": "二维码URL格式不正确时的验证错误消息"
   },

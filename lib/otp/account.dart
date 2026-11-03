@@ -132,6 +132,9 @@ OtpAccount parseOtpUri(String input, {bool detectSteam = false}) {
   if (uri.scheme.toLowerCase() != 'otpauth') {
     throw AuthFailure(AuthErrorCode.invalidScheme);
   }
+  if (uri.queryParametersAll.values.any((values) => values.length != 1)) {
+    throw AuthFailure(AuthErrorCode.duplicateParameters);
+  }
   final requestedType = uri.host.toLowerCase();
   final label = uri.path.length > 1
       ? Uri.decodeFull(uri.path.substring(1))

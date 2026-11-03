@@ -151,6 +151,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get invalidScheme => '無効なスキーム';
 
   @override
+  String get duplicateParameters =>
+      'The account link contains repeated parameters and cannot be imported.';
+
+  @override
   String get invalidType => '無効なタイプ';
 
   @override

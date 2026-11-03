@@ -4,6 +4,26 @@ import 'package:authentication/otp/validation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('rejects repeated provisioning parameters', () {
+    const uri =
+        'otpauth://hotp/Example:user?secret=JBSWY3DPEHPK3PXP&issuer=Example&counter=1';
+    for (final suffix in [
+      '&secret=AAAAAAAAAAAAAAAA',
+      '&counter=2',
+      '&%63ounter=2',
+    ]) {
+      expect(
+        () => parseOtpUri('$uri$suffix'),
+        throwsA(
+          isA<AuthFailure>().having(
+            (e) => e.code,
+            'code',
+            AuthErrorCode.duplicateParameters,
+          ),
+        ),
+      );
+    }
+  });
   test('Steam and Yandex accounts validate and survive URI round trips', () {
     for (final account in [
       const OtpAccount(

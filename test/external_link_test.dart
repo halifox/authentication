@@ -205,4 +205,42 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 10));
   });
+  testWidgets('external link with repeated secret cannot open the form', (
+    tester,
+  ) async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => Navigator.push(
+                context,
+                externalAccountRoute(
+                  'otpauth://totp/Example:user?secret=JBSWY3DPEHPK3PXP&secret=AAAAAAAAAAAAAAAA&issuer=Example',
+                ),
+              ),
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('The link is invalid or unsupported. No account was imported.'),
+      findsOneWidget,
+    );
+    expect(find.widgetWithText(TextField, 'Issuer'), findsNothing);
+    expect(await db.getAllConfigs(), isEmpty);
+    await tester.pumpWidget(const SizedBox());
+  });
 }

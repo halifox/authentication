@@ -46,6 +46,7 @@
   "invalidSecret": "Invalid secret",
   "dismiss": "Dismiss",
   "invalidScheme": "Invalid scheme",
+  "duplicateParameters": "The account link contains repeated parameters and cannot be imported.",
   "invalidType": "Invalid type",
   "issuerCannotBeEmpty": "Issuer cannot be empty",
   "accountCannotBeEmpty": "Account cannot be empty",
