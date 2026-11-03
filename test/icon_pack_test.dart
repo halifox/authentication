@@ -6,6 +6,7 @@ import 'package:authentication/otp/account.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/encryption.dart';
+import 'package:authentication/storage/icon_data.dart';
 import 'package:authentication/storage/icon_pack.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -97,6 +98,71 @@ void main() {
       throwsFormatException,
     );
   });
+
+  test(
+    'SVG packs survive backup and deletion without losing assigned icons',
+    () async {
+      FlutterSecureStorage.setMockInitialValues({});
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
+      db.encryption = await EncryptionService.initialize(db);
+      final svg = utf8.encode(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#123456"/></svg>',
+      );
+      final entry = CodedBufferWriter()
+        ..writeField(1, PbFieldType.OS, 'Vector')
+        ..writeField(2, PbFieldType.OY, svg);
+      final writer = CodedBufferWriter()
+        ..writeField(1, PbFieldType.OS, 'Pack')
+        ..writeField(4, PbFieldType.OY, entry.toBuffer());
+      final pack = parseIconPack(Uint8List.fromList(writer.toBuffer()));
+      final icon = pack.icons['Vector']!;
+      expect(icon.startsWith(customSvgPrefix), isTrue);
+      await db.saveIconPack(pack);
+      await db.addConfig(
+        OtpAccount(
+          type: 'totp',
+          issuer: 'Example',
+          account: 'person',
+          secret: 'JBSWY3DPEHPK3PXP',
+          icon: icon,
+        ),
+      );
+      final account = (await db.getAllConfigs()).single;
+      final bytes = await encodeBackupAccounts(
+        [account],
+        null,
+        settings: defaultSettings,
+        integerSettings: defaultIntegerSettings,
+        includeCopyCounts: true,
+        categories: [],
+        memberships: {account.id: []},
+        iconPacks: await db.getIconPacks(),
+      );
+      expect((jsonDecode(utf8.decode(bytes)) as Map)['version'], 8);
+      final restored = await decodeBackupDocument(bytes, null);
+      expect(restored.iconPacks!.single.icons['Vector'], icon);
+      expect(restored.accounts.single.icon, icon);
+      await db.deleteIconPack('Pack');
+      expect((await db.getAllConfigs()).single.icon, icon);
+      final unsafeEntry = CodedBufferWriter()
+        ..writeField(1, PbFieldType.OS, 'Unsafe')
+        ..writeField(
+          2,
+          PbFieldType.OY,
+          utf8.encode(
+            '<svg xmlns="http://www.w3.org/2000/svg"><image href="https://example.com/a"/></svg>',
+          ),
+        );
+      final unsafePack = CodedBufferWriter()
+        ..writeField(1, PbFieldType.OS, 'Pack')
+        ..writeField(4, PbFieldType.OY, unsafeEntry.toBuffer());
+      expect(
+        () => parseIconPack(Uint8List.fromList(unsafePack.toBuffer())),
+        throwsFormatException,
+      );
+    },
+  );
 
   test('rejects invalid protobuf and corrupt images', () {
     expect(

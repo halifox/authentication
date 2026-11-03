@@ -132,7 +132,7 @@ IconPack parseIconPack(Uint8List bytes) {
           if (iconName == null || data == null || icons.containsKey(iconName)) {
             throw const FormatException();
           }
-          final icon = makeCustomIcon(data);
+          final icon = makeImportedIcon(data);
           decodedBytes += iconName.length + icon.length;
           if (decodedBytes > maxStoredIconPacksBytes) {
             throw const FormatException();

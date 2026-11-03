@@ -208,7 +208,9 @@ void main() {
     final db = AppDatabase(NativeDatabase.memory());
     addTearDown(db.close);
     db.encryption = await EncryptionService.initialize(db);
-    final bitmap = image.Image(width: 16, height: 16);
+    final svg = utf8.encode(
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M0 0L10 10" fill="#123456"/></svg>',
+    );
     final encoded = CodedBufferWriter()
       ..writeField(1, PbFieldType.OS, 'Sample')
       ..writeField(
@@ -216,7 +218,7 @@ void main() {
         PbFieldType.OY,
         (CodedBufferWriter()
               ..writeField(1, PbFieldType.OS, 'Example')
-              ..writeField(2, PbFieldType.OY, image.encodePng(bitmap)))
+              ..writeField(2, PbFieldType.OY, svg))
             .toBuffer(),
       );
     await db.saveIconPack(
@@ -252,6 +254,7 @@ void main() {
     await tester.tap(find.text('Example'));
     await tester.pumpAndSettle();
     expect(selected, isNotNull);
+    expect(selected!.startsWith(customSvgPrefix), isTrue);
     expect(validateIcon(selected!), isNotEmpty);
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 10));
