@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:authentication/actions/icon_pack_provider.dart';
 import 'package:authentication/actions/icon_selection_provider.dart';
+import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/backup_provider.dart';
 import 'package:authentication/backup/legacy_import.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
@@ -654,6 +655,44 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 10));
   });
+  test('URI and full backup imports reject stale previews', () async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    final container = ProviderContainer(
+      overrides: [
+        appDatabaseProvider.overrideWithValue(db),
+        allIconsProvider.overrideWith((ref) async => []),
+      ],
+    );
+    addTearDown(container.dispose);
+    const account = OtpAccount(
+      type: 'totp',
+      issuer: 'Example',
+      account: 'one',
+      secret: 'JBSWY3DPEHPK3PXP',
+    );
+    final operations = container.read(backupOperationsProvider.notifier);
+    final uri = Uint8List.fromList(utf8.encode(account.toOtpUri()));
+    final preview = await operations.previewAccounts([account]);
+    await db.createCategory('Changed');
+    await expectLater(
+      operations.importUriFile(uri, expectedRevision: preview.revision),
+      throwsA(isA<ImportPreviewExpired>()),
+    );
+    expect(await db.getAllConfigs(), isEmpty);
+    final backup = await encodeBackupAccounts([account], null);
+    final document = await decodeBackupDocument(backup, null);
+    final next = await operations.previewAccounts(document.accounts);
+    await db.createCategory('Another');
+    await expectLater(
+      operations.importDocument(document, expectedRevision: next.revision),
+      throwsA(isA<ImportPreviewExpired>()),
+    );
+    expect(await db.getAllConfigs(), isEmpty);
+  });
+
   test('import preview rejects changes before transactional writes', () async {
     FlutterSecureStorage.setMockInitialValues({});
     final db = AppDatabase(NativeDatabase.memory());

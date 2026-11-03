@@ -270,19 +270,25 @@ class AddAccountScreen extends ConsumerWidget {
       }
       final accounts = collector.finish();
       if (!context.mounted) return;
+      final preview = await ref
+          .read(backupOperationsProvider.notifier)
+          .previewAccounts(accounts);
+      if (!context.mounted) return;
       final proceed = await showCupertinoModalPopup<bool>(
         context: context,
         builder: (_) => ActionResultSheet(
           state: 0,
           title: l10n.warning,
-          message: l10n.migrationConfirm(accounts.length),
+          message:
+              '${l10n.migrationConfirm(accounts.length)}\n\n'
+              '${l10n.importAccountCounts(preview.newCount, preview.updateCount)}',
           falseButtonVisible: true,
         ),
       );
       if (proceed != true || !context.mounted) return;
       final count = await ref
           .read(accountOperationsProvider.notifier)
-          .importMigration(accounts);
+          .importMigration(accounts, expectedRevision: preview.revision);
       if (context.mounted) {
         await _showResult(
           context,
@@ -291,6 +297,15 @@ class AddAccountScreen extends ConsumerWidget {
           l10n.migrationImported(count),
         );
         if (context.mounted) Navigator.pop(context);
+      }
+    } on ImportPreviewExpired {
+      if (context.mounted) {
+        await _showResult(
+          context,
+          0,
+          l10n.importFailed,
+          l10n.importPreviewExpired,
+        );
       }
     } catch (_) {
       if (context.mounted) {
@@ -381,19 +396,43 @@ class AddAccountScreen extends ConsumerWidget {
         password = await _passwordDialog(context, export: false);
         if (password == null || !context.mounted) return;
       }
+      final document = password == null
+          ? await decodeBackupDocument(bytes, null)
+          : await _decryptWithProgress(
+              context,
+              () => decodeBackupDocument(bytes, password),
+            );
+      if (!context.mounted) return;
+      final preview = await ref
+          .read(backupOperationsProvider.notifier)
+          .previewAccounts(document.accounts);
+      if (!context.mounted) return;
       final proceed = await showCupertinoModalPopup<bool>(
         context: context,
         builder: (_) => ActionResultSheet(
           state: 0,
           title: l10n.warning,
-          message: l10n.backupSettingsWarning,
+          message:
+              '${l10n.backupSettingsWarning}\n\n'
+              '${l10n.importAccountCounts(preview.newCount, preview.updateCount)}',
           falseButtonVisible: true,
         ),
       );
       if (proceed != true || !context.mounted) return;
-      await ref.read(backupOperationsProvider.notifier).import(bytes, password);
+      await ref
+          .read(backupOperationsProvider.notifier)
+          .importDocument(document, expectedRevision: preview.revision);
       if (context.mounted) {
         await _showResult(context, 1, l10n.importSuccess, l10n.backupImported);
+      }
+    } on ImportPreviewExpired {
+      if (context.mounted) {
+        await _showResult(
+          context,
+          0,
+          l10n.importFailed,
+          l10n.importPreviewExpired,
+        );
       }
     } catch (_) {
       if (context.mounted) {
@@ -901,20 +940,37 @@ class AddAccountScreen extends ConsumerWidget {
           .pickFile();
       if (bytes == null || !context.mounted) return;
       // Validate the complete file before presenting the conflict policy.
-      decodeUriList(bytes);
+      final accounts = decodeUriList(bytes);
+      final preview = await ref
+          .read(backupOperationsProvider.notifier)
+          .previewAccounts(accounts);
+      if (!context.mounted) return;
       final proceed = await showCupertinoModalPopup<bool>(
         context: context,
         builder: (_) => ActionResultSheet(
           state: 0,
           title: l10n.warning,
-          message: l10n.backupReplaceWarning,
+          message:
+              '${l10n.backupReplaceWarning}\n\n'
+              '${l10n.importAccountCounts(preview.newCount, preview.updateCount)}',
           falseButtonVisible: true,
         ),
       );
       if (proceed != true || !context.mounted) return;
-      await ref.read(backupOperationsProvider.notifier).importUriFile(bytes);
+      await ref
+          .read(backupOperationsProvider.notifier)
+          .importUriFile(bytes, expectedRevision: preview.revision);
       if (context.mounted) {
         await _showResult(context, 1, l10n.importSuccess, l10n.backupImported);
+      }
+    } on ImportPreviewExpired {
+      if (context.mounted) {
+        await _showResult(
+          context,
+          0,
+          l10n.importFailed,
+          l10n.importPreviewExpired,
+        );
       }
     } catch (_) {
       if (context.mounted) {

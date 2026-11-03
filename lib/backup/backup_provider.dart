@@ -4,6 +4,7 @@ import 'package:authentication/actions/icon_selection_provider.dart';
 import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/html_backup.dart';
 import 'package:authentication/backup/legacy_import.dart';
+import 'package:authentication/otp/account.dart';
 import 'package:authentication/storage/database.dart';
 
 import 'package:authentication/storage/database_provider.dart';
@@ -133,7 +134,7 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
     });
   }
 
-  Future<int> importUriFile(Uint8List bytes) {
+  Future<int> importUriFile(Uint8List bytes, {int? expectedRevision}) {
     final db = ref.read(appDatabaseProvider);
     return _run(() async {
       final accounts = decodeUriList(bytes);
@@ -141,32 +142,44 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
       return db.importAccounts(
         accounts.map((account) => suggestBuiltInIcon(account, icons)).toList(),
         preserveExistingMetadata: true,
+        expectedRevision: expectedRevision,
       );
     });
   }
 
-  Future<({int revision, int newCount, int updateCount})> previewLegacyImport(
-    LegacyImport data,
+  Future<({int revision, int newCount, int updateCount})> previewAccounts(
+    List<OtpAccount> accounts,
   ) {
     final db = ref.read(appDatabaseProvider);
     return _run(
       () => db.transaction(() async {
+        final keys = <(String, String)>{};
+        for (final account in accounts) {
+          account.validate();
+          if (!keys.add((account.issuer, account.account))) {
+            throw const FormatException('Duplicate accounts in backup.');
+          }
+        }
         final existing = (await db.getAllAuthEntries())
             .map((entry) => (entry.issuer, entry.account))
             .toSet();
-        final updates = data.accounts
+        final updates = accounts
             .where(
               (account) => existing.contains((account.issuer, account.account)),
             )
             .length;
         return (
           revision: await db.backupRevision(),
-          newCount: data.accounts.length - updates,
+          newCount: accounts.length - updates,
           updateCount: updates,
         );
       }),
     );
   }
+
+  Future<({int revision, int newCount, int updateCount})> previewLegacyImport(
+    LegacyImport data,
+  ) => previewAccounts(data.accounts);
 
   Future<int> importLegacyAccounts(LegacyImport data, {int? expectedRevision}) {
     final db = ref.read(appDatabaseProvider);
@@ -189,11 +202,10 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
     });
   }
 
-  Future<int> import(Uint8List bytes, String? password) {
+  Future<int> importDocument(BackupDocument document, {int? expectedRevision}) {
     final db = ref.read(appDatabaseProvider);
-    return _run(() async {
-      final document = await decodeBackupDocument(bytes, password);
-      return db.importAccounts(
+    return _run(
+      () => db.importAccounts(
         document.accounts,
         settings: document.settings,
         integerSettings: document.integerSettings,
@@ -201,8 +213,18 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
         importedCategories: document.categories,
         importedMemberships: document.memberships,
         importedIconPacks: document.iconPacks,
-      );
-    });
+        expectedRevision: expectedRevision,
+      ),
+    );
+  }
+
+  Future<int> import(
+    Uint8List bytes,
+    String? password, {
+    int? expectedRevision,
+  }) async {
+    final document = await decodeBackupDocument(bytes, password);
+    return importDocument(document, expectedRevision: expectedRevision);
   }
 }
 

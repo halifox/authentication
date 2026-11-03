@@ -286,6 +286,10 @@ void main() {
     await tester.tap(find.text('Simulate scan'));
     await tester.pumpAndSettle();
     expect(find.textContaining('Import 2 accounts?'), findsOneWidget);
+    expect(
+      find.textContaining('New accounts: 2. Existing accounts to update: 0.'),
+      findsOneWidget,
+    );
     expect(await db.getAllConfigs(), isEmpty);
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();

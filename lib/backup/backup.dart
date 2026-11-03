@@ -347,18 +347,20 @@ Future<Uint8List> encodeBackupAccounts(
   );
 }
 
-Future<
-  ({
-    List<OtpAccount> accounts,
-    Map<String, bool>? settings,
-    Map<String, int>? integerSettings,
-    bool hasCopyCounts,
-    List<AccountCategory>? categories,
-    List<IconPack>? iconPacks,
-    Map<(String, String), List<String>>? memberships,
-  })
->
-decodeBackupDocument(Uint8List bytes, String? password) async {
+typedef BackupDocument = ({
+  List<OtpAccount> accounts,
+  Map<String, bool>? settings,
+  Map<String, int>? integerSettings,
+  bool hasCopyCounts,
+  List<AccountCategory>? categories,
+  List<IconPack>? iconPacks,
+  Map<(String, String), List<String>>? memberships,
+});
+
+Future<BackupDocument> decodeBackupDocument(
+  Uint8List bytes,
+  String? password,
+) async {
   final document = await Backup.decodeDocument(bytes, password);
   return (
     accounts: parseBackupAccounts(document.entries),

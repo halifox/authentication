@@ -78,7 +78,10 @@ class AccountOperations extends Notifier<AsyncValue<void>> {
     }
   }
 
-  Future<int> importMigration(List<OtpAccount> accounts) async {
+  Future<int> importMigration(
+    List<OtpAccount> accounts, {
+    int? expectedRevision,
+  }) async {
     if (state.isLoading)
       throw StateError('An account operation is already running.');
     state = const AsyncLoading();
@@ -97,6 +100,7 @@ class AccountOperations extends Notifier<AsyncValue<void>> {
                 )
                 .toList(),
             preserveExistingMetadata: true,
+            expectedRevision: expectedRevision,
           );
       state = const AsyncData(null);
       return count;
