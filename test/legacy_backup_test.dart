@@ -61,6 +61,110 @@ class _MemoryPicker extends FilePickerPlatform {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  testWidgets('encrypted grouped backup decrypts before confirmation', (
+    tester,
+  ) async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    final bytes = File('test/fixtures/grouped_backup/encrypted.json')
+        .readAsBytesSync();
+    final original = FilePickerPlatform.instance;
+    FilePickerPlatform.instance = _MemoryPicker(bytes);
+    addTearDown(() => FilePickerPlatform.instance = original);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          allIconsProvider.overrideWith((ref) async => []),
+        ],
+        child: const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: AddAccountScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Import Aegis backup'),
+      200,
+      scrollable: find.byType(Scrollable),
+    );
+    await tester.tap(find.text('Import Aegis backup'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'test');
+    await tester.pump();
+    await tester.tap(find.text('OK'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Decrypting backup. Please wait.'), findsOneWidget);
+    expect(await db.getAllConfigs(), isEmpty);
+    await tester.runAsync(() async {
+      await Future<void>.delayed(const Duration(seconds: 2));
+    });
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('Source groups merge into categories'),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect((await db.getAllConfigs()).length, 7);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 10));
+  });
+  testWidgets('grouped backup shows conflict policy before importing', (
+    tester,
+  ) async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    final bytes = File('test/fixtures/grouped_backup/grouped-v2.json')
+        .readAsBytesSync();
+    final original = FilePickerPlatform.instance;
+    FilePickerPlatform.instance = _MemoryPicker(bytes);
+    addTearDown(() => FilePickerPlatform.instance = original);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          allIconsProvider.overrideWith((ref) async => []),
+        ],
+        child: const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: AddAccountScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Import Aegis backup'),
+      200,
+      scrollable: find.byType(Scrollable),
+    );
+    await tester.tap(find.text('Import Aegis backup'));
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('Source groups merge into categories'),
+      findsOneWidget,
+    );
+    expect(await db.getAllConfigs(), isEmpty);
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect((await db.getAllConfigs()).length, 7);
+    expect(
+      (await db.getCategories()).map((c) => c.name),
+      containsAll(['group1', 'group2']),
+    );
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 10));
+  });
   test('vault JSON extracts codes, folders and skipped item counts', () {
     Uint8List bytes(Object value) =>
         Uint8List.fromList(utf8.encode(jsonEncode(value)));
@@ -416,7 +520,9 @@ void main() {
         false,
       );
       await tester.tap(find.text('OK'));
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.text('Decrypting backup. Please wait.'), findsOneWidget);
       await tester.runAsync(() async {
         await Future<void>.delayed(const Duration(seconds: 2));
       });

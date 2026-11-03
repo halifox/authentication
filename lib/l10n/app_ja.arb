@@ -187,5 +187,10 @@
   "vaultImport": "Import Bitwarden JSON",
   "vaultImportWarning": "Import {count} verification accounts and skip {skipped} non-login or no-code items? Matching accounts are updated, existing categories and metadata are preserved, and folders merge into categories. Passwords, notes, attachments, and other data are not imported.",
   "vaultImportError": "Import failed. Choose an unencrypted JSON export and check the codes, folders, and account names. Duplicate or unsupported codes reject the entire file.",
-  "@vaultImportWarning": {"placeholders": {"count": {"type": "int"}, "skipped": {"type": "int"}}}
+  "@vaultImportWarning": {"placeholders": {"count": {"type": "int"}, "skipped": {"type": "int"}}},
+  "groupedImport": "Import Aegis backup",
+  "groupedImportWarning": "Import {count} accounts? Matching accounts are updated; existing categories and account metadata are preserved. Source groups merge into categories; icons, notes, and favorites are not imported.",
+  "groupedImportError": "Import failed. Check the file, password, groups, and OTP parameters. Unsupported encryption parameters, invalid entries, or duplicates reject the entire file.",
+  "@groupedImportWarning": {"placeholders": {"count": {"type": "int"}}},
+  "backupDecrypting": "Decrypting backup. Please wait."
 }

@@ -2,6 +2,7 @@ import 'package:authentication/actions/qr_actions.dart';
 
 import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/backup_provider.dart';
+import 'package:authentication/backup/grouped_import.dart';
 import 'package:authentication/backup/legacy_import.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/migration.dart';
@@ -92,6 +93,11 @@ class AddAccountScreen extends ConsumerWidget {
         Icons.file_open_outlined,
         l10n.vaultImport,
         () => _handleVaultImport(context, ref),
+      ),
+      AddMethodOption(
+        Icons.file_open_outlined,
+        l10n.groupedImport,
+        () => _handleGroupedImport(context, ref),
       ),
       AddMethodOption(
         Icons.list_alt,
@@ -405,11 +411,12 @@ class AddAccountScreen extends ConsumerWidget {
         password = await _passwordDialog(context, export: false);
         if (password == null || !context.mounted) return;
       }
-      final plaintext = await decryptLegacyBackup(
-        bytes,
-        format,
-        password: password,
-      );
+      final plaintext = format == LegacyBackupFormat.plain
+          ? await decryptLegacyBackup(bytes, format)
+          : await _decryptWithProgress(
+              context,
+              () => decryptLegacyBackup(bytes, format, password: password),
+            );
       final document = parseLegacyBackup(plaintext);
       if (!context.mounted) return;
       await _confirmImportedAccounts(context, ref, document);
@@ -444,6 +451,43 @@ class AddAccountScreen extends ConsumerWidget {
           0,
           l10n.importFailed,
           l10n.tokenListImportError,
+        );
+      }
+    }
+  }
+
+  Future<void> _handleGroupedImport(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final bytes = await ref
+          .read(backupOperationsProvider.notifier)
+          .pickFile();
+      if (bytes == null || !context.mounted) return;
+      String? password;
+      if (isGroupedBackupEncrypted(bytes)) {
+        password = await _passwordDialog(context, export: false);
+        if (password == null || !context.mounted) return;
+      }
+      final document = password == null
+          ? await parseGroupedBackup(bytes)
+          : await _decryptWithProgress(
+              context,
+              () => parseGroupedBackup(bytes, password: password),
+            );
+      if (!context.mounted) return;
+      await _confirmImportedAccounts(
+        context,
+        ref,
+        document,
+        warning: l10n.groupedImportWarning(document.accounts.length),
+      );
+    } catch (_) {
+      if (context.mounted) {
+        await _showResult(
+          context,
+          0,
+          l10n.importFailed,
+          l10n.groupedImportError,
         );
       }
     }
@@ -500,6 +544,37 @@ class AddAccountScreen extends ConsumerWidget {
         l10n.importSuccess,
         l10n.migrationImported(count),
       );
+    }
+  }
+
+  Future<T> _decryptWithProgress<T>(
+    BuildContext context,
+    Future<T> Function() action,
+  ) async {
+    final navigator = Navigator.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final route = DialogRoute<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => PopScope(
+        canPop: false,
+        child: AlertDialog(
+          content: Row(
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(width: 16),
+              Expanded(child: Text(l10n.backupDecrypting)),
+            ],
+          ),
+        ),
+      ),
+    );
+    navigator.push(route);
+    await WidgetsBinding.instance.endOfFrame;
+    try {
+      return await action();
+    } finally {
+      if (navigator.mounted && route.isActive) navigator.removeRoute(route);
     }
   }
 

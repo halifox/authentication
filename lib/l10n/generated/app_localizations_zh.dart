@@ -591,4 +591,19 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get vaultImportError =>
       '无法导入。请选择未加密 JSON，并检查验证码、文件夹及账户名称；重复或不支持的验证码会导致整批拒绝。';
+
+  @override
+  String get groupedImport => '导入 Aegis 备份';
+
+  @override
+  String groupedImportWarning(int count) {
+    return '导入 $count 个账户？同名账户将更新，已有分类和账户元数据保留；来源分组按名称合并为分类。来源图标、备注和收藏状态不会导入。';
+  }
+
+  @override
+  String get groupedImportError =>
+      '无法导入。请检查文件、密码、分组和验证码参数；不支持的加密参数、无效或重复记录会导致整批拒绝。';
+
+  @override
+  String get backupDecrypting => '正在解密备份，请稍候。';
 }

@@ -608,4 +608,19 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get vaultImportError =>
       'Import failed. Choose an unencrypted JSON export and check the codes, folders, and account names. Duplicate or unsupported codes reject the entire file.';
+
+  @override
+  String get groupedImport => 'Import Aegis backup';
+
+  @override
+  String groupedImportWarning(int count) {
+    return 'Import $count accounts? Matching accounts are updated; existing categories and account metadata are preserved. Source groups merge into categories; icons, notes, and favorites are not imported.';
+  }
+
+  @override
+  String get groupedImportError =>
+      'Import failed. Check the file, password, groups, and OTP parameters. Unsupported encryption parameters, invalid entries, or duplicates reject the entire file.';
+
+  @override
+  String get backupDecrypting => 'Decrypting backup. Please wait.';
 }
