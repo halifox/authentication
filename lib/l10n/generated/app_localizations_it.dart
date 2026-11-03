@@ -636,4 +636,15 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get uriBackupImportError =>
       'Import failed. Check the file, password, and account names. Duplicate, invalid, or unsupported records reject the entire file.';
+
+  @override
+  String get authproImport => '导入未加密的 .authpro 文件';
+
+  @override
+  String authproImportWarning(int count) {
+    return '导入 $count 个账户？同名账户将更新，已有分类和元数据保留，来源分类按名称合并。空账户名使用发行方名称；来源图标和分类内顺序不会导入。';
+  }
+
+  @override
+  String get authproImportError => '导入失败。仅支持未加密且账户参数受支持的文件；无效或重复记录会导致整批拒绝。';
 }

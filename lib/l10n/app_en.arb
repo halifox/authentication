@@ -196,5 +196,9 @@
   "uriBackupImport": "Import Proton Authenticator backup",
   "uriBackupImportWarning": "Import {count} accounts? Matching accounts are updated and existing categories and metadata are preserved. Unnamed Steam accounts use “Steam” as their account name; source notes are not imported.",
   "uriBackupImportError": "Import failed. Check the file, password, and account names. Duplicate, invalid, or unsupported records reject the entire file.",
-  "@uriBackupImportWarning": {"placeholders": {"count": {"type": "int"}}}
+  "@uriBackupImportWarning": {"placeholders": {"count": {"type": "int"}}},
+  "authproImport": "Import unencrypted .authpro file",
+  "authproImportWarning": "Import {count} accounts? Matching accounts are updated; existing categories and metadata remain. Source categories are merged. Unnamed accounts use the issuer as their name. Source icons and category-specific ordering are not imported.",
+  "authproImportError": "Import failed. Only unencrypted files with supported accounts are accepted. Check the file and account parameters; invalid or duplicate records reject the entire file.",
+  "@authproImportWarning": {"placeholders": {"count": {"type": "int"}}}
 }
