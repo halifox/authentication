@@ -301,6 +301,62 @@ void main() {
     expect(chosen, isNotNull);
     expect(validateIcon(chosen!), isNotEmpty);
   });
+  testWidgets('FreeOTP import requires password and confirmation', (
+    tester,
+  ) async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    final bytes = File('test/fixtures/freeotp/supported.bin').readAsBytesSync();
+    final original = FilePickerPlatform.instance;
+    FilePickerPlatform.instance = _MemoryPicker(bytes);
+    addTearDown(() => FilePickerPlatform.instance = original);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          allIconsProvider.overrideWith((ref) async => []),
+        ],
+        child: const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: AddAccountScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Import FreeOTP backup'),
+      200,
+      scrollable: find.byType(Scrollable),
+    );
+    await tester.ensureVisible(find.text('Import FreeOTP backup'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Import FreeOTP backup'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'test');
+    await tester.pump();
+    await tester.tap(find.text('OK'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(await db.getAllConfigs(), isEmpty);
+    await tester.runAsync(() async {
+      await Future<void>.delayed(const Duration(seconds: 8));
+    });
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('Missing issuers use the account label'),
+      findsOneWidget,
+    );
+    expect(await db.getAllConfigs(), isEmpty);
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect((await db.getAllConfigs()).length, 6);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 10));
+  });
   testWidgets('TOTP backup requires confirmation after decryption', (
     tester,
   ) async {

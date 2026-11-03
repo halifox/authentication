@@ -1427,6 +1427,24 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'删除“{name}”？已分配给账户的图标会保留。'**
   String iconPackDeleteConfirm(String name);
+
+  /// No description provided for @freeOtpImport.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入 FreeOTP 备份'**
+  String get freeOtpImport;
+
+  /// No description provided for @freeOtpImportWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入 {count} 个账户？同名账户将更新，已有元数据保留；缺少发行方时使用账户标签。来源图标和排序不会导入。'**
+  String freeOtpImportWarning(int count);
+
+  /// No description provided for @freeOtpImportError.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入失败。请检查密码和备份文件；不支持、无效或重复的记录会导致整批拒绝。'**
+  String get freeOtpImportError;
 }
 
 class _AppLocalizationsDelegate

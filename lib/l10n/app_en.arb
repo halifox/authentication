@@ -231,5 +231,9 @@
   "iconPackError": "Could not process the icon pack. Check its format and images.",
   "iconPackDeleteConfirm": "Delete “{name}”? Icons already assigned to accounts will remain.",
   "@iconPackImportConfirm": {"placeholders": {"name": {"type": "String"}, "count": {"type": "int"}}},
-  "@iconPackDeleteConfirm": {"placeholders": {"name": {"type": "String"}}}
+  "@iconPackDeleteConfirm": {"placeholders": {"name": {"type": "String"}}},
+  "freeOtpImport": "Import FreeOTP backup",
+  "freeOtpImportWarning": "Import {count} accounts? Matching accounts are updated and existing metadata is preserved. Missing issuers use the account label; source icons and ordering are not imported.",
+  "freeOtpImportError": "Import failed. Check the password and backup. Unsupported, invalid or duplicate records reject the entire file.",
+  "@freeOtpImportWarning": {"placeholders": {"count": {"type": "int"}}}
 }

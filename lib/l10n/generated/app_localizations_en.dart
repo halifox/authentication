@@ -739,4 +739,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String iconPackDeleteConfirm(String name) {
     return 'Delete “$name”? Icons already assigned to accounts will remain.';
   }
+
+  @override
+  String get freeOtpImport => 'Import FreeOTP backup';
+
+  @override
+  String freeOtpImportWarning(int count) {
+    return 'Import $count accounts? Matching accounts are updated and existing metadata is preserved. Missing issuers use the account label; source icons and ordering are not imported.';
+  }
+
+  @override
+  String get freeOtpImportError =>
+      'Import failed. Check the password and backup. Unsupported, invalid or duplicate records reject the entire file.';
 }

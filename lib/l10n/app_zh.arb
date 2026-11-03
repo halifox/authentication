@@ -422,5 +422,9 @@
   "iconPackError": "无法处理图标包，请检查文件格式和图片。",
   "iconPackDeleteConfirm": "删除“{name}”？已分配给账户的图标会保留。",
   "@iconPackImportConfirm": {"placeholders": {"name": {"type": "String"}, "count": {"type": "int"}}},
-  "@iconPackDeleteConfirm": {"placeholders": {"name": {"type": "String"}}}
+  "@iconPackDeleteConfirm": {"placeholders": {"name": {"type": "String"}}},
+  "freeOtpImport": "导入 FreeOTP 备份",
+  "freeOtpImportWarning": "导入 {count} 个账户？同名账户将更新，已有元数据保留；缺少发行方时使用账户标签。来源图标和排序不会导入。",
+  "freeOtpImportError": "导入失败。请检查密码和备份文件；不支持、无效或重复的记录会导致整批拒绝。",
+  "@freeOtpImportWarning": {"placeholders": {"count": {"type": "int"}}}
 }

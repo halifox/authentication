@@ -3,6 +3,7 @@ import 'package:authentication/actions/qr_actions.dart';
 import 'package:authentication/backup/authpro_import.dart';
 import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/backup_provider.dart';
+import 'package:authentication/backup/freeotp_import.dart';
 import 'package:authentication/backup/grouped_import.dart';
 import 'package:authentication/backup/lastpass_import.dart';
 import 'package:authentication/backup/legacy_import.dart';
@@ -109,6 +110,11 @@ class AddAccountScreen extends ConsumerWidget {
         Icons.file_open_outlined,
         l10n.uriBackupImport,
         () => _handleUriBackupImport(context, ref),
+      ),
+      AddMethodOption(
+        Icons.file_open_outlined,
+        l10n.freeOtpImport,
+        () => _handleFreeOtpImport(context, ref),
       ),
       AddMethodOption(
         Icons.file_open_outlined,
@@ -570,6 +576,38 @@ class AddAccountScreen extends ConsumerWidget {
           0,
           l10n.importFailed,
           l10n.groupedImportError,
+        );
+      }
+    }
+  }
+
+  Future<void> _handleFreeOtpImport(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final bytes = await ref
+          .read(backupOperationsProvider.notifier)
+          .pickFile();
+      if (bytes == null || !context.mounted) return;
+      final password = await _passwordDialog(context, export: false);
+      if (password == null || !context.mounted) return;
+      final document = await _decryptWithProgress(
+        context,
+        () => parseFreeOtpBackup(bytes, password),
+      );
+      if (!context.mounted) return;
+      await _confirmImportedAccounts(
+        context,
+        ref,
+        document,
+        warning: l10n.freeOtpImportWarning(document.accounts.length),
+      );
+    } catch (_) {
+      if (context.mounted) {
+        await _showResult(
+          context,
+          0,
+          l10n.importFailed,
+          l10n.freeOtpImportError,
         );
       }
     }
