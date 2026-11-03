@@ -50,6 +50,9 @@ const accentColorOptions = <int>[0, 1, 2, 3, 4, 5, 6, 7];
 const languageKey = 'language';
 const accountViewKey = 'account_view';
 const accountViewOptions = <int>[0, 1, 2];
+const autoLockKey = 'auto_lock_seconds';
+// Zero disables locking; -1 locks immediately after the app is hidden.
+const autoLockOptions = <int>[0, -1, 60, 300, 900];
 // Values are persisted and backed up; append new languages rather than reorder.
 const languageCodes = <String>[
   'de',
@@ -83,6 +86,7 @@ const defaultIntegerSettings = <String, int>{
   accentColorKey: 0,
   languageKey: 0,
   accountViewKey: 0,
+  autoLockKey: 0,
 };
 
 void validateIntegerSetting(String key, Object? value) {
@@ -94,6 +98,7 @@ void validateIntegerSetting(String key, Object? value) {
     accentColorKey => accentColorOptions,
     languageKey => List.generate(languageCodes.length + 1, (index) => index),
     accountViewKey => accountViewOptions,
+    autoLockKey => autoLockOptions,
     _ => throw const FormatException('Unknown integer setting.'),
   };
   if (value is! int || !allowed.contains(value)) {

@@ -387,6 +387,13 @@ class PasswordScreen extends HookConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final enabled = ref.watch(passwordEnabledProvider);
     final operation = ref.watch(passwordOperationsProvider);
+    final integerSettings = ref.watch(integerSettingsProvider);
+    ref.listen(settingsOperationsProvider, (previous, next) {
+      if (next.hasError && context.mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.saveFailed)));
+      }
+    });
     final current = useTextEditingController();
     final next = useTextEditingController();
     final confirmation = useTextEditingController();
@@ -453,6 +460,37 @@ class PasswordScreen extends HookConsumerWidget {
           children: [
             Text(l10n.passwordIntro),
             const SizedBox(height: 16),
+            if (hasPassword) ...[
+              integerSettings.when(
+                loading: () => const CircularProgressIndicator(),
+                error: (_, _) => Text(l10n.settingsLoadError),
+                data: (values) => DropdownButtonFormField<int>(
+                  key: const ValueKey(autoLockKey),
+                  initialValue: values[autoLockKey] ?? 0,
+                  decoration: InputDecoration(labelText: l10n.autoLockTitle),
+                  items: [
+                    DropdownMenuItem(value: 0, child: Text(l10n.never)),
+                    DropdownMenuItem(
+                      value: -1,
+                      child: Text(l10n.autoLockImmediately),
+                    ),
+                    for (final seconds in autoLockOptions.skip(2))
+                      DropdownMenuItem(
+                        value: seconds,
+                        child: Text(l10n.seconds(seconds)),
+                      ),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      ref
+                          .read(settingsOperationsProvider.notifier)
+                          .updateInteger(autoLockKey, value);
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             if (hasPassword) ...[
               TextField(
                 controller: current,

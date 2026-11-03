@@ -123,7 +123,7 @@ void main() {
         [account],
         null,
         settings: settings,
-        integerSettings: {hideCodeAfterKey: 30},
+        integerSettings: {hideCodeAfterKey: 30, autoLockKey: 300},
       );
       final invalid = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
       invalid['settings'] = {
@@ -168,6 +168,7 @@ void main() {
         accentColorKey: 0,
         languageKey: 0,
         accountViewKey: 0,
+        autoLockKey: 300,
       });
       expect((await db.getAllConfigs()).single.counter, 7);
       final oldV2 = await encodeBackupAccounts(
@@ -178,6 +179,7 @@ void main() {
       await operations.import(oldV2, null);
       expect((await db.getSettings())[showAccountNameKey], isFalse);
       expect((await db.getIntegerSettings())[hideCodeAfterKey], 30);
+      expect((await db.getIntegerSettings())[autoLockKey], 300);
       final badIntegers =
           jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
       badIntegers['integerSettings'] = {hideCodeAfterKey: 7};

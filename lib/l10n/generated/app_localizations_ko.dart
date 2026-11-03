@@ -916,6 +916,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get backupUseAppPassword => 'Use app password';
 
   @override
+  String get autoLockTitle => 'Lock after leaving the app';
+
+  @override
+  String get autoLockImmediately => 'Immediately';
+
+  @override
   String get backupUseAppPasswordHint =>
       'Enter your current app password. This backup keeps that password even if you change the app password later.';
 

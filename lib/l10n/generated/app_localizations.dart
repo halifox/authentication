@@ -1728,6 +1728,18 @@ abstract class AppLocalizations {
   /// **'Use app password'**
   String get backupUseAppPassword;
 
+  /// No description provided for @autoLockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock after leaving the app'**
+  String get autoLockTitle;
+
+  /// No description provided for @autoLockImmediately.
+  ///
+  /// In en, this message translates to:
+  /// **'Immediately'**
+  String get autoLockImmediately;
+
   /// No description provided for @backupUseAppPasswordHint.
   ///
   /// In en, this message translates to:

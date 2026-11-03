@@ -25,17 +25,20 @@ class AppBootstrap extends StatefulWidget {
     this.database,
     this.storage,
     this.protectScreen,
+    this.now,
     super.key,
   });
   final AppDatabase? database;
   final FlutterSecureStorage? storage;
   final Future<void> Function()? protectScreen;
+  final DateTime Function()? now;
 
   @override
   State<AppBootstrap> createState() => _AppBootstrapState();
 }
 
-class _AppBootstrapState extends State<AppBootstrap> {
+class _AppBootstrapState extends State<AppBootstrap>
+    with WidgetsBindingObserver {
   final password = TextEditingController();
   late final AppDatabase db;
   late final FlutterSecureStorage storage;
@@ -46,10 +49,17 @@ class _AppBootstrapState extends State<AppBootstrap> {
   bool unavailable = false;
   bool obscured = true;
   bool handedOff = false;
+  bool sessionLocked = false;
+  bool covered = false;
+  bool foreground = true;
+  DateTime? hiddenAt;
+  Stopwatch? hiddenElapsed;
+  int lifecycleGeneration = 0;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     db = widget.database ?? AppDatabase();
     storage =
         widget.storage ??
@@ -92,6 +102,20 @@ class _AppBootstrapState extends State<AppBootstrap> {
 
   Future<void> _open(String? value) async {
     try {
+      if (preferences != null) {
+        final valid =
+            value != null && await db.encryption.verifyPassword(value);
+        if (!valid) throw const FormatException();
+        if (mounted) {
+          password.clear();
+          setState(() {
+            sessionLocked = false;
+            failed = false;
+            busy = false;
+          });
+        }
+        return;
+      }
       final encryption = await EncryptionService.initialize(
         db,
         storage: storage,
@@ -128,9 +152,66 @@ class _AppBootstrapState extends State<AppBootstrap> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     password.dispose();
     if (!handedOff) db.close();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.paused) {
+      if (foreground) {
+        FocusManager.instance.primaryFocus?.unfocus();
+        foreground = false;
+        hiddenAt = widget.now?.call() ?? DateTime.now();
+        hiddenElapsed = Stopwatch()..start();
+        lifecycleGeneration++;
+        setState(() => covered = true);
+      }
+    } else if (state == AppLifecycleState.resumed && !foreground) {
+      foreground = true;
+      final generation = ++lifecycleGeneration;
+      if (preferences == null) {
+        setState(() => covered = false);
+      } else {
+        _checkReturn(generation);
+      }
+    }
+  }
+
+  Future<void> _checkReturn(int generation) async {
+    try {
+      final seconds = (await db.getIntegerSettings())[autoLockKey] ?? 0;
+      final elapsed = hiddenElapsed?.elapsed ?? Duration.zero;
+      final wall = hiddenAt == null
+          ? Duration.zero
+          : (widget.now?.call() ?? DateTime.now()).difference(hiddenAt!);
+      final expired =
+          seconds == -1 ||
+          (seconds > 0 &&
+              (wall.isNegative ||
+                  elapsed >= Duration(seconds: seconds) ||
+                  wall >= Duration(seconds: seconds)));
+      final needsPassword = expired && await db.encryption.passwordEnabled;
+      if (!mounted || !foreground || generation != lifecycleGeneration) return;
+      setState(() {
+        sessionLocked = sessionLocked || needsPassword;
+        covered = false;
+        unavailable = false;
+        busy = false;
+      });
+    } catch (_) {
+      if (!mounted || !foreground || generation != lifecycleGeneration) return;
+      setState(() {
+        sessionLocked = true;
+        covered = false;
+        unavailable = true;
+        busy = false;
+      });
+    }
   }
 
   @override
@@ -138,17 +219,35 @@ class _AppBootstrapState extends State<AppBootstrap> {
     final prefs = preferences;
     if (prefs != null) {
       handedOff = true;
-      return ProviderScope(
-        overrides: [
-          introductionPreferencesProvider.overrideWithValue(prefs),
-          appDatabaseProvider.overrideWith((ref) {
-            ref.onDispose(db.close);
-            return db;
-          }),
+      return Stack(
+        alignment: Alignment.topLeft,
+        children: [
+          ExcludeFocus(
+            excluding: covered || sessionLocked,
+            child: Offstage(
+              offstage: covered || sessionLocked,
+              child: ProviderScope(
+                overrides: [
+                  introductionPreferencesProvider.overrideWithValue(prefs),
+                  appDatabaseProvider.overrideWith((ref) {
+                    ref.onDispose(db.close);
+                    return db;
+                  }),
+                ],
+                child: const AuthApp(),
+              ),
+            ),
+          ),
+          if (covered)
+            const Positioned.fill(child: ColoredBox(color: Colors.black)),
+          if (!covered && sessionLocked) Positioned.fill(child: _lockScreen()),
         ],
-        child: const AuthApp(),
       );
     }
+    return _lockScreen();
+  }
+
+  Widget _lockScreen() {
     return MaterialApp(
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -185,11 +284,15 @@ class _AppBootstrapState extends State<AppBootstrap> {
                                 unavailable = false;
                                 busy = true;
                               });
-                              _start();
+                              if (preferences == null) {
+                                _start();
+                              } else {
+                                _checkReturn(++lifecycleGeneration);
+                              }
                             },
                             child: Text(l10n.screenProtectionRetry),
                           ),
-                        ] else if (locked) ...[
+                        ] else if (locked || sessionLocked) ...[
                           TextField(
                             controller: password,
                             obscureText: obscured,

@@ -196,6 +196,7 @@ void main() {
       final category = (await db.getCategories()).single;
       await db.setAccountCategories(account.id, {category.id});
       await db.setSetting(showAccountNameKey, false);
+      await db.setIntegerSetting(autoLockKey, 300);
       final snapshot = await createBackupSnapshot(db, 'test-password');
       expect(snapshot.revision, await db.backupRevision());
       await db.createCategory('Added later');
@@ -207,6 +208,7 @@ void main() {
       expect(document.categories!.map((item) => item.name), ['Work']);
       expect(document.memberships![('Example', 'alice')], ['Work']);
       expect(document.settings![showAccountNameKey], false);
+      expect(document.integerSettings![autoLockKey], 300);
       await expectLater(
         decodeBackupDocument(snapshot.bytes, 'wrong-password'),
         throwsFormatException,

@@ -879,6 +879,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get backupUseAppPassword => '使用应用密码';
 
   @override
+  String get autoLockTitle => '离开应用后锁定';
+
+  @override
+  String get autoLockImmediately => '立即锁定';
+
+  @override
   String get backupUseAppPasswordHint => '请输入当前应用密码。即使之后修改应用密码，此备份仍使用导出时的密码。';
 
   @override

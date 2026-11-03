@@ -349,6 +349,8 @@
   "unlockButton": "Unlock",
   "unlockInvalid": "Unable to unlock. Check the password and try again.",
   "backupUseAppPassword": "Use app password",
+  "autoLockTitle": "Lock after leaving the app",
+  "autoLockImmediately": "Immediately",
   "backupUseAppPasswordHint": "Enter your current app password. This backup keeps that password even if you change the app password later.",
   "backupAppPasswordInvalid": "The app password is incorrect or has been removed. No backup was saved.",
   "unlockUnavailable": "Unable to open the app securely. Your data has not been deleted.",

@@ -4,6 +4,7 @@ import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/main.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/screens/settings_screen.dart';
+import 'package:authentication/settings/settings.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
@@ -28,6 +29,112 @@ Future<void> waitFor(WidgetTester tester, bool Function() condition) async {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  testWidgets(
+    'auto lock hides accounts and requires the password after timeout',
+    (tester) async {
+      FlutterSecureStorage.setMockInitialValues({});
+      SharedPreferences.setMockInitialValues({'introduction_seen': true});
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      addTearDown(() => debugDefaultTargetPlatformOverride = null);
+      final folder = (await tester.runAsync(
+        () => Directory.systemTemp.createTemp('auth-lock-test-'),
+      ))!;
+      addTearDown(() => folder.delete(recursive: true));
+      final path = File('${folder.path}/db.sqlite');
+      await tester.runAsync(() async {
+        final setup = AppDatabase(NativeDatabase(path));
+        setup.encryption = await EncryptionService.initialize(setup);
+        await setup.addConfig(
+          const OtpAccount(
+            type: 'totp',
+            issuer: 'Example',
+            account: 'alice',
+            secret: 'JBSWY3DPEHPK3PXP',
+          ),
+        );
+        await setup.setIntegerSetting(autoLockKey, 60);
+        await setup.encryption.changePassword(newPassword: 'first-password');
+        await setup.close();
+      });
+      var now = DateTime(2026);
+      final reopened = AppDatabase(NativeDatabase(path));
+      await tester.pumpWidget(
+        AppBootstrap(
+          database: reopened,
+          protectScreen: () async {},
+          now: () => now,
+        ),
+      );
+      await waitFor(
+        tester,
+        () => find.widgetWithText(FilledButton, 'Unlock').evaluate().isNotEmpty,
+      );
+      await tester.enterText(find.byType(TextField), 'first-password');
+      await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
+      await tester.pump();
+      await waitFor(tester, () => find.text('alice').evaluate().isNotEmpty);
+      await tester.tap(find.widgetWithText(TextField, 'Search'));
+      await tester.pump();
+      final searchFocus = FocusManager.instance.primaryFocus!;
+      expect(searchFocus.hasFocus, true);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      await tester.pump();
+      expect(find.text('alice'), findsNothing);
+      expect(searchFocus.hasFocus, false);
+      now = now.add(const Duration(seconds: 30));
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pump();
+      await waitFor(tester, () => find.text('alice').evaluate().isNotEmpty);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      await tester.pump();
+      now = now.add(const Duration(seconds: 60));
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pump();
+      await waitFor(
+        tester,
+        () => find.widgetWithText(FilledButton, 'Unlock').evaluate().isNotEmpty,
+      );
+      expect(find.text('alice'), findsNothing);
+      await tester.enterText(find.byType(TextField), 'wrong');
+      await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
+      await tester.pump();
+      await waitFor(
+        tester,
+        () => find.textContaining('Unable to unlock').evaluate().isNotEmpty,
+      );
+      expect(find.text('alice'), findsNothing);
+      await tester.enterText(find.byType(TextField), 'first-password');
+      await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
+      await tester.pump();
+      await waitFor(tester, () => find.text('alice').evaluate().isNotEmpty);
+      await tester.runAsync(() => reopened.setIntegerSetting(autoLockKey, -1));
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      await tester.pump();
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pump();
+      await waitFor(
+        tester,
+        () => find.widgetWithText(FilledButton, 'Unlock').evaluate().isNotEmpty,
+      );
+      await tester.enterText(find.byType(TextField), 'first-password');
+      await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
+      await tester.pump();
+      await waitFor(tester, () => find.text('alice').evaluate().isNotEmpty);
+      await tester.runAsync(
+        () => reopened.encryption.changePassword(
+          currentPassword: 'first-password',
+        ),
+      );
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      await tester.pump();
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pump();
+      await waitFor(tester, () => find.text('alice').evaluate().isNotEmpty);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(const Duration(milliseconds: 10));
+      debugDefaultTargetPlatformOverride = null;
+    },
+  );
   testWidgets('settings creates, changes and removes password', (tester) async {
     FlutterSecureStorage.setMockInitialValues({});
     final db = AppDatabase(NativeDatabase.memory());
@@ -61,6 +168,11 @@ void main() {
       () => find.text('Change password').evaluate().isNotEmpty,
     );
     expect(await db.encryption.passwordEnabled, true);
+    await tester.tap(find.byKey(const ValueKey(autoLockKey)));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Immediately').last);
+    await tester.pumpAndSettle();
+    expect((await db.getIntegerSettings())[autoLockKey], -1);
     await tester.enterText(
       find.widgetWithText(TextField, 'Current password'),
       'first-password',
@@ -74,6 +186,8 @@ void main() {
       'second-password',
     );
     await tester.pump();
+    await tester.ensureVisible(find.text('Change password'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Change password'));
     await tester.pump();
     await waitFor(
@@ -97,6 +211,8 @@ void main() {
       'second-password',
     );
     await tester.pump();
+    await tester.ensureVisible(find.text('Remove password'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Remove password'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Remove password').last);
