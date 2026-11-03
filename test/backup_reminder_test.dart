@@ -160,6 +160,12 @@ void main() {
     final newer = await db.backupRevision();
     await db.markBackupSaved(newer);
     expect(await db.watchBackupNeeded().first, false);
+    await db.markBackupSaved(snapshot);
+    expect(await db.watchBackupNeeded().first, true);
+    await expectLater(db.markBackupSaved(newer + 1), throwsArgumentError);
+    expect(await db.watchBackupNeeded().first, true);
+    await db.markBackupSaved(newer);
+    expect(await db.watchBackupNeeded().first, false);
     await expectLater(
       db.transaction(() async {
         await db.createCategory('Rolled back');

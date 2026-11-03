@@ -142,9 +142,15 @@ class AppDatabase extends _$AppDatabase {
       (await select(backupState).getSingle()).revision;
 
   Future<void> markBackupSaved(int revision) async {
-    await (update(backupState)..where((row) => row.id.equals(1))).write(
-      BackupStateCompanion(savedRevision: Value(revision)),
-    );
+    await transaction(() async {
+      final state = await select(backupState).getSingle();
+      if (revision < 0 || revision > state.revision) {
+        throw ArgumentError.value(revision, 'revision');
+      }
+      await (update(backupState)..where((row) => row.id.equals(1))).write(
+        BackupStateCompanion(savedRevision: Value(revision)),
+      );
+    });
   }
 
   Stream<bool> watchBackupNeeded() => customSelect(

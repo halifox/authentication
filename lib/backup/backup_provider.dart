@@ -14,6 +14,50 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 export 'package:authentication/storage/database.dart' show ImportPreviewExpired;
 
+/// Captures a consistent, fully encoded backup and its database revision.
+Future<({Uint8List bytes, int revision})> createBackupSnapshot(
+  AppDatabase db,
+  String? password,
+) async {
+  final snapshot = await db.transaction(
+    () async => (
+      accounts: await db.getAllConfigs(),
+      settings: await db.getSettings(),
+      integerSettings: await db.getIntegerSettings(),
+      categories: await db.getCategories(),
+      iconPacks: await db.getIconPacks(),
+      membershipIds: await db.getCategoryMemberships(),
+      revision: await db.backupRevision(),
+    ),
+  );
+  final names = {
+    for (final category in snapshot.categories) category.id: category.name,
+  };
+  final accountIds = snapshot.accounts.map((account) => account.id).toSet();
+  final memberships = <int, List<String>>{};
+  for (final entry in snapshot.membershipIds.entries) {
+    if (!accountIds.contains(entry.key) ||
+        entry.value.any((id) => !names.containsKey(id))) {
+      throw StateError('Invalid category membership.');
+    }
+    memberships[entry.key] = [
+      for (final category in snapshot.categories)
+        if (entry.value.contains(category.id)) category.name,
+    ];
+  }
+  final bytes = await encodeBackupAccounts(
+    snapshot.accounts,
+    password,
+    settings: snapshot.settings,
+    integerSettings: snapshot.integerSettings,
+    includeCopyCounts: true,
+    categories: snapshot.categories,
+    iconPacks: snapshot.iconPacks,
+    memberships: memberships,
+  );
+  return (bytes: bytes, revision: snapshot.revision);
+}
+
 class BackupOperations extends Notifier<AsyncValue<void>> {
   @override
   AsyncValue<void> build() => const AsyncData(null);
@@ -53,45 +97,10 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
   Future<bool> exportFile(String? password) {
     final db = ref.read(appDatabaseProvider);
     return _run(() async {
-      final snapshot = await db.transaction(
-        () async => (
-          accounts: await db.getAllConfigs(),
-          settings: await db.getSettings(),
-          integerSettings: await db.getIntegerSettings(),
-          categories: await db.getCategories(),
-          iconPacks: await db.getIconPacks(),
-          membershipIds: await db.getCategoryMemberships(),
-          revision: await db.backupRevision(),
-        ),
-      );
-      final names = {
-        for (final category in snapshot.categories) category.id: category.name,
-      };
-      final accountIds = snapshot.accounts.map((account) => account.id).toSet();
-      final memberships = <int, List<String>>{};
-      for (final entry in snapshot.membershipIds.entries) {
-        if (!accountIds.contains(entry.key) ||
-            entry.value.any((id) => !names.containsKey(id))) {
-          throw StateError('Invalid category membership.');
-        }
-        memberships[entry.key] = [
-          for (final category in snapshot.categories)
-            if (entry.value.contains(category.id)) category.name,
-        ];
-      }
-      final bytes = await encodeBackupAccounts(
-        snapshot.accounts,
-        password,
-        settings: snapshot.settings,
-        integerSettings: snapshot.integerSettings,
-        includeCopyCounts: true,
-        categories: snapshot.categories,
-        iconPacks: snapshot.iconPacks,
-        memberships: memberships,
-      );
+      final snapshot = await createBackupSnapshot(db, password);
       final location = await FilePicker.saveFile(
         fileName: 'authentication-backup.json',
-        bytes: bytes,
+        bytes: snapshot.bytes,
         mimeType: 'application/json',
       );
       if (location != null && !kIsWeb) {
