@@ -682,4 +682,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get lastPassImportError =>
       'Import failed. Only version 3 files with supported 6–8 digit accounts can be imported. Invalid, duplicate or unsupported entries reject the entire file.';
+
+  @override
+  String get winAuthImport => 'Import WinAuth backup';
+
+  @override
+  String winAuthImportWarning(int count) {
+    return 'Import $count accounts? Matching accounts are updated and existing metadata is preserved. Missing issuer or account names use the other name. Source icons and other metadata are not imported. Older ZIP encryption uses CRC and cannot authenticate file integrity.';
+  }
+
+  @override
+  String get winAuthImportError =>
+      'Import failed. Check the file, password and account details. Unsupported, invalid or duplicate entries reject the entire file.';
 }

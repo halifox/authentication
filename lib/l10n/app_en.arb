@@ -212,5 +212,9 @@
   "lastPassImport": "Import LastPass Authenticator backup",
   "lastPassImportWarning": "Import {count} accounts? Matching accounts are updated; existing metadata remains. Folders merge into categories. Missing issuer or account names use the other name. Source favorites, icons and folder ordering are not imported.",
   "lastPassImportError": "Import failed. Only version 3 files with supported 6–8 digit accounts can be imported. Invalid, duplicate or unsupported entries reject the entire file.",
-  "@lastPassImportWarning": {"placeholders": {"count": {"type": "int"}}}
+  "@lastPassImportWarning": {"placeholders": {"count": {"type": "int"}}},
+  "winAuthImport": "Import WinAuth backup",
+  "winAuthImportWarning": "Import {count} accounts? Matching accounts are updated and existing metadata is preserved. Missing issuer or account names use the other name. Source icons and other metadata are not imported. Older ZIP encryption uses CRC and cannot authenticate file integrity.",
+  "winAuthImportError": "Import failed. Check the file, password and account details. Unsupported, invalid or duplicate entries reject the entire file.",
+  "@winAuthImportWarning": {"placeholders": {"count": {"type": "int"}}}
 }

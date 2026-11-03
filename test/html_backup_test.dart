@@ -108,6 +108,8 @@ void main() {
       200,
       scrollable: find.byType(Scrollable),
     );
+    await tester.ensureVisible(find.text('Export HTML backup'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Export HTML backup'));
     await tester.pumpAndSettle();
     expect(find.textContaining('unencrypted HTML file'), findsOneWidget);

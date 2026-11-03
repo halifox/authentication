@@ -1337,6 +1337,24 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'导入失败。仅支持版本 3 和受支持的 6–8 位账户；无效、重复或不受支持的记录会导致整批拒绝。'**
   String get lastPassImportError;
+
+  /// No description provided for @winAuthImport.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入 WinAuth 备份'**
+  String get winAuthImport;
+
+  /// No description provided for @winAuthImportWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入 {count} 个账户？同名账户将更新，已有元数据保留。缺少发行方或账户名时使用另一个名称；来源图标和其他元数据不会导入。旧版 ZIP 加密使用 CRC，无法验证文件的密码学完整性。'**
+  String winAuthImportWarning(int count);
+
+  /// No description provided for @winAuthImportError.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入失败。请检查文件、密码和账户信息；不支持、无效或重复的记录会导致整批拒绝。'**
+  String get winAuthImportError;
 }
 
 class _AppLocalizationsDelegate
