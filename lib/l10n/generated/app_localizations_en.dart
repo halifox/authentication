@@ -615,7 +615,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String groupedImportWarning(int count) {
-    return 'Import $count accounts? Matching accounts are updated; existing categories and account metadata are preserved. Source groups merge into categories; new accounts retain supported custom images, while existing icons remain. Notes and favorites are not imported.';
+    return 'Import $count accounts? Matching accounts are updated; existing categories and account metadata are preserved. Source groups merge into categories; missing issuers use the account name. New accounts retain supported custom images, while existing icons remain. Notes and favorites are not imported.';
   }
 
   @override

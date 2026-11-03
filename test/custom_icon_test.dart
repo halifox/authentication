@@ -11,7 +11,9 @@ import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
 import 'package:authentication/storage/icon_data.dart';
+import 'package:authentication/widgets/account_icon.dart';
 import 'package:drift/native.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -152,6 +154,72 @@ void main() {
       isCustomIcon(accounts.singleWhere((a) => a.account == 'new').icon),
       isTrue,
     );
+  });
+
+  testWidgets('SVG icon renders and survives version 8 backup', (tester) async {
+    final bytes = Uint8List.fromList(
+      utf8.encode(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#123456"/></svg>',
+      ),
+    );
+    final icon = makeImportedIcon(bytes);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: AccountIcon(icon: icon)),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    final account = OtpAccount(
+      type: 'totp',
+      issuer: 'Example',
+      account: 'person',
+      secret: 'JBSWY3DPEHPK3PXP',
+      icon: icon,
+    );
+    final backup = await encodeBackupAccounts(
+      [account],
+      null,
+      settings: defaultSettings,
+      integerSettings: defaultIntegerSettings,
+      includeCopyCounts: true,
+      categories: [],
+      memberships: {account.id: []},
+    );
+    final envelope = jsonDecode(utf8.decode(backup)) as Map<String, dynamic>;
+    expect(envelope['version'], 8);
+    expect(
+      (await decodeBackupDocument(backup, null)).accounts.single.icon,
+      icon,
+    );
+    envelope['version'] = 7;
+    await expectLater(
+      decodeBackupDocument(
+        Uint8List.fromList(utf8.encode(jsonEncode(envelope))),
+        null,
+      ),
+      throwsFormatException,
+    );
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  test('SVG icons reject external resources and unsafe content', () {
+    Uint8List input(String text) => Uint8List.fromList(utf8.encode(text));
+    final icon = makeImportedIcon(
+      input(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M0 0L10 10" fill="#123456"/></svg>',
+      ),
+    );
+    expect(icon.startsWith(customSvgPrefix), isTrue);
+    expect(validateIcon(icon), isNotEmpty);
+    for (final unsafe in [
+      '<svg xmlns="http://www.w3.org/2000/svg"><image href="https://example.com/a"/></svg>',
+      '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0" style="fill:url(https://example.com/a)"/></svg>',
+      '<!DOCTYPE svg [<!ENTITY x SYSTEM "file:///etc/passwd">]><svg>&x;</svg>',
+      '<svg xmlns="http://www.w3.org/2000/svg"><script/></svg>',
+    ]) {
+      expect(() => makeImportedIcon(input(unsafe)), throwsFormatException);
+    }
   });
 
   test('rejects invalid or oversized images before account writes', () async {

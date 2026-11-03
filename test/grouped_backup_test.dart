@@ -52,18 +52,18 @@ void main() {
       );
     },
   );
-  test(
-    'rejects independent encrypted backup with unsupported image',
-    () async {
-      final data = await File(
-        'test/fixtures/grouped_backup/icon_encrypted.json',
-      ).readAsBytes();
-      await expectLater(
-        parseGroupedBackup(data, password: 'test'),
-        throwsFormatException,
-      );
-    },
-  );
+  test('imports independent encrypted backup with SVG image', () async {
+    final data = await File('test/fixtures/grouped_backup/icon_encrypted.json')
+        .readAsBytes();
+    final result = await parseGroupedBackup(data, password: 'test');
+    expect(result.accounts.length, 11);
+    expect(
+      result.accounts
+          .where((account) => account.icon.startsWith(customSvgPrefix))
+          .length,
+      10,
+    );
+  });
 
   test(
     'imports independent icon image and rejects invalid image data',

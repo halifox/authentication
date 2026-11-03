@@ -40,6 +40,18 @@ class Backup {
       (entry) =>
           entry['icon'] is String && isCustomIcon(entry['icon'] as String),
     );
+    final hasSvgIcons =
+        entries.any(
+          (entry) =>
+              entry['icon'] is String &&
+              (entry['icon'] as String).startsWith(customSvgPrefix),
+        ) ||
+        (iconPacks?.any(
+              (pack) => pack.icons.values.any(
+                (icon) => icon.startsWith(customSvgPrefix),
+              ),
+            ) ??
+            false);
     if (hasCustomIcons && categories == null) {
       throw const FormatException('Custom icons require a complete backup.');
     }
@@ -65,8 +77,10 @@ class Backup {
       'entries': entries,
       'settings': ?validatedSettings,
       'integerSettings': ?validatedIntegers,
-      if (iconPacks != null)
-        'iconPacks': [for (final pack in iconPacks) iconPackToJson(pack)],
+      if (iconPacks != null || hasSvgIcons)
+        'iconPacks': [
+          for (final pack in iconPacks ?? <IconPack>[]) iconPackToJson(pack),
+        ],
       if (validatedCategories != null)
         'categories': [
           for (final category in validatedCategories)
@@ -80,7 +94,9 @@ class Backup {
     final payload = utf8.encode(jsonEncode(contents));
     final Map<String, Object> envelope = {
       'format': 'authentication-backup',
-      'version': iconPacks != null
+      'version': hasSvgIcons
+          ? 8
+          : iconPacks != null
           ? 7
           : validatedCategories != null
           ? (hasCustomIcons ? 6 : 5)
@@ -132,7 +148,8 @@ class Backup {
             data['version'] != 4 &&
             data['version'] != 5 &&
             data['version'] != 6 &&
-            data['version'] != 7) ||
+            data['version'] != 7 &&
+            data['version'] != 8) ||
         data['encrypted'] is! bool) {
       throw const FormatException('Unsupported backup format.');
     }
@@ -203,6 +220,14 @@ class Backup {
       iconPacks = validateIconPacks([
         for (final pack in raw) iconPackFromJson(pack),
       ]);
+      if (envelope['version'] < 8 &&
+          iconPacks.any(
+            (pack) => pack.icons.values.any(
+              (icon) => icon.startsWith(customSvgPrefix),
+            ),
+          )) {
+        throw const FormatException('Invalid icon for backup version.');
+      }
     }
     if ((envelope['version'] == 1 && contents.containsKey('settings')) ||
         (envelope['version'] < 3 && contents.containsKey('integerSettings')) ||
@@ -241,6 +266,12 @@ class Backup {
         .toList();
     if (envelope['version'] < 6 &&
         mappedEntries.any((entry) => isCustomIcon(entry['icon'] as String))) {
+      throw const FormatException('Invalid icon for backup version.');
+    }
+    if (envelope['version'] < 8 &&
+        mappedEntries.any(
+          (entry) => (entry['icon'] as String).startsWith(customSvgPrefix),
+        )) {
       throw const FormatException('Invalid icon for backup version.');
     }
     if (categories != null) {

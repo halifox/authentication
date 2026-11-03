@@ -235,11 +235,13 @@ Future<LegacyImport> parseGroupedBackup(
       }
       final icon = sourceIcon == null
           ? 'assets/icons/passkey.svg'
-          : makeCustomIcon(base64Decode(sourceIcon as String));
+          : makeImportedIcon(base64Decode(sourceIcon as String));
       final account = OtpAccount(
         icon: icon,
         type: type,
-        issuer: entry['issuer'] as String,
+        issuer: (entry['issuer'] as String).trim().isEmpty
+            ? entry['name'] as String
+            : entry['issuer'] as String,
         account: entry['name'] as String,
         secret: accountSecret,
         algorithm: algorithm,

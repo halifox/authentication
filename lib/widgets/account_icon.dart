@@ -13,7 +13,19 @@ class AccountIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isCustomIcon(icon)) {
       try {
-        final bytes = base64Decode(icon.substring(customIconPrefix.length));
+        final svg = icon.startsWith(customSvgPrefix);
+        final bytes = base64Decode(
+          icon.substring(
+            svg ? customSvgPrefix.length : customIconPrefix.length,
+          ),
+        );
+        if (svg) {
+          return SvgPicture.string(
+            utf8.decode(bytes),
+            width: size,
+            height: size,
+          );
+        }
         return ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: Image.memory(
