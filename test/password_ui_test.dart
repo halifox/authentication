@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:authentication/l10n/generated/app_localizations.dart';
@@ -60,6 +61,8 @@ void main() {
       var now = DateTime(2026);
       final protection = <bool>[];
       var failProtection = false;
+      Completer<void>? delayDisable;
+      var disableStarted = false;
       final reopened = AppDatabase(NativeDatabase(path));
       await tester.pumpWidget(
         AppBootstrap(
@@ -67,6 +70,10 @@ void main() {
           applyScreenProtection: (enabled) async {
             protection.add(enabled);
             if (enabled && failProtection) throw StateError('Unavailable');
+            if (!enabled && delayDisable != null) {
+              disableStarted = true;
+              await delayDisable.future;
+            }
           },
           now: () => now,
         ),
@@ -137,6 +144,28 @@ void main() {
         tester,
         () => find.widgetWithText(FilledButton, 'Unlock').evaluate().isNotEmpty,
       );
+      delayDisable = Completer<void>();
+      await tester.enterText(find.byType(TextField), 'first-password');
+      await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
+      await tester.pump();
+      for (var i = 0; i < 250 && !disableStarted; i++) {
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 40)),
+        );
+        await tester.pump();
+      }
+      expect(disableStarted, true);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      await tester.pump();
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pump();
+      delayDisable.complete();
+      delayDisable = null;
+      await waitFor(
+        tester,
+        () => find.widgetWithText(FilledButton, 'Unlock').evaluate().isNotEmpty,
+      );
+      expect(find.text('alice'), findsNothing);
       await tester.enterText(find.byType(TextField), 'first-password');
       await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
       await tester.pump();

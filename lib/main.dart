@@ -128,25 +128,25 @@ class _AppBootstrapState extends State<AppBootstrap>
   }
 
   Future<void> _open(String? value) async {
+    final generation = lifecycleGeneration;
     try {
       if (preferences != null) {
         final valid =
             value != null && await db.encryption.verifyPassword(value);
-        if (!valid) throw const FormatException();
-        if (!foreground) {
-          if (mounted) setState(() => busy = false);
+        if (!mounted || !foreground || generation != lifecycleGeneration) {
           return;
         }
+        if (!valid) throw const FormatException();
         password.clear();
         if (mounted) setState(() => covered = true);
         await WidgetsBinding.instance.endOfFrame;
         if (!mounted) return;
-        if (!foreground) {
+        if (!foreground || generation != lifecycleGeneration) {
           setState(() => busy = false);
           return;
         }
         await _restoreScreenProtection();
-        if (mounted) {
+        if (mounted && foreground && generation == lifecycleGeneration) {
           setState(() {
             sessionLocked = false;
             covered = !foreground;
@@ -177,7 +177,8 @@ class _AppBootstrapState extends State<AppBootstrap>
         });
       }
     } catch (error) {
-      if (mounted) {
+      if (mounted &&
+          (preferences == null || generation == lifecycleGeneration)) {
         setState(() {
           busy = false;
           if (foreground) covered = false;
