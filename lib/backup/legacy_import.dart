@@ -3,12 +3,19 @@ import 'dart:typed_data';
 
 import 'package:authentication/backup/backup.dart';
 import 'package:authentication/otp/account.dart';
+import 'package:authentication/otp/category.dart';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 
 import 'backup_key.dart' if (dart.library.js_interop) 'backup_key_web.dart';
 
 enum LegacyBackupFormat { plain, encrypted, encryptedOld }
+
+typedef LegacyImport = ({
+  List<OtpAccount> accounts,
+  List<AccountCategory> categories,
+  Map<(String, String), List<String>> memberships,
+});
 
 Future<Uint8List> decryptLegacyBackup(
   Uint8List bytes,
@@ -60,7 +67,7 @@ Future<Uint8List> decryptLegacyBackup(
   return plaintext;
 }
 
-List<OtpAccount> parseLegacyBackup(Uint8List plaintext) {
+LegacyImport parseLegacyBackup(Uint8List plaintext) {
   if (plaintext.isEmpty || plaintext.length > maxBackupBytes) {
     throw const FormatException('Invalid backup size.');
   }
@@ -70,6 +77,8 @@ List<OtpAccount> parseLegacyBackup(Uint8List plaintext) {
       throw const FormatException();
     }
     final accounts = <OtpAccount>[];
+    final categoryNames = <String>{};
+    final memberships = <(String, String), List<String>>{};
     final keys = <(String, String)>{};
     for (final item in data) {
       if (item is! Map<String, dynamic>) throw const FormatException();
@@ -112,9 +121,28 @@ List<OtpAccount> parseLegacyBackup(Uint8List plaintext) {
       if (!keys.add((account.issuer, account.account))) {
         throw const FormatException();
       }
+      final tags = item['tags'] ?? const [];
+      if (tags is! List || tags.any((tag) => tag is! String)) {
+        throw const FormatException();
+      }
+      final names = <String>{};
+      for (final tag in tags.cast<String>()) {
+        if (validateCategoryName(tag) != tag) throw const FormatException();
+        names.add(tag);
+        categoryNames.add(tag);
+      }
+      memberships[(account.issuer, account.account)] = names.toList();
       accounts.add(account);
     }
-    return accounts;
+    final categories = [
+      for (final name in categoryNames) AccountCategory(name: name),
+    ];
+    validateCategories(categories);
+    return (
+      accounts: accounts,
+      categories: categories,
+      memberships: memberships,
+    );
   } catch (_) {
     throw const FormatException('Invalid or unsupported backup contents.');
   }

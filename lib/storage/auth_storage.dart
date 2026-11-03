@@ -189,6 +189,7 @@ extension AuthStorage on AppDatabase {
     Map<String, int>? integerSettings,
     List<AccountCategory>? importedCategories,
     Map<(String, String), List<String>>? importedMemberships,
+    bool mergeImportedMemberships = false,
   }) async {
     final keys = <(String, String)>{};
     for (final account in accounts) {
@@ -208,6 +209,11 @@ extension AuthStorage on AppDatabase {
         : validateCategories(importedCategories);
     if ((checkedCategories == null) != (importedMemberships == null)) {
       throw const FormatException('Missing category membership.');
+    }
+    if (mergeImportedMemberships &&
+        (checkedCategories == null ||
+            checkedCategories.any((c) => c.isDefault))) {
+      throw const FormatException('Invalid category merge.');
     }
     if (checkedCategories != null) {
       final names = checkedCategories.map((c) => c.name).toSet();
@@ -233,19 +239,30 @@ extension AuthStorage on AppDatabase {
             1000) {
           throw const FormatException('Too many categories.');
         }
-        await update(categories)
-            .write(const CategoriesCompanion(isDefault: Value(false)));
+        var nextOrder =
+            local.values.fold<int>(
+              -1,
+              (max, category) =>
+                  category.sortOrder > max ? category.sortOrder : max,
+            ) +
+            1;
+        if (!mergeImportedMemberships) {
+          await update(categories)
+              .write(const CategoriesCompanion(isDefault: Value(false)));
+        }
         for (final category in checkedCategories) {
           final existing = local[category.name];
           if (existing == null) {
             await into(categories).insert(
               CategoriesCompanion.insert(
                 name: category.name,
-                sortOrder: category.sortOrder,
+                sortOrder: mergeImportedMemberships
+                    ? nextOrder++
+                    : category.sortOrder,
                 isDefault: Value(category.isDefault),
               ),
             );
-          } else {
+          } else if (!mergeImportedMemberships) {
             await (update(
               categories,
             )..where((c) => c.id.equals(existing.id))).write(
@@ -280,7 +297,8 @@ extension AuthStorage on AppDatabase {
           await addConfig(
             account,
             preserveSortOrder: !preserveExistingMetadata,
-            applyDefaultCategory: checkedCategories == null,
+            applyDefaultCategory:
+                checkedCategories == null || mergeImportedMemberships,
           );
         } else {
           await updateConfig(
@@ -319,9 +337,11 @@ extension AuthStorage on AppDatabase {
             account.issuer,
           );
           if (saved == null) throw StateError('Imported account not found.');
-          await (delete(
-            accountCategoryLinks,
-          )..where((link) => link.accountId.equals(saved.id))).go();
+          if (!mergeImportedMemberships) {
+            await (delete(
+              accountCategoryLinks,
+            )..where((link) => link.accountId.equals(saved.id))).go();
+          }
           for (final name
               in importedMemberships![(account.issuer, account.account)]!) {
             await into(accountCategoryLinks).insert(
@@ -329,6 +349,9 @@ extension AuthStorage on AppDatabase {
                 accountId: saved.id,
                 categoryId: categoryIds[name]!,
               ),
+              mode: mergeImportedMemberships
+                  ? InsertMode.insertOrIgnore
+                  : InsertMode.insert,
             );
           }
         }

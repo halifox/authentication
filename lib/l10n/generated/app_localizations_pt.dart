@@ -578,12 +578,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String legacyImportWarning(int count) {
-    return 'Import $count accounts? Matching issuer and account names will be updated; existing icons, order, copy counts, and categories are preserved. Source tags, icons, and usage statistics are not imported.';
+    return 'Import $count accounts? Matching issuer and account names will be updated; existing icons, order, copy counts, and categories are preserved. Source tags are merged into categories by name; source icons and usage statistics are not imported.';
   }
 
   @override
   String get legacyImportError =>
-      'Import failed. Check the file, password, and format. Only TOTP, HOTP, and Steam accounts with an issuer and account name are supported; duplicate or unsupported entries reject the entire file.';
+      'Import failed. Check the file, password, and format. Only TOTP, HOTP, and Steam accounts with an issuer and account name are supported; duplicate accounts, invalid tags, or unsupported entries reject the entire file.';
 
   @override
   String get revealPassword => 'Show password';

@@ -400,21 +400,21 @@ class AddAccountScreen extends ConsumerWidget {
         format,
         password: password,
       );
-      final accounts = parseLegacyBackup(plaintext);
+      final document = parseLegacyBackup(plaintext);
       if (!context.mounted) return;
       final proceed = await showCupertinoModalPopup<bool>(
         context: context,
         builder: (_) => ActionResultSheet(
           state: 0,
           title: l10n.warning,
-          message: l10n.legacyImportWarning(accounts.length),
+          message: l10n.legacyImportWarning(document.accounts.length),
           falseButtonVisible: true,
         ),
       );
       if (proceed != true || !context.mounted) return;
       final count = await ref
           .read(backupOperationsProvider.notifier)
-          .importLegacyAccounts(accounts);
+          .importLegacyAccounts(document);
       if (context.mounted) {
         await _showResult(
           context,

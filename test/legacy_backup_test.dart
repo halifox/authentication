@@ -7,6 +7,7 @@ import 'package:authentication/backup/backup_provider.dart';
 import 'package:authentication/backup/legacy_import.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/account.dart';
+import 'package:authentication/otp/category.dart';
 import 'package:authentication/screens/add_account_screen.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
@@ -110,7 +111,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(
         find.textContaining(
-          'Source tags, icons, and usage statistics are not imported.',
+          'Source tags are merged into categories by name; source icons and usage statistics are not imported.',
         ),
         findsOneWidget,
       );
@@ -202,16 +203,98 @@ void main() {
       "CREATE TRIGGER reject_import BEFORE INSERT ON auth_entries BEGIN SELECT RAISE(ABORT, 'test failure'); END",
     );
     await expectLater(
-      container.read(backupOperationsProvider.notifier).importLegacyAccounts([
-        initial.copyWith(counter: 9),
-        initial.copyWith(account: 'new'),
-      ]),
+      container.read(backupOperationsProvider.notifier).importLegacyAccounts((
+        accounts: [
+          initial.copyWith(counter: 9),
+          initial.copyWith(account: 'new'),
+        ],
+        categories: [const AccountCategory(name: 'Created')],
+        memberships: {
+          ('Example', 'existing'): ['Created'],
+          ('Example', 'new'): ['Created'],
+        },
+      )),
       throwsA(anything),
     );
     final account = (await db.getAllConfigs()).single;
     expect(account.counter, 1);
     expect(account.icon, 'assets/icons/google.svg');
+    expect(await db.getCategories(), isEmpty);
   });
+  test(
+    'tag import merges category names and preserves defaults and memberships',
+    () async {
+      FlutterSecureStorage.setMockInitialValues({});
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
+      db.encryption = await EncryptionService.initialize(db);
+      await db.createCategory('Local');
+      await db.createCategory('Work');
+      final originalCategories = await db.getCategories();
+      final local = originalCategories.first;
+      final work = originalCategories.last;
+      await db.setDefaultCategory(local.id);
+      const existing = OtpAccount(
+        type: 'totp',
+        issuer: 'Example',
+        account: 'existing',
+        secret: 'JBSWY3DPEHPK3PXP',
+      );
+      await db.addConfig(existing);
+      final json = [
+        {
+          'issuer': 'Example',
+          'label': 'existing',
+          'secret': 'JBSWY3DPEHPK3PXP',
+          'tags': ['Work', 'Work'],
+        },
+        {
+          'issuer': 'Example',
+          'label': 'new',
+          'secret': 'JBSWY3DPEHPK3PXP',
+          'tags': ['Work', 'New'],
+        },
+      ];
+      final document = parseLegacyBackup(
+        Uint8List.fromList(utf8.encode(jsonEncode(json))),
+      );
+      final container = ProviderContainer(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          allIconsProvider.overrideWith((ref) async => []),
+        ],
+      );
+      addTearDown(container.dispose);
+      expect(
+        await container
+            .read(backupOperationsProvider.notifier)
+            .importLegacyAccounts(document),
+        2,
+      );
+      final categories = await db.getCategories();
+      expect(categories.map((category) => category.name), [
+        'Local',
+        'Work',
+        'New',
+      ]);
+      expect(
+        categories.singleWhere((category) => category.isDefault).id,
+        local.id,
+      );
+      expect(categories[1].sortOrder, work.sortOrder);
+      final accounts = await db.getAllConfigs();
+      final memberships = await db.getCategoryMemberships();
+      expect(
+        memberships[accounts.singleWhere((a) => a.account == 'existing').id],
+        {local.id, work.id},
+      );
+      expect(memberships[accounts.singleWhere((a) => a.account == 'new').id], {
+        local.id,
+        work.id,
+        categories.last.id,
+      });
+    },
+  );
   test('decrypts independent old and current encrypted samples', () async {
     for (final sample in [
       (LegacyBackupFormat.encryptedOld, 'old.aes'),
@@ -251,7 +334,7 @@ void main() {
       utf8.encode(jsonEncode(sample.take(2).toList())),
     );
     final accounts = parseLegacyBackup(valid);
-    expect(accounts.length, 2);
+    expect(accounts.accounts.length, 2);
   });
   test('validates whole input and rejects unsupported entries', () {
     Uint8List data(Object object) =>
@@ -265,7 +348,7 @@ void main() {
       'digits': 8,
       'period': 60,
     };
-    final account = parseLegacyBackup(data([valid])).single;
+    final account = parseLegacyBackup(data([valid])).accounts.single;
     expect(account.algorithm, 'sha256');
     expect(account.period, 60);
     expect(
@@ -273,6 +356,17 @@ void main() {
         data([
           valid,
           {...valid, 'type': 'MOTP'},
+        ]),
+      ),
+      throwsFormatException,
+    );
+    expect(
+      () => parseLegacyBackup(
+        data([
+          {
+            ...valid,
+            'tags': ['  '],
+          },
         ]),
       ),
       throwsFormatException,

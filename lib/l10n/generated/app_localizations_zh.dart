@@ -560,12 +560,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String legacyImportWarning(int count) {
-    return '导入 $count 个账户？发行方和账户名相同的账户将更新，已有图标、排序、复制次数和分类会保留。来源标签、图标和使用统计不会导入。';
+    return '导入 $count 个账户？发行方和账户名相同的账户将更新，已有图标、排序、复制次数和分类会保留。来源标签按名称合并为分类；来源图标和使用统计不会导入。';
   }
 
   @override
   String get legacyImportError =>
-      '无法导入：请检查文件、密码和格式。仅支持发行方及账户名均非空的 TOTP、HOTP 和 Steam；重复账户或含不支持条目的文件会整批拒绝。';
+      '无法导入：请检查文件、密码和格式。仅支持发行方及账户名均非空的 TOTP、HOTP 和 Steam；重复账户、无效标签或含不支持条目的文件会整批拒绝。';
 
   @override
   String get revealPassword => '显示密码';
