@@ -20,6 +20,24 @@ const introductionSeenKey = 'introduction_seen';
 final introductionPreferencesProvider = Provider<SharedPreferences?>(
   (ref) => null,
 );
+final completeIntroductionProvider = Provider<Future<bool> Function()>(
+  (ref) => () async {
+    final preferences = ref.read(introductionPreferencesProvider);
+    if (preferences == null) return false;
+    try {
+      final saved = await preferences.setBool(introductionSeenKey, true);
+      if (!saved) await preferences.reload();
+      return saved;
+    } catch (_) {
+      try {
+        await preferences.reload();
+      } catch (_) {
+        // The introduction remains visible when preferences are unavailable.
+      }
+      return false;
+    }
+  },
+);
 
 class AuthApp extends ConsumerStatefulWidget {
   const AuthApp({super.key});
@@ -179,12 +197,7 @@ class _InitialScreenState extends ConsumerState<_InitialScreen> {
       saving: saving,
       onContinue: () async {
         setState(() => saving = true);
-        var saved = false;
-        try {
-          saved = await preferences!.setBool(introductionSeenKey, true);
-        } catch (_) {
-          // Keep the introduction visible when the completion marker fails.
-        }
+        final saved = await ref.read(completeIntroductionProvider)();
         if (!context.mounted) return;
         setState(() {
           saving = false;
