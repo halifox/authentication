@@ -5,6 +5,7 @@ import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/legacy_import.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/category.dart';
+import 'package:authentication/storage/icon_data.dart';
 import 'package:base32/base32.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 import 'package:flutter/foundation.dart' show compute;
@@ -143,8 +144,27 @@ LegacyImport parseAuthpro(Uint8List bytes) {
         groups.length > 1000 ||
         links is! List ||
         links.length > 100000 ||
-        icons is! List) {
+        icons is! List ||
+        icons.length > 1000) {
       throw const FormatException();
+    }
+    final customIcons = <String, String>{};
+    for (final icon in icons) {
+      if (icon is! Map<String, dynamic> ||
+          icon['Id'] is! String ||
+          icon['Data'] is! String) {
+        throw const FormatException();
+      }
+      final id = icon['Id'] as String;
+      final data = icon['Data'] as String;
+      if (id.isEmpty ||
+          id.length > 100 ||
+          id.startsWith('@') ||
+          customIcons.containsKey(id) ||
+          data.length > maxBackupBytes * 2) {
+        throw const FormatException();
+      }
+      customIcons[id] = makeCustomIcon(base64Decode(data));
     }
     final groupNames = <String, String>{};
     final groupOrder = <(int, int, String)>[];
@@ -191,7 +211,8 @@ LegacyImport parseAuthpro(Uint8List bytes) {
           item['Ranking'] is! int ||
           (item['Username'] != null && item['Username'] is! String) ||
           (item['Pin'] != null && item['Pin'] is! String) ||
-          (item['CopyCount'] != null && item['CopyCount'] is! int)) {
+          (item['CopyCount'] != null && item['CopyCount'] is! int) ||
+          (item['Icon'] != null && item['Icon'] is! String)) {
         throw const FormatException();
       }
       final type = switch (item['Type']) {
@@ -217,6 +238,12 @@ LegacyImport parseAuthpro(Uint8List bytes) {
           type == 'motp' && period != 10) {
         throw const FormatException();
       }
+      final sourceIcon = item['Icon'] as String?;
+      String? customIcon;
+      if (sourceIcon != null && sourceIcon.startsWith('@')) {
+        customIcon = customIcons[sourceIcon.substring(1)];
+        if (customIcon == null) throw const FormatException();
+      }
       final account = OtpAccount(
         type: type,
         issuer: issuer,
@@ -235,6 +262,7 @@ LegacyImport parseAuthpro(Uint8List bytes) {
         counter: item['Counter'] as int,
         pin: item['Pin'] as String? ?? '',
         copyCount: item['CopyCount'] as int? ?? 0,
+        icon: customIcon ?? 'assets/icons/passkey.svg',
       );
       account.validate();
       if (type != 'motp') {

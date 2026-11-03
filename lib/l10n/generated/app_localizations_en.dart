@@ -642,7 +642,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String authproImportWarning(int count) {
-    return 'Import $count accounts? Matching accounts are updated; existing categories and metadata remain. Source categories are merged. Unnamed accounts use the issuer as their name. Source icons and category-specific ordering are not imported.';
+    return 'Import $count accounts? Matching accounts are updated; existing categories and metadata remain. Source categories are merged. Unnamed accounts use the issuer as their name. New accounts keep supported custom images; existing account icons remain. Source built-in icons and category-specific ordering are not imported.';
   }
 
   @override
@@ -651,7 +651,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String authproLegacyWarning(int count) {
-    return 'Import $count accounts? Matching accounts are updated; existing categories and metadata remain. Source categories are merged. Unnamed accounts use the issuer as their name. Source icons and category-specific ordering are not imported. This legacy encryption cannot verify file integrity.';
+    return 'Import $count accounts? Matching accounts are updated; existing categories and metadata remain. Source categories are merged. Unnamed accounts use the issuer as their name. New accounts keep supported custom images; existing account icons remain. Source built-in icons and category-specific ordering are not imported. This legacy encryption cannot verify file integrity.';
   }
 
   @override
@@ -713,4 +713,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get invalidCustomIcon =>
       'Choose a valid PNG or JPEG image up to 4096 pixels per side.';
+
+  @override
+  String get backupProcessing => 'Processing backup. Please wait.';
 }

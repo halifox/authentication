@@ -64,6 +64,79 @@ class _MemoryPicker extends FilePickerPlatform {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  testWidgets('compatible backup imports a custom image after confirmation', (
+    tester,
+  ) async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    final bitmap = image.Image(width: 16, height: 16);
+    final bytes = Uint8List.fromList(
+      utf8.encode(
+        jsonEncode({
+          'Authenticators': [
+            {
+              'Type': 2,
+              'Issuer': 'Example',
+              'Username': 'person',
+              'Secret': 'JBSWY3DPEHPK3PXP',
+              'Algorithm': 0,
+              'Digits': 6,
+              'Period': 30,
+              'Counter': 0,
+              'Ranking': 0,
+              'Icon': '@image',
+            },
+          ],
+          'CustomIcons': [
+            {'Id': 'image', 'Data': base64Encode(image.encodePng(bitmap))},
+          ],
+        }),
+      ),
+    );
+    final original = FilePickerPlatform.instance;
+    FilePickerPlatform.instance = _MemoryPicker(bytes);
+    addTearDown(() => FilePickerPlatform.instance = original);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          allIconsProvider.overrideWith((ref) async => []),
+        ],
+        child: const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: AddAccountScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Import .authpro file'),
+      200,
+      scrollable: find.byType(Scrollable),
+    );
+    await tester.ensureVisible(find.text('Import .authpro file'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Import .authpro file'));
+    await tester.pump();
+    await tester.runAsync(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+    });
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('New accounts keep supported custom images'),
+      findsOneWidget,
+    );
+    expect(await db.getAllConfigs(), isEmpty);
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect(isCustomIcon((await db.getAllConfigs()).single.icon), isTrue);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 10));
+  });
   testWidgets('custom icon picker returns a usable image', (tester) async {
     final bitmap = image.Image(width: 20, height: 20);
     image.fill(bitmap, color: image.ColorRgb8(12, 45, 78));

@@ -198,10 +198,10 @@
   "uriBackupImportError": "Import failed. Check the file, password, and account names. Duplicate, invalid, or unsupported records reject the entire file.",
   "@uriBackupImportWarning": {"placeholders": {"count": {"type": "int"}}},
   "authproImport": "Import .authpro file",
-  "authproImportWarning": "Import {count} accounts? Matching accounts are updated; existing categories and metadata remain. Source categories are merged. Unnamed accounts use the issuer as their name. Source icons and category-specific ordering are not imported.",
+  "authproImportWarning": "Import {count} accounts? Matching accounts are updated; existing categories and metadata remain. Source categories are merged. Unnamed accounts use the issuer as their name. New accounts keep supported custom images; existing account icons remain. Source built-in icons and category-specific ordering are not imported.",
   "authproImportError": "Import failed. Check the file, password, and account parameters. Invalid, duplicate, or unsupported records reject the entire file.",
   "@authproImportWarning": {"placeholders": {"count": {"type": "int"}}},
-  "authproLegacyWarning": "Import {count} accounts? Matching accounts are updated; existing categories and metadata remain. Source categories are merged. Unnamed accounts use the issuer as their name. Source icons and category-specific ordering are not imported. This legacy encryption cannot verify file integrity.",
+  "authproLegacyWarning": "Import {count} accounts? Matching accounts are updated; existing categories and metadata remain. Source categories are merged. Unnamed accounts use the issuer as their name. New accounts keep supported custom images; existing account icons remain. Source built-in icons and category-specific ordering are not imported. This legacy encryption cannot verify file integrity.",
   "@authproLegacyWarning": {"placeholders": {"count": {"type": "int"}}},
   "pinLengthRequired": "PIN must contain {count} characters",
   "@pinLengthRequired": {"placeholders": {"count": {"type": "int"}}},
@@ -222,5 +222,6 @@
   "totpAuthImportError": "Import failed. Check the password and account details. Invalid, duplicate or unsupported records reject the entire file.",
   "@totpAuthImportWarning": {"placeholders": {"count": {"type": "int"}}},
   "chooseCustomIcon": "Choose image",
-  "invalidCustomIcon": "Choose a valid PNG or JPEG image up to 4096 pixels per side."
+  "invalidCustomIcon": "Choose a valid PNG or JPEG image up to 4096 pixels per side.",
+  "backupProcessing": "Processing backup. Please wait."
 }

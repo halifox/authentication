@@ -642,7 +642,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String authproImportWarning(int count) {
-    return '导入 $count 个账户？同名账户将更新，已有分类和元数据保留，来源分类按名称合并。空账户名使用发行方名称；来源图标和分类内顺序不会导入。';
+    return '导入 $count 个账户？同名账户将更新，已有分类和元数据保留，来源分类按名称合并。空账户名使用发行方名称；新账户保留受支持的自定义图片，已有账户图标不变；来源内置图标和分类内顺序不会导入。';
   }
 
   @override
@@ -650,7 +650,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String authproLegacyWarning(int count) {
-    return '导入 $count 个账户？同名账户将更新，已有分类和元数据保留，来源分类按名称合并。空账户名使用发行方名称；来源图标和分类内顺序不会导入。 此旧版加密无法验证文件完整性。';
+    return '导入 $count 个账户？同名账户将更新，已有分类和元数据保留，来源分类按名称合并。空账户名使用发行方名称；新账户保留受支持的自定义图片，已有账户图标不变；来源内置图标和分类内顺序不会导入。 此旧版加密无法验证文件完整性。';
   }
 
   @override
@@ -708,4 +708,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get invalidCustomIcon => '请选择有效的 PNG 或 JPEG 图片，边长不得超过 4096 像素。';
+
+  @override
+  String get backupProcessing => '正在处理备份，请稍候。';
 }

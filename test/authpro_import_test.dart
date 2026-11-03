@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:authentication/backup/authpro_import.dart';
+import 'package:authentication/storage/icon_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Uint8List encode(Map<String, Object?> value) =>
@@ -110,6 +111,25 @@ void main() {
       }
     }
   });
+
+  test(
+    'imports source image and rejects missing or invalid icon references',
+    () {
+      final data = sample();
+      final png = File('test/fixtures/authpro_icon.png').readAsBytesSync();
+      data['CustomIcons'] = [
+        {'Id': 'sample', 'Data': base64Encode(png)},
+      ];
+      (data['Authenticators'] as List).first['Icon'] = '@sample';
+      final parsed = parseAuthpro(encode(data));
+      expect(validateIcon(parsed.accounts.last.icon), isNotEmpty);
+      (data['Authenticators'] as List).first['Icon'] = '@missing';
+      expect(() => parseAuthpro(encode(data)), throwsFormatException);
+      (data['Authenticators'] as List).first['Icon'] = '@sample';
+      (data['CustomIcons'] as List).first['Data'] = base64Encode([1, 2, 3]);
+      expect(() => parseAuthpro(encode(data)), throwsFormatException);
+    },
+  );
 
   test('imports ordering, membership, counters and statistics', () {
     final result = parseAuthpro(encode(sample()));

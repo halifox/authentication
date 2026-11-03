@@ -724,13 +724,12 @@ class AddAccountScreen extends ConsumerWidget {
         password = await _passwordDialog(context, export: false);
         if (password == null || !context.mounted) return;
       }
-      final plaintext = password == null
-          ? bytes
-          : await _decryptWithProgress(
-              context,
-              () => decryptAuthpro(bytes, password: password),
-            );
-      final document = parseAuthpro(plaintext);
+      final document = await _decryptWithProgress(context, () async {
+        final plaintext = password == null
+            ? bytes
+            : await decryptAuthpro(bytes, password: password);
+        return compute(parseAuthpro, plaintext);
+      }, message: l10n.backupProcessing);
       if (!context.mounted) return;
       await _confirmImportedAccounts(
         context,
@@ -808,8 +807,9 @@ class AddAccountScreen extends ConsumerWidget {
 
   Future<T> _decryptWithProgress<T>(
     BuildContext context,
-    Future<T> Function() action,
-  ) async {
+    Future<T> Function() action, {
+    String? message,
+  }) async {
     final navigator = Navigator.of(context);
     final l10n = AppLocalizations.of(context)!;
     final route = DialogRoute<void>(
@@ -822,7 +822,7 @@ class AddAccountScreen extends ConsumerWidget {
             children: [
               const CircularProgressIndicator(),
               const SizedBox(width: 16),
-              Expanded(child: Text(l10n.backupDecrypting)),
+              Expanded(child: Text(message ?? l10n.backupDecrypting)),
             ],
           ),
         ),
