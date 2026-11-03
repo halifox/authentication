@@ -9,9 +9,21 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:saf/saf.dart';
 
+import 'automatic_backup_files.dart'
+    if (dart.library.io) 'automatic_backup_files_io.dart'
+    as local_files;
+
 const _configKey = 'automatic_backup_config_v1';
+final automaticBackupDesktopProvider = Provider<bool>(
+  (ref) =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.linux ||
+          defaultTargetPlatform == TargetPlatform.windows),
+);
 final automaticBackupSupportedProvider = Provider<bool>(
-  (ref) => !kIsWeb && defaultTargetPlatform == TargetPlatform.android,
+  (ref) =>
+      ref.watch(automaticBackupDesktopProvider) ||
+      (!kIsWeb && defaultTargetPlatform == TargetPlatform.android),
 );
 final automaticBackupStorageProvider = Provider<FlutterSecureStorage>(
   (ref) => const FlutterSecureStorage(),
@@ -64,6 +76,9 @@ class AutomaticBackup extends Notifier<AutomaticBackupStatus> {
   }
 
   Future<bool> _hasPermission(String uri) async {
+    if (ref.read(automaticBackupDesktopProvider)) {
+      return local_files.isLocalBackupDirectory(uri);
+    }
     final selected = Uri.parse(uri);
     final segments = selected.pathSegments;
     if (segments.length < 2 || segments.first != 'tree') return false;
@@ -97,7 +112,8 @@ class AutomaticBackup extends Notifier<AutomaticBackupStatus> {
       if (config is! Map ||
           config['directory'] is! String ||
           config['password'] is! String ||
-          !_isLocal(config['directory'] as String) ||
+          (!ref.read(automaticBackupDesktopProvider) &&
+              !_isLocal(config['directory'] as String)) ||
           (config['password'] as String).isEmpty ||
           (config['password'] as String).length > 1024) {
         throw const FormatException();
@@ -147,31 +163,31 @@ class AutomaticBackup extends Notifier<AutomaticBackupStatus> {
     _running = true;
     state = AutomaticBackupStatus.saving;
     try {
-      final picked = await ref.read(automaticBackupSafProvider).pickDirectory();
-      if (picked == null) {
+      final desktop = ref.read(automaticBackupDesktopProvider);
+      final directory = desktop
+          ? await local_files.pickLocalBackupDirectory()
+          : (await ref.read(automaticBackupSafProvider).pickDirectory())?.uri;
+      if (directory == null) {
         if (ref.mounted) state = previous;
         return false;
       }
-      if (!_isLocal(picked.uri)) {
+      if (!desktop && !_isLocal(directory)) {
         try {
           await ref
               .read(automaticBackupSafProvider)
-              .releasePersistedPermission(picked.uri);
+              .releasePersistedPermission(directory);
         } catch (_) {}
         throw const FormatException();
       }
-      if (!await _hasPermission(picked.uri)) throw const FormatException();
-      final config = jsonEncode({
-        'directory': picked.uri,
-        'password': password,
-      });
+      if (!await _hasPermission(directory)) throw const FormatException();
+      final config = jsonEncode({'directory': directory, 'password': password});
       final storage = ref.read(automaticBackupStorageProvider);
       await storage.write(key: _configKey, value: config);
       if (await storage.read(key: _configKey) != config) {
         throw StateError('Save failed');
       }
       if (!ref.mounted) return false;
-      _directory = picked.uri;
+      _directory = directory;
       _password = password;
       _lastRevision = null;
       state = AutomaticBackupStatus.ready;
@@ -232,26 +248,31 @@ class AutomaticBackup extends Notifier<AutomaticBackupStatus> {
         16,
         (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0'),
       ).join();
-      final saf = ref.read(automaticBackupSafProvider);
-      final file = await saf.writeFileStream(
-        _directory!,
-        'authentication-$suffix.json',
-        'application/json',
-        Stream.value(snapshot.bytes),
-      );
-      try {
-        final saved = await saf.readFileBytes(
-          file.uri,
-          count: snapshot.bytes.length + 1,
+      final name = 'authentication-$suffix.json';
+      if (ref.read(automaticBackupDesktopProvider)) {
+        await local_files.writeLocalBackup(_directory!, name, snapshot.bytes);
+      } else {
+        final saf = ref.read(automaticBackupSafProvider);
+        final file = await saf.writeFileStream(
+          _directory!,
+          name,
+          'application/json',
+          Stream.value(snapshot.bytes),
         );
-        if (!listEquals(saved, snapshot.bytes)) {
-          throw StateError('Verification failed');
-        }
-      } catch (_) {
         try {
-          await saf.delete(file.uri);
-        } catch (_) {}
-        rethrow;
+          final saved = await saf.readFileBytes(
+            file.uri,
+            count: snapshot.bytes.length + 1,
+          );
+          if (!listEquals(saved, snapshot.bytes)) {
+            throw StateError('Verification failed');
+          }
+        } catch (_) {
+          try {
+            await saf.delete(file.uri);
+          } catch (_) {}
+          rethrow;
+        }
       }
       await db.markBackupSaved(snapshot.revision);
       _lastRevision = snapshot.revision;

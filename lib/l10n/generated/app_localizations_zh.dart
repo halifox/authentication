@@ -815,7 +815,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get autoBackupIntro =>
-      '选择 Android 本地存储文件夹和备份密码。应用运行时，数据更改后会保存新的加密文件。请单独保管密码；丢失密码将无法恢复。旧文件不会自动删除，仍需使用原来的密码解密。';
+      '选择本地存储文件夹和备份密码。应用运行时，数据更改后会保存新的加密文件。请单独保管密码；丢失密码将无法恢复。旧文件不会自动删除，仍需使用原来的密码解密。';
 
   @override
   String get autoBackupUnsupported => '此平台暂不支持自动备份。';

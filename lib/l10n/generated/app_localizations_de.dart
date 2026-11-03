@@ -847,7 +847,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get autoBackupIntro =>
-      'Choose an Android local storage folder and a backup password. The app saves a new encrypted file after changes while it is running. Keep the password separately; losing it prevents recovery. Old files are not deleted and keep their original password.';
+      'Choose a local storage folder and a backup password. The app saves a new encrypted file after changes while it is running. Keep the password separately; losing it prevents recovery. Old files are not deleted and keep their original password.';
 
   @override
   String get autoBackupUnsupported =>
