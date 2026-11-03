@@ -305,6 +305,52 @@ void main() {
     expect(chosen, isNotNull);
     expect(validateIcon(chosen!), isNotEmpty);
   });
+  testWidgets(
+    'plaintext export imports through the URI list after confirmation',
+    (tester) async {
+      FlutterSecureStorage.setMockInitialValues({});
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
+      db.encryption = await EncryptionService.initialize(db);
+      final original = FilePickerPlatform.instance;
+      FilePickerPlatform.instance = _MemoryPicker(
+        File('test/fixtures/ente/plain.txt').readAsBytesSync(),
+      );
+      addTearDown(() => FilePickerPlatform.instance = original);
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            appDatabaseProvider.overrideWithValue(db),
+            allIconsProvider.overrideWith((ref) async => []),
+          ],
+          child: const MaterialApp(
+            locale: Locale('en'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: AddAccountScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Import URI list'),
+        200,
+        scrollable: find.byType(Scrollable),
+      );
+      await tester.ensureVisible(find.text('Import URI list'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Import URI list'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('New accounts: 7.'), findsOneWidget);
+      expect(await db.getAllConfigs(), isEmpty);
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+      expect((await db.getAllConfigs()).length, 7);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(const Duration(milliseconds: 10));
+    },
+  );
+
   testWidgets('FreeOTP import requires password and confirmation', (
     tester,
   ) async {
