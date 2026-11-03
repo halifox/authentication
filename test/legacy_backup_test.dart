@@ -61,6 +61,58 @@ class _MemoryPicker extends FilePickerPlatform {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  testWidgets('URI backup decrypts and imports only after confirmation', (
+    tester,
+  ) async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    final bytes = File('test/fixtures/uri_backup/encrypted.json')
+        .readAsBytesSync();
+    final original = FilePickerPlatform.instance;
+    FilePickerPlatform.instance = _MemoryPicker(bytes);
+    addTearDown(() => FilePickerPlatform.instance = original);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          allIconsProvider.overrideWith((ref) async => []),
+        ],
+        child: const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: AddAccountScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Import Proton Authenticator backup'),
+      200,
+      scrollable: find.byType(Scrollable),
+    );
+    await tester.tap(find.text('Import Proton Authenticator backup'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'test');
+    await tester.pump();
+    await tester.tap(find.text('OK'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Decrypting backup. Please wait.'), findsOneWidget);
+    expect(await db.getAllConfigs(), isEmpty);
+    await tester.runAsync(() async {
+      await Future<void>.delayed(const Duration(seconds: 2));
+    });
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Unnamed Steam accounts'), findsOneWidget);
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect((await db.getAllConfigs()).isNotEmpty, true);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 10));
+  });
   testWidgets('encrypted grouped backup decrypts before confirmation', (
     tester,
   ) async {

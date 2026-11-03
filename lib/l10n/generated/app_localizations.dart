@@ -1253,6 +1253,24 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'正在解密备份，请稍候。'**
   String get backupDecrypting;
+
+  /// No description provided for @uriBackupImport.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入 Proton Authenticator 备份'**
+  String get uriBackupImport;
+
+  /// No description provided for @uriBackupImportWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入 {count} 个账户？同名账户将更新，已有分类和元数据保留。没有名称的 Steam 账户将使用“Steam”作为账户名；来源备注不会导入。'**
+  String uriBackupImportWarning(int count);
+
+  /// No description provided for @uriBackupImportError.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法导入。请检查文件、密码及账户名称；重复、无效或不受支持的记录会导致整批拒绝。'**
+  String get uriBackupImportError;
 }
 
 class _AppLocalizationsDelegate

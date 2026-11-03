@@ -623,4 +623,16 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get backupDecrypting => 'Decrypting backup. Please wait.';
+
+  @override
+  String get uriBackupImport => 'Import Proton Authenticator backup';
+
+  @override
+  String uriBackupImportWarning(int count) {
+    return 'Import $count accounts? Matching accounts are updated and existing categories and metadata are preserved. Unnamed Steam accounts use “Steam” as their account name; source notes are not imported.';
+  }
+
+  @override
+  String get uriBackupImportError =>
+      'Import failed. Check the file, password, and account names. Duplicate, invalid, or unsupported records reject the entire file.';
 }

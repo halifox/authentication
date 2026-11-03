@@ -192,5 +192,9 @@
   "groupedImportWarning": "Import {count} accounts? Matching accounts are updated; existing categories and account metadata are preserved. Source groups merge into categories; icons, notes, and favorites are not imported.",
   "groupedImportError": "Import failed. Check the file, password, groups, and OTP parameters. Unsupported encryption parameters, invalid entries, or duplicates reject the entire file.",
   "@groupedImportWarning": {"placeholders": {"count": {"type": "int"}}},
-  "backupDecrypting": "Decrypting backup. Please wait."
+  "backupDecrypting": "Decrypting backup. Please wait.",
+  "uriBackupImport": "Import Proton Authenticator backup",
+  "uriBackupImportWarning": "Import {count} accounts? Matching accounts are updated and existing categories and metadata are preserved. Unnamed Steam accounts use “Steam” as their account name; source notes are not imported.",
+  "uriBackupImportError": "Import failed. Check the file, password, and account names. Duplicate, invalid, or unsupported records reject the entire file.",
+  "@uriBackupImportWarning": {"placeholders": {"count": {"type": "int"}}}
 }

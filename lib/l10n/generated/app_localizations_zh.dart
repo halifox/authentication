@@ -606,4 +606,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get backupDecrypting => '正在解密备份，请稍候。';
+
+  @override
+  String get uriBackupImport => '导入 Proton Authenticator 备份';
+
+  @override
+  String uriBackupImportWarning(int count) {
+    return '导入 $count 个账户？同名账户将更新，已有分类和元数据保留。没有名称的 Steam 账户将使用“Steam”作为账户名；来源备注不会导入。';
+  }
+
+  @override
+  String get uriBackupImportError => '无法导入。请检查文件、密码及账户名称；重复、无效或不受支持的记录会导致整批拒绝。';
 }
