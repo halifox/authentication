@@ -701,6 +701,18 @@ class AppLocalizationsIt extends AppLocalizations {
   String get plusImport => 'Import Authenticator Plus ZIP';
 
   @override
+  String get kdbxImport => 'Import KeePass database';
+
+  @override
+  String kdbxImportWarning(int count) {
+    return 'Import $count accounts? Matching accounts are updated and existing metadata is preserved. Nested groups are flattened and matching names merge into categories. Passwords, notes, icons and other fields are not imported; only entries with an OTP URI are included.';
+  }
+
+  @override
+  String get kdbxImportError =>
+      'Import failed. Check the password and file. Only supported password-protected KDBX 4 databases can be imported; unsupported or invalid entries reject the file.';
+
+  @override
   String plusImportWarning(int count) {
     return 'Import $count accounts? Matching accounts are updated and existing metadata is preserved. Categories, icons and ordering are not imported. Traditional ZIP encryption cannot authenticate file integrity.';
   }

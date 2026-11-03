@@ -679,6 +679,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get plusImport => '导入 Authenticator Plus ZIP';
 
   @override
+  String get kdbxImport => '导入 KeePass 数据库';
+
+  @override
+  String kdbxImportWarning(int count) {
+    return '导入 $count 个账户？同名账户会更新并保留已有元数据，嵌套分组展平并按名称合并为分类。仅导入含 OTP URI 的条目，不导入密码、备注、图标及其他字段。';
+  }
+
+  @override
+  String get kdbxImportError =>
+      '导入失败，请检查密码和文件。仅支持受支持的密码保护 KDBX 4 数据库；无效或不支持的条目会使整个文件被拒绝。';
+
+  @override
   String plusImportWarning(int count) {
     return '导入 $count 个账户？同名账户将更新并保留已有元数据，不导入分类、图标和顺序。传统 ZIP 加密不能认证文件完整性。';
   }

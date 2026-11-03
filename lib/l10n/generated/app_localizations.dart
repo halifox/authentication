@@ -1368,6 +1368,24 @@ abstract class AppLocalizations {
   /// **'Import Authenticator Plus ZIP'**
   String get plusImport;
 
+  /// No description provided for @kdbxImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Import KeePass database'**
+  String get kdbxImport;
+
+  /// No description provided for @kdbxImportWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Import {count} accounts? Matching accounts are updated and existing metadata is preserved. Nested groups are flattened and matching names merge into categories. Passwords, notes, icons and other fields are not imported; only entries with an OTP URI are included.'**
+  String kdbxImportWarning(int count);
+
+  /// No description provided for @kdbxImportError.
+  ///
+  /// In en, this message translates to:
+  /// **'Import failed. Check the password and file. Only supported password-protected KDBX 4 databases can be imported; unsupported or invalid entries reject the file.'**
+  String get kdbxImportError;
+
   /// No description provided for @plusImportWarning.
   ///
   /// In en, this message translates to:
