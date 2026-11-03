@@ -5,6 +5,7 @@ import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/category.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/storage/icon_data.dart';
+import 'package:authentication/storage/icon_pack.dart';
 
 import 'package:encrypt/encrypt.dart' as enc;
 
@@ -22,11 +23,18 @@ class Backup {
     Map<String, int>? integerSettings,
     bool includeCopyCounts = false,
     List<AccountCategory>? categories,
+    List<IconPack>? iconPacks,
   }) async {
     if (categories != null && !includeCopyCounts) {
       throw const FormatException(
         'Categories require complete account metadata.',
       );
+    }
+    if (iconPacks != null) {
+      if (categories == null) {
+        throw const FormatException('Icon packs require a complete backup.');
+      }
+      validateIconPacks(iconPacks);
     }
     final hasCustomIcons = entries.any(
       (entry) =>
@@ -57,6 +65,8 @@ class Backup {
       'entries': entries,
       'settings': ?validatedSettings,
       'integerSettings': ?validatedIntegers,
+      if (iconPacks != null)
+        'iconPacks': [for (final pack in iconPacks) iconPackToJson(pack)],
       if (validatedCategories != null)
         'categories': [
           for (final category in validatedCategories)
@@ -70,7 +80,9 @@ class Backup {
     final payload = utf8.encode(jsonEncode(contents));
     final Map<String, Object> envelope = {
       'format': 'authentication-backup',
-      'version': validatedCategories != null
+      'version': iconPacks != null
+          ? 7
+          : validatedCategories != null
           ? (hasCustomIcons ? 6 : 5)
           : includeCopyCounts
           ? 4
@@ -119,7 +131,8 @@ class Backup {
             data['version'] != 3 &&
             data['version'] != 4 &&
             data['version'] != 5 &&
-            data['version'] != 6) ||
+            data['version'] != 6 &&
+            data['version'] != 7) ||
         data['encrypted'] is! bool) {
       throw const FormatException('Unsupported backup format.');
     }
@@ -140,6 +153,7 @@ class Backup {
       Map<String, bool>? settings,
       Map<String, int>? integerSettings,
       List<AccountCategory>? categories,
+      List<IconPack>? iconPacks,
       bool hasCopyCounts,
     })
   >
@@ -180,9 +194,20 @@ class Backup {
       throw const FormatException('Invalid backup contents.');
     }
     final entries = contents['entries'];
+    List<IconPack>? iconPacks;
+    if (envelope['version'] >= 7) {
+      final raw = contents['iconPacks'];
+      if (raw is! List || raw.length > 100) {
+        throw const FormatException('Invalid icon packs.');
+      }
+      iconPacks = validateIconPacks([
+        for (final pack in raw) iconPackFromJson(pack),
+      ]);
+    }
     if ((envelope['version'] == 1 && contents.containsKey('settings')) ||
         (envelope['version'] < 3 && contents.containsKey('integerSettings')) ||
-        (envelope['version'] < 5 && contents.containsKey('categories'))) {
+        (envelope['version'] < 5 && contents.containsKey('categories')) ||
+        (envelope['version'] < 7 && contents.containsKey('iconPacks'))) {
       throw const FormatException('Invalid backup version.');
     }
     final settings = envelope['version'] >= 2
@@ -226,6 +251,7 @@ class Backup {
       settings: settings,
       integerSettings: integerSettings,
       categories: categories,
+      iconPacks: iconPacks,
       hasCopyCounts: (envelope['version'] as int) >= 4,
     );
   }
@@ -293,6 +319,7 @@ Future<Uint8List> encodeBackupAccounts(
   bool includeCopyCounts = false,
   List<AccountCategory>? categories,
   Map<int, List<String>>? memberships,
+  List<IconPack>? iconPacks,
 }) {
   if (categories != null && accounts.isNotEmpty && memberships == null) {
     throw const FormatException('Category memberships are required.');
@@ -316,6 +343,7 @@ Future<Uint8List> encodeBackupAccounts(
     integerSettings: integerSettings,
     includeCopyCounts: includeCopyCounts,
     categories: categories,
+    iconPacks: iconPacks,
   );
 }
 
@@ -326,6 +354,7 @@ Future<
     Map<String, int>? integerSettings,
     bool hasCopyCounts,
     List<AccountCategory>? categories,
+    List<IconPack>? iconPacks,
     Map<(String, String), List<String>>? memberships,
   })
 >
@@ -337,6 +366,7 @@ decodeBackupDocument(Uint8List bytes, String? password) async {
     integerSettings: document.integerSettings,
     hasCopyCounts: document.hasCopyCounts,
     categories: document.categories,
+    iconPacks: document.iconPacks,
     memberships: document.categories == null
         ? null
         : {

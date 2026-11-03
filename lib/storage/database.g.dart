@@ -2030,6 +2030,214 @@ class BackupStateCompanion extends UpdateCompanion<BackupStateData> {
   }
 }
 
+class $IconPacksTable extends IconPacks
+    with TableInfo<$IconPacksTable, StoredIconPack> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $IconPacksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dataMeta = const VerificationMeta('data');
+  @override
+  late final GeneratedColumn<String> data = GeneratedColumn<String>(
+    'data',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [name, data];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'icon_packs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<StoredIconPack> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('data')) {
+      context.handle(
+        _dataMeta,
+        this.data.isAcceptableOrUnknown(data['data']!, _dataMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dataMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {name};
+  @override
+  StoredIconPack map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return StoredIconPack(
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      data: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}data'],
+      )!,
+    );
+  }
+
+  @override
+  $IconPacksTable createAlias(String alias) {
+    return $IconPacksTable(attachedDatabase, alias);
+  }
+}
+
+class StoredIconPack extends DataClass implements Insertable<StoredIconPack> {
+  final String name;
+  final String data;
+  const StoredIconPack({required this.name, required this.data});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['name'] = Variable<String>(name);
+    map['data'] = Variable<String>(data);
+    return map;
+  }
+
+  IconPacksCompanion toCompanion(bool nullToAbsent) {
+    return IconPacksCompanion(name: Value(name), data: Value(data));
+  }
+
+  factory StoredIconPack.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return StoredIconPack(
+      name: serializer.fromJson<String>(json['name']),
+      data: serializer.fromJson<String>(json['data']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'name': serializer.toJson<String>(name),
+      'data': serializer.toJson<String>(data),
+    };
+  }
+
+  StoredIconPack copyWith({String? name, String? data}) =>
+      StoredIconPack(name: name ?? this.name, data: data ?? this.data);
+  StoredIconPack copyWithCompanion(IconPacksCompanion data) {
+    return StoredIconPack(
+      name: data.name.present ? data.name.value : this.name,
+      data: data.data.present ? data.data.value : this.data,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StoredIconPack(')
+          ..write('name: $name, ')
+          ..write('data: $data')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(name, data);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is StoredIconPack &&
+          other.name == this.name &&
+          other.data == this.data);
+}
+
+class IconPacksCompanion extends UpdateCompanion<StoredIconPack> {
+  final Value<String> name;
+  final Value<String> data;
+  final Value<int> rowid;
+  const IconPacksCompanion({
+    this.name = const Value.absent(),
+    this.data = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  IconPacksCompanion.insert({
+    required String name,
+    required String data,
+    this.rowid = const Value.absent(),
+  }) : name = Value(name),
+       data = Value(data);
+  static Insertable<StoredIconPack> custom({
+    Expression<String>? name,
+    Expression<String>? data,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (name != null) 'name': name,
+      if (data != null) 'data': data,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  IconPacksCompanion copyWith({
+    Value<String>? name,
+    Value<String>? data,
+    Value<int>? rowid,
+  }) {
+    return IconPacksCompanion(
+      name: name ?? this.name,
+      data: data ?? this.data,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (data.present) {
+      map['data'] = Variable<String>(data.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('IconPacksCompanion(')
+          ..write('name: $name, ')
+          ..write('data: $data, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2041,6 +2249,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $AccountCategoryLinksTable accountCategoryLinks =
       $AccountCategoryLinksTable(this);
   late final $BackupStateTable backupState = $BackupStateTable(this);
+  late final $IconPacksTable iconPacks = $IconPacksTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2052,6 +2261,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     categories,
     accountCategoryLinks,
     backupState,
+    iconPacks,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -3695,6 +3905,146 @@ typedef $$BackupStateTableProcessedTableManager =
       BackupStateData,
       PrefetchHooks Function()
     >;
+typedef $$IconPacksTableCreateCompanionBuilder = IconPacksCompanion Function({
+  required String name,
+  required String data,
+  Value<int> rowid,
+});
+typedef $$IconPacksTableUpdateCompanionBuilder = IconPacksCompanion Function({
+  Value<String> name,
+  Value<String> data,
+  Value<int> rowid,
+});
+
+class $$IconPacksTableFilterComposer
+    extends Composer<_$AppDatabase, $IconPacksTable> {
+  $$IconPacksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get data => $composableBuilder(
+    column: $table.data,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$IconPacksTableOrderingComposer
+    extends Composer<_$AppDatabase, $IconPacksTable> {
+  $$IconPacksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get data => $composableBuilder(
+    column: $table.data,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$IconPacksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $IconPacksTable> {
+  $$IconPacksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get data =>
+      $composableBuilder(column: $table.data, builder: (column) => column);
+}
+
+class $$IconPacksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $IconPacksTable,
+          StoredIconPack,
+          $$IconPacksTableFilterComposer,
+          $$IconPacksTableOrderingComposer,
+          $$IconPacksTableAnnotationComposer,
+          $$IconPacksTableCreateCompanionBuilder,
+          $$IconPacksTableUpdateCompanionBuilder,
+          (
+            StoredIconPack,
+            BaseReferences<_$AppDatabase, $IconPacksTable, StoredIconPack>,
+          ),
+          StoredIconPack,
+          PrefetchHooks Function()
+        > {
+  $$IconPacksTableTableManager(_$AppDatabase db, $IconPacksTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$IconPacksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$IconPacksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$IconPacksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> name = const Value.absent(),
+            Value<String> data = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) => IconPacksCompanion(name: name, data: data, rowid: rowid),
+          createCompanionCallback: ({
+            required String name,
+            required String data,
+            Value<int> rowid = const Value.absent(),
+          }) => IconPacksCompanion.insert(name: name, data: data, rowid: rowid),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$IconPacksTable, StoredIconPack>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $IconPacksTable,
+                    StoredIconPack
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$IconPacksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $IconPacksTable,
+      StoredIconPack,
+      $$IconPacksTableFilterComposer,
+      $$IconPacksTableOrderingComposer,
+      $$IconPacksTableAnnotationComposer,
+      $$IconPacksTableCreateCompanionBuilder,
+      $$IconPacksTableUpdateCompanionBuilder,
+      (
+        StoredIconPack,
+        BaseReferences<_$AppDatabase, $IconPacksTable, StoredIconPack>,
+      ),
+      StoredIconPack,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3711,4 +4061,6 @@ class $AppDatabaseManager {
       $$AccountCategoryLinksTableTableManager(_db, _db.accountCategoryLinks);
   $$BackupStateTableTableManager get backupState =>
       $$BackupStateTableTableManager(_db, _db.backupState);
+  $$IconPacksTableTableManager get iconPacks =>
+      $$IconPacksTableTableManager(_db, _db.iconPacks);
 }

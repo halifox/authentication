@@ -591,7 +591,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupSettingsWarning.
   ///
   /// In zh, this message translates to:
-  /// **'发行者和账户名相同的条目将被更新。若备份包含分类和设置，将按名称合并分类、替换导入账户的分类，并恢复设置和默认分类。是否继续？'**
+  /// **'发行者和账户名相同的条目将被更新。若备份包含分类和设置，将按名称合并分类、替换导入账户的分类，并恢复设置和默认分类。同名图标包将被替换。是否继续？'**
   String get backupSettingsWarning;
 
   /// No description provided for @showAccountName.
@@ -1391,6 +1391,42 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'正在处理备份，请稍候。'**
   String get backupProcessing;
+
+  /// No description provided for @importIconPack.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入图标包'**
+  String get importIconPack;
+
+  /// No description provided for @iconLoadError.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法加载图标。'**
+  String get iconLoadError;
+
+  /// No description provided for @iconPackImportConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入包含 {count} 个图标的“{name}”？同名图标包将被替换。'**
+  String iconPackImportConfirm(String name, int count);
+
+  /// No description provided for @iconPackImported.
+  ///
+  /// In zh, this message translates to:
+  /// **'图标包已导入。'**
+  String get iconPackImported;
+
+  /// No description provided for @iconPackError.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法处理图标包，请检查文件格式和图片。'**
+  String get iconPackError;
+
+  /// No description provided for @iconPackDeleteConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除“{name}”？已分配给账户的图标会保留。'**
+  String iconPackDeleteConfirm(String name);
 }
 
 class _AppLocalizationsDelegate

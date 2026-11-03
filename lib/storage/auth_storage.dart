@@ -191,7 +191,9 @@ extension AuthStorage on AppDatabase {
     List<AccountCategory>? importedCategories,
     Map<(String, String), List<String>>? importedMemberships,
     bool mergeImportedMemberships = false,
+    List<IconPack>? importedIconPacks,
   }) async {
+    if (importedIconPacks != null) validateIconPacks(importedIconPacks);
     final keys = <(String, String)>{};
     for (final account in accounts) {
       account.validate();
@@ -232,6 +234,11 @@ extension AuthStorage on AppDatabase {
       }
     }
     await transaction(() async {
+      if (importedIconPacks != null) {
+        for (final pack in importedIconPacks) {
+          await saveIconPack(pack);
+        }
+      }
       var categoryIds = <String, int>{};
       if (checkedCategories != null) {
         final local = {

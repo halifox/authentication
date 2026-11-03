@@ -711,4 +711,26 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get backupProcessing => '正在处理备份，请稍候。';
+
+  @override
+  String get importIconPack => '导入图标包';
+
+  @override
+  String get iconLoadError => '无法加载图标。';
+
+  @override
+  String iconPackImportConfirm(String name, int count) {
+    return '导入包含 $count 个图标的“$name”？同名图标包将被替换。';
+  }
+
+  @override
+  String get iconPackImported => '图标包已导入。';
+
+  @override
+  String get iconPackError => '无法处理图标包，请检查文件格式和图片。';
+
+  @override
+  String iconPackDeleteConfirm(String name) {
+    return '删除“$name”？已分配给账户的图标会保留。';
+  }
 }

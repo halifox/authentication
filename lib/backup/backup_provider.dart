@@ -55,6 +55,7 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
           settings: await db.getSettings(),
           integerSettings: await db.getIntegerSettings(),
           categories: await db.getCategories(),
+          iconPacks: await db.getIconPacks(),
           membershipIds: await db.getCategoryMemberships(),
           revision: await db.backupRevision(),
         ),
@@ -81,6 +82,7 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
         integerSettings: snapshot.integerSettings,
         includeCopyCounts: true,
         categories: snapshot.categories,
+        iconPacks: snapshot.iconPacks,
         memberships: memberships,
       );
       final location = await FilePicker.saveFile(
@@ -171,6 +173,7 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
         preserveExistingCopyCount: !document.hasCopyCounts,
         importedCategories: document.categories,
         importedMemberships: document.memberships,
+        importedIconPacks: document.iconPacks,
       );
     });
   }

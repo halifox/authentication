@@ -257,7 +257,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupSettingsWarning =>
-      'Accounts with the same issuer and account name will be updated. If included, categories will be merged by name, memberships for imported accounts replaced, and settings and default category restored. Continue?';
+      'Accounts with the same issuer and account name will be updated. If included, categories will be merged by name, memberships for imported accounts replaced, settings and default category restored, and same-name icon packs replaced. Continue?';
 
   @override
   String get showAccountName => 'Show account name';
@@ -716,4 +716,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupProcessing => 'Processing backup. Please wait.';
+
+  @override
+  String get importIconPack => 'Import icon pack';
+
+  @override
+  String get iconLoadError => 'Could not load icons.';
+
+  @override
+  String iconPackImportConfirm(String name, int count) {
+    return 'Import “$name” with $count icons? An existing pack with the same name will be replaced.';
+  }
+
+  @override
+  String get iconPackImported => 'Icon pack imported.';
+
+  @override
+  String get iconPackError =>
+      'Could not process the icon pack. Check its format and images.';
+
+  @override
+  String iconPackDeleteConfirm(String name) {
+    return 'Delete “$name”? Icons already assigned to accounts will remain.';
+  }
 }

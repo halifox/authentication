@@ -79,7 +79,7 @@
   "clearSearch": "Clear search",
   "noSearchResults": "No matching accounts",
   "settingsLoadError": "Settings could not be loaded.",
-  "backupSettingsWarning": "Accounts with the same issuer and account name will be updated. If included, categories will be merged by name, memberships for imported accounts replaced, and settings and default category restored. Continue?",
+  "backupSettingsWarning": "Accounts with the same issuer and account name will be updated. If included, categories will be merged by name, memberships for imported accounts replaced, settings and default category restored, and same-name icon packs replaced. Continue?",
   "showAccountName": "Show account name",
   "hideCodeAfter": "Automatically hide revealed codes",
   "never": "Never",
@@ -223,5 +223,13 @@
   "@totpAuthImportWarning": {"placeholders": {"count": {"type": "int"}}},
   "chooseCustomIcon": "Choose image",
   "invalidCustomIcon": "Choose a valid PNG or JPEG image up to 4096 pixels per side.",
-  "backupProcessing": "Processing backup. Please wait."
+  "backupProcessing": "Processing backup. Please wait.",
+  "importIconPack": "Import icon pack",
+  "iconLoadError": "Could not load icons.",
+  "iconPackImportConfirm": "Import “{name}” with {count} icons? An existing pack with the same name will be replaced.",
+  "iconPackImported": "Icon pack imported.",
+  "iconPackError": "Could not process the icon pack. Check its format and images.",
+  "iconPackDeleteConfirm": "Delete “{name}”? Icons already assigned to accounts will remain.",
+  "@iconPackImportConfirm": {"placeholders": {"name": {"type": "String"}, "count": {"type": "int"}}},
+  "@iconPackDeleteConfirm": {"placeholders": {"name": {"type": "String"}}}
 }

@@ -99,3 +99,12 @@ class BackupState extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
+
+@DataClassName('StoredIconPack')
+class IconPacks extends Table {
+  TextColumn get name => text()();
+  TextColumn get data => text()();
+
+  @override
+  Set<Column> get primaryKey => {name};
+}

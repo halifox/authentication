@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:authentication/actions/icon_pack_provider.dart';
 import 'package:authentication/actions/icon_selection_provider.dart';
 import 'package:authentication/backup/backup_provider.dart';
 import 'package:authentication/backup/legacy_import.dart';
@@ -14,6 +15,7 @@ import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
 import 'package:authentication/storage/icon_data.dart';
+import 'package:authentication/storage/icon_pack.dart';
 import 'package:base32/base32.dart';
 import 'package:drift/native.dart';
 import 'package:file_picker/file_picker.dart';
@@ -23,6 +25,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart'
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image/image.dart' as image;
+import 'package:protobuf/protobuf.dart';
 
 final class _MemoryFile extends PlatformFile {
   _MemoryFile(this.bytes);
@@ -137,6 +140,121 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 10));
   });
+  testWidgets('icon pack can be imported, searched and deleted', (
+    tester,
+  ) async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    final bitmap = image.Image(width: 16, height: 16);
+    final entry = CodedBufferWriter()
+      ..writeField(1, PbFieldType.OS, 'Example')
+      ..writeField(2, PbFieldType.OY, image.encodePng(bitmap));
+    final encoded = CodedBufferWriter()
+      ..writeField(1, PbFieldType.OS, 'Sample')
+      ..writeField(4, PbFieldType.OY, entry.toBuffer());
+    final original = FilePickerPlatform.instance;
+    FilePickerPlatform.instance = _MemoryPicker(
+      Uint8List.fromList(encoded.toBuffer()),
+    );
+    addTearDown(() => FilePickerPlatform.instance = original);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          allIconsProvider.overrideWith((ref) async => []),
+        ],
+        child: const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: IconSelectionScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Import icon pack'));
+    await tester.pump();
+    await tester.runAsync(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+    });
+    await tester.pumpAndSettle();
+    expect(await db.getIconPacks(), isEmpty);
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect((await db.getIconPacks()).length, 1);
+    await tester.tap(find.text('Sample'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Example');
+    await tester.pumpAndSettle();
+    expect(
+      find.byWidgetPredicate((w) => w is Text && w.data == 'Example'),
+      findsOneWidget,
+    );
+    await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Delete').last);
+    await tester.pumpAndSettle();
+    expect(await db.getIconPacks(), isEmpty);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 10));
+  });
+  testWidgets('selecting an imported pack icon returns its image', (
+    tester,
+  ) async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    final bitmap = image.Image(width: 16, height: 16);
+    final encoded = CodedBufferWriter()
+      ..writeField(1, PbFieldType.OS, 'Sample')
+      ..writeField(
+        4,
+        PbFieldType.OY,
+        (CodedBufferWriter()
+              ..writeField(1, PbFieldType.OS, 'Example')
+              ..writeField(2, PbFieldType.OY, image.encodePng(bitmap)))
+            .toBuffer(),
+      );
+    await db.saveIconPack(
+      parseIconPack(Uint8List.fromList(encoded.toBuffer())),
+    );
+    String? selected;
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          allIconsProvider.overrideWith((ref) async => []),
+        ],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () async => selected = await Navigator.push<String>(
+                context,
+                MaterialPageRoute(builder: (_) => const IconSelectionScreen()),
+              ),
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Sample'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Example'));
+    await tester.pumpAndSettle();
+    expect(selected, isNotNull);
+    expect(validateIcon(selected!), isNotEmpty);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 10));
+  });
   testWidgets('custom icon picker returns a usable image', (tester) async {
     final bitmap = image.Image(width: 20, height: 20);
     image.fill(bitmap, color: image.ColorRgb8(12, 45, 78));
@@ -148,7 +266,10 @@ void main() {
     String? chosen;
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [allIconsProvider.overrideWith((ref) async => [])],
+        overrides: [
+          allIconsProvider.overrideWith((ref) async => []),
+          iconPacksProvider.overrideWith((ref) => Stream.value([])),
+        ],
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,

@@ -4,6 +4,45 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test(
+    'upgrades version 6 and preserves accounts and backup tracking',
+    () async {
+      final database = AppDatabase(
+        NativeDatabase.memory(
+          setup: (sqlite) {
+            sqlite.execute(
+              'CREATE TABLE backup_state (id INTEGER PRIMARY KEY NOT NULL, revision INTEGER NOT NULL, saved_revision INTEGER NOT NULL)',
+            );
+            sqlite.execute('INSERT INTO backup_state VALUES (1, 3, 2)');
+            sqlite.execute(
+              'CREATE TABLE app_settings (key TEXT NOT NULL PRIMARY KEY, value INTEGER NOT NULL)',
+            );
+            sqlite.execute(
+              'CREATE TABLE app_integer_settings (key TEXT NOT NULL PRIMARY KEY, value INTEGER NOT NULL)',
+            );
+            sqlite.execute(
+              'CREATE TABLE categories (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL UNIQUE, sort_order INTEGER NOT NULL, is_default INTEGER NOT NULL DEFAULT 0)',
+            );
+            sqlite.execute(
+              'CREATE TABLE account_category_links (account_id INTEGER NOT NULL, category_id INTEGER NOT NULL, PRIMARY KEY (account_id, category_id))',
+            );
+            sqlite.execute(
+              'CREATE TABLE auth_entries (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, scheme TEXT NOT NULL, type TEXT NOT NULL, issuer TEXT NOT NULL, account TEXT NOT NULL, secret TEXT NOT NULL, algorithm TEXT NOT NULL, digits INTEGER NOT NULL, period INTEGER NOT NULL, counter INTEGER NOT NULL, pin TEXT NOT NULL, icon TEXT NOT NULL, sort_order INTEGER NOT NULL, created_at INTEGER NOT NULL, copy_count INTEGER NOT NULL DEFAULT 0, UNIQUE (issuer, account))',
+            );
+            sqlite.execute(
+              "INSERT INTO auth_entries VALUES (1, 'otpauth', 'totp', 'Example', 'user', 'secret', 'sha1', 6, 30, 0, '', 'assets/icons/passkey.svg', 0, 1, 7)",
+            );
+            sqlite.execute('PRAGMA user_version = 6');
+          },
+        ),
+      );
+      addTearDown(database.close);
+      expect((await database.getAllAuthEntries()).single.copyCount, 7);
+      expect(await database.getIconPacks(), isEmpty);
+      expect(await database.backupRevision(), 3);
+      expect(await database.watchBackupNeeded().first, isTrue);
+    },
+  );
   test('upgrades version 5 and preserves category links', () async {
     final database = AppDatabase(
       NativeDatabase.memory(

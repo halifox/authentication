@@ -251,7 +251,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get backupSettingsWarning =>
-      '发行者和账户名相同的条目将被更新。若备份包含分类和设置，将按名称合并分类、替换导入账户的分类，并恢复设置和默认分类。是否继续？';
+      '发行者和账户名相同的条目将被更新。若备份包含分类和设置，将按名称合并分类、替换导入账户的分类，并恢复设置和默认分类。同名图标包将被替换。是否继续？';
 
   @override
   String get showAccountName => '显示账户名';
@@ -692,4 +692,26 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get backupProcessing => '正在处理备份，请稍候。';
+
+  @override
+  String get importIconPack => '导入图标包';
+
+  @override
+  String get iconLoadError => '无法加载图标。';
+
+  @override
+  String iconPackImportConfirm(String name, int count) {
+    return '导入包含 $count 个图标的“$name”？同名图标包将被替换。';
+  }
+
+  @override
+  String get iconPackImported => '图标包已导入。';
+
+  @override
+  String get iconPackError => '无法处理图标包，请检查文件格式和图片。';
+
+  @override
+  String iconPackDeleteConfirm(String name) {
+    return '删除“$name”？已分配给账户的图标会保留。';
+  }
 }

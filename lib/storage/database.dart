@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/category.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/storage/auth_entries.dart';
 import 'package:authentication/storage/encryption.dart';
 import 'package:authentication/storage/icon_data.dart';
+import 'package:authentication/storage/icon_pack.dart';
+
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
@@ -22,6 +26,7 @@ part 'auth_storage.dart';
     Categories,
     AccountCategoryLinks,
     BackupState,
+    IconPacks,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -41,13 +46,14 @@ class AppDatabase extends _$AppDatabase {
   /// 数据库架构版本号。
   /// 如果修改了表结构，需要递增此版本并处理迁移逻辑。
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) async {
       await m.createAll();
       await _initializeBackupTracking(false);
+      await _createIconPackTriggers();
     },
     onUpgrade: (m, from, to) async {
       if (from < 2) await m.createTable(appSettings);
@@ -60,6 +66,10 @@ class AppDatabase extends _$AppDatabase {
       if (from < 6) {
         await m.createTable(backupState);
         await _initializeBackupTracking(true);
+      }
+      if (from < 7) {
+        await m.createTable(iconPacks);
+        await _createIconPackTriggers();
       }
     },
   );
@@ -83,6 +93,47 @@ class AppDatabase extends _$AppDatabase {
     }
   }
 
+  Future<void> _createIconPackTriggers() async {
+    for (final operation in ['INSERT', 'UPDATE', 'DELETE']) {
+      await customStatement(
+        'CREATE TRIGGER backup_icon_packs_${operation.toLowerCase()} AFTER $operation ON icon_packs BEGIN UPDATE backup_state SET revision = revision + 1 WHERE id = 1; END',
+      );
+    }
+  }
+
+  Future<List<IconPack>> getIconPacks() async => [
+    for (final row in await select(iconPacks).get())
+      iconPackFromJson(jsonDecode(row.data)),
+  ];
+
+  Stream<List<IconPack>> watchIconPacks() => select(iconPacks).watch().map(
+    (rows) => [for (final row in rows) iconPackFromJson(jsonDecode(row.data))],
+  );
+
+  Future<void> saveIconPack(IconPack pack) async {
+    validateIconPack(pack);
+    final encoded = jsonEncode(iconPackToJson(pack));
+    await transaction(() async {
+      final existing = await select(iconPacks).get();
+      final others = existing.where((row) => row.name != pack.name).toList();
+      if (others.length >= 100 ||
+          others.fold<int>(
+                encoded.length,
+                (sum, row) => sum + row.data.length,
+              ) >
+              maxStoredIconPacksBytes) {
+        throw const FormatException('Icon packs are too large.');
+      }
+      await into(iconPacks).insertOnConflictUpdate(
+        IconPacksCompanion.insert(name: pack.name, data: encoded),
+      );
+    });
+  }
+
+  Future<void> deleteIconPack(String name) async {
+    await (delete(iconPacks)..where((row) => row.name.equals(name))).go();
+  }
+
   Future<int> backupRevision() async =>
       (await select(backupState).getSingle()).revision;
 
@@ -93,7 +144,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Stream<bool> watchBackupNeeded() => customSelect(
-    'SELECT revision != saved_revision AND (saved_revision > 0 OR EXISTS (SELECT 1 FROM auth_entries) OR EXISTS (SELECT 1 FROM categories)) AS needed FROM backup_state WHERE id = 1',
+    'SELECT revision != saved_revision AND (saved_revision > 0 OR EXISTS (SELECT 1 FROM auth_entries) OR EXISTS (SELECT 1 FROM categories) OR EXISTS (SELECT 1 FROM icon_packs)) AS needed FROM backup_state WHERE id = 1',
     readsFrom: {
       backupState,
       authEntries,
@@ -101,6 +152,7 @@ class AppDatabase extends _$AppDatabase {
       appIntegerSettings,
       categories,
       accountCategoryLinks,
+      iconPacks,
     },
   ).watchSingle().map((row) => row.read<bool>('needed'));
 

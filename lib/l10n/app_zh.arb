@@ -264,7 +264,7 @@
   "clearSearch": "清除搜索",
   "noSearchResults": "没有匹配的账户",
   "settingsLoadError": "无法加载设置。",
-  "backupSettingsWarning": "发行者和账户名相同的条目将被更新。若备份包含分类和设置，将按名称合并分类、替换导入账户的分类，并恢复设置和默认分类。是否继续？",
+  "backupSettingsWarning": "发行者和账户名相同的条目将被更新。若备份包含分类和设置，将按名称合并分类、替换导入账户的分类，并恢复设置和默认分类。同名图标包将被替换。是否继续？",
   "showAccountName": "显示账户名",
   "hideCodeAfter": "显示后自动隐藏验证码",
   "never": "从不",
@@ -414,5 +414,13 @@
   "@totpAuthImportWarning": {"placeholders": {"count": {"type": "int"}}},
   "chooseCustomIcon": "选择图片",
   "invalidCustomIcon": "请选择有效的 PNG 或 JPEG 图片，边长不得超过 4096 像素。",
-  "backupProcessing": "正在处理备份，请稍候。"
+  "backupProcessing": "正在处理备份，请稍候。",
+  "importIconPack": "导入图标包",
+  "iconLoadError": "无法加载图标。",
+  "iconPackImportConfirm": "导入包含 {count} 个图标的“{name}”？同名图标包将被替换。",
+  "iconPackImported": "图标包已导入。",
+  "iconPackError": "无法处理图标包，请检查文件格式和图片。",
+  "iconPackDeleteConfirm": "删除“{name}”？已分配给账户的图标会保留。",
+  "@iconPackImportConfirm": {"placeholders": {"name": {"type": "String"}, "count": {"type": "int"}}},
+  "@iconPackDeleteConfirm": {"placeholders": {"name": {"type": "String"}}}
 }
