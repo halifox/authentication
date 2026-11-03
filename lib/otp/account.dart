@@ -127,12 +127,12 @@ class OtpAccount {
   }
 }
 
-OtpAccount parseOtpUri(String input) {
+OtpAccount parseOtpUri(String input, {bool detectSteam = false}) {
   final uri = Uri.parse(input);
   if (uri.scheme.toLowerCase() != 'otpauth') {
     throw AuthFailure(AuthErrorCode.invalidScheme);
   }
-  final type = uri.host.toLowerCase();
+  final requestedType = uri.host.toLowerCase();
   final label = uri.path.length > 1
       ? Uri.decodeFull(uri.path.substring(1))
       : '';
@@ -150,6 +150,21 @@ OtpAccount parseOtpUri(String input) {
       : label.contains(':')
       ? label.split(':').skip(1).join(':').trim()
       : label.trim();
+  final isSteam =
+      detectSteam &&
+      requestedType == 'totp' &&
+      (issuer == 'Steam' ||
+          params.containsKey('steam') ||
+          params['encoder']?.toLowerCase() == 'steam');
+  final type = isSteam ? 'steam' : requestedType;
+  if (isSteam &&
+      ((params['algorithm'] != null &&
+              params['algorithm']!.toLowerCase() != 'sha1') ||
+          (params['period'] != null && params['period'] != '30') ||
+          (params['digits'] != null &&
+              !const ['5', '6'].contains(params['digits'])))) {
+    throw AuthFailure(AuthErrorCode.invalidType);
+  }
   int number(String key, int defaultValue, AuthErrorCode error) {
     final value = params[key];
     return value == null
@@ -165,7 +180,7 @@ OtpAccount parseOtpUri(String input) {
         ? secret
         : secret.replaceAll(RegExp(r'\s+'), '').toUpperCase(),
     algorithm: params['algorithm'] ?? 'sha1',
-    digits: number('digits', 6, AuthErrorCode.invalidDigits),
+    digits: isSteam ? 5 : number('digits', 6, AuthErrorCode.invalidDigits),
     period: number('period', 30, AuthErrorCode.invalidPeriod),
     counter: number('counter', 0, AuthErrorCode.invalidCounter),
     pin: params['pin'] ?? '',

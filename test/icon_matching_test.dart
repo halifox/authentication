@@ -48,10 +48,19 @@ void main() {
       await operations.scan(
         'otpauth://totp/GitHub:one?secret=JBSWY3DPEHPK3PXP&issuer=GitHub',
       );
+      await operations.scan(
+        'otpauth://totp/Steam:player?secret=63BEDWCQZKTQWPESARIERL5DTTQFCJTK&issuer=Steam',
+      );
       var accounts = await db.getAllConfigs();
-      expect(accounts.single.icon, 'assets/icons/github.svg');
+      expect(accounts.singleWhere((a) => a.issuer == 'Steam').type, 'steam');
+      expect(
+        accounts.singleWhere((a) => a.issuer == 'GitHub').icon,
+        'assets/icons/github.svg',
+      );
       await db.updateConfig(
-        accounts.single.copyWith(icon: 'assets/icons/google.svg'),
+        accounts
+            .singleWhere((a) => a.issuer == 'GitHub')
+            .copyWith(icon: 'assets/icons/google.svg'),
       );
       await operations.scan(
         'otpauth://totp/GitHub:one?secret=JBSWY3DPEHPK3PXP&issuer=GitHub',

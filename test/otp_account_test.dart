@@ -29,6 +29,29 @@ void main() {
       expect(restored.generateCodeString().length, account.digits);
     }
   });
+  test('recognizes Steam provisioning URI markers', () {
+    for (final suffix in [
+      'issuer=Steam',
+      'issuer=Example&steam',
+      'issuer=Example&encoder=steam',
+    ]) {
+      final account = parseOtpUri(
+        'otpauth://totp/user?secret=63BEDWCQZKTQWPESARIERL5DTTQFCJTK&$suffix',
+        detectSteam: true,
+      );
+      account.validate();
+      expect(account.type, 'steam');
+      expect(account.digits, 5);
+      expect(account.generateCodeString().length, 5);
+    }
+    expect(
+      () => parseOtpUri(
+        'otpauth://totp/user?secret=JBSWY3DPEHPK3PXP&issuer=Steam&period=60',
+        detectSteam: true,
+      ),
+      throwsA(isA<AuthFailure>()),
+    );
+  });
   test('parses and validates an OTP URI without a database', () {
     final account = parseOtpUri(
       'otpauth://totp/Example:user?secret=jbswy3dpehpk3pxp&issuer=Example',

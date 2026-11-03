@@ -35,8 +35,10 @@ Future<QrProcessResult> processQrCode(
 }) async {
   try {
     final config = suggestBuiltInIcon(
-      parseOtpUri(uriString)
-          .copyWith(createdAt: DateTime.now().millisecondsSinceEpoch),
+      parseOtpUri(
+        uriString,
+        detectSteam: true,
+      ).copyWith(createdAt: DateTime.now().millisecondsSinceEpoch),
       icons,
     );
     // 验证配置

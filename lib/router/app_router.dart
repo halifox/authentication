@@ -25,7 +25,7 @@ Route<void> externalAccountRoute(String name) {
   OtpAccount? account;
   try {
     if (name.length > 65536) throw const FormatException();
-    account = parseOtpUri(name)..validate();
+    account = parseOtpUri(name, detectSteam: true)..validate();
   } catch (_) {
     // Never include an external URI or parsing exception in the UI or route.
   }
