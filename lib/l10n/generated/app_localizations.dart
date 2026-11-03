@@ -1487,6 +1487,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Blizzard account authentication is managed through its official mobile app. This guide does not extract or import its secret.\n\n1. Keep your existing authenticator and recovery information available.\n2. On the new device, sign in to the official app and follow its authenticator setup or recovery prompts.\n3. If you cannot approve the sign-in or restore access, use Blizzard Support’s account recovery process before removing the old authenticator.\n\nCheck the provider’s current instructions before making changes: https://us.support.blizzard.com/'**
   String get blizzardGuide;
+
+  /// No description provided for @userGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Using the app'**
+  String get userGuide;
+
+  /// No description provided for @guideAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an account'**
+  String get guideAddTitle;
+
+  /// No description provided for @guideAddBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Add to scan a setup QR code, select a supported image, or enter the setup key. Verify a code with the service before removing your previous method.'**
+  String get guideAddBody;
+
+  /// No description provided for @guideCodesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use your codes'**
+  String get guideCodesTitle;
+
+  /// No description provided for @guideCodesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the current code at the service. Time-based codes change automatically; counter-based codes can be advanced manually. Search, categories, and sorting help organize accounts.'**
+  String get guideCodesBody;
+
+  /// No description provided for @guideBackupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep a backup'**
+  String get guideBackupTitle;
+
+  /// No description provided for @guideBackupBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Export a password-protected backup and store it safely. Test recovery before replacing your device. Unencrypted exports and QR codes reveal account secrets.'**
+  String get guideBackupBody;
+
+  /// No description provided for @guideMigrationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Move existing accounts'**
+  String get guideMigrationTitle;
+
+  /// No description provided for @guideMigrationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Add to import a supported file or follow the migration guides. Imports show a confirmation and conflict policy before saving.'**
+  String get guideMigrationBody;
 }
 
 class _AppLocalizationsDelegate

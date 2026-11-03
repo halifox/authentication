@@ -1,4 +1,5 @@
 import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/router/app_router.dart';
 import 'package:authentication/screens/settings_screen.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/storage/database.dart';
@@ -9,6 +10,53 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() {
+  testWidgets('usage guide is accessible from settings at large text sizes', (
+    tester,
+  ) async {
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    await db.initializeSettings(defaultSettings);
+    tester.view.physicalSize = const Size(320, 600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          onGenerateRoute: onGenerateRoute,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: const TextScaler.linear(1.5)),
+            child: child!,
+          ),
+          home: const SettingsScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Using the app'),
+      150,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.text('Using the app'));
+    await tester.pumpAndSettle();
+    expect(find.text('Add an account'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Move existing accounts'),
+      150,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.textContaining('conflict policy'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 10));
+  });
+
   testWidgets('settings changes persist and database changes update the UI', (
     tester,
   ) async {

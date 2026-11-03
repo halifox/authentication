@@ -779,4 +779,35 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get blizzardGuide =>
       'Blizzard account authentication is managed through its official mobile app. This guide does not extract or import its secret.\n\n1. Keep your existing authenticator and recovery information available.\n2. On the new device, sign in to the official app and follow its authenticator setup or recovery prompts.\n3. If you cannot approve the sign-in or restore access, use Blizzard Support’s account recovery process before removing the old authenticator.\n\nCheck the provider’s current instructions before making changes: https://us.support.blizzard.com/';
+
+  @override
+  String get userGuide => 'Using the app';
+
+  @override
+  String get guideAddTitle => 'Add an account';
+
+  @override
+  String get guideAddBody =>
+      'Choose Add to scan a setup QR code, select a supported image, or enter the setup key. Verify a code with the service before removing your previous method.';
+
+  @override
+  String get guideCodesTitle => 'Use your codes';
+
+  @override
+  String get guideCodesBody =>
+      'Enter the current code at the service. Time-based codes change automatically; counter-based codes can be advanced manually. Search, categories, and sorting help organize accounts.';
+
+  @override
+  String get guideBackupTitle => 'Keep a backup';
+
+  @override
+  String get guideBackupBody =>
+      'Export a password-protected backup and store it safely. Test recovery before replacing your device. Unencrypted exports and QR codes reveal account secrets.';
+
+  @override
+  String get guideMigrationTitle => 'Move existing accounts';
+
+  @override
+  String get guideMigrationBody =>
+      'Choose Add to import a supported file or follow the migration guides. Imports show a confirmation and conflict policy before saving.';
 }

@@ -21,6 +21,7 @@ class AppRoutes {
   static const scan = '/scan';
   static const icons = '/icons';
   static const migrationGuides = '/migration-guides';
+  static const userGuide = '/user-guide';
 }
 
 Route<void> externalAccountRoute(String name) {
@@ -68,6 +69,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     AppRoutes.scan => const QrScannerScreen(),
     AppRoutes.icons => const IconSelectionScreen(),
     AppRoutes.migrationGuides => const MigrationGuideScreen(),
+    AppRoutes.userGuide => const UserGuideScreen(),
     _ => const TokenListScreen(),
   };
   if (settings.name == AppRoutes.icons) {

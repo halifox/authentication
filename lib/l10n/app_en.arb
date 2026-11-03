@@ -308,5 +308,14 @@
   "@groupEvery": {"placeholders": {"count": {"type": "int"}}},
   "@migrationNext": {"placeholders": {"received": {"type": "int"}, "total": {"type": "int"}}},
   "@migrationConfirm": {"placeholders": {"count": {"type": "int"}}},
-  "@migrationImported": {"placeholders": {"count": {"type": "int"}}}
+  "@migrationImported": {"placeholders": {"count": {"type": "int"}}},
+  "userGuide": "Using the app",
+  "guideAddTitle": "Add an account",
+  "guideAddBody": "Choose Add to scan a setup QR code, select a supported image, or enter the setup key. Verify a code with the service before removing your previous method.",
+  "guideCodesTitle": "Use your codes",
+  "guideCodesBody": "Enter the current code at the service. Time-based codes change automatically; counter-based codes can be advanced manually. Search, categories, and sorting help organize accounts.",
+  "guideBackupTitle": "Keep a backup",
+  "guideBackupBody": "Export a password-protected backup and store it safely. Test recovery before replacing your device. Unencrypted exports and QR codes reveal account secrets.",
+  "guideMigrationTitle": "Move existing accounts",
+  "guideMigrationBody": "Choose Add to import a supported file or follow the migration guides. Imports show a confirmation and conflict policy before saving."
 }

@@ -752,4 +752,34 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get blizzardGuide =>
       'Blizzard 账户验证通过其官方移动应用管理，本指南不会提取或导入密钥。\n\n1. 保留现有验证器和恢复信息。\n2. 在新设备登录官方应用，按提示设置或恢复验证器。\n3. 无法批准登录或恢复访问时，请先通过 Blizzard 支持的账户恢复流程处理，再移除旧验证器。\n\n操作前请查看服务提供方的最新说明：https://us.support.blizzard.com/';
+
+  @override
+  String get userGuide => '使用指南';
+
+  @override
+  String get guideAddTitle => '添加账户';
+
+  @override
+  String get guideAddBody =>
+      '选择添加，扫描设置二维码、选择受支持的图片或手动输入设置密钥。移除原有验证方式前，请先在服务中验证新验证码。';
+
+  @override
+  String get guideCodesTitle => '使用验证码';
+
+  @override
+  String get guideCodesBody =>
+      '在服务中输入当前验证码。时间型验证码自动更新；计数器型验证码可手动前进。搜索、分类和排序可帮助管理账户。';
+
+  @override
+  String get guideBackupTitle => '保存备份';
+
+  @override
+  String get guideBackupBody =>
+      '导出受密码保护的备份并妥善保管。更换设备前请测试恢复。未加密导出文件和二维码会暴露账户密钥。';
+
+  @override
+  String get guideMigrationTitle => '迁移已有账户';
+
+  @override
+  String get guideMigrationBody => '选择添加以导入受支持的文件或查看迁移指南。保存前会显示确认和冲突处理方式。';
 }
