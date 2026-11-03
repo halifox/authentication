@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:authentication/actions/icon_selection_provider.dart';
 import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/html_backup.dart';
+import 'package:authentication/otp/account.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:file_picker/file_picker.dart';
@@ -134,6 +135,23 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
       final icons = await ref.read(allIconsProvider.future);
       return db.importAccounts(
         accounts.map((account) => suggestBuiltInIcon(account, icons)).toList(),
+        preserveExistingMetadata: true,
+      );
+    });
+  }
+
+  Future<int> importLegacyAccounts(List<OtpAccount> accounts) {
+    final db = ref.read(appDatabaseProvider);
+    return _run(() async {
+      final icons = await ref.read(allIconsProvider.future);
+      final now = DateTime.now().millisecondsSinceEpoch;
+      return db.importAccounts(
+        accounts
+            .map(
+              (account) =>
+                  suggestBuiltInIcon(account.copyWith(createdAt: now), icons),
+            )
+            .toList(),
         preserveExistingMetadata: true,
       );
     });

@@ -1145,6 +1145,60 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'验证码使用系统字体'**
   String get systemCodeFont;
+
+  /// No description provided for @legacyImport.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入 andOTP 备份'**
+  String get legacyImport;
+
+  /// No description provided for @legacyImportFormat.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择备份格式'**
+  String get legacyImportFormat;
+
+  /// No description provided for @legacyPlain.
+  ///
+  /// In zh, this message translates to:
+  /// **'明文 JSON'**
+  String get legacyPlain;
+
+  /// No description provided for @legacyEncrypted.
+  ///
+  /// In zh, this message translates to:
+  /// **'加密备份（0.6.3 及以上）'**
+  String get legacyEncrypted;
+
+  /// No description provided for @legacyEncryptedOld.
+  ///
+  /// In zh, this message translates to:
+  /// **'旧版加密备份（0.6.2 及以下）'**
+  String get legacyEncryptedOld;
+
+  /// No description provided for @legacyImportWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入 {count} 个账户？发行方和账户名相同的账户将更新，已有图标、排序、复制次数和分类会保留。来源标签、图标和使用统计不会导入。'**
+  String legacyImportWarning(int count);
+
+  /// No description provided for @legacyImportError.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法导入：请检查文件、密码和格式。仅支持发行方及账户名均非空的 TOTP、HOTP 和 Steam；重复账户或含不支持条目的文件会整批拒绝。'**
+  String get legacyImportError;
+
+  /// No description provided for @revealPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'显示密码'**
+  String get revealPassword;
+
+  /// No description provided for @hidePassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'隐藏密码'**
+  String get hidePassword;
 }
 
 class _AppLocalizationsDelegate

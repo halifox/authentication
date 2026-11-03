@@ -542,4 +542,34 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get systemCodeFont => '验证码使用系统字体';
+
+  @override
+  String get legacyImport => '导入 andOTP 备份';
+
+  @override
+  String get legacyImportFormat => '选择备份格式';
+
+  @override
+  String get legacyPlain => '明文 JSON';
+
+  @override
+  String get legacyEncrypted => '加密备份（0.6.3 及以上）';
+
+  @override
+  String get legacyEncryptedOld => '旧版加密备份（0.6.2 及以下）';
+
+  @override
+  String legacyImportWarning(int count) {
+    return '导入 $count 个账户？发行方和账户名相同的账户将更新，已有图标、排序、复制次数和分类会保留。来源标签、图标和使用统计不会导入。';
+  }
+
+  @override
+  String get legacyImportError =>
+      '无法导入：请检查文件、密码和格式。仅支持发行方及账户名均非空的 TOTP、HOTP 和 Steam；重复账户或含不支持条目的文件会整批拒绝。';
+
+  @override
+  String get revealPassword => '显示密码';
+
+  @override
+  String get hidePassword => '隐藏密码';
 }

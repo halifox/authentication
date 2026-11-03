@@ -18,8 +18,9 @@ extension type _Pbkdf2Params._(JSObject _) implements JSObject {
 Future<Uint8List> deriveBackupKey(
   String password,
   Uint8List salt,
-  int iterations,
-) async {
+  int iterations, {
+  bool sha1 = false,
+}) async {
   final subtle = web.window.crypto.subtle;
   final material = await subtle
       .importKey(
@@ -36,7 +37,7 @@ Future<Uint8List> deriveBackupKey(
           name: 'PBKDF2',
           salt: salt.toJS,
           iterations: iterations,
-          hash: 'SHA-256',
+          hash: sha1 ? 'SHA-1' : 'SHA-256',
         ),
         material,
         256,

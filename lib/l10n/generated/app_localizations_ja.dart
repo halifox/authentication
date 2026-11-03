@@ -559,4 +559,34 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get systemCodeFont => 'Use system font for codes';
+
+  @override
+  String get legacyImport => 'Import andOTP backup';
+
+  @override
+  String get legacyImportFormat => 'Choose backup format';
+
+  @override
+  String get legacyPlain => 'Plain JSON';
+
+  @override
+  String get legacyEncrypted => 'Encrypted backup (0.6.3 or later)';
+
+  @override
+  String get legacyEncryptedOld => 'Old encrypted backup (0.6.2 or earlier)';
+
+  @override
+  String legacyImportWarning(int count) {
+    return 'Import $count accounts? Matching issuer and account names will be updated; existing icons, order, copy counts, and categories are preserved. Source tags, icons, and usage statistics are not imported.';
+  }
+
+  @override
+  String get legacyImportError =>
+      'Import failed. Check the file, password, and format. Only TOTP, HOTP, and Steam accounts with an issuer and account name are supported; duplicate or unsupported entries reject the entire file.';
+
+  @override
+  String get revealPassword => 'Show password';
+
+  @override
+  String get hidePassword => 'Hide password';
 }

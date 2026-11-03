@@ -2,6 +2,7 @@ import 'package:authentication/actions/qr_actions.dart';
 
 import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/backup_provider.dart';
+import 'package:authentication/backup/legacy_import.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/migration.dart';
 import 'package:authentication/otp/otp_provider.dart';
@@ -12,6 +13,7 @@ import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -75,6 +77,11 @@ class AddAccountScreen extends ConsumerWidget {
         Icons.playlist_add,
         l10n.importUriList,
         () => _handleUriImport(context, ref),
+      ),
+      AddMethodOption(
+        Icons.file_open,
+        l10n.legacyImport,
+        () => _handleLegacyImport(context, ref),
       ),
       AddMethodOption(
         Icons.list_alt,
@@ -291,62 +298,10 @@ class AddAccountScreen extends ConsumerWidget {
     BuildContext context, {
     required bool export,
   }) async {
-    final l10n = AppLocalizations.of(context)!;
-    final password = TextEditingController();
-    final confirmation = TextEditingController();
-    final result = await showDialog<String>(
+    return showDialog<String>(
       context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setState) {
-          final mismatch = export && password.text != confirmation.text;
-          return AlertDialog(
-            title: Text(l10n.backupPasswordTitle),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: password,
-                  obscureText: true,
-                  onChanged: (_) => setState(() {}),
-                  decoration: InputDecoration(
-                    labelText: export
-                        ? l10n.backupPasswordHint
-                        : l10n.backupPasswordRequired,
-                  ),
-                ),
-                if (export)
-                  TextField(
-                    controller: confirmation,
-                    obscureText: true,
-                    onChanged: (_) => setState(() {}),
-                    decoration: InputDecoration(
-                      labelText: l10n.backupPasswordConfirm,
-                      errorText: mismatch ? l10n.backupPasswordMismatch : null,
-                    ),
-                  ),
-                if (export && password.text.isEmpty)
-                  Text(l10n.backupPlainWarning),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: Text(l10n.cancel),
-              ),
-              TextButton(
-                onPressed: mismatch || (!export && password.text.isEmpty)
-                    ? null
-                    : () => Navigator.pop(dialogContext, password.text),
-                child: Text(l10n.ok),
-              ),
-            ],
-          );
-        },
-      ),
+      builder: (_) => _BackupPasswordDialog(export: export),
     );
-    password.dispose();
-    confirmation.dispose();
-    return result;
   }
 
   Future<void> _handleRestore(BuildContext context, WidgetRef ref) async {
@@ -373,11 +328,13 @@ class AddAccountScreen extends ConsumerWidget {
       );
       if (proceed != true || !context.mounted) return;
       await ref.read(backupOperationsProvider.notifier).import(bytes, password);
-      if (context.mounted)
+      if (context.mounted) {
         await _showResult(context, 1, l10n.importSuccess, l10n.backupImported);
+      }
     } catch (_) {
-      if (context.mounted)
+      if (context.mounted) {
         await _showResult(context, 0, l10n.importFailed, l10n.backupFileError);
+      }
     }
   }
 
@@ -398,8 +355,83 @@ class AddAccountScreen extends ConsumerWidget {
         );
       }
     } catch (_) {
-      if (context.mounted)
+      if (context.mounted) {
         await _showResult(context, 0, l10n.exportFailed, l10n.exportFailed);
+      }
+    }
+  }
+
+  Future<void> _handleLegacyImport(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
+    final format = await showDialog<LegacyBackupFormat>(
+      context: context,
+      builder: (dialogContext) => SimpleDialog(
+        title: Text(l10n.legacyImportFormat),
+        children: [
+          for (final choice in [
+            (LegacyBackupFormat.plain, l10n.legacyPlain),
+            (LegacyBackupFormat.encrypted, l10n.legacyEncrypted),
+            (LegacyBackupFormat.encryptedOld, l10n.legacyEncryptedOld),
+          ])
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(dialogContext, choice.$1),
+              child: Text(choice.$2),
+            ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel),
+          ),
+        ],
+      ),
+    );
+    if (format == null || !context.mounted) return;
+    try {
+      final bytes = await ref
+          .read(backupOperationsProvider.notifier)
+          .pickFile();
+      if (bytes == null || !context.mounted) return;
+      String? password;
+      if (format != LegacyBackupFormat.plain) {
+        password = await _passwordDialog(context, export: false);
+        if (password == null || !context.mounted) return;
+      }
+      final plaintext = await decryptLegacyBackup(
+        bytes,
+        format,
+        password: password,
+      );
+      final accounts = parseLegacyBackup(plaintext);
+      if (!context.mounted) return;
+      final proceed = await showCupertinoModalPopup<bool>(
+        context: context,
+        builder: (_) => ActionResultSheet(
+          state: 0,
+          title: l10n.warning,
+          message: l10n.legacyImportWarning(accounts.length),
+          falseButtonVisible: true,
+        ),
+      );
+      if (proceed != true || !context.mounted) return;
+      final count = await ref
+          .read(backupOperationsProvider.notifier)
+          .importLegacyAccounts(accounts);
+      if (context.mounted) {
+        await _showResult(
+          context,
+          1,
+          l10n.importSuccess,
+          l10n.migrationImported(count),
+        );
+      }
+    } catch (_) {
+      if (context.mounted) {
+        await _showResult(
+          context,
+          0,
+          l10n.importFailed,
+          l10n.legacyImportError,
+        );
+      }
     }
   }
 
@@ -492,8 +524,9 @@ class AddAccountScreen extends ConsumerWidget {
         );
       }
     } catch (_) {
-      if (context.mounted)
+      if (context.mounted) {
         await _showResult(context, 0, l10n.exportFailed, l10n.htmlExportFailed);
+      }
     }
   }
 
@@ -583,4 +616,68 @@ class AddMethodTile extends StatelessWidget {
       ),
     ),
   );
+}
+
+class _BackupPasswordDialog extends HookWidget {
+  const _BackupPasswordDialog({required this.export});
+  final bool export;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final password = useTextEditingController();
+    final confirmation = useTextEditingController();
+    final obscured = useState(true);
+    useListenable(password);
+    useListenable(confirmation);
+    final mismatch = export && password.text != confirmation.text;
+    return AlertDialog(
+      title: Text(l10n.backupPasswordTitle),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: password,
+            obscureText: obscured.value,
+            decoration: InputDecoration(
+              labelText: export
+                  ? l10n.backupPasswordHint
+                  : l10n.backupPasswordRequired,
+              suffixIcon: IconButton(
+                tooltip: obscured.value
+                    ? l10n.revealPassword
+                    : l10n.hidePassword,
+                onPressed: () => obscured.value = !obscured.value,
+                icon: Icon(
+                  obscured.value ? Icons.visibility_off : Icons.visibility,
+                ),
+              ),
+            ),
+          ),
+          if (export)
+            TextField(
+              controller: confirmation,
+              obscureText: obscured.value,
+              decoration: InputDecoration(
+                labelText: l10n.backupPasswordConfirm,
+                errorText: mismatch ? l10n.backupPasswordMismatch : null,
+              ),
+            ),
+          if (export && password.text.isEmpty) Text(l10n.backupPlainWarning),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        TextButton(
+          onPressed: mismatch || (!export && password.text.isEmpty)
+              ? null
+              : () => Navigator.pop(context, password.text),
+          child: Text(l10n.ok),
+        ),
+      ],
+    );
+  }
 }
