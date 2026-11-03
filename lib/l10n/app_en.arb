@@ -183,6 +183,8 @@
   "revealPassword": "Show password",
   "hidePassword": "Hide password",
   "tokenListImport": "Import FreeOTP+ backup",
+  "encryptedUriImport": "Import encrypted Ente export",
+  "encryptedUriWarning": "Source tags, icons, notes, ordering and usage statistics are not imported. Files requiring more than 256 MiB of key derivation memory are not supported.",
   "tokenListImportError": "Import failed. Check the plain JSON file. Accounts, order, secrets, categories, and OTP parameters must be valid; duplicates, missing records, or unsupported entries reject the entire file.",
   "vaultImport": "Import Bitwarden JSON",
   "vaultImportWarning": "Import {count} verification accounts and skip {skipped} non-login or no-code items? Matching accounts are updated, existing categories and metadata are preserved, and folders merge into categories. Passwords, notes, attachments, and other data are not imported.",

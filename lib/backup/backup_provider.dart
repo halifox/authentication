@@ -151,10 +151,14 @@ class BackupOperations extends Notifier<AsyncValue<void>> {
     });
   }
 
-  Future<int> importUriFile(Uint8List bytes, {int? expectedRevision}) {
+  Future<int> importUriFile(
+    Uint8List bytes, {
+    int? expectedRevision,
+    bool detectSteam = false,
+  }) {
     final db = ref.read(appDatabaseProvider);
     return _run(() async {
-      final accounts = decodeUriList(bytes);
+      final accounts = decodeUriList(bytes, detectSteam: detectSteam);
       final icons = await ref.read(allIconsProvider.future);
       return db.importAccounts(
         accounts.map((account) => suggestBuiltInIcon(account, icons)).toList(),

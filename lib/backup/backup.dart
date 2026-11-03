@@ -419,7 +419,7 @@ Future<List<OtpAccount>> decodeBackupAccounts(
 ) async => parseBackupAccounts(await Backup.decode(bytes, password));
 
 /// A UTF-8 file containing one OTP URI per non-empty line.
-List<OtpAccount> decodeUriList(Uint8List bytes) {
+List<OtpAccount> decodeUriList(Uint8List bytes, {bool detectSteam = false}) {
   if (bytes.length > maxBackupBytes) {
     throw const FormatException('File too large.');
   }
@@ -432,7 +432,9 @@ List<OtpAccount> decodeUriList(Uint8List bytes) {
   if (lines.isEmpty || lines.length > 10000) {
     throw const FormatException('Invalid URI list.');
   }
-  final accounts = lines.map(parseOtpUri).toList();
+  final accounts = lines
+      .map((line) => parseOtpUri(line, detectSteam: detectSteam))
+      .toList();
   for (final account in accounts) {
     account.validate();
   }

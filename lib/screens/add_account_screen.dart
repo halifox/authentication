@@ -5,6 +5,7 @@ import 'package:authentication/actions/qr_actions.dart';
 import 'package:authentication/backup/authpro_import.dart';
 import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/backup_provider.dart';
+import 'package:authentication/backup/ente_import.dart';
 import 'package:authentication/backup/freeotp_import.dart';
 import 'package:authentication/backup/grouped_import.dart';
 import 'package:authentication/backup/lastpass_import.dart';
@@ -93,6 +94,11 @@ class AddAccountScreen extends ConsumerWidget {
         Icons.playlist_add,
         l10n.importUriList,
         () => _handleUriImport(context, ref),
+      ),
+      AddMethodOption(
+        Icons.lock_open,
+        l10n.encryptedUriImport,
+        () => _handleUriImport(context, ref, encrypted: true),
       ),
       AddMethodOption(
         Icons.file_open,
@@ -956,15 +962,26 @@ class AddAccountScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _handleUriImport(BuildContext context, WidgetRef ref) async {
+  Future<void> _handleUriImport(
+    BuildContext context,
+    WidgetRef ref, {
+    bool encrypted = false,
+  }) async {
     final l10n = AppLocalizations.of(context)!;
     try {
-      final bytes = await ref
-          .read(backupOperationsProvider.notifier)
-          .pickFile();
+      var bytes = await ref.read(backupOperationsProvider.notifier).pickFile();
       if (bytes == null || !context.mounted) return;
+      if (encrypted) {
+        final password = await _passwordDialog(context, export: false);
+        if (password == null || !context.mounted) return;
+        bytes = await _decryptWithProgress(
+          context,
+          () => decryptEnteBackup(bytes!, password),
+        );
+        if (!context.mounted) return;
+      }
       // Validate the complete file before presenting the conflict policy.
-      final accounts = decodeUriList(bytes);
+      final accounts = decodeUriList(bytes, detectSteam: encrypted);
       final preview = await ref
           .read(backupOperationsProvider.notifier)
           .previewAccounts(accounts);
@@ -976,6 +993,7 @@ class AddAccountScreen extends ConsumerWidget {
           title: l10n.warning,
           message:
               '${l10n.backupReplaceWarning}\n\n'
+              '${encrypted ? '${l10n.encryptedUriWarning}\n\n' : ''}'
               '${l10n.importAccountCounts(preview.newCount, preview.updateCount)}',
           falseButtonVisible: true,
         ),
@@ -983,7 +1001,11 @@ class AddAccountScreen extends ConsumerWidget {
       if (proceed != true || !context.mounted) return;
       await ref
           .read(backupOperationsProvider.notifier)
-          .importUriFile(bytes, expectedRevision: preview.revision);
+          .importUriFile(
+            bytes,
+            expectedRevision: preview.revision,
+            detectSteam: encrypted,
+          );
       if (context.mounted) {
         await _showResult(context, 1, l10n.importSuccess, l10n.backupImported);
       }

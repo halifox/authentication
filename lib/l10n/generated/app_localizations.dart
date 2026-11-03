@@ -1206,6 +1206,18 @@ abstract class AppLocalizations {
   /// **'Import FreeOTP+ backup'**
   String get tokenListImport;
 
+  /// No description provided for @encryptedUriImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Import encrypted Ente export'**
+  String get encryptedUriImport;
+
+  /// No description provided for @encryptedUriWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Source tags, icons, notes, ordering and usage statistics are not imported. Files requiring more than 256 MiB of key derivation memory are not supported.'**
+  String get encryptedUriWarning;
+
   /// No description provided for @tokenListImportError.
   ///
   /// In en, this message translates to:

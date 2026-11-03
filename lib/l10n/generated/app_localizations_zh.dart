@@ -577,6 +577,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tokenListImport => '导入 FreeOTP+ 备份';
 
   @override
+  String get encryptedUriImport => '导入加密的 Ente 导出文件';
+
+  @override
+  String get encryptedUriWarning =>
+      '不会导入来源标签、图标、备注、顺序和使用统计。不支持密钥派生需要超过 256 MiB 内存的文件。';
+
+  @override
   String get tokenListImportError =>
       '无法导入：请检查明文 JSON 文件。账户、顺序表、密钥、分类和验证码参数必须有效；重复、缺失或不支持的记录会导致整批拒绝。';
 

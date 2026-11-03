@@ -70,6 +70,62 @@ class _MemoryPicker extends FilePickerPlatform {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  testWidgets('encrypted URI export imports only after confirmation', (
+    tester,
+  ) async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    final original = FilePickerPlatform.instance;
+    FilePickerPlatform.instance = _MemoryPicker(
+      File('test/fixtures/ente/encrypted.txt').readAsBytesSync(),
+    );
+    addTearDown(() => FilePickerPlatform.instance = original);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          allIconsProvider.overrideWith((ref) async => []),
+        ],
+        child: const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: AddAccountScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Import encrypted Ente export'),
+      200,
+      scrollable: find.byType(Scrollable),
+    );
+    await tester.tap(find.text('Import encrypted Ente export'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'password');
+    await tester.pump();
+    await tester.tap(find.text('OK'));
+    await tester.pump();
+    for (
+      var i = 0;
+      i < 100 && find.textContaining('New accounts: 3.').evaluate().isEmpty;
+      i++
+    ) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 50)),
+      );
+      await tester.pump(const Duration(milliseconds: 50));
+    }
+    await tester.pumpAndSettle();
+    expect(find.textContaining('New accounts: 3.'), findsOneWidget);
+    expect(await db.getAllConfigs(), isEmpty);
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect((await db.getAllConfigs()).length, 3);
+    await tester.pumpWidget(const SizedBox());
+  });
   testWidgets('image import reads a QR code on desktop', (tester) async {
     FlutterSecureStorage.setMockInitialValues({});
     final db = AppDatabase(NativeDatabase.memory());
@@ -603,6 +659,10 @@ void main() {
       200,
       scrollable: find.byType(Scrollable),
     );
+    await tester.ensureVisible(
+      find.text('Import LastPass Authenticator backup'),
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Import LastPass Authenticator backup'));
     await tester.pumpAndSettle();
     expect(

@@ -595,6 +595,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get tokenListImport => 'Import FreeOTP+ backup';
 
   @override
+  String get encryptedUriImport => 'Import encrypted Ente export';
+
+  @override
+  String get encryptedUriWarning =>
+      'Source tags, icons, notes, ordering and usage statistics are not imported. Files requiring more than 256 MiB of key derivation memory are not supported.';
+
+  @override
   String get tokenListImportError =>
       'Import failed. Check the plain JSON file. Accounts, order, secrets, categories, and OTP parameters must be valid; duplicates, missing records, or unsupported entries reject the entire file.';
 
