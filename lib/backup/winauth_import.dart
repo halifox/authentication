@@ -35,7 +35,17 @@ LegacyImport parseWinAuthBackup(
           .toList();
       if (headers.length != 1) throw const FormatException();
       final header = headers.single;
-      if (accountsZip && header.filename.split('/').last != 'Accounts.txt') {
+      final offset = header.localHeaderOffset;
+      if (accountsZip &&
+          (header.filename.split('/').last != 'Accounts.txt' ||
+              header.generalPurposeBitFlag & 1 == 0 ||
+              offset < 0 ||
+              offset + 8 > bytes.length ||
+              bytes[offset] != 0x50 ||
+              bytes[offset + 1] != 0x4b ||
+              bytes[offset + 2] != 3 ||
+              bytes[offset + 3] != 4 ||
+              bytes[offset + 6] & 1 == 0)) {
         throw const FormatException();
       }
       final mode = header.externalFileAttributes >> 16;

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:archive/archive.dart';
 import 'package:authentication/backup/winauth_import.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -17,6 +18,39 @@ void main() {
       accountsZip: true,
     );
     expect(result.accounts, isNotEmpty);
+    final plain = Archive()
+      ..addFile(
+        ArchiveFile.string(
+          'Accounts.txt',
+          'otpauth://totp/Example:user?secret=JBSWY3DPEHPK3PXP&issuer=Example',
+        ),
+      );
+    final plainZip = Uint8List.fromList(ZipEncoder().encode(plain));
+    expect(
+      () => parseWinAuthBackup(
+        plainZip,
+        password: 'any-password',
+        accountsZip: true,
+      ),
+      throwsFormatException,
+    );
+    final forged = Uint8List.fromList(plainZip);
+    final central = List.generate(forged.length - 3, (i) => i).firstWhere(
+      (i) =>
+          forged[i] == 0x50 &&
+          forged[i + 1] == 0x4b &&
+          forged[i + 2] == 1 &&
+          forged[i + 3] == 2,
+    );
+    forged[central + 8] |= 1;
+    expect(
+      () => parseWinAuthBackup(
+        forged,
+        password: 'any-password',
+        accountsZip: true,
+      ),
+      throwsFormatException,
+    );
     expect(
       () => parseWinAuthBackup(
         File('test/fixtures/winauth.zip').readAsBytesSync(),
