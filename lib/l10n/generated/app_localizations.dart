@@ -1373,6 +1373,18 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'导入失败。请检查密码和账户信息；无效、重复或不受支持的记录会导致整批拒绝。'**
   String get totpAuthImportError;
+
+  /// No description provided for @chooseCustomIcon.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择图片'**
+  String get chooseCustomIcon;
+
+  /// No description provided for @invalidCustomIcon.
+  ///
+  /// In zh, this message translates to:
+  /// **'请选择有效的 PNG 或 JPEG 图片，边长不得超过 4096 像素。'**
+  String get invalidCustomIcon;
 }
 
 class _AppLocalizationsDelegate

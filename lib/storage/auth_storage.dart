@@ -19,6 +19,7 @@ OtpAccount _decode(AppDatabase db, AuthEntry e) => OtpAccount(
 
 AuthEntriesCompanion _encode(AppDatabase db, OtpAccount e) {
   e.validate();
+  validateIcon(e.icon);
   return AuthEntriesCompanion.insert(
     scheme: 'otpauth',
     type: e.type,
@@ -194,6 +195,7 @@ extension AuthStorage on AppDatabase {
     final keys = <(String, String)>{};
     for (final account in accounts) {
       account.validate();
+      validateIcon(account.icon);
       if (!keys.add((account.issuer, account.account))) {
         throw const FormatException('Duplicate accounts in backup.');
       }

@@ -706,4 +706,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get totpAuthImportError =>
       'Import failed. Check the password and account details. Invalid, duplicate or unsupported records reject the entire file.';
+
+  @override
+  String get chooseCustomIcon => 'Choose image';
+
+  @override
+  String get invalidCustomIcon =>
+      'Choose a valid PNG or JPEG image up to 4096 pixels per side.';
 }

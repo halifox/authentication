@@ -9,9 +9,11 @@ import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/category.dart';
 import 'package:authentication/screens/add_account_screen.dart';
+import 'package:authentication/screens/icon_selection_screen.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
+import 'package:authentication/storage/icon_data.dart';
 import 'package:base32/base32.dart';
 import 'package:drift/native.dart';
 import 'package:file_picker/file_picker.dart';
@@ -20,6 +22,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart'
     show FlutterSecureStorage;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image/image.dart' as image;
 
 final class _MemoryFile extends PlatformFile {
   _MemoryFile(this.bytes);
@@ -61,6 +64,49 @@ class _MemoryPicker extends FilePickerPlatform {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  testWidgets('custom icon picker returns a usable image', (tester) async {
+    final bitmap = image.Image(width: 20, height: 20);
+    image.fill(bitmap, color: image.ColorRgb8(12, 45, 78));
+    final original = FilePickerPlatform.instance;
+    FilePickerPlatform.instance = _MemoryPicker(
+      Uint8List.fromList(image.encodePng(bitmap)),
+    );
+    addTearDown(() => FilePickerPlatform.instance = original);
+    String? chosen;
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [allIconsProvider.overrideWith((ref) async => [])],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () async {
+                chosen = await Navigator.push<String>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const IconSelectionScreen(),
+                  ),
+                );
+              },
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Choose image'));
+    await tester.pump();
+    await tester.runAsync(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+    });
+    await tester.pumpAndSettle();
+    expect(chosen, isNotNull);
+    expect(validateIcon(chosen!), isNotEmpty);
+  });
   testWidgets('TOTP backup requires confirmation after decryption', (
     tester,
   ) async {

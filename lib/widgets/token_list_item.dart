@@ -7,11 +7,11 @@ import 'package:authentication/otp/token_item_provider.dart';
 import 'package:authentication/router/app_router.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/settings/settings_provider.dart';
+import 'package:authentication/widgets/account_icon.dart';
 import 'package:authentication/widgets/action_result_sheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 
 /// 令牌列表项组件，支持侧滑删除和编辑操作。
@@ -248,15 +248,7 @@ class _TokenIcon extends StatelessWidget {
         color: theme.colorScheme.primary,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: SvgPicture.asset(
-        iconPath,
-        width: 28,
-        height: 28,
-        colorFilter: ColorFilter.mode(
-          theme.colorScheme.onPrimary,
-          BlendMode.srcIn,
-        ),
-      ),
+      child: AccountIcon(icon: iconPath),
     );
   }
 }

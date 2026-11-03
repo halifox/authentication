@@ -1,6 +1,9 @@
 import 'package:authentication/actions/icon_selection_provider.dart';
+import 'package:authentication/backup/backup_provider.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/storage/icon_data.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -18,6 +21,36 @@ class IconSelectionScreen extends ConsumerWidget {
       appBar: CustomAppBar(title: AppLocalizations.of(context)!.selectIcon),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.add_photo_alternate_outlined),
+                label: Text(AppLocalizations.of(context)!.chooseCustomIcon),
+                onPressed: () async {
+                  try {
+                    final bytes = await ref
+                        .read(backupOperationsProvider.notifier)
+                        .pickFile();
+                    if (bytes == null || !context.mounted) return;
+                    final icon = await compute(makeCustomIcon, bytes);
+                    if (context.mounted) Navigator.pop(context, icon);
+                  } catch (_) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            AppLocalizations.of(context)!.invalidCustomIcon,
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                },
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: TextField(

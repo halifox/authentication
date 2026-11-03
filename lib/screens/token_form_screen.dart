@@ -6,6 +6,7 @@ import 'package:authentication/otp/category_provider.dart';
 import 'package:authentication/otp/otp_provider.dart';
 import 'package:authentication/router/app_router.dart';
 import 'package:authentication/screens/auth_error_localization.dart';
+import 'package:authentication/widgets/account_icon.dart';
 import 'package:authentication/widgets/account_qr.dart';
 import 'package:authentication/widgets/action_result_sheet.dart';
 import 'package:authentication/widgets/category_selection.dart';
@@ -14,7 +15,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// 令牌编辑/表单页面，用于手动输入或编辑 2FA 账号的详细配置信息。
@@ -452,15 +452,7 @@ class TokenFormScreen extends HookConsumerWidget {
           color: Theme.of(context).colorScheme.primary,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: SvgPicture.asset(
-          icon,
-          width: 28,
-          height: 28,
-          colorFilter: ColorFilter.mode(
-            Theme.of(context).colorScheme.onPrimary,
-            BlendMode.srcIn,
-          ),
-        ),
+        child: AccountIcon(icon: icon),
       ),
     ),
   );

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/otp/category.dart';
 import 'package:authentication/settings/settings.dart';
+import 'package:authentication/storage/icon_data.dart';
 
 import 'package:encrypt/encrypt.dart' as enc;
 
@@ -26,6 +27,13 @@ class Backup {
       throw const FormatException(
         'Categories require complete account metadata.',
       );
+    }
+    final hasCustomIcons = entries.any(
+      (entry) =>
+          entry['icon'] is String && isCustomIcon(entry['icon'] as String),
+    );
+    if (hasCustomIcons && categories == null) {
+      throw const FormatException('Custom icons require a complete backup.');
     }
     final validatedCategories = categories == null
         ? null
@@ -63,7 +71,7 @@ class Backup {
     final Map<String, Object> envelope = {
       'format': 'authentication-backup',
       'version': validatedCategories != null
-          ? 5
+          ? (hasCustomIcons ? 6 : 5)
           : includeCopyCounts
           ? 4
           : validatedIntegers != null
@@ -92,7 +100,11 @@ class Backup {
         'ciphertext': cipher.encryptBytes(payload, iv: nonce).base64,
       });
     }
-    return Uint8List.fromList(utf8.encode(jsonEncode(envelope)));
+    final output = Uint8List.fromList(utf8.encode(jsonEncode(envelope)));
+    if (output.length > maxBackupBytes) {
+      throw const FormatException('Backup is too large.');
+    }
+    return output;
   }
 
   static Map<String, dynamic> _envelope(Uint8List bytes) {
@@ -106,7 +118,8 @@ class Backup {
             data['version'] != 2 &&
             data['version'] != 3 &&
             data['version'] != 4 &&
-            data['version'] != 5) ||
+            data['version'] != 5 &&
+            data['version'] != 6) ||
         data['encrypted'] is! bool) {
       throw const FormatException('Unsupported backup format.');
     }
@@ -178,7 +191,7 @@ class Backup {
     final integerSettings = envelope['version'] >= 3
         ? validateIntegerSettings(contents['integerSettings'])
         : null;
-    final categories = envelope['version'] == 5
+    final categories = envelope['version'] >= 5
         ? parseBackupCategories(contents['categories'])
         : null;
     if (entries is! List ||
@@ -201,6 +214,10 @@ class Backup {
     final mappedEntries = entries
         .map((e) => Map<String, Object>.from(e as Map))
         .toList();
+    if (envelope['version'] < 6 &&
+        mappedEntries.any((entry) => isCustomIcon(entry['icon'] as String))) {
+      throw const FormatException('Invalid icon for backup version.');
+    }
     if (categories != null) {
       validateBackupMemberships(mappedEntries, categories);
     }
@@ -257,9 +274,7 @@ void validateBackupMemberships(
 List<OtpAccount> parseBackupAccounts(List<Map<String, Object>> entries) =>
     entries.map((entry) {
       final icon = entry['icon'] as String;
-      if (!RegExp(r'^assets/icons/[a-zA-Z0-9_-]+\.svg$').hasMatch(icon)) {
-        throw const FormatException('Invalid icon path.');
-      }
+      validateIcon(icon);
       final account = parseOtpUri(entry['uri'] as String).copyWith(
         icon: icon,
         sortOrder: entry['sortOrder'] as int,

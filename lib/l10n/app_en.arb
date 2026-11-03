@@ -220,5 +220,7 @@
   "totpAuthImport": "Import TOTP Authenticator backup",
   "totpAuthImportWarning": "Import {count} accounts? Matching accounts are updated and existing metadata is preserved. Missing issuer or account names use the other name. Source icons and other metadata are not imported. This older encryption cannot authenticate file integrity.",
   "totpAuthImportError": "Import failed. Check the password and account details. Invalid, duplicate or unsupported records reject the entire file.",
-  "@totpAuthImportWarning": {"placeholders": {"count": {"type": "int"}}}
+  "@totpAuthImportWarning": {"placeholders": {"count": {"type": "int"}}},
+  "chooseCustomIcon": "Choose image",
+  "invalidCustomIcon": "Choose a valid PNG or JPEG image up to 4096 pixels per side."
 }

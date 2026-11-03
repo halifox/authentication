@@ -703,4 +703,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get totpAuthImportError => '导入失败。请检查密码和账户信息；无效、重复或不受支持的记录会导致整批拒绝。';
+
+  @override
+  String get chooseCustomIcon => '选择图片';
+
+  @override
+  String get invalidCustomIcon => '请选择有效的 PNG 或 JPEG 图片，边长不得超过 4096 像素。';
 }

@@ -3,6 +3,7 @@ import 'package:authentication/otp/category.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/storage/auth_entries.dart';
 import 'package:authentication/storage/encryption.dart';
+import 'package:authentication/storage/icon_data.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
