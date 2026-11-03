@@ -548,14 +548,14 @@ class TokenFormScreen extends HookConsumerWidget {
           );
         }
       }
-    } catch (e) {
+    } catch (_) {
       if (context.mounted) {
         await showCupertinoModalPopup(
           context: context,
           builder: (ctx) => ActionResultSheet(
             state: 0,
             title: l10n.saveFailed,
-            message: e.toString(),
+            message: AuthErrorCode.unknown.getLocalizedMessage(context),
           ),
         );
       }

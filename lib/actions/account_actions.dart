@@ -20,8 +20,7 @@ class TokenFormConflict extends TokenFormResult {
 
 class TokenFormError extends TokenFormResult {
   final AuthErrorCode code;
-  final String? message;
-  TokenFormError(this.code, {this.message});
+  TokenFormError(this.code);
 }
 
 /// 令牌表单页面的控制器，处理认证令牌的创建和更新。
@@ -105,11 +104,11 @@ Future<TokenFormResult> saveAccount(
         );
         return TokenFormSuccess(isUpdate: true);
       }
-      return TokenFormError(AuthErrorCode.unknown, message: 'ID not found');
+      return TokenFormError(AuthErrorCode.unknown);
     }
   } on AuthFailure catch (e) {
-    return TokenFormError(e.code, message: e.message);
-  } catch (e) {
-    return TokenFormError(AuthErrorCode.unknown, message: e.toString());
+    return TokenFormError(e.code);
+  } catch (_) {
+    return TokenFormError(AuthErrorCode.unknown);
   }
 }

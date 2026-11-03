@@ -22,8 +22,7 @@ class QrProcessConflict extends QrProcessResult {
 
 class QrProcessError extends QrProcessResult {
   final AuthErrorCode code;
-  final String? message;
-  QrProcessError(this.code, {this.message});
+  QrProcessError(this.code);
 }
 
 /// 处理二维码扫描和图片上传功能的控制器。
@@ -77,9 +76,9 @@ Future<QrProcessResult> processQrCode(
       }
     }
   } on AuthFailure catch (e) {
-    return QrProcessError(e.code, message: e.message);
-  } catch (e) {
-    return QrProcessError(AuthErrorCode.unknown, message: e.toString());
+    return QrProcessError(e.code);
+  } catch (_) {
+    return QrProcessError(AuthErrorCode.unknown);
   }
 }
 
