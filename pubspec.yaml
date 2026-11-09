@@ -58,7 +58,7 @@ dev_dependencies:
   # Code Generation
   build_runner: ^2.16.2
   drift_dev: ^2.35.2
-  riverpod_generator: ^4.0.9
+  riverpod_generator: ^4.0.10
 
   # Tools
   flutter_launcher_icons: ^0.14.4
