@@ -18,7 +18,7 @@ dependencies:
   intl: ^0.20.3
 
   # State Management & Hooks
-  flutter_hooks: ^0.21.3+1
+  flutter_hooks: ^0.21.4
   flutter_riverpod: ^3.4.3
   hooks_riverpod: ^3.4.3
   riverpod_annotation: ^4.0.7
