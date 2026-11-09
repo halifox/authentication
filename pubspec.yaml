@@ -20,7 +20,7 @@ dependencies:
   # State Management & Hooks
   flutter_hooks: ^0.21.3+1
   flutter_riverpod: ^3.4.3
-  hooks_riverpod: ^3.4.3
+  hooks_riverpod: ^3.5.0
   riverpod_annotation: ^4.0.7
 
   # Navigation
