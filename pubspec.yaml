@@ -56,7 +56,7 @@ dev_dependencies:
     sdk: flutter
 
   # Code Generation
-  build_runner: ^2.16.2
+  build_runner: ^2.17.1
   drift_dev: ^2.35.2
   riverpod_generator: ^4.0.9
 
