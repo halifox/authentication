@@ -1,4 +1,5 @@
 import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -42,7 +43,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
     final l10n = AppLocalizations.of(context)!;
     return ValueListenableBuilder<MobileScannerState>(
       valueListenable: controller,
-      builder: (context, state, _) => Scaffold(
+      builder: (context, state, _) => AppScaffold(
         appBar: CustomAppBar(
           title: l10n.scan,
           rightIcon: state.torchState == TorchState.on

@@ -8,6 +8,7 @@ import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/device_key_store.dart';
 import 'package:authentication/storage/encryption.dart';
+import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:authentication/widgets/glass_quality.dart';
 import 'package:authentication/widgets/glass_surface.dart';
@@ -324,10 +325,10 @@ class _AppBootstrapState extends State<AppBootstrap>
 
   Widget _lockScreen() {
     return MaterialApp(
-      theme: ThemeData(
+      theme: appTheme(
         colorScheme: appColorScheme(Brightness.light, null, 0, false),
       ),
-      darkTheme: ThemeData(
+      darkTheme: appTheme(
         colorScheme: appColorScheme(Brightness.dark, null, 0, false),
       ),
       localizationsDelegates: const [
@@ -345,7 +346,7 @@ class _AppBootstrapState extends State<AppBootstrap>
       home: Builder(
         builder: (context) {
           final l10n = AppLocalizations.of(context)!;
-          return Scaffold(
+          return AppScaffold(
             appBar: CustomAppBar(title: l10n.unlockTitle, leftIcon: null),
             body: SafeArea(
               child: Center(

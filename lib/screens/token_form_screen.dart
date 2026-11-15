@@ -9,6 +9,7 @@ import 'package:authentication/screens/auth_error_localization.dart';
 import 'package:authentication/widgets/account_icon.dart';
 import 'package:authentication/widgets/account_qr.dart';
 import 'package:authentication/widgets/action_result_sheet.dart';
+import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/category_selection.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:authentication/widgets/glass_surface.dart';
@@ -86,7 +87,7 @@ class TokenFormScreen extends HookConsumerWidget {
       [l10n],
     );
 
-    return Scaffold(
+    return AppScaffold(
       appBar: CustomAppBar(
         title: isSaved
             ? l10n.editAccount

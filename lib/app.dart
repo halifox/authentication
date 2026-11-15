@@ -118,7 +118,7 @@ class _AuthAppState extends ConsumerState<AuthApp> with WidgetsBindingObserver {
           2 || 3 => ThemeMode.dark,
           _ => ThemeMode.system,
         },
-        theme: ThemeData(
+        theme: appTheme(
           colorScheme: appColorScheme(
             Brightness.light,
             dynamicEnabled ? toFlutterColorScheme(lightDynamic) : null,
@@ -127,7 +127,7 @@ class _AuthAppState extends ConsumerState<AuthApp> with WidgetsBindingObserver {
           ),
           pageTransitionsTheme: pageTransitionsTheme,
         ),
-        darkTheme: ThemeData(
+        darkTheme: appTheme(
           colorScheme: appColorScheme(
             Brightness.dark,
             dynamicEnabled ? toFlutterColorScheme(darkDynamic) : null,
@@ -209,6 +209,45 @@ class _AuthAppState extends ConsumerState<AuthApp> with WidgetsBindingObserver {
     );
   }
 }
+
+ThemeData appTheme({
+  required ColorScheme colorScheme,
+  PageTransitionsTheme? pageTransitionsTheme,
+}) => ThemeData(
+  colorScheme: colorScheme,
+  pageTransitionsTheme: pageTransitionsTheme,
+  scaffoldBackgroundColor: colorScheme.surface,
+  inputDecorationTheme: InputDecorationTheme(
+    filled: true,
+    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: .45),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16),
+      borderSide: BorderSide.none,
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16),
+      borderSide: BorderSide.none,
+    ),
+  ),
+  listTileTheme: ListTileThemeData(
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+    iconColor: colorScheme.primary,
+    textColor: colorScheme.onSurface,
+  ),
+  filledButtonTheme: FilledButtonThemeData(
+    style: FilledButton.styleFrom(
+      minimumSize: const Size(48, 50),
+      shape: const StadiumBorder(),
+    ),
+  ),
+  outlinedButtonTheme: OutlinedButtonThemeData(
+    style: OutlinedButton.styleFrom(
+      minimumSize: const Size(48, 48),
+      shape: const StadiumBorder(),
+    ),
+  ),
+);
 
 ColorScheme appColorScheme(
   Brightness brightness,

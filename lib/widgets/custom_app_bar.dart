@@ -27,42 +27,53 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       Navigator.pop(context);
 
   @override
-  Widget build(BuildContext context) => GlassAppBar(
-    toolbarHeight: 96,
+  Widget build(BuildContext context) => buildBar(context);
+
+  GlassAppBar buildBar(
+    BuildContext context, {
+    GlassLargeTitleController? titleController,
+  }) => GlassAppBar(
+    toolbarHeight: 56,
+    largeTitleController: titleController,
     padding: const EdgeInsets.symmetric(horizontal: 16),
     title: Text(
       title,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       textAlign: TextAlign.center,
-      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
+      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+        fontSize: 17,
+        fontWeight: FontWeight.w600,
         color: Theme.of(context).colorScheme.onSurface,
       ),
     ),
-    leading: AppBarIconButton(
-      icon: leftIcon,
-      tooltip:
-          leftTooltip ??
-          (leftIcon == Icons.arrow_back
-              ? MaterialLocalizations.of(context).backButtonTooltip
-              : null),
-      onPressed: leftOnPressed == null ? null : () => leftOnPressed!(context),
-    ),
+    leading: leftIcon == null
+        ? null
+        : AppBarIconButton(
+            icon: leftIcon,
+            tooltip:
+                leftTooltip ??
+                (leftIcon == Icons.arrow_back
+                    ? MaterialLocalizations.of(context).backButtonTooltip
+                    : null),
+            onPressed: leftOnPressed == null
+                ? null
+                : () => leftOnPressed!(context),
+          ),
     actions: [
-      AppBarIconButton(
-        icon: rightIcon,
-        tooltip: rightTooltip,
-        onPressed: rightOnPressed == null
-            ? null
-            : () => rightOnPressed!(context),
-      ),
+      if (rightIcon != null)
+        AppBarIconButton(
+          icon: rightIcon,
+          tooltip: rightTooltip,
+          onPressed: rightOnPressed == null
+              ? null
+              : () => rightOnPressed!(context),
+        ),
     ],
   );
 
   @override
-  Size get preferredSize => const Size.fromHeight(96);
+  Size get preferredSize => const Size.fromHeight(56);
 }
 
 class AppBarIconButton extends StatelessWidget {
@@ -73,20 +84,19 @@ class AppBarIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (icon == null) return const SizedBox(width: 64, height: 64);
+    if (icon == null) return const SizedBox(width: 44, height: 44);
     final colors = Theme.of(context).colorScheme;
     final button = GlassIconButton(
-      icon: Icon(icon, color: colors.onPrimaryContainer),
+      icon: Icon(icon, color: colors.onSurface),
       onPressed: onPressed,
       semanticLabel: tooltip,
-      size: 64,
-      iconSize: 30,
-      shape: GlassIconButtonShape.roundedSquare,
-      borderRadius: 24,
+      size: 44,
+      iconSize: 22,
+      shape: GlassIconButtonShape.circle,
       useOwnLayer: true,
       quality: appGlassQuality,
       settings: LiquidGlassSettings(
-        glassColor: colors.primaryContainer.withValues(alpha: .8),
+        glassColor: colors.surfaceContainer.withValues(alpha: .65),
       ),
     );
     return tooltip == null ? button : Tooltip(message: tooltip!, child: button);

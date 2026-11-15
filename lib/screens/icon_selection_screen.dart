@@ -4,6 +4,7 @@ import 'package:authentication/backup/backup_provider.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/storage/icon_data.dart';
 import 'package:authentication/widgets/account_icon.dart';
+import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/foundation.dart' show compute;
@@ -23,7 +24,7 @@ class IconSelectionScreen extends ConsumerWidget {
         ref.watch(iconPackOperationsProvider).isLoading ||
         ref.watch(backupOperationsProvider).isLoading;
 
-    return Scaffold(
+    return AppScaffold(
       appBar: CustomAppBar(title: l10n.selectIcon),
       body: Column(
         children: [

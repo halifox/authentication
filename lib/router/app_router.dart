@@ -8,6 +8,7 @@ import 'package:authentication/screens/qr_scanner_screen.dart';
 import 'package:authentication/screens/settings_screen.dart';
 import 'package:authentication/screens/token_form_screen.dart';
 import 'package:authentication/screens/token_list_screen.dart';
+import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -49,7 +50,7 @@ Route<void> externalAccountRoute(String name) {
   return MaterialPageRoute<void>(
     settings: const RouteSettings(name: '/external-account'),
     builder: (context) => parsedAccount == null
-        ? Scaffold(
+        ? AppScaffold(
             appBar: CustomAppBar(
               title: AppLocalizations.of(context)!.externalAccount,
             ),
@@ -128,7 +129,7 @@ class _UnavailableRouteScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
+    return AppScaffold(
       appBar: CustomAppBar(title: l10n.tip, leftOnPressed: _leave),
       body: Center(
         child: Padding(

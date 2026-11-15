@@ -1,8 +1,6 @@
-import 'package:authentication/widgets/glass_quality.dart';
 import 'package:flutter/material.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
-/// A theme-aware glass surface that also works without shader initialization.
+/// An opaque content surface beneath the glass navigation and control layer.
 class AppGlassCard extends StatelessWidget {
   const AppGlassCard({
     required this.child,
@@ -16,30 +14,33 @@ class AppGlassCard extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final EdgeInsetsGeometry? margin;
 
-  /// Use the shader-free renderer for repeated surfaces in scrolling lists.
+  /// Retained for account-list callers; all content surfaces are shader-free.
   final bool repeated;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return GlassCard(
-      useOwnLayer: true,
-      quality: repeated ? GlassQuality.minimal : appGlassQuality,
-      shape: const LiquidRoundedSuperellipse(borderRadius: 24),
-      settings: LiquidGlassSettings(
-        glassColor: colors.primaryContainer.withValues(alpha: .8),
-      ),
-      padding: padding,
-      margin: margin,
-      child: DefaultTextStyle.merge(
-        style: TextStyle(color: colors.onPrimaryContainer),
-        child: child,
+    return Padding(
+      padding: margin ?? EdgeInsets.zero,
+      child: Material(
+        color: colors.surfaceContainerLow,
+        shape: const RoundedSuperellipseBorder(
+          borderRadius: BorderRadius.all(Radius.circular(26)),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Padding(
+          padding: padding,
+          child: DefaultTextStyle.merge(
+            style: TextStyle(color: colors.onSurface),
+            child: child,
+          ),
+        ),
       ),
     );
   }
 }
 
-/// A grouped glass surface with automatic dividers between its rows.
+/// Inset grouped content. Controls can lift above this non-refracting surface.
 class AppGlassGroup extends StatelessWidget {
   const AppGlassGroup({
     required this.children,
@@ -57,29 +58,48 @@ class AppGlassGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return GlassGroupedSection(
-      header: header == null
-          ? null
-          : DefaultTextStyle.merge(
-              style: Theme.of(context).textTheme.labelMedium!
-                  .copyWith(color: colors.onSurfaceVariant),
-              child: Semantics(header: true, child: header!),
+    return Padding(
+      padding: margin ?? EdgeInsets.zero,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (header != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: DefaultTextStyle.merge(
+                style: Theme.of(context).textTheme.labelMedium!
+                    .copyWith(color: colors.onSurfaceVariant),
+                child: Semantics(header: true, child: header!),
+              ),
             ),
-      footer: footer == null
-          ? null
-          : DefaultTextStyle.merge(
-              style: Theme.of(context).textTheme.bodySmall!
-                  .copyWith(color: colors.onSurfaceVariant),
-              child: footer!,
+          AppGlassCard(
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: [
+                for (var index = 0; index < children.length; index++) ...[
+                  if (index > 0)
+                    Divider(
+                      height: 1,
+                      indent: 16,
+                      endIndent: 16,
+                      color: colors.outlineVariant.withValues(alpha: .45),
+                    ),
+                  children[index],
+                ],
+              ],
             ),
-      margin: margin ?? EdgeInsets.zero,
-      useOwnLayer: true,
-      quality: appGlassQuality,
-      shape: const LiquidRoundedSuperellipse(borderRadius: 24),
-      settings: LiquidGlassSettings(
-        glassColor: colors.primaryContainer.withValues(alpha: .8),
+          ),
+          if (footer != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: DefaultTextStyle.merge(
+                style: Theme.of(context).textTheme.bodySmall!
+                    .copyWith(color: colors.onSurfaceVariant),
+                child: footer!,
+              ),
+            ),
+        ],
       ),
-      children: children,
     );
   }
 }

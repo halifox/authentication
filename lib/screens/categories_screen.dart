@@ -2,6 +2,7 @@ import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/category.dart';
 import 'package:authentication/otp/category_provider.dart';
 import 'package:authentication/otp/otp_provider.dart';
+import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/category_selection.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:authentication/widgets/glass_surface.dart';
@@ -46,7 +47,7 @@ class CategoriesScreen extends ConsumerWidget {
       );
     }
 
-    return Scaffold(
+    return AppScaffold(
       appBar: CustomAppBar(
         title: l10n.categories,
         rightIcon: Icons.add,

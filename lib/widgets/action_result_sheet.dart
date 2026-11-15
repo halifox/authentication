@@ -1,4 +1,5 @@
 import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class ActionResultSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       appBar: const CustomAppBar(title: ''),
       body: SafeArea(
         child: LayoutBuilder(
