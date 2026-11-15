@@ -34,7 +34,7 @@ void main() {
     'auto lock hides accounts and requires the password after timeout',
     (tester) async {
       FlutterSecureStorage.setMockInitialValues({});
-      SharedPreferences.setMockInitialValues({'introduction_seen': true});
+      SharedPreferences.setMockInitialValues({});
       debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
       addTearDown(() => debugDefaultTargetPlatformOverride = null);
       final folder = (await tester.runAsync(
@@ -280,7 +280,7 @@ void main() {
     tester,
   ) async {
     FlutterSecureStorage.setMockInitialValues({});
-    SharedPreferences.setMockInitialValues({'introduction_seen': true});
+    SharedPreferences.setMockInitialValues({});
     debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
     addTearDown(() => debugDefaultTargetPlatformOverride = null);
     final folder = (await tester.runAsync(

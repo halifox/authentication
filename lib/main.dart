@@ -278,7 +278,6 @@ class _AppBootstrapState extends State<AppBootstrap>
               offstage: covered || sessionLocked,
               child: ProviderScope(
                 overrides: [
-                  introductionPreferencesProvider.overrideWithValue(prefs),
                   screenProtectionApplyProvider.overrideWithValue(
                     _applyScreenProtection,
                   ),
