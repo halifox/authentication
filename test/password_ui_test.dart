@@ -9,12 +9,16 @@ import 'package:authentication/settings/settings.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
+import 'package:authentication/widgets/glass_surface.dart';
 import 'package:drift/native.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> waitFor(WidgetTester tester, bool Function() condition) async {
@@ -80,13 +84,15 @@ void main() {
       );
       await waitFor(
         tester,
-        () => find.widgetWithText(FilledButton, 'Unlock').evaluate().isNotEmpty,
+        () => find.widgetWithText(AppButton, 'Unlock').evaluate().isNotEmpty,
       );
-      await tester.enterText(find.byType(TextField), 'first-password');
-      await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
+      await tester.enterText(find.byType(AppTextField), 'first-password');
+      await tester.tap(find.widgetWithText(AppButton, 'Unlock'));
       await tester.pump();
       await waitFor(tester, () => find.text('alice').evaluate().isNotEmpty);
-      await tester.tap(find.widgetWithText(TextField, 'Search'));
+      await tester.tap(find.byIcon(CupertinoIcons.search).hitTestable().first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(CupertinoTextField).hitTestable().first);
       await tester.pump();
       final searchFocus = FocusManager.instance.primaryFocus!;
       expect(searchFocus.hasFocus, true);
@@ -97,7 +103,10 @@ void main() {
       now = now.add(const Duration(seconds: 30));
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
       await tester.pump();
-      await waitFor(tester, () => find.text('alice').evaluate().isNotEmpty);
+      await waitFor(
+        tester,
+        () => find.byType(GlassTabBar).evaluate().isNotEmpty,
+      );
       expect(protection.last, false);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
       await tester.pump();
@@ -118,22 +127,25 @@ void main() {
       await tester.pump();
       await waitFor(
         tester,
-        () => find.widgetWithText(FilledButton, 'Unlock').evaluate().isNotEmpty,
+        () => find.widgetWithText(AppButton, 'Unlock').evaluate().isNotEmpty,
       );
       expect(protection.last, true);
       expect(find.text('alice'), findsNothing);
-      await tester.enterText(find.byType(TextField), 'wrong');
-      await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
+      await tester.enterText(find.byType(AppTextField), 'wrong');
+      await tester.tap(find.widgetWithText(AppButton, 'Unlock'));
       await tester.pump();
       await waitFor(
         tester,
         () => find.textContaining('Unable to unlock').evaluate().isNotEmpty,
       );
       expect(find.text('alice'), findsNothing);
-      await tester.enterText(find.byType(TextField), 'first-password');
-      await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
+      await tester.enterText(find.byType(AppTextField), 'first-password');
+      await tester.tap(find.widgetWithText(AppButton, 'Unlock'));
       await tester.pump();
-      await waitFor(tester, () => find.text('alice').evaluate().isNotEmpty);
+      await waitFor(
+        tester,
+        () => find.byType(GlassTabBar).evaluate().isNotEmpty,
+      );
       expect(protection.last, false);
       await tester.runAsync(() => reopened.setIntegerSetting(autoLockKey, -1));
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
@@ -142,11 +154,11 @@ void main() {
       await tester.pump();
       await waitFor(
         tester,
-        () => find.widgetWithText(FilledButton, 'Unlock').evaluate().isNotEmpty,
+        () => find.widgetWithText(AppButton, 'Unlock').evaluate().isNotEmpty,
       );
       delayDisable = Completer<void>();
-      await tester.enterText(find.byType(TextField), 'first-password');
-      await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
+      await tester.enterText(find.byType(AppTextField), 'first-password');
+      await tester.tap(find.widgetWithText(AppButton, 'Unlock'));
       await tester.pump();
       for (var i = 0; i < 250 && !disableStarted; i++) {
         await tester.runAsync(
@@ -163,13 +175,19 @@ void main() {
       delayDisable = null;
       await waitFor(
         tester,
-        () => find.widgetWithText(FilledButton, 'Unlock').evaluate().isNotEmpty,
+        () => find.widgetWithText(AppButton, 'Unlock').evaluate().isNotEmpty,
       );
       expect(find.text('alice'), findsNothing);
-      await tester.enterText(find.byType(TextField), 'first-password');
-      await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
+      await tester.enterText(find.byType(AppTextField), 'first-password');
+      await tester.tap(find.widgetWithText(AppButton, 'Unlock'));
       await tester.pump();
-      await waitFor(tester, () => find.text('alice').evaluate().isNotEmpty);
+      await waitFor(
+        tester,
+        () => find.byType(GlassTabBar).evaluate().isNotEmpty,
+      );
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.text('alice'), findsOneWidget);
       await tester.runAsync(
         () => reopened.encryption.changePassword(
           currentPassword: 'first-password',
@@ -203,14 +221,16 @@ void main() {
     );
     await tester.pumpAndSettle();
     await tester.enterText(
-      find.widgetWithText(TextField, 'New password'),
+      find.widgetWithText(AppTextField, 'New password'),
       'first-password',
     );
     await tester.enterText(
-      find.widgetWithText(TextField, 'Confirm new password'),
+      find.widgetWithText(AppTextField, 'Confirm new password'),
       'first-password',
     );
     await tester.pump();
+    await tester.ensureVisible(find.text('Set password'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Set password'));
     await tester.pump();
     await waitFor(
@@ -218,21 +238,27 @@ void main() {
       () => find.text('Change password').evaluate().isNotEmpty,
     );
     expect(await db.encryption.passwordEnabled, true);
-    await tester.tap(find.byKey(const ValueKey(autoLockKey)));
+    await tester.tap(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppChoiceTile<int> &&
+            widget.key == const ValueKey(autoLockKey),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Immediately').last);
     await tester.pumpAndSettle();
     expect((await db.getIntegerSettings())[autoLockKey], -1);
     await tester.enterText(
-      find.widgetWithText(TextField, 'Current password'),
+      find.widgetWithText(AppTextField, 'Current password'),
       'first-password',
     );
     await tester.enterText(
-      find.widgetWithText(TextField, 'New password'),
+      find.widgetWithText(AppTextField, 'New password'),
       'second-password',
     );
     await tester.enterText(
-      find.widgetWithText(TextField, 'Confirm new password'),
+      find.widgetWithText(AppTextField, 'Confirm new password'),
       'second-password',
     );
     await tester.pump();
@@ -244,20 +270,21 @@ void main() {
       tester,
       () =>
           find
-              .widgetWithText(TextField, 'New password')
+              .widgetWithText(AppTextField, 'New password')
               .evaluate()
               .isNotEmpty &&
           tester
-              .widget<TextField>(find.widgetWithText(TextField, 'New password'))
+              .widget<AppTextField>(
+                find.widgetWithText(AppTextField, 'New password'),
+              )
               .controller!
               .text
               .isEmpty,
     );
-    ScaffoldMessenger.of(tester.element(find.byType(PasswordScreen)))
-        .clearSnackBars();
+    await tester.pump(const Duration(seconds: 4));
     await tester.pumpAndSettle();
     await tester.enterText(
-      find.widgetWithText(TextField, 'Current password'),
+      find.widgetWithText(AppTextField, 'Current password'),
       'second-password',
     );
     await tester.pump();
@@ -308,16 +335,16 @@ void main() {
     );
     await waitFor(tester, () => find.text('Unlock').evaluate().length >= 2);
     expect(find.text('alice'), findsNothing);
-    await tester.enterText(find.byType(TextField), 'wrong-password');
-    await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
+    await tester.enterText(find.byType(AppTextField), 'wrong-password');
+    await tester.tap(find.widgetWithText(AppButton, 'Unlock'));
     await tester.pump();
     await waitFor(
       tester,
       () => find.textContaining('Unable to unlock').evaluate().isNotEmpty,
     );
     expect(find.text('alice'), findsNothing);
-    await tester.enterText(find.byType(TextField), 'first-password');
-    await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
+    await tester.enterText(find.byType(AppTextField), 'first-password');
+    await tester.tap(find.widgetWithText(AppButton, 'Unlock'));
     await tester.pump();
     await waitFor(tester, () => find.text('alice').evaluate().isNotEmpty);
     await tester.pumpWidget(const SizedBox());

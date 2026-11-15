@@ -8,28 +8,41 @@ Future<T?> showAppChoiceSheet<T>({
   required Map<T, String> options,
   T? value,
 }) async {
-  T? selection;
-  await showGlassActionSheet<void>(
+  return GlassSheet.show<T>(
     context: context,
-    title: title,
     quality: appGlassQuality,
-    cancelLabel: MaterialLocalizations.of(context).cancelButtonLabel,
-    actions: [
-      for (final option in options.entries)
-        GlassActionSheetAction(
-          label: option.value,
-          icon: Icon(
-            Icons.check,
-            color: value == option.key
-                ? Theme.of(context).colorScheme.primary
-                : Colors.transparent,
+    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+    builder: (sheetContext) => DefaultTextStyle(
+      style: Theme.of(context).textTheme.bodyLarge!,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: Semantics(
+              header: true,
+              child: Text(title, style: Theme.of(context).textTheme.titleLarge),
+            ),
           ),
-          onPressed: () => selection = option.key,
-        ),
-    ],
+          for (final option in options.entries)
+            GlassListTile(
+              title: Text(option.value),
+              leading: Icon(
+                Icons.check,
+                color: value == option.key
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.transparent,
+              ),
+              onTap: () => Navigator.pop(sheetContext, option.key),
+            ),
+          GlassListTile(
+            title: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            onTap: () => Navigator.pop(sheetContext),
+          ),
+        ],
+      ),
+    ),
   );
-  // Complete the sheet route before an action can open another dialog or page.
-  return selection;
 }
 
 /// An opaque content surface beneath the glass navigation and control layer.
@@ -52,21 +65,14 @@ class AppGlassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return Padding(
-      padding: margin ?? EdgeInsets.zero,
-      child: Material(
-        color: colors.surfaceContainerLow,
-        shape: const RoundedSuperellipseBorder(
-          borderRadius: BorderRadius.all(Radius.circular(26)),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Padding(
-          padding: padding,
-          child: DefaultTextStyle.merge(
-            style: TextStyle(color: colors.onSurface),
-            child: child,
-          ),
-        ),
+    return GlassContainer.card(
+      surfaceStyle: GlassSurfaceStyle.solid,
+      color: colors.surfaceContainerLow,
+      padding: padding,
+      margin: margin,
+      child: DefaultTextStyle.merge(
+        style: TextStyle(color: colors.onSurface),
+        child: child,
       ),
     );
   }
@@ -164,61 +170,47 @@ class AppDialog extends StatelessWidget {
     this.actions = const [],
     super.key,
   });
-
-  final Widget? title;
+  final String? title;
   final Widget? content;
-  final List<Widget> actions;
+  final List<GlassDialogAction> actions;
 
   @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 440),
-        child: GlassContainer(
-          useOwnLayer: true,
-          quality: appGlassQuality,
-          shape: const LiquidRoundedSuperellipse(borderRadius: 28),
-          settings: LiquidGlassSettings(
-            glassColor: colors.surfaceContainerHigh.withValues(alpha: .9),
+  Widget build(BuildContext context) => actions.isNotEmpty
+      ? DefaultTextStyle(
+          style: Theme.of(context).textTheme.bodyLarge!,
+          child: GlassDialog(
+            title: title,
+            content: content,
+            actions: actions,
+            quality: appGlassQuality,
+            maxWidth: 440,
           ),
-          padding: const EdgeInsets.all(24),
-          child: Material(
-            type: MaterialType.transparency,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (title != null) ...[
-                  DefaultTextStyle.merge(
-                    style: Theme.of(context).textTheme.titleLarge
-                        ?.copyWith(fontWeight: FontWeight.w600),
-                    child: Semantics(namesRoute: true, child: title!),
+        )
+      : SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 440),
+                child: GlassContainer(
+                  useOwnLayer: true,
+                  quality: appGlassQuality,
+                  padding: const EdgeInsets.all(24),
+                  child: DefaultTextStyle(
+                    style: Theme.of(context).textTheme.bodyLarge!,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (title != null) Text(title!),
+                        if (content != null) content!,
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                ],
-                if (content != null)
-                  Flexible(child: SingleChildScrollView(child: content!)),
-                if (actions.isNotEmpty) ...[
-                  const SizedBox(height: 20),
-                  OverflowBar(
-                    alignment: MainAxisAlignment.end,
-                    overflowAlignment: OverflowBarAlignment.end,
-                    spacing: 8,
-                    overflowSpacing: 8,
-                    children: actions,
-                  ),
-                ],
-              ],
+                ),
+              ),
             ),
           ),
-        ),
-      ),
-    );
-  }
+        );
 }
 
 /// Inset grouped content. Controls can lift above this non-refracting surface.
@@ -238,49 +230,12 @@ class AppGlassGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Padding(
-      padding: margin ?? EdgeInsets.zero,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (header != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: DefaultTextStyle.merge(
-                style: Theme.of(context).textTheme.labelMedium!
-                    .copyWith(color: colors.onSurfaceVariant),
-                child: Semantics(header: true, child: header!),
-              ),
-            ),
-          AppGlassCard(
-            padding: EdgeInsets.zero,
-            child: Column(
-              children: [
-                for (var index = 0; index < children.length; index++) ...[
-                  if (index > 0)
-                    Divider(
-                      height: 1,
-                      indent: 16,
-                      endIndent: 16,
-                      color: colors.outlineVariant.withValues(alpha: .45),
-                    ),
-                  children[index],
-                ],
-              ],
-            ),
-          ),
-          if (footer != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-              child: DefaultTextStyle.merge(
-                style: Theme.of(context).textTheme.bodySmall!
-                    .copyWith(color: colors.onSurfaceVariant),
-                child: footer!,
-              ),
-            ),
-        ],
-      ),
+    return GlassGroupedSection(
+      surfaceStyle: GlassSurfaceStyle.solid,
+      margin: margin ?? EdgeInsets.zero,
+      header: header,
+      footer: footer,
+      children: children,
     );
   }
 }

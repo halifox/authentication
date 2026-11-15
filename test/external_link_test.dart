@@ -7,6 +7,7 @@ import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +57,7 @@ void main() {
       (_) {},
     );
     await tester.pumpAndSettle();
-    final field = find.widgetWithText(TextField, 'Issuer');
+    final field = find.widgetWithText(AppTextField, 'Issuer');
     expect(field, findsOneWidget);
     expect(
       ModalRoute.of(tester.element(field))!.settings.name,
@@ -90,7 +91,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    var field = find.widgetWithText(TextField, 'Issuer');
+    var field = find.widgetWithText(AppTextField, 'Issuer');
     expect(field, findsOneWidget);
     expect(
       ModalRoute.of(tester.element(field))!.settings.name,
@@ -112,7 +113,7 @@ void main() {
     expect(find.textContaining('sensitive plugin detail'), findsNothing);
     links.add(uri);
     await tester.pumpAndSettle();
-    field = find.widgetWithText(TextField, 'Issuer');
+    field = find.widgetWithText(AppTextField, 'Issuer');
     expect(
       ModalRoute.of(tester.element(field))!.settings.name,
       '/external-account',
@@ -216,7 +217,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
-            builder: (context) => TextButton(
+            builder: (context) => AppButton(
               onPressed: () => Navigator.push(
                 context,
                 externalAccountRoute(
@@ -232,9 +233,12 @@ void main() {
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
     expect(await db.getAllConfigs(), isEmpty);
-    final pin = find.widgetWithText(TextField, 'PIN must contain 4 characters');
+    final pin = find.widgetWithText(
+      AppTextField,
+      'PIN must contain 4 characters',
+    );
     expect(pin, findsOneWidget);
-    expect(tester.widget<TextField>(pin).obscureText, isTrue);
+    expect(tester.widget<AppTextField>(pin).obscureText, isTrue);
     await tester.tap(find.byIcon(Icons.save));
     await tester.pumpAndSettle();
     expect(await db.getAllConfigs(), isEmpty);
@@ -264,7 +268,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
-            builder: (context) => TextButton(
+            builder: (context) => AppButton(
               onPressed: () => Navigator.push(
                 context,
                 externalAccountRoute('otpauth://totp/bad?secret=INVALID!'),
@@ -300,7 +304,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
-            builder: (context) => TextButton(
+            builder: (context) => AppButton(
               onPressed: () => Navigator.push(
                 context,
                 externalAccountRoute(
@@ -319,7 +323,7 @@ void main() {
       find.text('The link is invalid or unsupported. No account was imported.'),
       findsOneWidget,
     );
-    expect(find.widgetWithText(TextField, 'Issuer'), findsNothing);
+    expect(find.widgetWithText(AppTextField, 'Issuer'), findsNothing);
     expect(await db.getAllConfigs(), isEmpty);
     await tester.pumpWidget(const SizedBox());
   });

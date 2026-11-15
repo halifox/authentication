@@ -8,6 +8,7 @@ import 'package:authentication/screens/settings_screen.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -101,7 +102,7 @@ void main() {
       find.text('Automatic backup is not available on this platform.'),
       findsWidgets,
     );
-    expect(find.byType(TextField), findsNothing);
+    expect(find.byType(AppTextField), findsNothing);
   });
   testWidgets('setup requires matching passwords and enables local folder', (
     tester,
@@ -127,24 +128,25 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    final button = find.widgetWithText(
-      FilledButton,
-      'Choose folder and enable',
-    );
-    expect(tester.widget<FilledButton>(button).onPressed, isNull);
-    await tester.enterText(find.byType(TextField).first, 'secure-password');
-    await tester.enterText(find.byType(TextField).last, 'wrong');
+    final button = find.widgetWithText(AppButton, 'Choose folder and enable');
+    expect(tester.widget<AppButton>(button).onPressed, isNull);
+    await tester.enterText(find.byType(AppTextField).first, 'secure-password');
+    await tester.enterText(find.byType(AppTextField).last, 'wrong');
     await tester.pump();
-    expect(tester.widget<FilledButton>(button).onPressed, isNull);
-    await tester.enterText(find.byType(TextField).last, 'secure-password');
+    expect(tester.widget<AppButton>(button).onPressed, isNull);
+    await tester.enterText(find.byType(AppTextField).last, 'secure-password');
     await tester.pump();
     await tester.ensureVisible(button);
+    await tester.pumpAndSettle();
     await tester.tap(button);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 10));
     expect(find.text('Automatic backup is enabled.'), findsOneWidget);
     expect(
-      tester.widget<TextField>(find.byType(TextField).first).controller!.text,
+      tester
+          .widget<AppTextField>(find.byType(AppTextField).first)
+          .controller!
+          .text,
       isEmpty,
     );
     await tester.pumpWidget(const SizedBox());

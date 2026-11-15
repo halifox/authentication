@@ -5,10 +5,12 @@ import 'package:authentication/otp/otp_provider.dart';
 import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/category_selection.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 class CategoriesScreen extends ConsumerWidget {
   const CategoriesScreen({super.key});
@@ -25,9 +27,7 @@ class CategoriesScreen extends ConsumerWidget {
         await action();
       } catch (_) {
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(l10n.categoryOperationFailed)));
+          showAppToast(context, l10n.categoryOperationFailed);
         }
       }
     }
@@ -60,7 +60,7 @@ class CategoriesScreen extends ConsumerWidget {
           categories.when(
             loading: () => const SliverFillRemaining(
               hasScrollBody: false,
-              child: Center(child: CircularProgressIndicator()),
+              child: Center(child: GlassProgressIndicator.circular()),
             ),
             error: (_, _) => SliverFillRemaining(
               hasScrollBody: false,
@@ -92,7 +92,7 @@ class CategoriesScreen extends ConsumerWidget {
                     padding: const EdgeInsets.only(bottom: 16),
                     child: AppGlassCard(
                       padding: EdgeInsets.zero,
-                      child: ListTile(
+                      child: GlassListTile(
                         leading: const Icon(Icons.folder_outlined),
                         title: Text(
                           category.name,
@@ -136,24 +136,24 @@ class CategoriesScreen extends ConsumerWidget {
                                         final confirmed = await showDialog<bool>(
                                           context: context,
                                           builder: (dialogContext) => AppDialog(
-                                            title: Text(l10n.categoryDelete),
+                                            title: l10n.categoryDelete,
                                             content: Text(
                                               l10n.categoryDeleteWarning,
                                             ),
                                             actions: [
-                                              TextButton(
+                                              GlassDialogAction(
                                                 onPressed: () => Navigator.pop(
                                                   dialogContext,
                                                   false,
                                                 ),
-                                                child: Text(l10n.cancel),
+                                                label: l10n.cancel,
                                               ),
-                                              TextButton(
+                                              GlassDialogAction(
                                                 onPressed: () => Navigator.pop(
                                                   dialogContext,
                                                   true,
                                                 ),
-                                                child: Text(l10n.ok),
+                                                label: l10n.ok,
                                               ),
                                             ],
                                           ),
@@ -217,21 +217,21 @@ class _CategoryNameDialog extends HookWidget {
     final l10n = AppLocalizations.of(context)!;
     final controller = useTextEditingController(text: category?.name ?? '');
     return AppDialog(
-      title: Text(category == null ? l10n.categoryCreate : l10n.categoryRename),
-      content: TextField(
+      title: category == null ? l10n.categoryCreate : l10n.categoryRename,
+      content: AppTextField(
         controller: controller,
         autofocus: true,
         maxLength: 100,
-        decoration: InputDecoration(labelText: l10n.categoryName),
+        label: l10n.categoryName,
       ),
       actions: [
-        TextButton(
+        GlassDialogAction(
           onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
+          label: l10n.cancel,
         ),
-        TextButton(
+        GlassDialogAction(
           onPressed: () => Navigator.pop(context, controller.text),
-          child: Text(l10n.ok),
+          label: l10n.ok,
         ),
       ],
     );

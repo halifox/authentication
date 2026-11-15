@@ -9,22 +9,29 @@ import 'package:authentication/settings/settings.dart';
 import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:authentication/widgets/glass_surface.dart';
 import 'package:authentication/widgets/token_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 /// 令牌列表主页面，展示所有已保存的身份验证令牌。
 class TokenListScreen extends HookConsumerWidget {
   /// 创建令牌列表主页面。
-  const TokenListScreen({super.key});
+  const TokenListScreen({
+    super.key,
+    this.searchQuery,
+    this.initialCategory = -1,
+  });
+  final String? searchQuery;
+  final int initialCategory;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final searchController = useTextEditingController();
-    final query = useState('');
-    final categoryFilter = useState(-1);
+    final query = searchQuery ?? '';
+    final categoryFilter = useState(initialCategory);
     final l10n = AppLocalizations.of(context)!;
 
     // 监听列表 Provider。每当数据库发生变化时，此流都会更新。
@@ -57,16 +64,16 @@ class TokenListScreen extends HookConsumerWidget {
         ref.watch(accountOperationsProvider).isLoading;
     ref.listen(settingsOperationsProvider, (previous, next) {
       if (next.hasError && context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.saveFailed)));
+        showAppToast(context, l10n.saveFailed);
       }
     });
 
     return AppScaffold(
       largeTitle: true,
       appBar: CustomAppBar(
-        title: l10n.accountsTab,
-        leftIcon: null,
+        title: searchQuery == null ? l10n.accountsTab : l10n.searchResults,
+        leftIcon: searchQuery == null ? null : Icons.arrow_back,
+        leftOnPressed: (context) => Navigator.pop(context),
         rightIcon: Icons.add,
         rightTooltip: l10n.add,
         rightOnPressed: (_) => Navigator.pushNamed(context, AppRoutes.add),
@@ -80,10 +87,10 @@ class TokenListScreen extends HookConsumerWidget {
                 if (autoBackupFailed)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16),
-                    child: Material(
+                    child: GlassContainer.card(
+                      surfaceStyle: GlassSurfaceStyle.solid,
                       color: Theme.of(context).colorScheme.errorContainer,
-                      borderRadius: BorderRadius.circular(24),
-                      child: ListTile(
+                      child: GlassListTile(
                         title: Text(
                           autoBackupStatus ==
                                   AutomaticBackupStatus.configurationFailed
@@ -103,7 +110,7 @@ class TokenListScreen extends HookConsumerWidget {
                     padding: const EdgeInsets.only(bottom: 16),
                     child: AppGlassCard(
                       padding: EdgeInsets.zero,
-                      child: ListTile(
+                      child: GlassListTile(
                         title: Text(l10n.backupReminderMessage),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () =>
@@ -111,26 +118,16 @@ class TokenListScreen extends HookConsumerWidget {
                       ),
                     ),
                   ),
-                TextField(
-                  controller: searchController,
-                  onChanged: (value) => query.value = value,
-                  textInputAction: TextInputAction.search,
-                  decoration: InputDecoration(
-                    hintText: l10n.search,
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: query.value.isEmpty
-                        ? null
-                        : IconButton(
-                            tooltip: l10n.clearSearch,
-                            icon: const Icon(Icons.clear),
-                            onPressed: () {
-                              searchController.clear();
-                              query.value = '';
-                            },
-                          ),
+                if (searchQuery?.isNotEmpty ?? false) ...[
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: GlassChip(
+                      label: searchQuery!,
+                      surfaceStyle: GlassSurfaceStyle.solid,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
+                  const SizedBox(height: 16),
+                ],
                 Row(
                   children: [
                     Expanded(
@@ -196,20 +193,19 @@ class TokenListScreen extends HookConsumerWidget {
                 if (selectedCategory != -1)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8),
-                    child: InputChip(
-                      label: Text(
-                        selectedCategory == 0
-                            ? l10n.uncategorized
-                            : categoryList
-                                  .firstWhere((c) => c.id == selectedCategory)
-                                  .name,
-                      ),
+                    child: GlassChip(
+                      surfaceStyle: GlassSurfaceStyle.solid,
+                      label: selectedCategory == 0
+                          ? l10n.uncategorized
+                          : categoryList
+                                .firstWhere((c) => c.id == selectedCategory)
+                                .name,
                       onDeleted: () => categoryFilter.value = -1,
                     ),
                   ),
                 if (sortMode == 0 &&
                     !sortLocked &&
-                    (query.value.trim().isNotEmpty || selectedCategory != -1))
+                    (query.trim().isNotEmpty || selectedCategory != -1))
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
@@ -232,7 +228,7 @@ class TokenListScreen extends HookConsumerWidget {
               if (categories.isLoading || memberships.isLoading) {
                 return const SliverFillRemaining(
                   hasScrollBody: false,
-                  child: Center(child: CircularProgressIndicator()),
+                  child: Center(child: GlassProgressIndicator.circular()),
                 );
               }
               if (data.isEmpty) {
@@ -241,7 +237,7 @@ class TokenListScreen extends HookConsumerWidget {
                   child: Center(child: Text(l10n.noData)),
                 );
               }
-              final search = query.value.trim().toLowerCase();
+              final search = query.trim().toLowerCase();
               final filtered = sortAccounts(data, sortMode).where((entry) {
                 final matchesSearch =
                     entry.issuer.toLowerCase().contains(search) ||
@@ -276,9 +272,7 @@ class TokenListScreen extends HookConsumerWidget {
                           .reorder(ids);
                     } catch (_) {
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(l10n.reorderFailed)),
-                        );
+                        showAppToast(context, l10n.reorderFailed);
                       }
                     }
                   },
@@ -337,7 +331,7 @@ class TokenListScreen extends HookConsumerWidget {
             },
             loading: () => const SliverFillRemaining(
               hasScrollBody: false,
-              child: Center(child: CircularProgressIndicator()),
+              child: Center(child: GlassProgressIndicator.circular()),
             ),
             error: (_, _) => SliverFillRemaining(
               hasScrollBody: false,
@@ -347,7 +341,7 @@ class TokenListScreen extends HookConsumerWidget {
                   children: [
                     Text(l10n.accountLoadFailed),
                     const SizedBox(height: 16),
-                    FilledButton(
+                    AppButton(
                       onPressed: () => ref.invalidate(authEntryListProvider),
                       child: Text(l10n.screenProtectionRetry),
                     ),

@@ -6,11 +6,13 @@ import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/storage/device_key_store.dart';
 import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart' show HookConsumerWidget;
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 /// 设置项的数据模型。
 class SettingsItemModel {
@@ -53,13 +55,13 @@ class SettingsScreen extends ConsumerWidget {
           hasScrollBody: false,
           child: Center(
             child: message == null
-                ? const CircularProgressIndicator()
+                ? const GlassProgressIndicator.circular()
                 : Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(message, textAlign: TextAlign.center),
                       const SizedBox(height: 16),
-                      FilledButton(
+                      AppButton(
                         onPressed: () {
                           ref.invalidate(settingsProvider);
                           ref.invalidate(integerSettingsProvider);
@@ -74,8 +76,7 @@ class SettingsScreen extends ConsumerWidget {
     );
     ref.listen(settingsOperationsProvider, (previous, next) {
       if (next.hasError && context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.saveFailed)));
+        showAppToast(context, l10n.saveFailed);
       }
     });
     final isShowCaptchaOnTap = ref.watch(isShowCaptchaOnTapProvider);
@@ -212,7 +213,7 @@ class SettingsScreen extends ConsumerWidget {
 
             SettingsItemModel option(String key) => options[key]!;
 
-            Widget link(String title, String route) => ListTile(
+            Widget link(String title, String route) => GlassListTile(
               title: Text(title),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => Navigator.pushNamed(context, route),
@@ -281,7 +282,7 @@ class SettingsScreen extends ConsumerWidget {
                             enabled: !busy,
                           )
                         else
-                          ListTile(
+                          GlassListTile(
                             title: Text(l10n.screenProtectionUnsupported),
                           ),
                       ],
@@ -317,8 +318,7 @@ class PasswordScreen extends HookConsumerWidget {
     final integerSettings = ref.watch(integerSettingsProvider);
     ref.listen(settingsOperationsProvider, (previous, next) {
       if (next.hasError && context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.saveFailed)));
+        showAppToast(context, l10n.saveFailed);
       }
     });
     final current = useTextEditingController();
@@ -334,16 +334,16 @@ class PasswordScreen extends HookConsumerWidget {
         final confirmed = await showDialog<bool>(
           context: context,
           builder: (context) => AppDialog(
-            title: Text(l10n.passwordRemove),
+            title: l10n.passwordRemove,
             content: Text(l10n.passwordRemoveWarning),
             actions: [
-              TextButton(
+              GlassDialogAction(
                 onPressed: () => Navigator.pop(context, false),
-                child: Text(l10n.cancel),
+                label: l10n.cancel,
               ),
-              TextButton(
+              GlassDialogAction(
                 onPressed: () => Navigator.pop(context, true),
-                child: Text(l10n.passwordRemove),
+                label: l10n.passwordRemove,
               ),
             ],
           ),
@@ -364,23 +364,20 @@ class PasswordScreen extends HookConsumerWidget {
         next.clear();
         confirmation.clear();
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            success
-                ? l10n.passwordSaved
-                : cleanupFailed
-                ? l10n.passwordCleanupFailed
-                : l10n.passwordFailed,
-          ),
-        ),
+      showAppToast(
+        context,
+        success
+            ? l10n.passwordSaved
+            : cleanupFailed
+            ? l10n.passwordCleanupFailed
+            : l10n.passwordFailed,
       );
     }
 
     return AppScaffold(
       appBar: CustomAppBar(title: l10n.passwordTitle),
       body: enabled.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: GlassProgressIndicator.circular()),
         error: (_, _) => Center(child: Text(l10n.passwordFailed)),
         data: (hasPassword) => Align(
           alignment: Alignment.topCenter,
@@ -397,7 +394,8 @@ class PasswordScreen extends HookConsumerWidget {
                       const SizedBox(height: 16),
                       if (hasPassword) ...[
                         integerSettings.when(
-                          loading: () => const CircularProgressIndicator(),
+                          loading: () =>
+                              const GlassProgressIndicator.circular(),
                           error: (_, _) => Text(l10n.settingsLoadError),
                           data: (values) => AppChoiceTile<int>(
                             key: const ValueKey(autoLockKey),
@@ -419,51 +417,47 @@ class PasswordScreen extends HookConsumerWidget {
                         const SizedBox(height: 16),
                       ],
                       if (hasPassword) ...[
-                        TextField(
+                        AppTextField(
                           controller: current,
                           obscureText: hidden.value,
                           maxLength: 1024,
-                          decoration: InputDecoration(
-                            labelText: l10n.passwordCurrent,
-                          ),
+                          label: l10n.passwordCurrent,
+                          sensitive: true,
                         ),
                         const SizedBox(height: 16),
                       ],
-                      TextField(
+                      AppTextField(
                         controller: next,
                         obscureText: hidden.value,
                         maxLength: 1024,
-                        decoration: InputDecoration(
-                          labelText: l10n.passwordNew,
-                          suffixIcon: IconButton(
-                            tooltip: hidden.value
-                                ? l10n.revealPassword
-                                : l10n.hidePassword,
-                            onPressed: () => hidden.value = !hidden.value,
-                            icon: Icon(
-                              hidden.value
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                            ),
-                          ),
+                        label: l10n.passwordNew,
+                        suffixIcon: Icon(
+                          hidden.value
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                         ),
+                        onSuffixTap: () => hidden.value = !hidden.value,
+                        suffixTooltip: hidden.value
+                            ? l10n.revealPassword
+                            : l10n.hidePassword,
+                        sensitive: true,
                       ),
                       const SizedBox(height: 16),
-                      TextField(
+                      AppTextField(
                         controller: confirmation,
                         obscureText: hidden.value,
                         maxLength: 1024,
-                        decoration: InputDecoration(
-                          labelText: l10n.passwordConfirm,
-                          errorText:
-                              confirmation.text.isNotEmpty &&
-                                  confirmation.text != next.text
-                              ? l10n.backupPasswordMismatch
-                              : null,
-                        ),
+                        label: l10n.passwordConfirm,
+                        errorText:
+                            confirmation.text.isNotEmpty &&
+                                confirmation.text != next.text
+                            ? l10n.backupPasswordMismatch
+                            : null,
+                        sensitive: true,
+                        textInputAction: TextInputAction.done,
                       ),
                       const SizedBox(height: 16),
-                      FilledButton(
+                      AppButton(
                         onPressed:
                             operation.isLoading ||
                                 (hasPassword && current.text.isEmpty) ||
@@ -481,13 +475,12 @@ class PasswordScreen extends HookConsumerWidget {
                 if (hasPassword) ...[
                   const SizedBox(height: 16),
                   AppGlassCard(
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        foregroundColor: Theme.of(context).colorScheme.error,
-                      ),
+                    child: AppButton(
                       onPressed: operation.isLoading || current.text.isEmpty
                           ? null
                           : () => change(true),
+                      prominent: false,
+                      destructive: true,
                       child: Text(l10n.passwordRemove),
                     ),
                   ),
@@ -551,39 +544,36 @@ class AutomaticBackupScreen extends HookConsumerWidget {
                       const SizedBox(height: 16),
                       Text(l10n.autoBackupLocalOnly),
                       const SizedBox(height: 16),
-                      TextField(
+                      AppTextField(
                         controller: password,
                         obscureText: obscure.value,
-                        decoration: InputDecoration(
-                          labelText: l10n.backupPasswordRequired,
-                          suffixIcon: IconButton(
-                            tooltip: obscure.value
-                                ? l10n.revealPassword
-                                : l10n.hidePassword,
-                            onPressed: () => obscure.value = !obscure.value,
-                            icon: Icon(
-                              obscure.value
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                            ),
-                          ),
+                        label: l10n.backupPasswordRequired,
+                        suffixIcon: Icon(
+                          obscure.value
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                         ),
+                        onSuffixTap: () => obscure.value = !obscure.value,
+                        suffixTooltip: obscure.value
+                            ? l10n.revealPassword
+                            : l10n.hidePassword,
+                        sensitive: true,
                       ),
                       const SizedBox(height: 16),
-                      TextField(
+                      AppTextField(
                         controller: confirmation,
                         obscureText: obscure.value,
-                        decoration: InputDecoration(
-                          labelText: l10n.backupPasswordConfirm,
-                          errorText:
-                              confirmation.text.isNotEmpty &&
-                                  confirmation.text != password.text
-                              ? l10n.backupPasswordMismatch
-                              : null,
-                        ),
+                        label: l10n.backupPasswordConfirm,
+                        errorText:
+                            confirmation.text.isNotEmpty &&
+                                confirmation.text != password.text
+                            ? l10n.backupPasswordMismatch
+                            : null,
+                        sensitive: true,
+                        textInputAction: TextInputAction.done,
                       ),
                       const SizedBox(height: 16),
-                      FilledButton(
+                      AppButton(
                         onPressed:
                             busy ||
                                 password.text.isEmpty ||
@@ -601,7 +591,7 @@ class AutomaticBackupScreen extends HookConsumerWidget {
                               },
                         child: Text(l10n.autoBackupConfigure),
                       ),
-                      TextButton(
+                      AppButton(
                         onPressed:
                             busy ||
                                 status == AutomaticBackupStatus.disabled ||
@@ -611,6 +601,7 @@ class AutomaticBackupScreen extends HookConsumerWidget {
                             : () => ref
                                   .read(automaticBackupProvider.notifier)
                                   .runNow(),
+                        prominent: false,
                         child: Text(l10n.autoBackupRetry),
                       ),
                     ],
@@ -620,15 +611,14 @@ class AutomaticBackupScreen extends HookConsumerWidget {
               if (supported) ...[
                 const SizedBox(height: 16),
                 AppGlassCard(
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      foregroundColor: Theme.of(context).colorScheme.error,
-                    ),
+                  child: AppButton(
                     onPressed: busy || status == AutomaticBackupStatus.disabled
                         ? null
                         : () => ref
                               .read(automaticBackupProvider.notifier)
                               .disable(),
+                    prominent: false,
+                    destructive: true,
                     child: Text(l10n.autoBackupDisable),
                   ),
                 ),

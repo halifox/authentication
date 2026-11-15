@@ -2027,6 +2027,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add account'**
   String get addAccount;
+
+  /// No description provided for @searchAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Search accounts'**
+  String get searchAccounts;
+
+  /// No description provided for @recentSearches.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent searches'**
+  String get recentSearches;
+
+  /// No description provided for @recentSearchesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent searches'**
+  String get recentSearchesEmpty;
+
+  /// No description provided for @searchHistoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by service or account name.'**
+  String get searchHistoryHint;
+
+  /// No description provided for @clearSearchHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear history'**
+  String get clearSearchHistory;
+
+  /// No description provided for @clearSearchHistoryConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove recent searches from this device?'**
+  String get clearSearchHistoryConfirm;
+
+  /// No description provided for @searchHistoryFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Search history could not be updated.'**
+  String get searchHistoryFailed;
+
+  /// No description provided for @searchHistoryLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Search history could not be loaded.'**
+  String get searchHistoryLoadFailed;
+
+  /// No description provided for @searchResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Search results'**
+  String get searchResults;
+
+  /// No description provided for @formIdentity.
+  ///
+  /// In en, this message translates to:
+  /// **'Account details'**
+  String get formIdentity;
+
+  /// No description provided for @formVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification settings'**
+  String get formVerification;
+
+  /// No description provided for @manualSecretHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the key provided by your service. Keep it private.'**
+  String get manualSecretHint;
+
+  /// No description provided for @searchAccountCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} accounts'**
+  String searchAccountCount(int count);
 }
 
 class _AppLocalizationsDelegate

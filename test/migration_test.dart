@@ -8,6 +8,7 @@ import 'package:authentication/screens/add_account_screen.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -235,7 +236,7 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
             builder: (context) => Scaffold(
-              body: TextButton(
+              body: AppButton(
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute<void>(
@@ -249,7 +250,7 @@ void main() {
           onGenerateRoute: (settings) => settings.name == AppRoutes.scan
               ? MaterialPageRoute<BarcodeCapture>(
                   builder: (context) => Scaffold(
-                    body: TextButton(
+                    body: AppButton(
                       onPressed: () => Navigator.pop(
                         context,
                         BarcodeCapture(

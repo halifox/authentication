@@ -1,5 +1,6 @@
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/router/app_router.dart';
+import 'package:authentication/screens/migration_guide_screen.dart';
 import 'package:authentication/screens/settings_screen.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/storage/database.dart';
@@ -83,7 +84,7 @@ void main() {
     );
     await tester.tap(find.text('Open-source licenses'));
     await tester.pumpAndSettle();
-    expect(find.byType(LicensePage), findsOneWidget);
+    expect(find.byType(LicensesScreen), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 10));
   });
@@ -178,7 +179,7 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Use system font for codes'),
       150,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.ensureVisible(switchFor('Use system font for codes'));
     await tester.pumpAndSettle();
@@ -186,61 +187,141 @@ void main() {
     await tester.pumpAndSettle();
     expect((await db.getSettings())[systemCodeFontKey], isTrue);
     await tester.scrollUntilVisible(
-      find.byKey(const ValueKey(hideCodeAfterKey)),
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppChoiceTile<int> &&
+            widget.key == const ValueKey(hideCodeAfterKey),
+      ),
       -150,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
-    await tester.ensureVisible(find.byKey(const ValueKey(hideCodeAfterKey)));
+    await tester.ensureVisible(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppChoiceTile<int> &&
+            widget.key == const ValueKey(hideCodeAfterKey),
+      ),
+    );
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey(hideCodeAfterKey)));
+    await tester.tap(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppChoiceTile<int> &&
+            widget.key == const ValueKey(hideCodeAfterKey),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('10 seconds').last);
     await tester.pumpAndSettle();
     expect((await db.getIntegerSettings())[hideCodeAfterKey], 10);
     await tester.scrollUntilVisible(
-      find.byKey(const ValueKey(codeGroupingKey)),
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppChoiceTile<int> &&
+            widget.key == const ValueKey(codeGroupingKey),
+      ),
       150,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
-    await tester.ensureVisible(find.byKey(const ValueKey(codeGroupingKey)));
+    await tester.ensureVisible(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppChoiceTile<int> &&
+            widget.key == const ValueKey(codeGroupingKey),
+      ),
+    );
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey(codeGroupingKey)));
+    await tester.tap(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppChoiceTile<int> &&
+            widget.key == const ValueKey(codeGroupingKey),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Every 3 characters').last);
     await tester.pumpAndSettle();
     expect((await db.getIntegerSettings())[codeGroupingKey], 3);
     await tester.scrollUntilVisible(
-      find.byKey(const ValueKey(themeModeKey)),
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppChoiceTile<int> &&
+            widget.key == const ValueKey(themeModeKey),
+      ),
       150,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
-    await tester.ensureVisible(find.byKey(const ValueKey(themeModeKey)));
+    await tester.ensureVisible(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppChoiceTile<int> &&
+            widget.key == const ValueKey(themeModeKey),
+      ),
+    );
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey(themeModeKey)));
+    await tester.tap(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppChoiceTile<int> &&
+            widget.key == const ValueKey(themeModeKey),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Black').last);
     await tester.pumpAndSettle();
     expect((await db.getIntegerSettings())[themeModeKey], 3);
     await tester.scrollUntilVisible(
-      find.byKey(const ValueKey(accentColorKey)),
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppChoiceTile<int> &&
+            widget.key == const ValueKey(accentColorKey),
+      ),
       150,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
-    await tester.ensureVisible(find.byKey(const ValueKey(accentColorKey)));
+    await tester.ensureVisible(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppChoiceTile<int> &&
+            widget.key == const ValueKey(accentColorKey),
+      ),
+    );
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey(accentColorKey)));
+    await tester.tap(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppChoiceTile<int> &&
+            widget.key == const ValueKey(accentColorKey),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Blue').last);
     await tester.pumpAndSettle();
     expect((await db.getIntegerSettings())[accentColorKey], 5);
     await tester.scrollUntilVisible(
-      find.byKey(const ValueKey(languageKey)),
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppChoiceTile<int> &&
+            widget.key == const ValueKey(languageKey),
+      ),
       150,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
-    await tester.ensureVisible(find.byKey(const ValueKey(languageKey)));
+    await tester.ensureVisible(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppChoiceTile<int> &&
+            widget.key == const ValueKey(languageKey),
+      ),
+    );
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey(languageKey)));
+    await tester.tap(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppChoiceTile<int> &&
+            widget.key == const ValueKey(languageKey),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('日本語').last);
     await tester.pumpAndSettle();

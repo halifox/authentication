@@ -1,5 +1,7 @@
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/widgets/action_result_sheet.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -23,10 +25,9 @@ void main() {
           child: child!,
         ),
         home: Builder(
-          builder: (context) => TextButton(
-            onPressed: () async => result = await showModalBottomSheet<bool>(
+          builder: (context) => AppButton(
+            onPressed: () async => result = await showCupertinoModalPopup<bool>(
               context: context,
-              isScrollControlled: true,
               builder: (_) => ActionResultSheet(
                 title: 'Confirm',
                 message: List.filled(

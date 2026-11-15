@@ -8,6 +8,7 @@ import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
 import 'package:authentication/widgets/account_qr.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -187,7 +188,7 @@ void main() {
     await tester.pumpAndSettle();
     final issuer = find.byWidgetPredicate(
       (widget) =>
-          widget is TextField && widget.controller?.text == account.issuer,
+          widget is AppTextField && widget.controller?.text == account.issuer,
     );
     await tester.enterText(issuer, 'Unsaved');
     await tester.ensureVisible(find.text('Show saved account QR code'));

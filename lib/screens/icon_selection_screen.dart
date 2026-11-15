@@ -6,10 +6,13 @@ import 'package:authentication/storage/icon_data.dart';
 import 'package:authentication/widgets/account_icon.dart';
 import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
+import 'package:authentication/widgets/glass_quality.dart';
 import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 class IconSelectionScreen extends ConsumerWidget {
   const IconSelectionScreen({super.key});
@@ -33,37 +36,41 @@ class IconSelectionScreen extends ConsumerWidget {
             child: Wrap(
               spacing: 8,
               children: [
-                OutlinedButton.icon(
+                AppButton(
                   onPressed: busy ? null : () => _chooseImage(context, ref),
                   icon: const Icon(Icons.add_photo_alternate_outlined),
-                  label: Text(l10n.chooseCustomIcon),
+                  prominent: false,
+                  child: Text(l10n.chooseCustomIcon),
                 ),
-                OutlinedButton.icon(
+                AppButton(
                   onPressed: busy ? null : () => _importPack(context, ref),
                   icon: const Icon(Icons.file_upload_outlined),
-                  label: Text(l10n.importIconPack),
+                  prominent: false,
+                  child: Text(l10n.importIconPack),
                 ),
               ],
             ),
           ),
-          if (busy) const LinearProgressIndicator(),
+          if (busy) const GlassProgressIndicator.linear(),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-            child: TextField(
+            child: GlassSearchBar(
+              surfaceStyle: GlassSurfaceStyle.solid,
+              placeholder: l10n.search,
+              clearButtonSemanticLabel: l10n.clearSearch,
+              cancelButtonSemanticLabel: l10n.cancel,
               onChanged: (value) =>
                   ref.read(iconSearchQueryProvider.notifier).update(value),
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
-                hintText: l10n.search,
-              ),
             ),
           ),
           Expanded(
             child: icons.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () =>
+                  const Center(child: GlassProgressIndicator.circular()),
               error: (_, _) => Center(child: Text(l10n.iconLoadError)),
               data: (builtIn) => packs.when(
-                loading: () => const Center(child: CircularProgressIndicator()),
+                loading: () =>
+                    const Center(child: GlassProgressIndicator.circular()),
                 error: (_, _) => Center(child: Text(l10n.iconLoadError)),
                 data: (items) => Scrollbar(
                   child: CustomScrollView(
@@ -77,14 +84,14 @@ class IconSelectionScreen extends ConsumerWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: AppGlassCard(
                               padding: EdgeInsets.zero,
-                              child: ExpansionTile(
+                              child: GlassDisclosureGroup(
                                 key: ValueKey('${pack.name}:$query'),
                                 initiallyExpanded: query.isNotEmpty,
                                 title: Text(pack.name),
                                 subtitle: pack.description.isEmpty
                                     ? null
                                     : Text(pack.description),
-                                trailing: IconButton(
+                                trailing: AppBarIconButton(
                                   tooltip: l10n.delete,
                                   onPressed: busy
                                       ? null
@@ -93,7 +100,7 @@ class IconSelectionScreen extends ConsumerWidget {
                                           ref,
                                           pack.name,
                                         ),
-                                  icon: const Icon(Icons.delete_outline),
+                                  icon: Icons.delete_outline,
                                 ),
                                 children: [
                                   Wrap(
@@ -107,7 +114,11 @@ class IconSelectionScreen extends ConsumerWidget {
                                             ))
                                           Tooltip(
                                             message: entry.key,
-                                            child: InkWell(
+                                            child: GlassButton.custom(
+                                              style:
+                                                  GlassButtonStyle.transparent,
+                                              quality: appGlassQuality,
+                                              label: entry.key,
                                               onTap: () => Navigator.pop(
                                                 context,
                                                 entry.value,
@@ -150,7 +161,10 @@ class IconSelectionScreen extends ConsumerWidget {
                           itemCount: builtIn.length,
                           itemBuilder: (context, index) {
                             final path = 'assets/icons/${builtIn[index]}';
-                            return InkWell(
+                            return GlassButton.custom(
+                              style: GlassButtonStyle.transparent,
+                              quality: appGlassQuality,
+                              label: builtIn[index].replaceAll('.svg', ''),
                               onTap: () => Navigator.pop(context, path),
                               child: Container(
                                 alignment: Alignment.center,
@@ -187,11 +201,7 @@ class IconSelectionScreen extends ConsumerWidget {
       if (context.mounted) Navigator.pop(context, icon);
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.invalidCustomIcon),
-          ),
-        );
+        showAppToast(context, AppLocalizations.of(context)!.invalidCustomIcon);
       }
     }
   }
@@ -210,18 +220,18 @@ class IconSelectionScreen extends ConsumerWidget {
       final proceed = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AppDialog(
-          title: Text(l10n.importIconPack),
+          title: l10n.importIconPack,
           content: Text(
             l10n.iconPackImportConfirm(pack.name, pack.icons.length),
           ),
           actions: [
-            TextButton(
+            GlassDialogAction(
               onPressed: () => Navigator.pop(dialogContext, false),
-              child: Text(l10n.cancel),
+              label: l10n.cancel,
             ),
-            TextButton(
+            GlassDialogAction(
               onPressed: () => Navigator.pop(dialogContext, true),
-              child: Text(l10n.ok),
+              label: l10n.ok,
             ),
           ],
         ),
@@ -229,13 +239,11 @@ class IconSelectionScreen extends ConsumerWidget {
       if (proceed != true || !context.mounted) return;
       await ref.read(iconPackOperationsProvider.notifier).save(pack);
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.iconPackImported)));
+        showAppToast(context, l10n.iconPackImported);
       }
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.iconPackError)));
+        showAppToast(context, l10n.iconPackError);
       }
     }
   }
@@ -249,16 +257,16 @@ class IconSelectionScreen extends ConsumerWidget {
     final proceed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AppDialog(
-        title: Text(l10n.delete),
+        title: l10n.delete,
         content: Text(l10n.iconPackDeleteConfirm(name)),
         actions: [
-          TextButton(
+          GlassDialogAction(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(l10n.cancel),
+            label: l10n.cancel,
           ),
-          TextButton(
+          GlassDialogAction(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(l10n.delete),
+            label: l10n.delete,
           ),
         ],
       ),
@@ -268,8 +276,7 @@ class IconSelectionScreen extends ConsumerWidget {
       await ref.read(iconPackOperationsProvider.notifier).delete(name);
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.iconPackError)));
+        showAppToast(context, l10n.iconPackError);
       }
     }
   }

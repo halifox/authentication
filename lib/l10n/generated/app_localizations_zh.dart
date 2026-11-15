@@ -1035,4 +1035,45 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get addAccount => '添加账户';
+
+  @override
+  String get searchAccounts => '搜索账户';
+
+  @override
+  String get recentSearches => '最近搜索';
+
+  @override
+  String get recentSearchesEmpty => '暂无最近搜索';
+
+  @override
+  String get searchHistoryHint => '按服务名称或账户名称搜索。';
+
+  @override
+  String get clearSearchHistory => '清空历史';
+
+  @override
+  String get clearSearchHistoryConfirm => '清除此设备上的最近搜索记录？';
+
+  @override
+  String get searchHistoryFailed => '无法更新搜索历史。';
+
+  @override
+  String get searchHistoryLoadFailed => '无法加载搜索历史。';
+
+  @override
+  String get searchResults => '搜索结果';
+
+  @override
+  String get formIdentity => '账户信息';
+
+  @override
+  String get formVerification => '验证设置';
+
+  @override
+  String get manualSecretHint => '输入服务提供的密钥，并妥善保密。';
+
+  @override
+  String searchAccountCount(int count) {
+    return '$count 个账户';
+  }
 }

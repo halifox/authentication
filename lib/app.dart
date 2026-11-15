@@ -4,14 +4,17 @@ import 'package:app_links/app_links.dart';
 import 'package:authentication/backup/automatic_backup.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/router/app_router.dart';
+import 'package:authentication/screens/main_navigation_screen.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/settings/settings_provider.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:material_ui/material_ui.dart' as material_ui;
 
 class AuthApp extends ConsumerStatefulWidget {
@@ -29,6 +32,7 @@ final externalLinksProvider = Provider<Stream<String>>((ref) {
 
 class _AuthAppState extends ConsumerState<AuthApp> with WidgetsBindingObserver {
   final navigatorKey = GlobalKey<NavigatorState>();
+  final toastAnchorKey = GlobalKey();
   StreamSubscription<String>? links;
 
   @override
@@ -41,14 +45,11 @@ class _AuthAppState extends ConsumerState<AuthApp> with WidgetsBindingObserver {
           _handleLink,
           onError: (Object error, StackTrace stack) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              final context = navigatorKey.currentContext;
+              final context = toastAnchorKey.currentContext;
               if (mounted && context != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      AppLocalizations.of(context)!.externalAccountUnavailable,
-                    ),
-                  ),
+                showAppToast(
+                  context,
+                  AppLocalizations.of(context)!.externalAccountUnavailable,
                 );
               }
             });
@@ -162,31 +163,34 @@ class _AuthAppState extends ConsumerState<AuthApp> with WidgetsBindingObserver {
                   ),
                 ),
               ),
-              Material(
+              ColoredBox(
                 color: Theme.of(context).colorScheme.surface,
-                child: Center(
-                  child: protection.hasError
-                      ? Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(24),
-                              child: Text(
-                                AppLocalizations.of(context)!
-                                    .screenProtectionFailure,
+                child: DefaultTextStyle(
+                  style: Theme.of(context).textTheme.bodyLarge!,
+                  child: Center(
+                    child: protection.hasError
+                        ? Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(24),
+                                child: Text(
+                                  AppLocalizations.of(context)!
+                                      .screenProtectionFailure,
+                                ),
                               ),
-                            ),
-                            FilledButton(
-                              onPressed: () =>
-                                  ref.invalidate(screenProtectionProvider),
-                              child: Text(
-                                AppLocalizations.of(context)!
-                                    .screenProtectionRetry,
+                              AppButton(
+                                onPressed: () =>
+                                    ref.invalidate(screenProtectionProvider),
+                                child: Text(
+                                  AppLocalizations.of(context)!
+                                      .screenProtectionRetry,
+                                ),
                               ),
-                            ),
-                          ],
-                        )
-                      : const CircularProgressIndicator(),
+                            ],
+                          )
+                        : const GlassProgressIndicator.circular(),
+                  ),
                 ),
               ),
             ],
@@ -204,6 +208,7 @@ class _AuthAppState extends ConsumerState<AuthApp> with WidgetsBindingObserver {
           // 如果不支持当前语言，回退到英文
           return const Locale('en');
         },
+        home: MainNavigationScreen(key: toastAnchorKey),
         onGenerateRoute: onGenerateRoute,
       ),
     );
@@ -217,35 +222,9 @@ ThemeData appTheme({
   colorScheme: colorScheme,
   pageTransitionsTheme: pageTransitionsTheme,
   scaffoldBackgroundColor: colorScheme.surface,
-  inputDecorationTheme: InputDecorationTheme(
-    filled: true,
-    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: .45),
-    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
-      borderSide: BorderSide.none,
-    ),
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
-      borderSide: BorderSide.none,
-    ),
-  ),
-  listTileTheme: ListTileThemeData(
-    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-    iconColor: colorScheme.primary,
-    textColor: colorScheme.onSurface,
-  ),
-  filledButtonTheme: FilledButtonThemeData(
-    style: FilledButton.styleFrom(
-      minimumSize: const Size(48, 50),
-      shape: const StadiumBorder(),
-    ),
-  ),
-  outlinedButtonTheme: OutlinedButtonThemeData(
-    style: OutlinedButton.styleFrom(
-      minimumSize: const Size(48, 48),
-      shape: const StadiumBorder(),
-    ),
+  cupertinoOverrideTheme: CupertinoThemeData(
+    brightness: colorScheme.brightness,
+    primaryColor: colorScheme.primary,
   ),
 );
 

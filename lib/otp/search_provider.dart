@@ -17,7 +17,9 @@ class SearchHistoryOperations extends Notifier<AsyncValue<void>> {
   Future<bool> _run(Future<void> Function() action) async {
     if (state.isLoading) return false;
     state = const AsyncLoading();
-    state = await AsyncValue.guard(action);
+    final result = await AsyncValue.guard(action);
+    if (!ref.mounted) return false;
+    state = result;
     return !state.hasError;
   }
 

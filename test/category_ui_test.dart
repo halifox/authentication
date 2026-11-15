@@ -6,6 +6,7 @@ import 'package:authentication/screens/token_list_screen.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -48,7 +49,7 @@ void main() {
     expect(find.text('No categories yet.'), findsOneWidget);
     await tester.tap(find.byIcon(Icons.add));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), 'Work');
+    await tester.enterText(find.byType(AppTextField), 'Work');
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
     expect(find.text('Work'), findsOneWidget);

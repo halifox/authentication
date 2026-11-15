@@ -7,6 +7,7 @@ import 'package:authentication/settings/settings.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
+import 'package:authentication/widgets/glass_surface.dart';
 import 'package:authentication/widgets/token_list_item.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
@@ -100,11 +101,21 @@ void main() {
     await tester.pumpWidget(app(const SettingsScreen()));
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(
-      find.byKey(const ValueKey(accountViewKey)),
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppChoiceTile<int> &&
+            widget.key == const ValueKey(accountViewKey),
+      ),
       200,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
-    await tester.tap(find.byKey(const ValueKey(accountViewKey)));
+    await tester.tap(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AppChoiceTile<int> &&
+            widget.key == const ValueKey(accountViewKey),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Compact').last);
     await tester.pumpAndSettle();

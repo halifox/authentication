@@ -2,9 +2,11 @@ import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/category.dart';
 import 'package:authentication/otp/category_provider.dart';
 import 'package:authentication/otp/otp_provider.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 Future<Set<int>?> _choose(
   BuildContext context,
@@ -18,7 +20,7 @@ Future<Set<int>?> _choose(
     context: context,
     builder: (dialogContext) => StatefulBuilder(
       builder: (context, setState) => AppDialog(
-        title: Text(title),
+        title: title,
         content: options.isEmpty
             ? Text(l10n.categorySelectionEmpty)
             : SizedBox(
@@ -27,11 +29,15 @@ Future<Set<int>?> _choose(
                 child: ListView(
                   children: [
                     for (final option in options.entries)
-                      CheckboxListTile(
-                        value: selected.contains(option.key),
+                      GlassListTile(
                         title: Text(option.value),
-                        onChanged: (checked) => setState(() {
-                          if (checked == true) {
+                        leading: Icon(
+                          selected.contains(option.key)
+                              ? Icons.check_circle
+                              : Icons.circle_outlined,
+                        ),
+                        onTap: () => setState(() {
+                          if (!selected.contains(option.key)) {
                             selected.add(option.key);
                           } else {
                             selected.remove(option.key);
@@ -42,13 +48,13 @@ Future<Set<int>?> _choose(
                 ),
               ),
         actions: [
-          TextButton(
+          GlassDialogAction(
             onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.cancel),
+            label: l10n.cancel,
           ),
-          TextButton(
+          GlassDialogAction(
             onPressed: () => Navigator.pop(dialogContext, selected),
-            child: Text(l10n.ok),
+            label: l10n.ok,
           ),
         ],
       ),
@@ -76,8 +82,7 @@ Future<void> assignAccountCategories(
         .assignAccount(accountId, selected, initial);
   } catch (_) {
     if (context.mounted) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l10n.categoryOperationFailed)));
+      showAppToast(context, l10n.categoryOperationFailed);
     }
   }
 }
@@ -106,8 +111,7 @@ Future<void> assignCategoryAccounts(
         .assignCategory(category.id, selected, initial);
   } catch (_) {
     if (context.mounted) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l10n.categoryOperationFailed)));
+      showAppToast(context, l10n.categoryOperationFailed);
     }
   }
 }

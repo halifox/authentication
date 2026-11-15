@@ -25,14 +25,14 @@ import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/widgets/action_result_sheet.dart';
 import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart'
-    show GlassListTile;
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 /// 添加方式选项的模型类。
@@ -639,30 +639,14 @@ class AddAccountScreen extends ConsumerWidget {
 
   Future<void> _handleLegacyImport(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context)!;
-    final format = await showDialog<LegacyBackupFormat>(
+    final format = await showAppChoiceSheet<LegacyBackupFormat>(
       context: context,
-      builder: (dialogContext) => AppDialog(
-        title: Text(l10n.legacyImportFormat),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            for (final choice in [
-              (LegacyBackupFormat.plain, l10n.legacyPlain),
-              (LegacyBackupFormat.encrypted, l10n.legacyEncrypted),
-              (LegacyBackupFormat.encryptedOld, l10n.legacyEncryptedOld),
-            ])
-              SimpleDialogOption(
-                onPressed: () => Navigator.pop(dialogContext, choice.$1),
-                child: Text(choice.$2),
-              ),
-            SimpleDialogOption(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: Text(l10n.cancel),
-            ),
-          ],
-        ),
-      ),
+      title: l10n.legacyImportFormat,
+      options: {
+        LegacyBackupFormat.plain: l10n.legacyPlain,
+        LegacyBackupFormat.encrypted: l10n.legacyEncrypted,
+        LegacyBackupFormat.encryptedOld: l10n.legacyEncryptedOld,
+      },
     );
     if (format == null || !context.mounted) return;
     try {
@@ -1129,7 +1113,7 @@ class AddAccountScreen extends ConsumerWidget {
         child: AppDialog(
           content: Row(
             children: [
-              const CircularProgressIndicator(),
+              const GlassProgressIndicator.circular(),
               const SizedBox(width: 16),
               Expanded(child: Text(message ?? l10n.backupDecrypting)),
             ],
@@ -1317,7 +1301,7 @@ class _BackupPasswordDialog extends HookWidget {
     final mismatch =
         export && !useAppPassword.value && password.text != confirmation.text;
     return AppDialog(
-      title: Text(l10n.backupPasswordTitle),
+      title: l10n.backupPasswordTitle,
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1333,34 +1317,31 @@ class _BackupPasswordDialog extends HookWidget {
                   confirmation.clear();
                 },
               ),
-            TextField(
+            AppTextField(
               controller: password,
               obscureText: obscured.value,
-              decoration: InputDecoration(
-                labelText: useAppPassword.value
-                    ? l10n.passwordCurrent
-                    : export
-                    ? l10n.backupPasswordHint
-                    : l10n.backupPasswordRequired,
-                suffixIcon: IconButton(
-                  tooltip: obscured.value
-                      ? l10n.revealPassword
-                      : l10n.hidePassword,
-                  onPressed: () => obscured.value = !obscured.value,
-                  icon: Icon(
-                    obscured.value ? Icons.visibility_off : Icons.visibility,
-                  ),
-                ),
+              label: useAppPassword.value
+                  ? l10n.passwordCurrent
+                  : export
+                  ? l10n.backupPasswordHint
+                  : l10n.backupPasswordRequired,
+              suffixIcon: Icon(
+                obscured.value ? Icons.visibility_off : Icons.visibility,
               ),
+              onSuffixTap: () => obscured.value = !obscured.value,
+              suffixTooltip: obscured.value
+                  ? l10n.revealPassword
+                  : l10n.hidePassword,
+              sensitive: true,
             ),
             if (export && !useAppPassword.value)
-              TextField(
+              AppTextField(
                 controller: confirmation,
                 obscureText: obscured.value,
-                decoration: InputDecoration(
-                  labelText: l10n.backupPasswordConfirm,
-                  errorText: mismatch ? l10n.backupPasswordMismatch : null,
-                ),
+                label: l10n.backupPasswordConfirm,
+                errorText: mismatch ? l10n.backupPasswordMismatch : null,
+                sensitive: true,
+                textInputAction: TextInputAction.done,
               ),
             if (export && !useAppPassword.value && password.text.isEmpty)
               Text(l10n.backupPlainWarning),
@@ -1368,11 +1349,11 @@ class _BackupPasswordDialog extends HookWidget {
         ),
       ),
       actions: [
-        TextButton(
+        GlassDialogAction(
           onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
+          label: l10n.cancel,
         ),
-        TextButton(
+        GlassDialogAction(
           onPressed:
               mismatch ||
                   ((!export || useAppPassword.value) && password.text.isEmpty)
@@ -1381,7 +1362,7 @@ class _BackupPasswordDialog extends HookWidget {
                   password: password.text,
                   useAppPassword: useAppPassword.value,
                 )),
-          child: Text(l10n.ok),
+          label: l10n.ok,
         ),
       ],
     );

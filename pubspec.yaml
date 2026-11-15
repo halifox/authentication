@@ -32,7 +32,7 @@ dependencies:
   # UI & Styling
   cupertino_icons: ^2.0.0
   dynamic_color: ^2.1.0
-  liquid_glass_widgets: 1.7.2
+  liquid_glass_widgets: 1.17.3
   material_ui: ^1.9.0
   flutter_svg: ^2.3.2
   flutter_swipe_action_cell: ^3.1.9

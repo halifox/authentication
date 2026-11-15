@@ -6,6 +6,7 @@ import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -60,10 +61,16 @@ void main() {
     await tester.pumpAndSettle();
     key.currentState!.pushNamed(AppRoutes.form);
     await tester.pumpAndSettle();
-    await tester.enterText(find.widgetWithText(TextField, 'Issuer'), 'Example');
-    await tester.enterText(find.widgetWithText(TextField, 'Account'), 'user');
     await tester.enterText(
-      find.widgetWithText(TextField, 'Secret'),
+      find.widgetWithText(AppTextField, 'Issuer'),
+      'Example',
+    );
+    await tester.enterText(
+      find.widgetWithText(AppTextField, 'Account'),
+      'user',
+    );
+    await tester.enterText(
+      find.widgetWithText(AppTextField, 'Secret'),
       'JBSWY3DPEHPK3PXP',
     );
     await tester.tap(find.byIcon(Icons.save));
@@ -139,13 +146,14 @@ void main() {
       100,
       scrollable: find.byType(Scrollable).first,
     );
+    await tester.pumpAndSettle();
     expect(find.byTooltip('Account actions'), findsOneWidget);
     await tester.tap(find.byTooltip('Account actions'));
     await tester.pumpAndSettle();
     expect(find.text('Edit'), findsOneWidget);
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
-    expect(find.widgetWithText(TextField, 'Issuer'), findsOneWidget);
+    expect(find.widgetWithText(AppTextField, 'Issuer'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 10));

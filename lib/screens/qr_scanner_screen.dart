@@ -1,6 +1,7 @@
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -55,17 +56,14 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
           rightOnPressed: (_) async {
             if (!state.isRunning ||
                 state.torchState == TorchState.unavailable) {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text(l10n.torchUnavailable)));
+              showAppToast(context, l10n.torchUnavailable);
               return;
             }
             try {
               await controller.toggleTorch();
             } catch (_) {
               if (context.mounted) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(l10n.torchUnavailable)));
+                showAppToast(context, l10n.torchUnavailable);
               }
             }
           },

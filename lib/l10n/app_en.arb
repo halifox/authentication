@@ -400,5 +400,25 @@
   "save": "Save",
   "reviewExternalAccount": "Review external account",
   "editAccount": "Edit account",
-  "addAccount": "Add account"
+  "addAccount": "Add account",
+  "searchAccounts": "Search accounts",
+  "recentSearches": "Recent searches",
+  "recentSearchesEmpty": "No recent searches",
+  "searchHistoryHint": "Search by service or account name.",
+  "clearSearchHistory": "Clear history",
+  "clearSearchHistoryConfirm": "Remove recent searches from this device?",
+  "searchHistoryFailed": "Search history could not be updated.",
+  "searchHistoryLoadFailed": "Search history could not be loaded.",
+  "searchResults": "Search results",
+  "formIdentity": "Account details",
+  "formVerification": "Verification settings",
+  "manualSecretHint": "Enter the key provided by your service. Keep it private.",
+  "searchAccountCount": "{count} accounts",
+  "@searchAccountCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

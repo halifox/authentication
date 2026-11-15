@@ -106,7 +106,7 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Export HTML backup'),
       200,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.ensureVisible(find.text('Export HTML backup'));
     await tester.pumpAndSettle();

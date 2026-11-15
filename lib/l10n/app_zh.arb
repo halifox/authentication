@@ -524,5 +524,25 @@
   "save": "保存",
   "reviewExternalAccount": "检查外部账户",
   "editAccount": "编辑账户",
-  "addAccount": "添加账户"
+  "addAccount": "添加账户",
+  "searchAccounts": "搜索账户",
+  "recentSearches": "最近搜索",
+  "recentSearchesEmpty": "暂无最近搜索",
+  "searchHistoryHint": "按服务名称或账户名称搜索。",
+  "clearSearchHistory": "清空历史",
+  "clearSearchHistoryConfirm": "清除此设备上的最近搜索记录？",
+  "searchHistoryFailed": "无法更新搜索历史。",
+  "searchHistoryLoadFailed": "无法加载搜索历史。",
+  "searchResults": "搜索结果",
+  "formIdentity": "账户信息",
+  "formVerification": "验证设置",
+  "manualSecretHint": "输入服务提供的密钥，并妥善保密。",
+  "searchAccountCount": "{count} 个账户",
+  "@searchAccountCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

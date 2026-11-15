@@ -12,12 +12,15 @@ import 'package:authentication/widgets/action_result_sheet.dart';
 import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/category_selection.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
+import 'package:authentication/widgets/glass_quality.dart';
 import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 /// 令牌编辑/表单页面，用于手动输入或编辑 2FA 账号的详细配置信息。
 class TokenFormScreen extends HookConsumerWidget {
@@ -146,96 +149,113 @@ class TokenFormScreen extends HookConsumerWidget {
                 child: Column(
                   spacing: 16,
                   children: [
-                    AppGlassCard(
-                      child: Column(
-                        spacing: 16,
-                        children: [
-                          _buildTextField(
-                            label: l10n.issuer,
-                            controller: issuerController,
-                            suffixIcon: _buildIcon(
-                              context,
-                              chosenIcon,
-                              (newIcon) => icon.value = newIcon,
-                            ),
-                          ),
-                          _buildTextField(
-                            label: l10n.account,
-                            controller: accountController,
-                          ),
-                        ],
-                      ),
-                    ),
-                    AppGlassCard(
-                      child: Column(
-                        spacing: 16,
-                        children: [
-                          _buildDropdown<String>(
-                            l10n.type,
-                            type.value,
-                            typeLabels,
-                            (value) {
-                              type.value = value;
-                              digitsController.text = switch (value) {
-                                'steam' => '5',
-                                'yandex' => '8',
-                                _ => '6',
-                              };
-                              if (value == 'steam' || value == 'yandex')
-                                periodController.text = '30';
-                            },
-                          ),
-                          _buildPasswordTextField(
-                            secretController,
-                            l10n.secret,
-                            obscureText,
-                          ),
-                          switch (type.value.toLowerCase()) {
-                            'totp' || 'hotp' => _buildDropdown<String>(
-                              l10n.algorithm,
-                              algorithm.value,
-                              algorithmLabels,
-                              (value) => algorithm.value = value,
-                            ),
-                            'motp' || 'yandex' => _buildPasswordTextField(
-                              pinController,
-                              expectedPinLength != null &&
-                                      type.value == 'yandex'
-                                  ? l10n.pinLengthRequired(expectedPinLength!)
-                                  : l10n.pin,
-                              obscurePin,
-                            ),
-                            String() => const SizedBox.shrink(),
-                          },
-                          Row(
+                    AppGlassGroup(
+                      header: Text(l10n.formIdentity),
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
                             spacing: 16,
                             children: [
-                              Expanded(
-                                child: _buildDigitsOnlyTextField(
-                                  digitsController,
-                                  l10n.digits,
+                              _buildTextField(
+                                label: l10n.issuer,
+                                controller: issuerController,
+                                suffixIcon: _buildIcon(
+                                  context,
+                                  chosenIcon,
+                                  (newIcon) => icon.value = newIcon,
                                 ),
                               ),
-                              Expanded(
-                                child: switch (type.value.toLowerCase()) {
-                                  'totp' ||
-                                  'motp' ||
-                                  'steam' ||
-                                  'yandex' => _buildDigitsOnlyTextField(
-                                    periodController,
-                                    l10n.period,
-                                  ),
-                                  'hotp' => _buildDigitsOnlyTextField(
-                                    counterController,
-                                    l10n.counter,
-                                  ),
-                                  String() => const SizedBox.shrink(),
-                                },
+                              _buildTextField(
+                                label: l10n.account,
+                                controller: accountController,
                               ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
+                    ),
+                    AppGlassGroup(
+                      header: Text(l10n.formVerification),
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            spacing: 16,
+                            children: [
+                              _buildDropdown<String>(
+                                l10n.type,
+                                type.value,
+                                typeLabels,
+                                (value) {
+                                  type.value = value;
+                                  digitsController.text = switch (value) {
+                                    'steam' => '5',
+                                    'yandex' => '8',
+                                    _ => '6',
+                                  };
+                                  if (value == 'steam' || value == 'yandex')
+                                    periodController.text = '30';
+                                },
+                              ),
+                              _buildPasswordTextField(
+                                secretController,
+                                l10n.secret,
+                                obscureText,
+                                helperText: l10n.manualSecretHint,
+                              ),
+                              switch (type.value.toLowerCase()) {
+                                'totp' || 'hotp' => _buildDropdown<String>(
+                                  l10n.algorithm,
+                                  algorithm.value,
+                                  algorithmLabels,
+                                  (value) => algorithm.value = value,
+                                ),
+                                'motp' || 'yandex' => _buildPasswordTextField(
+                                  pinController,
+                                  expectedPinLength != null &&
+                                          type.value == 'yandex'
+                                      ? l10n.pinLengthRequired(
+                                          expectedPinLength!,
+                                        )
+                                      : l10n.pin,
+                                  obscurePin,
+                                ),
+                                String() => const SizedBox.shrink(),
+                              },
+                              Row(
+                                spacing: 16,
+                                children: [
+                                  Expanded(
+                                    child: _buildDigitsOnlyTextField(
+                                      digitsController,
+                                      l10n.digits,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: switch (type.value.toLowerCase()) {
+                                      'totp' ||
+                                      'motp' ||
+                                      'steam' ||
+                                      'yandex' => _buildDigitsOnlyTextField(
+                                        periodController,
+                                        l10n.period,
+                                        action: TextInputAction.done,
+                                      ),
+                                      'hotp' => _buildDigitsOnlyTextField(
+                                        counterController,
+                                        l10n.counter,
+                                        action: TextInputAction.done,
+                                      ),
+                                      String() => const SizedBox.shrink(),
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                     if (isSaved)
                       AppGlassCard(
@@ -243,7 +263,7 @@ class TokenFormScreen extends HookConsumerWidget {
                           spacing: 8,
                           runSpacing: 8,
                           children: [
-                            OutlinedButton.icon(
+                            AppButton(
                               onPressed: busy
                                   ? null
                                   : () => assignAccountCategories(
@@ -252,14 +272,16 @@ class TokenFormScreen extends HookConsumerWidget {
                                       args.id,
                                     ),
                               icon: const Icon(Icons.label_outline),
-                              label: Text(l10n.assignCategories),
+                              prominent: false,
+                              child: Text(l10n.assignCategories),
                             ),
-                            OutlinedButton.icon(
+                            AppButton(
                               onPressed: busy
                                   ? null
                                   : () => _showAccountQr(context, ref, args.id),
                               icon: const Icon(Icons.qr_code),
-                              label: Text(l10n.showSavedAccountQr),
+                              prominent: false,
+                              child: Text(l10n.showSavedAccountQr),
                             ),
                           ],
                         ),
@@ -289,12 +311,12 @@ class TokenFormScreen extends HookConsumerWidget {
         await showDialog<void>(
           context: context,
           builder: (_) => AppDialog(
-            title: Text(l10n.warning),
+            title: l10n.warning,
             content: Text(l10n.qrAccountUnavailable),
             actions: [
-              TextButton(
+              GlassDialogAction(
                 onPressed: () => Navigator.pop(context),
-                child: Text(l10n.ok),
+                label: l10n.ok,
               ),
             ],
           ),
@@ -306,12 +328,12 @@ class TokenFormScreen extends HookConsumerWidget {
         await showDialog<void>(
           context: context,
           builder: (_) => AppDialog(
-            title: Text(l10n.warning),
+            title: l10n.warning,
             content: Text(l10n.qrUnsupportedAccount),
             actions: [
-              TextButton(
+              GlassDialogAction(
                 onPressed: () => Navigator.pop(context),
-                child: Text(l10n.ok),
+                label: l10n.ok,
               ),
             ],
           ),
@@ -324,12 +346,12 @@ class TokenFormScreen extends HookConsumerWidget {
         await showDialog<void>(
           context: context,
           builder: (dialogContext) => AppDialog(
-            title: Text(l10n.warning),
+            title: l10n.warning,
             content: Text(l10n.qrUnsupportedParameters),
             actions: [
-              TextButton(
+              GlassDialogAction(
                 onPressed: () => Navigator.pop(dialogContext),
-                child: Text(l10n.ok),
+                label: l10n.ok,
               ),
             ],
           ),
@@ -350,7 +372,7 @@ class TokenFormScreen extends HookConsumerWidget {
       await showDialog<void>(
         context: context,
         builder: (dialogContext) => AppDialog(
-          title: Text(l10n.showSavedAccountQr),
+          title: l10n.showSavedAccountQr,
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -366,9 +388,9 @@ class TokenFormScreen extends HookConsumerWidget {
             ),
           ),
           actions: [
-            TextButton(
+            GlassDialogAction(
               onPressed: () => Navigator.pop(dialogContext),
-              child: Text(l10n.ok),
+              label: l10n.ok,
             ),
           ],
         ),
@@ -378,12 +400,12 @@ class TokenFormScreen extends HookConsumerWidget {
         await showDialog<void>(
           context: context,
           builder: (dialogContext) => AppDialog(
-            title: Text(l10n.warning),
+            title: l10n.warning,
             content: Text(l10n.qrAccountUnavailable),
             actions: [
-              TextButton(
+              GlassDialogAction(
                 onPressed: () => Navigator.pop(dialogContext),
-                child: Text(l10n.ok),
+                label: l10n.ok,
               ),
             ],
           ),
@@ -394,21 +416,17 @@ class TokenFormScreen extends HookConsumerWidget {
 
   Widget _buildDigitsOnlyTextField(
     TextEditingController controller,
-    String label,
-  ) {
-    return TextField(
+    String label, {
+    TextInputAction action = TextInputAction.next,
+  }) {
+    return AppTextField(
+      textInputAction: action,
       controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(14.0)),
-        ),
-      ),
       keyboardType: TextInputType.number,
       inputFormatters: <TextInputFormatter>[
         FilteringTextInputFormatter.digitsOnly,
       ],
+      label: label,
     );
   }
 
@@ -417,37 +435,28 @@ class TokenFormScreen extends HookConsumerWidget {
     TextEditingController? controller,
     Widget? suffixIcon,
   }) {
-    return TextField(
+    return AppTextField(
       controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(14.0)),
-        ),
-        suffixIcon: suffixIcon,
-      ),
+      label: label,
+      suffixIcon: suffixIcon,
     );
   }
 
   Widget _buildPasswordTextField(
     TextEditingController controller,
     String label,
-    ValueNotifier<bool> obscureText,
-  ) => TextField(
+    ValueNotifier<bool> obscureText, {
+    String? helperText,
+  }) => AppTextField(
+    helperText: helperText,
     controller: controller,
     obscureText: obscureText.value,
-    decoration: InputDecoration(
-      labelText: label,
-      floatingLabelBehavior: FloatingLabelBehavior.always,
-      border: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(14.0)),
-      ),
-      suffixIcon: IconButton(
-        icon: Icon(obscureText.value ? Icons.visibility_off : Icons.visibility),
-        onPressed: () => obscureText.value = !obscureText.value,
-      ),
+    label: label,
+    suffixIcon: Icon(
+      obscureText.value ? Icons.visibility_off : Icons.visibility,
     ),
+    onSuffixTap: () => obscureText.value = !obscureText.value,
+    sensitive: true,
   );
 
   Widget _buildDropdown<T>(
@@ -455,7 +464,7 @@ class TokenFormScreen extends HookConsumerWidget {
     T initialValue,
     Map<T, String> options,
     void Function(T) onChanged,
-  ) => AppChoiceTile<T>(
+  ) => AppPickerField<T>(
     label: label,
     value: initialValue,
     options: options,
@@ -468,7 +477,10 @@ class TokenFormScreen extends HookConsumerWidget {
     void Function(String) onChange,
   ) => Padding(
     padding: const EdgeInsets.all(6.0),
-    child: GestureDetector(
+    child: GlassButton.custom(
+      style: GlassButtonStyle.transparent,
+      quality: appGlassQuality,
+      label: AppLocalizations.of(context)!.selectIcon,
       onTap: () async {
         final iconPath = await Navigator.pushNamed<String>(
           context,

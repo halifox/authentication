@@ -28,30 +28,27 @@ class AppScaffold extends HookWidget {
     return _PageScope(
       title: appBar.title,
       controller: largeTitle ? controller : null,
-      child: Scaffold(
-        backgroundColor: colors.surface,
-        resizeToAvoidBottomInset: false,
-        body: CupertinoTheme(
-          data: CupertinoThemeData(
-            brightness: colors.brightness,
-            primaryColor: colors.primary,
-            scaffoldBackgroundColor: colors.surface,
-          ),
-          child: GlassTheme(
-            data: GlassThemeData.simple(quality: appGlassQuality),
-            child: GlassScaffold(
-              statusBarStyle: GlassStatusBarStyle.auto,
-              backgroundColor: colors.surface,
-              extendBody: largeTitle,
-              edgeFade: largeTitle,
-              appBar: appBar.buildBar(
-                context,
-                titleController: largeTitle ? controller : null,
-              ),
-              body: Material(
-                type: MaterialType.transparency,
-                child: SafeArea(top: false, child: body),
-              ),
+      child: CupertinoTheme(
+        data: CupertinoThemeData(
+          brightness: colors.brightness,
+          primaryColor: colors.primary,
+          scaffoldBackgroundColor: colors.surface,
+        ),
+        child: GlassTheme(
+          data: GlassThemeData.simple(quality: appGlassQuality),
+          child: GlassScaffold(
+            statusBarStyle: GlassStatusBarStyle.auto,
+            backgroundColor: colors.surface,
+            extendBody: largeTitle,
+            edgeFade: largeTitle,
+            appBar: appBar.buildBar(
+              context,
+              titleController: largeTitle ? controller : null,
+            ),
+            body: DefaultTextStyle(
+              style: Theme.of(context).textTheme.bodyLarge!
+                  .copyWith(color: colors.onSurface),
+              child: SafeArea(top: false, child: body),
             ),
           ),
         ),

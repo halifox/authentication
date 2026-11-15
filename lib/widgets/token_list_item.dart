@@ -9,11 +9,14 @@ import 'package:authentication/settings/settings.dart';
 import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/widgets/account_icon.dart';
 import 'package:authentication/widgets/action_result_sheet.dart';
+import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 /// 令牌列表项组件，支持侧滑删除和编辑操作。
 class TokenListItem extends ConsumerWidget {
@@ -95,9 +98,7 @@ class TokenListItem extends ConsumerWidget {
       try {
         await ref.read(tokenItemProvider(config.id).notifier).resetCopyCount();
       } catch (_) {
-        if (context.mounted)
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(l10n.saveFailed)));
+        if (context.mounted) showAppToast(context, l10n.saveFailed);
       }
     }
   }
@@ -190,10 +191,7 @@ class _TokenCard extends ConsumerWidget {
       message = l10n.copyFailed;
     }
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), duration: const Duration(seconds: 3)),
-    );
+    showAppToast(context, message, duration: const Duration(seconds: 3));
   }
 }
 
@@ -252,9 +250,9 @@ class _TokenHeader extends ConsumerWidget {
           ),
         ),
         _TokenAction(config: config),
-        PopupMenuButton<int>(
+        AppMenuButton<int>(
           tooltip: l10n.accountActions,
-          icon: const Icon(Icons.more_vert),
+          icon: Icons.more_vert,
           onSelected: (value) {
             switch (value) {
               case 0:
@@ -265,11 +263,7 @@ class _TokenHeader extends ConsumerWidget {
                 onDelete();
             }
           },
-          itemBuilder: (_) => [
-            PopupMenuItem(value: 0, child: Text(l10n.edit)),
-            PopupMenuItem(value: 1, child: Text(l10n.resetCopyCount)),
-            PopupMenuItem(value: 2, child: Text(l10n.delete)),
-          ],
+          options: {0: l10n.edit, 1: l10n.resetCopyCount, 2: l10n.delete},
         ),
       ],
     );
@@ -306,13 +300,13 @@ class _TokenAction extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (config.type == 'hotp') {
       final itemState = ref.watch(tokenItemProvider(config.id));
-      return IconButton(
+      return AppBarIconButton(
         onPressed: itemState.isUpdating
             ? null
             : () => ref
                   .read(tokenItemProvider(config.id).notifier)
                   .incrementHotp(config),
-        icon: const Icon(Icons.refresh),
+        icon: Icons.refresh,
       );
     }
     return _OtpTimer(period: config.period);
@@ -483,11 +477,7 @@ class _OtpTimer extends StatelessWidget {
         (context as Element).markNeedsBuild();
       },
       builder: (context, value, child) {
-        return CircularProgressIndicator(
-          value: value,
-          strokeCap: StrokeCap.round,
-          strokeWidth: 5.5,
-        );
+        return GlassProgressIndicator.circular(value: value, strokeWidth: 5.5);
       },
     );
   }

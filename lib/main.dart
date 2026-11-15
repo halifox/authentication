@@ -10,6 +10,7 @@ import 'package:authentication/storage/device_key_store.dart';
 import 'package:authentication/storage/encryption.dart';
 import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:authentication/widgets/glass_quality.dart';
 import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/foundation.dart';
@@ -361,7 +362,7 @@ class _AppBootstrapState extends State<AppBootstrap>
                           if (unavailable) ...[
                             Text(l10n.unlockUnavailable),
                             const SizedBox(height: 16),
-                            FilledButton(
+                            AppButton(
                               onPressed: () {
                                 setState(() {
                                   unavailable = false;
@@ -376,7 +377,7 @@ class _AppBootstrapState extends State<AppBootstrap>
                               child: Text(l10n.screenProtectionRetry),
                             ),
                           ] else if (locked || sessionLocked) ...[
-                            TextField(
+                            AppTextField(
                               controller: password,
                               obscureText: obscured,
                               enabled: !busy,
@@ -389,25 +390,23 @@ class _AppBootstrapState extends State<AppBootstrap>
                                   _open(value);
                                 }
                               },
-                              decoration: InputDecoration(
-                                labelText: l10n.unlockPassword,
-                                errorText: failed ? l10n.unlockInvalid : null,
-                                suffixIcon: IconButton(
-                                  tooltip: obscured
-                                      ? l10n.revealPassword
-                                      : l10n.hidePassword,
-                                  onPressed: () =>
-                                      setState(() => obscured = !obscured),
-                                  icon: Icon(
-                                    obscured
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                  ),
-                                ),
+                              label: l10n.unlockPassword,
+                              errorText: failed ? l10n.unlockInvalid : null,
+                              suffixIcon: Icon(
+                                obscured
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
                               ),
+                              onSuffixTap: () =>
+                                  setState(() => obscured = !obscured),
+                              suffixTooltip: obscured
+                                  ? l10n.revealPassword
+                                  : l10n.hidePassword,
+                              sensitive: true,
+                              textInputAction: TextInputAction.go,
                             ),
                             const SizedBox(height: 16),
-                            FilledButton(
+                            AppButton(
                               onPressed: busy
                                   ? null
                                   : () {
@@ -425,7 +424,7 @@ class _AppBootstrapState extends State<AppBootstrap>
                           if (busy)
                             const Padding(
                               padding: EdgeInsets.all(16),
-                              child: CircularProgressIndicator(),
+                              child: GlassProgressIndicator.circular(),
                             ),
                         ],
                       ),

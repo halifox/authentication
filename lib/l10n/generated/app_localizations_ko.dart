@@ -1078,4 +1078,47 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get addAccount => 'Add account';
+
+  @override
+  String get searchAccounts => 'Search accounts';
+
+  @override
+  String get recentSearches => 'Recent searches';
+
+  @override
+  String get recentSearchesEmpty => 'No recent searches';
+
+  @override
+  String get searchHistoryHint => 'Search by service or account name.';
+
+  @override
+  String get clearSearchHistory => 'Clear history';
+
+  @override
+  String get clearSearchHistoryConfirm =>
+      'Remove recent searches from this device?';
+
+  @override
+  String get searchHistoryFailed => 'Search history could not be updated.';
+
+  @override
+  String get searchHistoryLoadFailed => 'Search history could not be loaded.';
+
+  @override
+  String get searchResults => 'Search results';
+
+  @override
+  String get formIdentity => 'Account details';
+
+  @override
+  String get formVerification => 'Verification settings';
+
+  @override
+  String get manualSecretHint =>
+      'Enter the key provided by your service. Keep it private.';
+
+  @override
+  String searchAccountCount(int count) {
+    return '$count accounts';
+  }
 }

@@ -11,6 +11,7 @@ import 'package:authentication/screens/token_form_screen.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -124,7 +125,7 @@ void main() {
       'Account': 'user',
       'Secret': 'JBSWY3DPEHPK3PXP',
     }.entries) {
-      final finder = find.widgetWithText(TextField, field.key);
+      final finder = find.widgetWithText(AppTextField, field.key);
       await tester.ensureVisible(finder);
       await tester.enterText(finder, field.value);
       await tester.pumpAndSettle();
@@ -158,7 +159,7 @@ void main() {
           onGenerateRoute: (settings) => settings.name == AppRoutes.icons
               ? MaterialPageRoute<String>(
                   builder: (context) => Scaffold(
-                    body: TextButton(
+                    body: AppButton(
                       onPressed: () =>
                           Navigator.pop(context, 'assets/icons/google.svg'),
                       child: const Text('Choose Google'),
@@ -171,7 +172,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     Future<void> fill(String label, String value) async {
-      final field = find.widgetWithText(TextField, label);
+      final field = find.widgetWithText(AppTextField, label);
       await tester.ensureVisible(field);
       await tester.enterText(field, value);
       await tester.pumpAndSettle();
@@ -180,11 +181,11 @@ void main() {
     await fill('Issuer', 'GitHub');
     await fill('Account', 'user');
     await fill('Secret', 'JBSWY3DPEHPK3PXP');
-    await tester.ensureVisible(find.widgetWithText(TextField, 'Issuer'));
+    await tester.ensureVisible(find.widgetWithText(AppTextField, 'Issuer'));
     await tester.tap(
       find
           .descendant(
-            of: find.widgetWithText(TextField, 'Issuer'),
+            of: find.widgetWithText(AppTextField, 'Issuer'),
             matching: find.byType(GestureDetector),
           )
           .last,

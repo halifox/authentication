@@ -6,6 +6,7 @@ import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -40,8 +41,8 @@ void main() {
       'otpauth://totp/Example:user?secret=JBSWY3DPEHPK3PXP&issuer=Example',
     );
     await tester.pumpAndSettle();
-    expect(find.widgetWithText(TextField, 'Issuer'), findsOneWidget);
-    Navigator.of(tester.element(find.widgetWithText(TextField, 'Issuer')))
+    expect(find.widgetWithText(AppTextField, 'Issuer'), findsOneWidget);
+    Navigator.of(tester.element(find.widgetWithText(AppTextField, 'Issuer')))
         .pop();
     await tester.pumpAndSettle();
     await tester.pumpWidget(const SizedBox());

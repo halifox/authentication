@@ -19,6 +19,7 @@ import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
 import 'package:authentication/storage/icon_data.dart';
 import 'package:authentication/storage/icon_pack.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:base32/base32.dart';
 import 'package:drift/native.dart';
 import 'package:file_picker/file_picker.dart';
@@ -28,6 +29,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart'
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image/image.dart' as image;
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:protobuf/protobuf.dart';
 import 'package:qr/qr.dart';
 
@@ -99,13 +101,13 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Import KeePass database'),
       200,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.ensureVisible(find.text('Import KeePass database'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Import KeePass database'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), 'test');
+    await tester.enterText(find.byType(AppTextField), 'test');
     await tester.pump();
     await tester.tap(find.text('OK'));
     await tester.pump();
@@ -197,11 +199,11 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Import encrypted Ente export'),
       200,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.tap(find.text('Import encrypted Ente export'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), 'password');
+    await tester.enterText(find.byType(AppTextField), 'password');
     await tester.pump();
     await tester.tap(find.text('OK'));
     await tester.pump();
@@ -336,7 +338,7 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Import .authpro file'),
       200,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.ensureVisible(find.text('Import .authpro file'));
     await tester.pumpAndSettle();
@@ -403,7 +405,7 @@ void main() {
     expect((await db.getIconPacks()).length, 1);
     await tester.tap(find.text('Sample'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), 'Example');
+    await tester.enterText(find.byType(GlassSearchBar), 'Example');
     await tester.pumpAndSettle();
     expect(
       find.byWidgetPredicate((w) => w is Text && w.data == 'Example'),
@@ -452,7 +454,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
-            builder: (context) => TextButton(
+            builder: (context) => AppButton(
               onPressed: () async => selected = await Navigator.push<String>(
                 context,
                 MaterialPageRoute(builder: (_) => const IconSelectionScreen()),
@@ -495,7 +497,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
-            builder: (context) => TextButton(
+            builder: (context) => AppButton(
               onPressed: () async {
                 chosen = await Navigator.push<String>(
                   context,
@@ -551,7 +553,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Import URI list'),
         200,
-        scrollable: find.byType(Scrollable),
+        scrollable: find.byType(Scrollable).first,
       );
       await tester.ensureVisible(find.text('Import URI list'));
       await tester.pumpAndSettle();
@@ -596,13 +598,13 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Import FreeOTP backup'),
       200,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.ensureVisible(find.text('Import FreeOTP backup'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Import FreeOTP backup'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), 'test');
+    await tester.enterText(find.byType(AppTextField), 'test');
     await tester.pump();
     await tester.tap(find.text('OK'));
     await tester.pump();
@@ -653,13 +655,13 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Import TOTP Authenticator backup'),
       200,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.ensureVisible(find.text('Import TOTP Authenticator backup'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Import TOTP Authenticator backup'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), 'Testtest1');
+    await tester.enterText(find.byType(AppTextField), 'Testtest1');
     await tester.pump();
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
@@ -703,13 +705,13 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Import Authenticator Plus ZIP'),
       200,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.ensureVisible(find.text('Import Authenticator Plus ZIP'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Import Authenticator Plus ZIP'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), 'testtesttest');
+    await tester.enterText(find.byType(AppTextField), 'testtesttest');
     await tester.pump();
     await tester.tap(find.text('OK'));
     await tester.pump();
@@ -754,14 +756,14 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Import WinAuth backup'),
       200,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.ensureVisible(find.text('Import WinAuth backup'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Import WinAuth backup'));
     await tester.pumpAndSettle();
     expect(await db.getAllConfigs(), isEmpty);
-    await tester.enterText(find.byType(TextField), 'test');
+    await tester.enterText(find.byType(AppTextField), 'test');
     await tester.pump();
     await tester.tap(find.text('OK'));
     await tester.pump();
@@ -811,7 +813,7 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Import LastPass Authenticator backup'),
       200,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.ensureVisible(
       find.text('Import LastPass Authenticator backup'),
@@ -858,7 +860,7 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Import 2FAS backup'),
       200,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.ensureVisible(find.text('Import 2FAS backup'));
     await tester.pumpAndSettle();
@@ -905,11 +907,11 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Import Proton Authenticator backup'),
       200,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.tap(find.text('Import Proton Authenticator backup'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), 'test');
+    await tester.enterText(find.byType(AppTextField), 'test');
     await tester.pump();
     await tester.tap(find.text('OK'));
     await tester.pump();
@@ -957,11 +959,11 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Import Aegis backup'),
       200,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.tap(find.text('Import Aegis backup'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), 'test');
+    await tester.enterText(find.byType(AppTextField), 'test');
     await tester.pump();
     await tester.tap(find.text('OK'));
     await tester.pump();
@@ -1110,7 +1112,7 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Import Aegis backup'),
       200,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.tap(find.text('Import Aegis backup'));
     await tester.pump();
@@ -1237,7 +1239,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Import Bitwarden JSON'),
         200,
-        scrollable: find.byType(Scrollable),
+        scrollable: find.byType(Scrollable).first,
       );
       await tester.tap(find.text('Import Bitwarden JSON'));
       await tester.pumpAndSettle();
@@ -1374,7 +1376,7 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Import FreeOTP+ backup'),
       200,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.tap(find.text('Import FreeOTP+ backup'));
     await tester.pumpAndSettle();
@@ -1433,7 +1435,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Import andOTP backup'),
         200,
-        scrollable: find.byType(Scrollable),
+        scrollable: find.byType(Scrollable).first,
       );
       await tester.tap(find.text('Import andOTP backup'));
       await tester.pumpAndSettle();
@@ -1480,17 +1482,17 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Import andOTP backup'),
         200,
-        scrollable: find.byType(Scrollable),
+        scrollable: find.byType(Scrollable).first,
       );
       await tester.tap(find.text('Import andOTP backup'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Encrypted backup (0.6.3 or later)'));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField), '123456');
-      await tester.tap(find.byTooltip('Show password'));
+      await tester.enterText(find.byType(AppTextField), '123456');
+      await tester.tap(find.bySemanticsLabel('Show password'));
       await tester.pump();
       expect(
-        tester.widget<TextField>(find.byType(TextField)).obscureText,
+        tester.widget<AppTextField>(find.byType(AppTextField)).obscureText,
         false,
       );
       await tester.tap(find.text('OK'));

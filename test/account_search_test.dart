@@ -37,6 +37,8 @@ void main() {
       account: 'Bob',
       secret: 'JBSWY3DPEHPK3PXP',
     );
+    final query = ValueNotifier('');
+    addTearDown(query.dispose);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -49,11 +51,14 @@ void main() {
             (ref) => Stream.value(defaultIntegerSettings),
           ),
         ],
-        child: const MaterialApp(
-          locale: Locale('en'),
+        child: MaterialApp(
+          locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: TokenListScreen(),
+          home: ValueListenableBuilder(
+            valueListenable: query,
+            builder: (context, value, _) => TokenListScreen(searchQuery: value),
+          ),
         ),
       ),
     );
@@ -62,33 +67,34 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(TokenListItem), findsNWidgets(2));
 
-    await tester.enterText(find.byType(TextField), '  EXAMPLE  ');
-    await tester.pump();
+    query.value = '  EXAMPLE  ';
+    await tester.pumpAndSettle();
     expect(find.text('Alice'), findsOneWidget);
     expect(find.text('Bob'), findsNothing);
 
-    await tester.enterText(find.byType(TextField), 'bOb');
-    await tester.pump();
+    query.value = 'bOb';
+    await tester.pumpAndSettle();
     expect(find.text('Bob'), findsOneWidget);
     expect(find.text('Alice'), findsNothing);
     settings.add({showAccountNameKey: false});
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(find.text('Bob'), findsNothing);
     expect(find.text('Another'), findsOneWidget);
     settings.add({showAccountNameKey: true});
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     entries.add([alice]);
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(find.text('No matching accounts'), findsOneWidget);
-    await tester.tap(find.byTooltip('Clear search'));
-    await tester.pump();
+    query.value = '';
+    await tester.pumpAndSettle();
     expect(find.text('Alice'), findsOneWidget);
     expect(find.text('No matching accounts'), findsNothing);
 
     entries.add([]);
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(find.text('No data'), findsOneWidget);
-    expect(find.byType(TextField), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 10));
   });
 }

@@ -14,6 +14,7 @@ import 'package:authentication/widgets/glass_surface.dart';
 import 'package:drift/native.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart'
     show FlutterSecureStorage;
 import 'package:flutter_test/flutter_test.dart';
@@ -69,7 +70,7 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Export app backup'),
       200,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.tap(find.text('Export app backup'));
     await tester.pumpAndSettle();

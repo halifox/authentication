@@ -8,13 +8,16 @@ import 'package:authentication/screens/migration_guide_screen.dart';
 import 'package:authentication/screens/qr_scanner_screen.dart';
 import 'package:authentication/screens/settings_screen.dart';
 import 'package:authentication/screens/token_form_screen.dart';
+import 'package:authentication/screens/token_list_screen.dart';
 import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:authentication/widgets/glass_inputs.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class AppRoutes {
   static const home = '/';
+  static const searchResults = '/search-results';
   static const backupHub = '/backup';
   static const add = '/add';
   static const importFile = '/add/import';
@@ -69,6 +72,12 @@ Route<void> externalAccountRoute(String name) {
 Route<dynamic> onGenerateRoute(RouteSettings settings) {
   final Widget screen = switch (settings.name) {
     AppRoutes.home => const MainNavigationScreen(),
+    AppRoutes.searchResults => TokenListScreen(
+      searchQuery:
+          (settings.arguments as ({String query, int categoryId})).query,
+      initialCategory:
+          (settings.arguments as ({String query, int categoryId})).categoryId,
+    ),
     AppRoutes.add => const AddAccountScreen(),
     AppRoutes.backupHub => const AddAccountScreen(
       page: AccountActionPage.backupHub,
@@ -139,7 +148,7 @@ class _UnavailableRouteScreen extends StatelessWidget {
             children: [
               Text(l10n.pageUnavailable, textAlign: TextAlign.center),
               const SizedBox(height: 16),
-              FilledButton(
+              AppButton(
                 onPressed: () => _leave(context),
                 child: Text(
                   MaterialLocalizations.of(context).backButtonTooltip,

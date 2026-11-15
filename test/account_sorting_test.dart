@@ -205,7 +205,17 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(sortAccounts(await db.getAllConfigs(), 0).first.issuer, 'Alpha');
-    await tester.enterText(find.byType(TextField), 'Alpha');
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
+        child: const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: TokenListScreen(searchQuery: 'Alpha'),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Clear the search to reorder accounts.'), findsOneWidget);
     expect(find.byType(ReorderableDragStartListener), findsNothing);
