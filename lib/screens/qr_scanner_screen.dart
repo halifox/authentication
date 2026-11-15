@@ -95,6 +95,26 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                 Navigator.pop(context, capture);
               },
             ),
+            if (state.isRunning && !startupFailed)
+              IgnorePointer(
+                child: Center(
+                  child: FractionallySizedBox(
+                    widthFactor: .72,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 320),
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(32),
+                            border: Border.all(color: Colors.white, width: 3),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             if (startupFailed)
               ColoredBox(
                 color: Theme.of(context).colorScheme.surface,

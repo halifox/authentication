@@ -2,6 +2,36 @@ import 'package:authentication/widgets/glass_quality.dart';
 import 'package:flutter/material.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
+Future<T?> showAppChoiceSheet<T>({
+  required BuildContext context,
+  required String title,
+  required Map<T, String> options,
+  T? value,
+}) async {
+  T? selection;
+  await showGlassActionSheet<void>(
+    context: context,
+    title: title,
+    quality: appGlassQuality,
+    cancelLabel: MaterialLocalizations.of(context).cancelButtonLabel,
+    actions: [
+      for (final option in options.entries)
+        GlassActionSheetAction(
+          label: option.value,
+          icon: Icon(
+            Icons.check,
+            color: value == option.key
+                ? Theme.of(context).colorScheme.primary
+                : Colors.transparent,
+          ),
+          onPressed: () => selection = option.key,
+        ),
+    ],
+  );
+  // Complete the sheet route before an action can open another dialog or page.
+  return selection;
+}
+
 /// An opaque content surface beneath the glass navigation and control layer.
 class AppGlassCard extends StatelessWidget {
   const AppGlassCard({
@@ -112,26 +142,83 @@ class AppChoiceTile<T> extends StatelessWidget {
     trailing: const Icon(Icons.unfold_more, size: 20),
     onTap: onChanged == null
         ? null
-        : () => showGlassActionSheet<void>(
-            context: context,
-            title: label,
-            quality: appGlassQuality,
-            cancelLabel: MaterialLocalizations.of(context).cancelButtonLabel,
-            actions: [
-              for (final option in options.entries)
-                GlassActionSheetAction(
-                  label: option.value,
-                  icon: Icon(
-                    Icons.check,
-                    color: value == option.key
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.transparent,
-                  ),
-                  onPressed: () => onChanged?.call(option.key),
-                ),
-            ],
-          ),
+        : () async {
+            final selection = await showAppChoiceSheet<T>(
+              context: context,
+              title: label,
+              value: value,
+              options: options,
+            );
+            if (context.mounted && selection != null) {
+              onChanged?.call(selection);
+            }
+          },
   );
+}
+
+/// A keyboard-aware glass dialog shared by confirmations and small forms.
+class AppDialog extends StatelessWidget {
+  const AppDialog({
+    this.title,
+    this.content,
+    this.actions = const [],
+    super.key,
+  });
+
+  final Widget? title;
+  final Widget? content;
+  final List<Widget> actions;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 440),
+        child: GlassContainer(
+          useOwnLayer: true,
+          quality: appGlassQuality,
+          shape: const LiquidRoundedSuperellipse(borderRadius: 28),
+          settings: LiquidGlassSettings(
+            glassColor: colors.surfaceContainerHigh.withValues(alpha: .9),
+          ),
+          padding: const EdgeInsets.all(24),
+          child: Material(
+            type: MaterialType.transparency,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (title != null) ...[
+                  DefaultTextStyle.merge(
+                    style: Theme.of(context).textTheme.titleLarge
+                        ?.copyWith(fontWeight: FontWeight.w600),
+                    child: Semantics(namesRoute: true, child: title!),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                if (content != null)
+                  Flexible(child: SingleChildScrollView(child: content!)),
+                if (actions.isNotEmpty) ...[
+                  const SizedBox(height: 20),
+                  OverflowBar(
+                    alignment: MainAxisAlignment.end,
+                    overflowAlignment: OverflowBarAlignment.end,
+                    spacing: 8,
+                    overflowSpacing: 8,
+                    children: actions,
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 /// Inset grouped content. Controls can lift above this non-refracting surface.

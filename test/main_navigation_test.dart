@@ -57,7 +57,7 @@ void main() {
       await tester.tap(find.byIcon(Icons.settings).first);
       await tester.pumpAndSettle();
       expect(find.byType(SettingsScreen), findsOneWidget);
-      await tester.tap(find.byIcon(Icons.shield_outlined));
+      await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
       expect(
         tester.widget<TextField>(find.byType(TextField)).controller!.text,

@@ -48,141 +48,160 @@ class CategoriesScreen extends ConsumerWidget {
     }
 
     return AppScaffold(
+      largeTitle: true,
       appBar: CustomAppBar(
         title: l10n.categories,
         rightIcon: Icons.add,
         rightTooltip: l10n.add,
         rightOnPressed: busy ? null : (_) => edit(),
       ),
-      body: categories.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => Center(child: Text(l10n.categoryLoadFailed)),
-        data: (items) {
-          if (items.isEmpty) return Center(child: Text(l10n.categoryEmpty));
-          return ReorderableListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            buildDefaultDragHandles: false,
-            itemCount: items.length,
-            onReorderItem: (oldIndex, newIndex) async {
-              if (busy) return;
-              final ids = items.map((item) => item.id).toList();
-              ids.insert(newIndex, ids.removeAt(oldIndex));
-              await execute(
-                () =>
-                    ref.read(categoryOperationsProvider.notifier).reorder(ids),
-              );
-            },
-            itemBuilder: (context, index) {
-              final category = items[index];
-              return Padding(
-                key: ValueKey(category.id),
-                padding: const EdgeInsets.only(bottom: 16),
-                child: AppGlassCard(
-                  padding: EdgeInsets.zero,
-                  child: ListTile(
-                    title: Text(
-                      category.name,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: category.isDefault
-                        ? Text(l10n.categoryDefault)
-                        : null,
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        PopupMenuButton<int>(
-                          enabled: !busy,
-                          tooltip: l10n.categoryActions,
-                          onSelected: (action) async {
-                            if (action == 0) {
-                              await edit(category);
-                            } else if (action == 1) {
-                              await execute(
-                                () => ref
-                                    .read(categoryOperationsProvider.notifier)
-                                    .setDefault(
-                                      category.isDefault ? null : category.id,
-                                    ),
-                              );
-                            } else if (action == 3) {
-                              await assignCategoryAccounts(
-                                context,
-                                ref,
-                                category,
-                              );
-                            } else {
-                              final confirmed = await showDialog<bool>(
-                                context: context,
-                                builder: (dialogContext) => AlertDialog(
-                                  title: Text(l10n.categoryDelete),
-                                  content: Text(l10n.categoryDeleteWarning),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.pop(dialogContext, false),
-                                      child: Text(l10n.cancel),
-                                    ),
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.pop(dialogContext, true),
-                                      child: Text(l10n.ok),
-                                    ),
-                                  ],
-                                ),
-                              );
-                              if (confirmed == true && context.mounted) {
-                                await execute(
-                                  () => ref
-                                      .read(categoryOperationsProvider.notifier)
-                                      .delete(category.id),
-                                );
-                              }
-                            }
-                          },
-                          itemBuilder: (_) => [
-                            PopupMenuItem(
-                              value: 0,
-                              child: Text(l10n.categoryRename),
-                            ),
-                            PopupMenuItem(
-                              value: 1,
-                              child: Text(
-                                category.isDefault
+      body: AppPageScrollView(
+        slivers: [
+          categories.when(
+            loading: () => const SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (_, _) => SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(child: Text(l10n.categoryLoadFailed)),
+            ),
+            data: (items) {
+              if (items.isEmpty) {
+                return SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(child: Text(l10n.categoryEmpty)),
+                );
+              }
+              return SliverReorderableList(
+                itemCount: items.length,
+                onReorderItem: (oldIndex, newIndex) async {
+                  if (busy) return;
+                  final ids = items.map((item) => item.id).toList();
+                  ids.insert(newIndex, ids.removeAt(oldIndex));
+                  await execute(
+                    () => ref
+                        .read(categoryOperationsProvider.notifier)
+                        .reorder(ids),
+                  );
+                },
+                itemBuilder: (context, index) {
+                  final category = items[index];
+                  return Padding(
+                    key: ValueKey(category.id),
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: AppGlassCard(
+                      padding: EdgeInsets.zero,
+                      child: ListTile(
+                        leading: const Icon(Icons.folder_outlined),
+                        title: Text(
+                          category.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: category.isDefault
+                            ? Text(l10n.categoryDefault)
+                            : null,
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            AppMenuButton<int>(
+                              icon: Icons.more_horiz,
+                              tooltip: l10n.categoryActions,
+                              onSelected: busy
+                                  ? null
+                                  : (action) async {
+                                      if (action == 0) {
+                                        await edit(category);
+                                      } else if (action == 1) {
+                                        await execute(
+                                          () => ref
+                                              .read(
+                                                categoryOperationsProvider
+                                                    .notifier,
+                                              )
+                                              .setDefault(
+                                                category.isDefault
+                                                    ? null
+                                                    : category.id,
+                                              ),
+                                        );
+                                      } else if (action == 3) {
+                                        await assignCategoryAccounts(
+                                          context,
+                                          ref,
+                                          category,
+                                        );
+                                      } else {
+                                        final confirmed = await showDialog<bool>(
+                                          context: context,
+                                          builder: (dialogContext) => AppDialog(
+                                            title: Text(l10n.categoryDelete),
+                                            content: Text(
+                                              l10n.categoryDeleteWarning,
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(
+                                                  dialogContext,
+                                                  false,
+                                                ),
+                                                child: Text(l10n.cancel),
+                                              ),
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(
+                                                  dialogContext,
+                                                  true,
+                                                ),
+                                                child: Text(l10n.ok),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                        if (confirmed == true &&
+                                            context.mounted) {
+                                          await execute(
+                                            () => ref
+                                                .read(
+                                                  categoryOperationsProvider
+                                                      .notifier,
+                                                )
+                                                .delete(category.id),
+                                          );
+                                        }
+                                      }
+                                    },
+                              options: {
+                                0: l10n.categoryRename,
+                                1: category.isDefault
                                     ? l10n.categoryClearDefault
                                     : l10n.categorySetDefault,
+                                2: l10n.categoryDelete,
+                                3: l10n.assignAccounts,
+                              },
+                            ),
+                            ReorderableDragStartListener(
+                              index: index,
+                              enabled: !busy,
+                              child: Tooltip(
+                                message: l10n.dragToReorder,
+                                child: const SizedBox(
+                                  width: 48,
+                                  height: 64,
+                                  child: Icon(Icons.drag_handle),
+                                ),
                               ),
-                            ),
-                            PopupMenuItem(
-                              value: 2,
-                              child: Text(l10n.categoryDelete),
-                            ),
-                            PopupMenuItem(
-                              value: 3,
-                              child: Text(l10n.assignAccounts),
                             ),
                           ],
                         ),
-                        ReorderableDragStartListener(
-                          index: index,
-                          enabled: !busy,
-                          child: Tooltip(
-                            message: l10n.dragToReorder,
-                            child: const SizedBox(
-                              width: 48,
-                              height: 64,
-                              child: Icon(Icons.drag_handle),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               );
             },
-          );
-        },
+          ),
+        ],
       ),
     );
   }
@@ -197,7 +216,7 @@ class _CategoryNameDialog extends HookWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final controller = useTextEditingController(text: category?.name ?? '');
-    return AlertDialog(
+    return AppDialog(
       title: Text(category == null ? l10n.categoryCreate : l10n.categoryRename),
       content: TextField(
         controller: controller,

@@ -288,7 +288,7 @@ class TokenFormScreen extends HookConsumerWidget {
       if (account == null) {
         await showDialog<void>(
           context: context,
-          builder: (_) => AlertDialog(
+          builder: (_) => AppDialog(
             title: Text(l10n.warning),
             content: Text(l10n.qrAccountUnavailable),
             actions: [
@@ -305,7 +305,7 @@ class TokenFormScreen extends HookConsumerWidget {
           account.type.toLowerCase() != 'hotp') {
         await showDialog<void>(
           context: context,
-          builder: (_) => AlertDialog(
+          builder: (_) => AppDialog(
             title: Text(l10n.warning),
             content: Text(l10n.qrUnsupportedAccount),
             actions: [
@@ -323,7 +323,7 @@ class TokenFormScreen extends HookConsumerWidget {
       } on FormatException {
         await showDialog<void>(
           context: context,
-          builder: (dialogContext) => AlertDialog(
+          builder: (dialogContext) => AppDialog(
             title: Text(l10n.warning),
             content: Text(l10n.qrUnsupportedParameters),
             actions: [
@@ -349,7 +349,7 @@ class TokenFormScreen extends HookConsumerWidget {
       if (proceed != true || !context.mounted) return;
       await showDialog<void>(
         context: context,
-        builder: (dialogContext) => AlertDialog(
+        builder: (dialogContext) => AppDialog(
           title: Text(l10n.showSavedAccountQr),
           content: SingleChildScrollView(
             child: Column(
@@ -377,7 +377,7 @@ class TokenFormScreen extends HookConsumerWidget {
       if (context.mounted) {
         await showDialog<void>(
           context: context,
-          builder: (dialogContext) => AlertDialog(
+          builder: (dialogContext) => AppDialog(
             title: Text(l10n.warning),
             content: Text(l10n.qrAccountUnavailable),
             actions: [
@@ -455,26 +455,11 @@ class TokenFormScreen extends HookConsumerWidget {
     T initialValue,
     Map<T, String> options,
     void Function(T) onChanged,
-  ) => DropdownMenuFormField<T>(
-    width: double.infinity,
-    label: Text(label),
-    initialSelection: initialValue,
-    dropdownMenuEntries: options.entries
-        .map(
-          (MapEntry<T, String> entry) =>
-              DropdownMenuEntry(value: entry.key, label: entry.value),
-        )
-        .toList(),
-    inputDecorationTheme: const InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(14.0)),
-      ),
-    ),
-    onSelected: (value) {
-      if (value != null) {
-        onChanged(value);
-      }
-    },
+  ) => AppChoiceTile<T>(
+    label: label,
+    value: initialValue,
+    options: options,
+    onChanged: onChanged,
   );
 
   Widget _buildIcon(

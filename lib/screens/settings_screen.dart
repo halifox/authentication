@@ -47,6 +47,31 @@ class SettingsScreen extends ConsumerWidget {
     final settings = ref.watch(settingsProvider);
     final integerSettings = ref.watch(integerSettingsProvider);
     final busy = ref.watch(settingsOperationsProvider).isLoading;
+    Widget loadState({String? message}) => AppPageScrollView(
+      slivers: [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Center(
+            child: message == null
+                ? const CircularProgressIndicator()
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(message, textAlign: TextAlign.center),
+                      const SizedBox(height: 16),
+                      FilledButton(
+                        onPressed: () {
+                          ref.invalidate(settingsProvider);
+                          ref.invalidate(integerSettingsProvider);
+                        },
+                        child: Text(l10n.screenProtectionRetry),
+                      ),
+                    ],
+                  ),
+          ),
+        ),
+      ],
+    );
     ref.listen(settingsOperationsProvider, (previous, next) {
       if (next.hasError && context.mounted) {
         ScaffoldMessenger.of(context)
@@ -121,11 +146,11 @@ class SettingsScreen extends ConsumerWidget {
         leftIcon: root ? null : Icons.arrow_back,
       ),
       body: settings.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => Center(child: Text(l10n.settingsLoadError)),
+        loading: () => loadState(),
+        error: (_, _) => loadState(message: l10n.settingsLoadError),
         data: (_) => integerSettings.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (_, _) => Center(child: Text(l10n.settingsLoadError)),
+          loading: () => loadState(),
+          error: (_, _) => loadState(message: l10n.settingsLoadError),
           data: (values) {
             Widget choice(String settingKey) => AppChoiceTile<int>(
               key: ValueKey(settingKey),
@@ -308,7 +333,7 @@ class PasswordScreen extends HookConsumerWidget {
       if (remove) {
         final confirmed = await showDialog<bool>(
           context: context,
-          builder: (context) => AlertDialog(
+          builder: (context) => AppDialog(
             title: Text(l10n.passwordRemove),
             content: Text(l10n.passwordRemoveWarning),
             actions: [
@@ -374,33 +399,20 @@ class PasswordScreen extends HookConsumerWidget {
                         integerSettings.when(
                           loading: () => const CircularProgressIndicator(),
                           error: (_, _) => Text(l10n.settingsLoadError),
-                          data: (values) => DropdownButtonFormField<int>(
+                          data: (values) => AppChoiceTile<int>(
                             key: const ValueKey(autoLockKey),
-                            initialValue: values[autoLockKey] ?? 0,
-                            decoration: InputDecoration(
-                              labelText: l10n.autoLockTitle,
-                            ),
-                            items: [
-                              DropdownMenuItem(
-                                value: 0,
-                                child: Text(l10n.never),
-                              ),
-                              DropdownMenuItem(
-                                value: -1,
-                                child: Text(l10n.autoLockImmediately),
-                              ),
+                            value: values[autoLockKey] ?? 0,
+                            label: l10n.autoLockTitle,
+                            options: {
+                              0: l10n.never,
+                              -1: l10n.autoLockImmediately,
                               for (final seconds in autoLockOptions.skip(2))
-                                DropdownMenuItem(
-                                  value: seconds,
-                                  child: Text(l10n.seconds(seconds)),
-                                ),
-                            ],
+                                seconds: l10n.seconds(seconds),
+                            },
                             onChanged: (value) {
-                              if (value != null) {
-                                ref
-                                    .read(settingsOperationsProvider.notifier)
-                                    .updateInteger(autoLockKey, value);
-                              }
+                              ref
+                                  .read(settingsOperationsProvider.notifier)
+                                  .updateInteger(autoLockKey, value);
                             },
                           ),
                         ),

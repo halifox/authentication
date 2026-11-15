@@ -1,4 +1,5 @@
 import 'package:authentication/widgets/glass_quality.dart';
+import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
@@ -103,7 +104,7 @@ class AppBarIconButton extends StatelessWidget {
   }
 }
 
-/// A glass menu anchored to a floating navigation control.
+/// A floating control that opens a scrollable glass action sheet.
 class AppMenuButton<T> extends StatelessWidget {
   const AppMenuButton({
     required this.icon,
@@ -126,24 +127,16 @@ class AppMenuButton<T> extends StatelessWidget {
     tooltip: tooltip,
     onPressed: onSelected == null
         ? null
-        : () => showGlassActionSheet<void>(
-            context: context,
-            title: tooltip,
-            quality: appGlassQuality,
-            cancelLabel: MaterialLocalizations.of(context).cancelButtonLabel,
-            actions: [
-              for (final option in options.entries)
-                GlassActionSheetAction(
-                  label: option.value,
-                  icon: Icon(
-                    Icons.check,
-                    color: value == option.key
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.transparent,
-                  ),
-                  onPressed: () => onSelected?.call(option.key),
-                ),
-            ],
-          ),
+        : () async {
+            final selection = await showAppChoiceSheet<T>(
+              context: context,
+              title: tooltip,
+              value: value,
+              options: options,
+            );
+            if (context.mounted && selection != null) {
+              onSelected?.call(selection);
+            }
+          },
   );
 }

@@ -1,4 +1,5 @@
 import 'package:authentication/l10n/generated/app_localizations.dart';
+import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/material.dart';
@@ -9,10 +10,10 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
+    return AppScaffold(
+      largeTitle: true,
       appBar: CustomAppBar(title: l10n.aboutApp),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      body: AppPageList(
         children: [
           Text(
             l10n.aboutDescription,
@@ -54,28 +55,31 @@ class UserGuideScreen extends StatelessWidget {
       (title: l10n.guideBackupTitle, body: l10n.guideBackupBody),
       (title: l10n.guideMigrationTitle, body: l10n.guideMigrationBody),
     ];
-    return Scaffold(
+    return AppScaffold(
+      largeTitle: true,
       appBar: CustomAppBar(title: l10n.userGuide),
-      body: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-        itemCount: sections.length,
-        separatorBuilder: (_, _) => const SizedBox(height: 16),
-        itemBuilder: (context, index) => AppGlassCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                sections[index].title,
-                style: Theme.of(context).textTheme.titleLarge,
+      body: AppPageList(
+        children: [
+          for (final section in sections) ...[
+            AppGlassCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    section.title,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    section.body,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Text(
-                sections[index].body,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ],
-          ),
-        ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ],
       ),
     );
   }
@@ -93,13 +97,10 @@ class MigrationGuideScreen extends StatelessWidget {
       (title: 'Steam', body: l10n.steamGuide),
       (title: 'Blizzard', body: l10n.blizzardGuide),
     ];
-    return Scaffold(
+    return AppScaffold(
+      largeTitle: true,
       appBar: CustomAppBar(title: l10n.migrationGuides),
-      body: ListView(
-        physics: const BouncingScrollPhysics(
-          parent: AlwaysScrollableScrollPhysics(),
-        ),
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      body: AppPageList(
         children: [
           Text(
             l10n.migrationGuideIntro,

@@ -2,6 +2,7 @@ import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/category.dart';
 import 'package:authentication/otp/category_provider.dart';
 import 'package:authentication/otp/otp_provider.dart';
+import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -16,7 +17,7 @@ Future<Set<int>?> _choose(
   return showDialog<Set<int>>(
     context: context,
     builder: (dialogContext) => StatefulBuilder(
-      builder: (context, setState) => AlertDialog(
+      builder: (context, setState) => AppDialog(
         title: Text(title),
         content: options.isEmpty
             ? Text(l10n.categorySelectionEmpty)

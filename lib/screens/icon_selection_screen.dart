@@ -53,10 +53,6 @@ class IconSelectionScreen extends ConsumerWidget {
               onChanged: (value) =>
                   ref.read(iconSearchQueryProvider.notifier).update(value),
               decoration: InputDecoration(
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                border: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(14)),
-                ),
                 prefixIcon: const Icon(Icons.search),
                 hintText: l10n.search,
               ),
@@ -159,7 +155,9 @@ class IconSelectionScreen extends ConsumerWidget {
                               child: Container(
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.primary,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainerLow,
                                   borderRadius: BorderRadius.circular(14),
                                 ),
                                 child: AccountIcon(icon: path),
@@ -211,7 +209,7 @@ class IconSelectionScreen extends ConsumerWidget {
       if (!context.mounted) return;
       final proceed = await showDialog<bool>(
         context: context,
-        builder: (dialogContext) => AlertDialog(
+        builder: (dialogContext) => AppDialog(
           title: Text(l10n.importIconPack),
           content: Text(
             l10n.iconPackImportConfirm(pack.name, pack.icons.length),
@@ -250,7 +248,7 @@ class IconSelectionScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final proceed = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
+      builder: (dialogContext) => AppDialog(
         title: Text(l10n.delete),
         content: Text(l10n.iconPackDeleteConfirm(name)),
         actions: [

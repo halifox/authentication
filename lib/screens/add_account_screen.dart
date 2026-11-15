@@ -641,23 +641,27 @@ class AddAccountScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final format = await showDialog<LegacyBackupFormat>(
       context: context,
-      builder: (dialogContext) => SimpleDialog(
+      builder: (dialogContext) => AppDialog(
         title: Text(l10n.legacyImportFormat),
-        children: [
-          for (final choice in [
-            (LegacyBackupFormat.plain, l10n.legacyPlain),
-            (LegacyBackupFormat.encrypted, l10n.legacyEncrypted),
-            (LegacyBackupFormat.encryptedOld, l10n.legacyEncryptedOld),
-          ])
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (final choice in [
+              (LegacyBackupFormat.plain, l10n.legacyPlain),
+              (LegacyBackupFormat.encrypted, l10n.legacyEncrypted),
+              (LegacyBackupFormat.encryptedOld, l10n.legacyEncryptedOld),
+            ])
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(dialogContext, choice.$1),
+                child: Text(choice.$2),
+              ),
             SimpleDialogOption(
-              onPressed: () => Navigator.pop(dialogContext, choice.$1),
-              child: Text(choice.$2),
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.cancel),
             ),
-          SimpleDialogOption(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.cancel),
-          ),
-        ],
+          ],
+        ),
       ),
     );
     if (format == null || !context.mounted) return;
@@ -1122,7 +1126,7 @@ class AddAccountScreen extends ConsumerWidget {
       barrierDismissible: false,
       builder: (_) => PopScope(
         canPop: false,
-        child: AlertDialog(
+        child: AppDialog(
           content: Row(
             children: [
               const CircularProgressIndicator(),
@@ -1312,7 +1316,7 @@ class _BackupPasswordDialog extends HookWidget {
     useListenable(confirmation);
     final mismatch =
         export && !useAppPassword.value && password.text != confirmation.text;
-    return AlertDialog(
+    return AppDialog(
       title: Text(l10n.backupPasswordTitle),
       content: SingleChildScrollView(
         child: Column(

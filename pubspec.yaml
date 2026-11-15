@@ -30,6 +30,7 @@ dependencies:
   shared_preferences: ^2.5.6
 
   # UI & Styling
+  cupertino_icons: ^2.0.0
   dynamic_color: ^2.1.0
   liquid_glass_widgets: 1.7.2
   material_ui: ^1.9.0
