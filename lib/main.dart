@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:authentication/app.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/settings/settings.dart';
@@ -6,19 +8,40 @@ import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/device_key_store.dart';
 import 'package:authentication/storage/encryption.dart';
+import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:authentication/widgets/glass_quality.dart';
+import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:screen_security/screen_security.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
-  runApp(const AppBootstrap());
+  try {
+    await LiquidGlassWidgets.initialize();
+    if (!kIsWeb) {
+      await ui.FragmentProgram.fromAsset(
+        'packages/liquid_glass_widgets/shaders/lightweight_glass.frag',
+      );
+      glassShadersReady = true;
+    }
+  } catch (_) {
+    // The shader-free renderer keeps the interface usable on unsupported devices.
+  }
+  runApp(
+    LiquidGlassWidgets.wrap(
+      brightnessResolver: Theme.maybeBrightnessOf,
+      adaptiveQuality: true,
+      child: const AppBootstrap(),
+    ),
+  );
 }
 
 class AppBootstrap extends StatefulWidget {
@@ -301,6 +324,12 @@ class _AppBootstrapState extends State<AppBootstrap>
 
   Widget _lockScreen() {
     return MaterialApp(
+      theme: ThemeData(
+        colorScheme: appColorScheme(Brightness.light, null, 0, false),
+      ),
+      darkTheme: ThemeData(
+        colorScheme: appColorScheme(Brightness.dark, null, 0, false),
+      ),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -317,86 +346,88 @@ class _AppBootstrapState extends State<AppBootstrap>
         builder: (context) {
           final l10n = AppLocalizations.of(context)!;
           return Scaffold(
-            appBar: AppBar(title: Text(l10n.unlockTitle)),
+            appBar: CustomAppBar(title: l10n.unlockTitle, leftIcon: null),
             body: SafeArea(
               child: Center(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(24),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 480),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (unavailable) ...[
-                          Text(l10n.unlockUnavailable),
-                          const SizedBox(height: 16),
-                          FilledButton(
-                            onPressed: () {
-                              setState(() {
-                                unavailable = false;
-                                busy = true;
-                              });
-                              if (preferences == null) {
-                                _start();
-                              } else {
-                                _checkReturn(++lifecycleGeneration);
-                              }
-                            },
-                            child: Text(l10n.screenProtectionRetry),
-                          ),
-                        ] else if (locked || sessionLocked) ...[
-                          TextField(
-                            controller: password,
-                            obscureText: obscured,
-                            enabled: !busy,
-                            onSubmitted: (value) {
-                              if (!busy && value.isNotEmpty) {
+                    child: AppGlassCard(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (unavailable) ...[
+                            Text(l10n.unlockUnavailable),
+                            const SizedBox(height: 16),
+                            FilledButton(
+                              onPressed: () {
                                 setState(() {
+                                  unavailable = false;
                                   busy = true;
-                                  failed = false;
                                 });
-                                _open(value);
-                              }
-                            },
-                            decoration: InputDecoration(
-                              labelText: l10n.unlockPassword,
-                              errorText: failed ? l10n.unlockInvalid : null,
-                              suffixIcon: IconButton(
-                                tooltip: obscured
-                                    ? l10n.revealPassword
-                                    : l10n.hidePassword,
-                                onPressed: () =>
-                                    setState(() => obscured = !obscured),
-                                icon: Icon(
-                                  obscured
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
+                                if (preferences == null) {
+                                  _start();
+                                } else {
+                                  _checkReturn(++lifecycleGeneration);
+                                }
+                              },
+                              child: Text(l10n.screenProtectionRetry),
+                            ),
+                          ] else if (locked || sessionLocked) ...[
+                            TextField(
+                              controller: password,
+                              obscureText: obscured,
+                              enabled: !busy,
+                              onSubmitted: (value) {
+                                if (!busy && value.isNotEmpty) {
+                                  setState(() {
+                                    busy = true;
+                                    failed = false;
+                                  });
+                                  _open(value);
+                                }
+                              },
+                              decoration: InputDecoration(
+                                labelText: l10n.unlockPassword,
+                                errorText: failed ? l10n.unlockInvalid : null,
+                                suffixIcon: IconButton(
+                                  tooltip: obscured
+                                      ? l10n.revealPassword
+                                      : l10n.hidePassword,
+                                  onPressed: () =>
+                                      setState(() => obscured = !obscured),
+                                  icon: Icon(
+                                    obscured
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                          FilledButton(
-                            onPressed: busy
-                                ? null
-                                : () {
-                                    if (password.text.isNotEmpty) {
-                                      setState(() {
-                                        busy = true;
-                                        failed = false;
-                                      });
-                                      _open(password.text);
-                                    }
-                                  },
-                            child: Text(l10n.unlockButton),
-                          ),
+                            const SizedBox(height: 16),
+                            FilledButton(
+                              onPressed: busy
+                                  ? null
+                                  : () {
+                                      if (password.text.isNotEmpty) {
+                                        setState(() {
+                                          busy = true;
+                                          failed = false;
+                                        });
+                                        _open(password.text);
+                                      }
+                                    },
+                              child: Text(l10n.unlockButton),
+                            ),
+                          ],
+                          if (busy)
+                            const Padding(
+                              padding: EdgeInsets.all(16),
+                              child: CircularProgressIndicator(),
+                            ),
                         ],
-                        if (busy)
-                          const Padding(
-                            padding: EdgeInsets.all(16),
-                            child: CircularProgressIndicator(),
-                          ),
-                      ],
+                      ),
                     ),
                   ),
                 ),

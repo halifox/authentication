@@ -31,6 +31,7 @@ dependencies:
 
   # UI & Styling
   dynamic_color: ^2.1.0
+  liquid_glass_widgets: 1.7.2
   material_ui: ^1.9.0
   flutter_svg: ^2.3.2
   flutter_swipe_action_cell: ^3.1.9

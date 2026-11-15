@@ -1,120 +1,94 @@
+import 'package:authentication/widgets/glass_quality.dart';
 import 'package:flutter/material.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
-/// 自定义应用栏，提供一致的顶部导航样式。
+/// Shared navigation bar with balanced leading and trailing controls.
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  /// 创建一个自定义应用栏。
-  /// [title] 标题文字。
-  /// [leftIcon] 左侧按钮图标，默认为返回箭头。
-  /// [leftOnPressed] 左侧按钮点击回调。
-  /// [rightIcon] 右侧按钮图标。
-  /// [rightOnPressed] 右侧按钮点击回调。
   const CustomAppBar({
-    super.key,
     required this.title,
+    super.key,
     this.leftIcon = Icons.arrow_back,
     this.leftOnPressed = _defaultLeftOnPressed,
     this.rightIcon,
     this.rightOnPressed,
+    this.leftTooltip,
+    this.rightTooltip,
   });
 
-  /// 标题内容
   final String title;
-
-  /// 左侧图标
   final IconData? leftIcon;
-
-  /// 左侧点击回调
   final void Function(BuildContext context)? leftOnPressed;
-
-  /// 右侧图标
   final IconData? rightIcon;
-
-  /// 右侧点击回调
   final void Function(BuildContext context)? rightOnPressed;
+  final String? leftTooltip;
+  final String? rightTooltip;
 
-  /// 默认的左侧返回操作
-  static void _defaultLeftOnPressed(BuildContext context) {
-    Navigator.pop(context);
-  }
+  static void _defaultLeftOnPressed(BuildContext context) =>
+      Navigator.pop(context);
 
   @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            AppBarIconButton(
-              icon: leftIcon,
-              onPressed: () => leftOnPressed?.call(context),
-            ),
-            Expanded(
-              child: Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-            ),
-            AppBarIconButton(
-              icon: rightIcon,
-              onPressed: rightOnPressed != null
-                  ? () => rightOnPressed!(context)
-                  : null,
-            ),
-          ],
-        ),
+  Widget build(BuildContext context) => GlassAppBar(
+    toolbarHeight: 96,
+    padding: const EdgeInsets.symmetric(horizontal: 16),
+    title: Text(
+      title,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      textAlign: TextAlign.center,
+      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        color: Theme.of(context).colorScheme.onSurface,
       ),
-    );
-  }
+    ),
+    leading: AppBarIconButton(
+      icon: leftIcon,
+      tooltip:
+          leftTooltip ??
+          (leftIcon == Icons.arrow_back
+              ? MaterialLocalizations.of(context).backButtonTooltip
+              : null),
+      onPressed: leftOnPressed == null ? null : () => leftOnPressed!(context),
+    ),
+    actions: [
+      AppBarIconButton(
+        icon: rightIcon,
+        tooltip: rightTooltip,
+        onPressed: rightOnPressed == null
+            ? null
+            : () => rightOnPressed!(context),
+      ),
+    ],
+  );
 
   @override
-  Size get preferredSize => const Size.fromHeight(100);
+  Size get preferredSize => const Size.fromHeight(96);
 }
 
-/// 应用栏使用的自定义图标按钮，具有圆角和特定配色。
 class AppBarIconButton extends StatelessWidget {
-  /// 创建一个应用栏图标按钮。
-  /// [icon] 图标。
-  /// [onPressed] 点击回调。
-  const AppBarIconButton({super.key, this.icon, this.onPressed});
-
-  /// 图标数据
+  const AppBarIconButton({super.key, this.icon, this.onPressed, this.tooltip});
   final IconData? icon;
-
-  /// 点击回调
   final VoidCallback? onPressed;
+  final String? tooltip;
 
   @override
   Widget build(BuildContext context) {
-    return Visibility(
-      visible: icon != null,
-      replacement: const SizedBox(width: 64, height: 64),
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          padding: EdgeInsets.zero,
-          fixedSize: const Size(64, 64),
-          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
-          elevation: 0,
-        ),
-        child: icon != null
-            ? Icon(
-                icon,
-                size: 30,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-              )
-            : null,
+    if (icon == null) return const SizedBox(width: 64, height: 64);
+    final colors = Theme.of(context).colorScheme;
+    final button = GlassIconButton(
+      icon: Icon(icon, color: colors.onPrimaryContainer),
+      onPressed: onPressed,
+      semanticLabel: tooltip,
+      size: 64,
+      iconSize: 30,
+      shape: GlassIconButtonShape.roundedSquare,
+      borderRadius: 24,
+      useOwnLayer: true,
+      quality: appGlassQuality,
+      settings: LiquidGlassSettings(
+        glassColor: colors.primaryContainer.withValues(alpha: .8),
       ),
     );
+    return tooltip == null ? button : Tooltip(message: tooltip!, child: button);
   }
 }
