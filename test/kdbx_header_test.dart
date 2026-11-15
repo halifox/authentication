@@ -8,10 +8,19 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('reads independent KDF and data-block variants', () async {
-    for (final name in ['argon2id', 'argon2d', 'uncompressed', 'chacha']) {
+    for (final name in [
+      'argon2id',
+      'argon2d',
+      'uncompressed',
+      'recycle_aes_kdf',
+    ]) {
       final bytes = File('test/fixtures/kdbx/$name.kdbx').readAsBytesSync();
       final result = parseKdbxPayload(await decryptKdbx(bytes, 'test'));
       expect(result.accounts.length, 7, reason: name);
+    }
+    for (final name in ['chacha', 'recycle']) {
+      final bytes = File('test/fixtures/kdbx/$name.kdbx').readAsBytesSync();
+      expect(() => readKdbxHeader(bytes), throwsFormatException, reason: name);
     }
     final excessive = File('test/fixtures/kdbx/multiblock.kdbx')
         .readAsBytesSync();
@@ -22,11 +31,17 @@ void main() {
     final result = parseKdbxPayload(await decryptKdbx(groups, 'test'));
     expect(result.accounts.length, 7);
     expect(result.categories, isNotEmpty);
-    final recycle = File('test/fixtures/kdbx/recycle.kdbx').readAsBytesSync();
+    final recycle = File('test/fixtures/kdbx/recycle_aes_kdf.kdbx')
+        .readAsBytesSync();
+    final restored = parseKdbxPayload(await decryptKdbx(recycle, 'test'));
+    expect(restored.accounts.length, 7);
     expect(
-      () async => parseKdbxPayload(await decryptKdbx(recycle, 'test')),
-      throwsFormatException,
+      restored.accounts.any((account) => account.issuer == 'Deleted'),
+      isFalse,
     );
+    await expectLater(decryptKdbx(recycle, 'wrong'), throwsFormatException);
+    final damaged = Uint8List.fromList(recycle)..[recycle.length - 45] ^= 1;
+    await expectLater(decryptKdbx(damaged, 'test'), throwsFormatException);
   });
   test('authenticates and decrypts independent database', () async {
     final bytes = File('test/fixtures/kdbx/aes.kdbx').readAsBytesSync();
