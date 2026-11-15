@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('reads independent KDF and data-block variants', () async {
-    for (final name in ['argon2id', 'argon2d', 'uncompressed']) {
+    for (final name in ['argon2id', 'argon2d', 'uncompressed', 'chacha']) {
       final bytes = File('test/fixtures/kdbx/$name.kdbx').readAsBytesSync();
       final result = parseKdbxPayload(await decryptKdbx(bytes, 'test'));
       expect(result.accounts.length, 7, reason: name);

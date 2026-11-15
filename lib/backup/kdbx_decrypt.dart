@@ -5,6 +5,8 @@ import 'package:archive/archive.dart';
 import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/kdbx_header.dart';
 import 'package:crypto/crypto.dart' as hash;
+import 'package:cryptography/cryptography.dart';
+import 'package:cryptography/dart.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 import 'package:flutter/foundation.dart' show compute;
 import 'package:pointycastle/export.dart' as pc;
@@ -99,10 +101,29 @@ Uint8List _decrypt((Uint8List, String) input) {
     0x5a,
     0xff,
   ];
+  const chachaId = [
+    0xd6,
+    0x03,
+    0x8a,
+    0x2b,
+    0x8b,
+    0x6f,
+    0x4c,
+    0xb5,
+    0xa5,
+    0x24,
+    0x33,
+    0x9a,
+    0x31,
+    0xdb,
+    0xb5,
+    0x9a,
+  ];
+  final isAes = cipherId != null && _equal(cipherId, aesId);
+  final isChacha = cipherId != null && _equal(cipherId, chachaId);
   if (seed?.length != 32 ||
-      iv?.length != 16 ||
-      cipherId == null ||
-      !_equal(cipherId, aesId) ||
+      (!isAes && !isChacha) ||
+      iv?.length != (isAes ? 16 : 12) ||
       compression?.length != 4) {
     throw const FormatException();
   }
@@ -167,8 +188,26 @@ Uint8List _decrypt((Uint8List, String) input) {
   }
   if (!ended || position != bytes.length) throw const FormatException();
   final master = _digest(hash.sha256, _join([seed, transformed]));
-  final plain = enc.Encrypter(enc.AES(enc.Key(master), mode: enc.AESMode.cbc))
-      .decryptBytes(enc.Encrypted(encrypted.takeBytes()), iv: enc.IV(iv!));
+  final ciphertext = encrypted.takeBytes();
+  final List<int> plain;
+  if (isAes) {
+    plain = enc.Encrypter(enc.AES(enc.Key(master), mode: enc.AESMode.cbc))
+        .decryptBytes(enc.Encrypted(ciphertext), iv: enc.IV(iv!));
+  } else {
+    final secret = SecretKeyData(master);
+    try {
+      final state =
+          const DartChacha20(macAlgorithm: MacAlgorithm.empty).newState()
+            ..initializeSync(
+              isEncrypting: false,
+              secretKey: secret,
+              nonce: iv!,
+            );
+      plain = state.convertChunkSync(ciphertext);
+    } finally {
+      secret.destroy();
+    }
+  }
   final result = mode == 1
       ? const GZipDecoder().decodeBytes(
           plain,
