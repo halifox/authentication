@@ -31,6 +31,7 @@ class ImportPreviewExpired implements Exception {
     AccountCategoryLinks,
     BackupState,
     IconPacks,
+    RecentSearches,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -50,7 +51,7 @@ class AppDatabase extends _$AppDatabase {
   /// 数据库架构版本号。
   /// 如果修改了表结构，需要递增此版本并处理迁移逻辑。
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -77,8 +78,67 @@ class AppDatabase extends _$AppDatabase {
         await _createIconPackTriggers();
       }
       if (from < 8) await _createKeyState();
+      if (from < 9) await m.createTable(recentSearches);
     },
   );
+
+  Stream<List<String>> watchRecentSearches() =>
+      (select(
+        recentSearches,
+      )..orderBy([(row) => OrderingTerm.desc(row.id)])).watch().map(
+        (rows) => [
+          for (final row in rows) encryption.decrypt(row.encryptedQuery),
+        ],
+      );
+
+  Future<bool> hasSearchHistory() async =>
+      (await (select(recentSearches)..limit(1)).get()).isNotEmpty;
+
+  Future<void> rememberSearch(String query) async {
+    final value = query.trim();
+    if (value.isEmpty || value.length > 128) throw const FormatException();
+    await transaction(() async {
+      final rows = await select(recentSearches).get();
+      final duplicates = [
+        for (final row in rows)
+          if (encryption.decrypt(row.encryptedQuery).toLowerCase() ==
+              value.toLowerCase())
+            row.id,
+      ];
+      if (duplicates.isNotEmpty) {
+        await (delete(
+          recentSearches,
+        )..where((row) => row.id.isIn(duplicates))).go();
+      }
+      await into(recentSearches).insert(
+        RecentSearchesCompanion.insert(
+          encryptedQuery: encryption.encrypt(value),
+        ),
+      );
+      final latest =
+          await (select(recentSearches)
+                ..orderBy([(row) => OrderingTerm.desc(row.id)])
+                ..limit(20))
+              .get();
+      await (delete(recentSearches)..where(
+            (row) => row.id.isNotIn(latest.map((row) => row.id).toList()),
+          ))
+          .go();
+    });
+  }
+
+  Future<void> removeRecentSearch(String query) => transaction(() async {
+    final rows = await select(recentSearches).get();
+    final ids = [
+      for (final row in rows)
+        if (encryption.decrypt(row.encryptedQuery) == query) row.id,
+    ];
+    await (delete(recentSearches)..where((row) => row.id.isIn(ids))).go();
+  });
+
+  Future<void> clearRecentSearches() async {
+    await delete(recentSearches).go();
+  }
 
   Future<void> _createKeyState() async {
     await customStatement(

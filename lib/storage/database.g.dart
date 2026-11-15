@@ -2238,6 +2238,213 @@ class IconPacksCompanion extends UpdateCompanion<StoredIconPack> {
   }
 }
 
+class $RecentSearchesTable extends RecentSearches
+    with TableInfo<$RecentSearchesTable, RecentSearche> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RecentSearchesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _encryptedQueryMeta = const VerificationMeta(
+    'encryptedQuery',
+  );
+  @override
+  late final GeneratedColumn<String> encryptedQuery = GeneratedColumn<String>(
+    'encrypted_query',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, encryptedQuery];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'recent_searches';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RecentSearche> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('encrypted_query')) {
+      context.handle(
+        _encryptedQueryMeta,
+        encryptedQuery.isAcceptableOrUnknown(
+          data['encrypted_query']!,
+          _encryptedQueryMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_encryptedQueryMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RecentSearche map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RecentSearche(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      encryptedQuery: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}encrypted_query'],
+      )!,
+    );
+  }
+
+  @override
+  $RecentSearchesTable createAlias(String alias) {
+    return $RecentSearchesTable(attachedDatabase, alias);
+  }
+}
+
+class RecentSearche extends DataClass implements Insertable<RecentSearche> {
+  final int id;
+  final String encryptedQuery;
+  const RecentSearche({required this.id, required this.encryptedQuery});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['encrypted_query'] = Variable<String>(encryptedQuery);
+    return map;
+  }
+
+  RecentSearchesCompanion toCompanion(bool nullToAbsent) {
+    return RecentSearchesCompanion(
+      id: Value(id),
+      encryptedQuery: Value(encryptedQuery),
+    );
+  }
+
+  factory RecentSearche.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RecentSearche(
+      id: serializer.fromJson<int>(json['id']),
+      encryptedQuery: serializer.fromJson<String>(json['encryptedQuery']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'encryptedQuery': serializer.toJson<String>(encryptedQuery),
+    };
+  }
+
+  RecentSearche copyWith({int? id, String? encryptedQuery}) => RecentSearche(
+    id: id ?? this.id,
+    encryptedQuery: encryptedQuery ?? this.encryptedQuery,
+  );
+  RecentSearche copyWithCompanion(RecentSearchesCompanion data) {
+    return RecentSearche(
+      id: data.id.present ? data.id.value : this.id,
+      encryptedQuery: data.encryptedQuery.present
+          ? data.encryptedQuery.value
+          : this.encryptedQuery,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecentSearche(')
+          ..write('id: $id, ')
+          ..write('encryptedQuery: $encryptedQuery')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, encryptedQuery);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RecentSearche &&
+          other.id == this.id &&
+          other.encryptedQuery == this.encryptedQuery);
+}
+
+class RecentSearchesCompanion extends UpdateCompanion<RecentSearche> {
+  final Value<int> id;
+  final Value<String> encryptedQuery;
+  const RecentSearchesCompanion({
+    this.id = const Value.absent(),
+    this.encryptedQuery = const Value.absent(),
+  });
+  RecentSearchesCompanion.insert({
+    this.id = const Value.absent(),
+    required String encryptedQuery,
+  }) : encryptedQuery = Value(encryptedQuery);
+  static Insertable<RecentSearche> custom({
+    Expression<int>? id,
+    Expression<String>? encryptedQuery,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (encryptedQuery != null) 'encrypted_query': encryptedQuery,
+    });
+  }
+
+  RecentSearchesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? encryptedQuery,
+  }) {
+    return RecentSearchesCompanion(
+      id: id ?? this.id,
+      encryptedQuery: encryptedQuery ?? this.encryptedQuery,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (encryptedQuery.present) {
+      map['encrypted_query'] = Variable<String>(encryptedQuery.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecentSearchesCompanion(')
+          ..write('id: $id, ')
+          ..write('encryptedQuery: $encryptedQuery')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2250,6 +2457,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $AccountCategoryLinksTable(this);
   late final $BackupStateTable backupState = $BackupStateTable(this);
   late final $IconPacksTable iconPacks = $IconPacksTable(this);
+  late final $RecentSearchesTable recentSearches = $RecentSearchesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2262,6 +2470,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     accountCategoryLinks,
     backupState,
     iconPacks,
+    recentSearches,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -4045,6 +4254,152 @@ typedef $$IconPacksTableProcessedTableManager =
       StoredIconPack,
       PrefetchHooks Function()
     >;
+typedef $$RecentSearchesTableCreateCompanionBuilder =
+    RecentSearchesCompanion Function({
+      Value<int> id,
+      required String encryptedQuery,
+    });
+typedef $$RecentSearchesTableUpdateCompanionBuilder =
+    RecentSearchesCompanion Function({
+      Value<int> id,
+      Value<String> encryptedQuery,
+    });
+
+class $$RecentSearchesTableFilterComposer
+    extends Composer<_$AppDatabase, $RecentSearchesTable> {
+  $$RecentSearchesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get encryptedQuery => $composableBuilder(
+    column: $table.encryptedQuery,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$RecentSearchesTableOrderingComposer
+    extends Composer<_$AppDatabase, $RecentSearchesTable> {
+  $$RecentSearchesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get encryptedQuery => $composableBuilder(
+    column: $table.encryptedQuery,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$RecentSearchesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RecentSearchesTable> {
+  $$RecentSearchesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get encryptedQuery => $composableBuilder(
+    column: $table.encryptedQuery,
+    builder: (column) => column,
+  );
+}
+
+class $$RecentSearchesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RecentSearchesTable,
+          RecentSearche,
+          $$RecentSearchesTableFilterComposer,
+          $$RecentSearchesTableOrderingComposer,
+          $$RecentSearchesTableAnnotationComposer,
+          $$RecentSearchesTableCreateCompanionBuilder,
+          $$RecentSearchesTableUpdateCompanionBuilder,
+          (
+            RecentSearche,
+            BaseReferences<_$AppDatabase, $RecentSearchesTable, RecentSearche>,
+          ),
+          RecentSearche,
+          PrefetchHooks Function()
+        > {
+  $$RecentSearchesTableTableManager(
+    _$AppDatabase db,
+    $RecentSearchesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RecentSearchesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RecentSearchesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RecentSearchesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> encryptedQuery = const Value.absent(),
+          }) => RecentSearchesCompanion(id: id, encryptedQuery: encryptedQuery),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String encryptedQuery,
+              }) => RecentSearchesCompanion.insert(
+                id: id,
+                encryptedQuery: encryptedQuery,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$RecentSearchesTable, RecentSearche>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $RecentSearchesTable,
+                    RecentSearche
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$RecentSearchesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RecentSearchesTable,
+      RecentSearche,
+      $$RecentSearchesTableFilterComposer,
+      $$RecentSearchesTableOrderingComposer,
+      $$RecentSearchesTableAnnotationComposer,
+      $$RecentSearchesTableCreateCompanionBuilder,
+      $$RecentSearchesTableUpdateCompanionBuilder,
+      (
+        RecentSearche,
+        BaseReferences<_$AppDatabase, $RecentSearchesTable, RecentSearche>,
+      ),
+      RecentSearche,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -4063,4 +4418,6 @@ class $AppDatabaseManager {
       $$BackupStateTableTableManager(_db, _db.backupState);
   $$IconPacksTableTableManager get iconPacks =>
       $$IconPacksTableTableManager(_db, _db.iconPacks);
+  $$RecentSearchesTableTableManager get recentSearches =>
+      $$RecentSearchesTableTableManager(_db, _db.recentSearches);
 }

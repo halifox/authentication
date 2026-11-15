@@ -108,3 +108,8 @@ class IconPacks extends Table {
   @override
   Set<Column> get primaryKey => {name};
 }
+
+class RecentSearches extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get encryptedQuery => text()();
+}

@@ -31,9 +31,10 @@ class EncryptionService {
     final store = DeviceKeyStore(db, secureStorage);
     var keyBytes = await store.readKey(password: password);
     if (keyBytes == null) {
-      if (entries.any(
-        (e) => e.secret.startsWith(_prefix) || e.pin.startsWith(_prefix),
-      )) {
+      if (await db.hasSearchHistory() ||
+          entries.any(
+            (e) => e.secret.startsWith(_prefix) || e.pin.startsWith(_prefix),
+          )) {
         throw StateError(
           'The encryption key is unavailable. Restore it before opening this database.',
         );
