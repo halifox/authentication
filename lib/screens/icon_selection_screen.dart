@@ -5,6 +5,7 @@ import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/storage/icon_data.dart';
 import 'package:authentication/widgets/account_icon.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -77,60 +78,66 @@ class IconSelectionScreen extends ConsumerWidget {
                         SliverToBoxAdapter(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: ExpansionTile(
-                              key: ValueKey('${pack.name}:$query'),
-                              initiallyExpanded: query.isNotEmpty,
-                              title: Text(pack.name),
-                              subtitle: pack.description.isEmpty
-                                  ? null
-                                  : Text(pack.description),
-                              trailing: IconButton(
-                                tooltip: l10n.delete,
-                                onPressed: busy
+                            child: AppGlassCard(
+                              padding: EdgeInsets.zero,
+                              child: ExpansionTile(
+                                key: ValueKey('${pack.name}:$query'),
+                                initiallyExpanded: query.isNotEmpty,
+                                title: Text(pack.name),
+                                subtitle: pack.description.isEmpty
                                     ? null
-                                    : () =>
-                                          _deletePack(context, ref, pack.name),
-                                icon: const Icon(Icons.delete_outline),
-                              ),
-                              children: [
-                                Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
-                                  children: [
-                                    for (final entry in pack.icons.entries)
-                                      if (query.isEmpty ||
-                                          entry.key.toLowerCase().contains(
-                                            query,
-                                          ))
-                                        Tooltip(
-                                          message: entry.key,
-                                          child: InkWell(
-                                            onTap: () => Navigator.pop(
-                                              context,
-                                              entry.value,
-                                            ),
-                                            child: SizedBox(
-                                              width: 72,
-                                              child: Column(
-                                                children: [
-                                                  AccountIcon(
-                                                    icon: entry.value,
-                                                    size: 48,
-                                                  ),
-                                                  Text(
-                                                    entry.key,
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                ],
+                                    : Text(pack.description),
+                                trailing: IconButton(
+                                  tooltip: l10n.delete,
+                                  onPressed: busy
+                                      ? null
+                                      : () => _deletePack(
+                                          context,
+                                          ref,
+                                          pack.name,
+                                        ),
+                                  icon: const Icon(Icons.delete_outline),
+                                ),
+                                children: [
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: [
+                                      for (final entry in pack.icons.entries)
+                                        if (query.isEmpty ||
+                                            entry.key.toLowerCase().contains(
+                                              query,
+                                            ))
+                                          Tooltip(
+                                            message: entry.key,
+                                            child: InkWell(
+                                              onTap: () => Navigator.pop(
+                                                context,
+                                                entry.value,
+                                              ),
+                                              child: SizedBox(
+                                                width: 72,
+                                                child: Column(
+                                                  children: [
+                                                    AccountIcon(
+                                                      icon: entry.value,
+                                                      size: 48,
+                                                    ),
+                                                    Text(
+                                                      entry.key,
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                  ],
-                                ),
-                              ],
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),

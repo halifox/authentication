@@ -9,6 +9,7 @@ import 'package:authentication/settings/settings.dart';
 import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/widgets/account_icon.dart';
 import 'package:authentication/widgets/action_result_sheet.dart';
+import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,7 +40,13 @@ class TokenListItem extends ConsumerWidget {
           () => _onReset(context, ref),
         ),
       ],
-      child: _TokenCard(config: config, compact: compact),
+      child: _TokenCard(
+        config: config,
+        compact: compact,
+        onEdit: () => _onEdit(context),
+        onDelete: () => _onDelete(context, ref),
+        onReset: () => _onReset(context, ref),
+      ),
     );
   }
 
@@ -113,10 +120,19 @@ class TokenListItem extends ConsumerWidget {
 }
 
 class _TokenCard extends ConsumerWidget {
-  const _TokenCard({required this.config, required this.compact});
+  const _TokenCard({
+    required this.config,
+    required this.compact,
+    required this.onEdit,
+    required this.onDelete,
+    required this.onReset,
+  });
 
   final OtpAccount config;
   final bool compact;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  final VoidCallback onReset;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -138,15 +154,16 @@ class _TokenCard extends ConsumerWidget {
           _handleCopy(context, controller, advanceHotp);
         }
       },
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          borderRadius: BorderRadius.circular(24),
-        ),
+      child: AppGlassCard(
+        repeated: true,
         child: Column(
           children: [
-            _TokenHeader(config: config),
+            _TokenHeader(
+              config: config,
+              onEdit: onEdit,
+              onDelete: onDelete,
+              onReset: onReset,
+            ),
             const Spacer(),
             _TokenCodeRow(
               config: config,
@@ -181,9 +198,17 @@ class _TokenCard extends ConsumerWidget {
 }
 
 class _TokenHeader extends ConsumerWidget {
-  const _TokenHeader({required this.config});
+  const _TokenHeader({
+    required this.config,
+    required this.onEdit,
+    required this.onDelete,
+    required this.onReset,
+  });
 
   final OtpAccount config;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  final VoidCallback onReset;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -227,6 +252,25 @@ class _TokenHeader extends ConsumerWidget {
           ),
         ),
         _TokenAction(config: config),
+        PopupMenuButton<int>(
+          tooltip: l10n.accountActions,
+          icon: const Icon(Icons.more_vert),
+          onSelected: (value) {
+            switch (value) {
+              case 0:
+                onEdit();
+              case 1:
+                onReset();
+              case 2:
+                onDelete();
+            }
+          },
+          itemBuilder: (_) => [
+            PopupMenuItem(value: 0, child: Text(l10n.edit)),
+            PopupMenuItem(value: 1, child: Text(l10n.resetCopyCount)),
+            PopupMenuItem(value: 2, child: Text(l10n.delete)),
+          ],
+        ),
       ],
     );
   }

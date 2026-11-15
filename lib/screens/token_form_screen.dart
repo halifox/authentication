@@ -11,6 +11,7 @@ import 'package:authentication/widgets/account_qr.dart';
 import 'package:authentication/widgets/action_result_sheet.dart';
 import 'package:authentication/widgets/category_selection.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,10 +20,16 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// 令牌编辑/表单页面，用于手动输入或编辑 2FA 账号的详细配置信息。
 class TokenFormScreen extends HookConsumerWidget {
-  const TokenFormScreen({super.key, this.initialEntry, this.expectedPinLength});
+  const TokenFormScreen({
+    super.key,
+    this.initialEntry,
+    this.expectedPinLength,
+    this.returnToOrigin = false,
+  });
 
   final OtpAccount? initialEntry;
   final int? expectedPinLength;
+  final bool returnToOrigin;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -81,8 +88,13 @@ class TokenFormScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: CustomAppBar(
-        title: l10n.enterProvidedKey,
+        title: isSaved
+            ? l10n.editAccount
+            : returnToOrigin
+            ? l10n.reviewExternalAccount
+            : l10n.addAccount,
         rightIcon: Icons.save,
+        rightTooltip: l10n.save,
         rightOnPressed: busy || (icon.value == null && icons.isLoading)
             ? null
             : (_) async {
@@ -122,102 +134,138 @@ class TokenFormScreen extends HookConsumerWidget {
           physics: const BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
           ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            child: Column(
-              spacing: 16,
-              children: [
-                _buildDropdown<String>(l10n.type, type.value, typeLabels, (
-                  value,
-                ) {
-                  type.value = value;
-                  digitsController.text = switch (value) {
-                    'steam' => '5',
-                    'yandex' => '8',
-                    _ => '6',
-                  };
-                  if (value == 'steam' || value == 'yandex') {
-                    periodController.text = '30';
-                  }
-                }),
-                _buildTextField(
-                  label: l10n.issuer,
-                  controller: issuerController,
-                  suffixIcon: _buildIcon(
-                    context,
-                    chosenIcon,
-                    (newIcon) => icon.value = newIcon,
-                  ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 640),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 16,
                 ),
-                _buildTextField(
-                  label: l10n.account,
-                  controller: accountController,
-                ),
-                _buildPasswordTextField(
-                  secretController,
-                  l10n.secret,
-                  obscureText,
-                ),
-                switch (type.value.toLowerCase()) {
-                  'totp' || 'hotp' => _buildDropdown<String>(
-                    l10n.algorithm,
-                    algorithm.value,
-                    algorithmLabels,
-                    (value) => algorithm.value = value,
-                  ),
-                  'motp' || 'yandex' => _buildPasswordTextField(
-                    pinController,
-                    expectedPinLength != null && type.value == 'yandex'
-                        ? l10n.pinLengthRequired(expectedPinLength!)
-                        : l10n.pin,
-                    obscurePin,
-                  ),
-                  String() => const SizedBox.shrink(),
-                },
-                if (isSaved)
-                  OutlinedButton.icon(
-                    onPressed: busy
-                        ? null
-                        : () => assignAccountCategories(context, ref, args.id),
-                    icon: const Icon(Icons.label_outline),
-                    label: Text(l10n.assignCategories),
-                  ),
-                if (isSaved)
-                  OutlinedButton.icon(
-                    onPressed: busy
-                        ? null
-                        : () => _showAccountQr(context, ref, args.id),
-                    icon: const Icon(Icons.qr_code),
-                    label: Text(l10n.showSavedAccountQr),
-                  ),
-                Row(
+                child: Column(
                   spacing: 16,
-                  children: <Widget>[
-                    Expanded(
-                      child: _buildDigitsOnlyTextField(
-                        digitsController,
-                        l10n.digits,
+                  children: [
+                    AppGlassCard(
+                      child: Column(
+                        spacing: 16,
+                        children: [
+                          _buildTextField(
+                            label: l10n.issuer,
+                            controller: issuerController,
+                            suffixIcon: _buildIcon(
+                              context,
+                              chosenIcon,
+                              (newIcon) => icon.value = newIcon,
+                            ),
+                          ),
+                          _buildTextField(
+                            label: l10n.account,
+                            controller: accountController,
+                          ),
+                        ],
                       ),
                     ),
-                    Expanded(
-                      child: switch (type.value.toLowerCase()) {
-                        'totp' ||
-                        'motp' ||
-                        'steam' ||
-                        'yandex' => _buildDigitsOnlyTextField(
-                          periodController,
-                          l10n.period,
-                        ),
-                        'hotp' => _buildDigitsOnlyTextField(
-                          counterController,
-                          l10n.counter,
-                        ),
-                        String() => const SizedBox.shrink(),
-                      },
+                    AppGlassCard(
+                      child: Column(
+                        spacing: 16,
+                        children: [
+                          _buildDropdown<String>(
+                            l10n.type,
+                            type.value,
+                            typeLabels,
+                            (value) {
+                              type.value = value;
+                              digitsController.text = switch (value) {
+                                'steam' => '5',
+                                'yandex' => '8',
+                                _ => '6',
+                              };
+                              if (value == 'steam' || value == 'yandex')
+                                periodController.text = '30';
+                            },
+                          ),
+                          _buildPasswordTextField(
+                            secretController,
+                            l10n.secret,
+                            obscureText,
+                          ),
+                          switch (type.value.toLowerCase()) {
+                            'totp' || 'hotp' => _buildDropdown<String>(
+                              l10n.algorithm,
+                              algorithm.value,
+                              algorithmLabels,
+                              (value) => algorithm.value = value,
+                            ),
+                            'motp' || 'yandex' => _buildPasswordTextField(
+                              pinController,
+                              expectedPinLength != null &&
+                                      type.value == 'yandex'
+                                  ? l10n.pinLengthRequired(expectedPinLength!)
+                                  : l10n.pin,
+                              obscurePin,
+                            ),
+                            String() => const SizedBox.shrink(),
+                          },
+                          Row(
+                            spacing: 16,
+                            children: [
+                              Expanded(
+                                child: _buildDigitsOnlyTextField(
+                                  digitsController,
+                                  l10n.digits,
+                                ),
+                              ),
+                              Expanded(
+                                child: switch (type.value.toLowerCase()) {
+                                  'totp' ||
+                                  'motp' ||
+                                  'steam' ||
+                                  'yandex' => _buildDigitsOnlyTextField(
+                                    periodController,
+                                    l10n.period,
+                                  ),
+                                  'hotp' => _buildDigitsOnlyTextField(
+                                    counterController,
+                                    l10n.counter,
+                                  ),
+                                  String() => const SizedBox.shrink(),
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
+                    if (isSaved)
+                      AppGlassCard(
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            OutlinedButton.icon(
+                              onPressed: busy
+                                  ? null
+                                  : () => assignAccountCategories(
+                                      context,
+                                      ref,
+                                      args.id,
+                                    ),
+                              icon: const Icon(Icons.label_outline),
+                              label: Text(l10n.assignCategories),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: busy
+                                  ? null
+                                  : () => _showAccountQr(context, ref, args.id),
+                              icon: const Icon(Icons.qr_code),
+                              label: Text(l10n.showSavedAccountQr),
+                            ),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
@@ -508,7 +556,17 @@ class TokenFormScreen extends HookConsumerWidget {
             ),
           );
           if (context.mounted) {
-            Navigator.popUntil(context, (route) => route.isFirst);
+            final navigator = Navigator.of(context);
+            final route = ModalRoute.of(context);
+            if (route != null && route.isActive) {
+              if (!route.isCurrent) {
+                navigator.removeRoute(route);
+              } else if (returnToOrigin || id != null) {
+                navigator.pop();
+              } else {
+                navigator.popUntil((route) => route.isFirst);
+              }
+            }
           }
         }
       } else if (result is TokenFormConflict) {

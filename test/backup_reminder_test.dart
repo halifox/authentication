@@ -5,7 +5,6 @@ import 'package:authentication/backup/backup_provider.dart';
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/otp/account.dart';
 import 'package:authentication/screens/add_account_screen.dart';
-import 'package:authentication/screens/settings_screen.dart';
 import 'package:authentication/screens/token_list_screen.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/storage/database.dart';
@@ -61,17 +60,17 @@ void main() {
           locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: AddAccountScreen(),
+          home: AddAccountScreen(page: AccountActionPage.exportFile),
         ),
       ),
     );
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(
-      find.text('Export file'),
+      find.text('Export app backup'),
       200,
       scrollable: find.byType(Scrollable),
     );
-    await tester.tap(find.text('Export file'));
+    await tester.tap(find.text('Export app backup'));
     await tester.pumpAndSettle();
     expect(find.text('Use app password'), findsOneWidget);
     await tester.tap(find.byType(SwitchListTile));
@@ -256,19 +255,13 @@ void main() {
           locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: SettingsScreen(),
+          home: AddAccountScreen(page: AccountActionPage.backupHub),
         ),
       ),
     );
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Backup reminders'));
-    final tile = find.ancestor(
-      of: find.text('Backup reminders'),
-      matching: find.byType(SettingsSwitchTile),
-    );
-    await tester.tap(
-      find.descendant(of: tile, matching: find.byType(GestureDetector)),
-    );
+    await tester.tap(find.byType(SwitchListTile));
     await tester.pumpAndSettle();
     await tester.pumpWidget(
       ProviderScope(

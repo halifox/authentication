@@ -804,7 +804,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get guideBackupBody =>
-      '导出受密码保护的备份并妥善保管。更换设备前请测试恢复。未加密导出文件和二维码会暴露账户密钥。';
+      '打开设置中的“备份与恢复”，导出受密码保护的备份并妥善保管。更换设备前请测试恢复。未加密导出文件和二维码会暴露账户密钥。';
 
   @override
   String get guideMigrationTitle => '迁移已有账户';
@@ -951,4 +951,79 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get passwordRemoveWarning => '移除密码后，此设备无需密码即可打开应用。是否继续？';
+
+  @override
+  String get backupHubTitle => '备份与恢复';
+
+  @override
+  String get restoreAppBackup => '恢复应用备份';
+
+  @override
+  String get exportAppBackup => '导出应用备份';
+
+  @override
+  String get settingsCodes => '验证码';
+
+  @override
+  String get settingsAppearance => '外观';
+
+  @override
+  String get settingsData => '数据';
+
+  @override
+  String get settingsSecurity => '安全';
+
+  @override
+  String get settingsHelp => '帮助';
+
+  @override
+  String get importOtherFormats => '导入其他格式';
+
+  @override
+  String get exportOtherFormats => '所有导出格式';
+
+  @override
+  String get accountActions => '账户操作';
+
+  @override
+  String get pageUnavailable => '此页面不可用。';
+
+  @override
+  String get addMethods => '添加账户';
+
+  @override
+  String get appBackupGroup => '应用备份';
+
+  @override
+  String get uriFormats => 'URI 文件';
+
+  @override
+  String get otherSources => '其他来源';
+
+  @override
+  String get plainExports => '未加密格式';
+
+  @override
+  String get scannerUnavailable => '无法使用相机。请检查相机权限后重试。';
+
+  @override
+  String get torchOn => '打开闪光灯';
+
+  @override
+  String get torchOff => '关闭闪光灯';
+
+  @override
+  String get torchUnavailable => '闪光灯不可用。';
+
+  @override
+  String get save => '保存';
+
+  @override
+  String get reviewExternalAccount => '检查外部账户';
+
+  @override
+  String get editAccount => '编辑账户';
+
+  @override
+  String get addAccount => '添加账户';
 }

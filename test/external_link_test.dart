@@ -123,6 +123,86 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 10));
   });
+  testWidgets('external save returns to the invoking page', (tester) async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    final links = StreamController<String>.broadcast();
+    addTearDown(links.close);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          externalLinksProvider.overrideWithValue(links.stream),
+          screenProtectionApplyProvider.overrideWithValue((_) async {}),
+        ],
+        child: const AuthApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.settings));
+    await tester.pumpAndSettle();
+    links.add(
+      'otpauth://totp/Example:user?secret=JBSWY3DPEHPK3PXP&issuer=Example',
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.save));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect(find.text('Settings'), findsOneWidget);
+    expect((await db.getAllConfigs()).single.account, 'user');
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 10));
+  });
+
+  testWidgets('a later route survives external save completion', (
+    tester,
+  ) async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    db.encryption = await EncryptionService.initialize(db);
+    final key = GlobalKey<NavigatorState>();
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          navigatorKey: key,
+          home: const Scaffold(body: Text('Origin')),
+        ),
+      ),
+    );
+    key.currentState!.push(
+      externalAccountRoute(
+        'otpauth://totp/Example:user?secret=JBSWY3DPEHPK3PXP&issuer=Example',
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.save));
+    await tester.pumpAndSettle();
+    final resultRoute = ModalRoute.of(tester.element(find.text('OK')))!;
+    key.currentState!.push(
+      MaterialPageRoute<void>(
+        builder: (_) => const Scaffold(body: Text('Later page')),
+      ),
+    );
+    await tester.pumpAndSettle();
+    key.currentState!.removeRoute(resultRoute);
+    await tester.pumpAndSettle();
+    expect(find.text('Later page'), findsOneWidget);
+    key.currentState!.pop();
+    await tester.pumpAndSettle();
+    expect(find.text('Origin'), findsOneWidget);
+    expect(key.currentState!.canPop(), isFalse);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 10));
+  });
+
   testWidgets('Yandex link requires a PIN before saving', (tester) async {
     FlutterSecureStorage.setMockInitialValues({});
     final db = AppDatabase(NativeDatabase.memory());

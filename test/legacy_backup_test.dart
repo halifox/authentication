@@ -91,7 +91,7 @@ void main() {
           locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: AddAccountScreen(),
+          home: AddAccountScreen(page: AccountActionPage.importFile),
         ),
       ),
     );
@@ -189,7 +189,7 @@ void main() {
           locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: AddAccountScreen(),
+          home: AddAccountScreen(page: AccountActionPage.importFile),
         ),
       ),
     );
@@ -328,7 +328,7 @@ void main() {
           locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: AddAccountScreen(),
+          home: AddAccountScreen(page: AccountActionPage.importFile),
         ),
       ),
     );
@@ -543,7 +543,7 @@ void main() {
             locale: Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: AddAccountScreen(),
+            home: AddAccountScreen(page: AccountActionPage.importFile),
           ),
         ),
       );
@@ -588,7 +588,7 @@ void main() {
           locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: AddAccountScreen(),
+          home: AddAccountScreen(page: AccountActionPage.importFile),
         ),
       ),
     );
@@ -645,7 +645,7 @@ void main() {
           locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: AddAccountScreen(),
+          home: AddAccountScreen(page: AccountActionPage.importFile),
         ),
       ),
     );
@@ -655,6 +655,8 @@ void main() {
       200,
       scrollable: find.byType(Scrollable),
     );
+    await tester.ensureVisible(find.text('Import TOTP Authenticator backup'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Import TOTP Authenticator backup'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'Testtest1');
@@ -693,7 +695,7 @@ void main() {
           locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: AddAccountScreen(),
+          home: AddAccountScreen(page: AccountActionPage.importFile),
         ),
       ),
     );
@@ -744,7 +746,7 @@ void main() {
           locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: AddAccountScreen(),
+          home: AddAccountScreen(page: AccountActionPage.importFile),
         ),
       ),
     );
@@ -754,6 +756,8 @@ void main() {
       200,
       scrollable: find.byType(Scrollable),
     );
+    await tester.ensureVisible(find.text('Import WinAuth backup'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Import WinAuth backup'));
     await tester.pumpAndSettle();
     expect(await db.getAllConfigs(), isEmpty);
@@ -799,7 +803,7 @@ void main() {
           locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: AddAccountScreen(),
+          home: AddAccountScreen(page: AccountActionPage.importFile),
         ),
       ),
     );
@@ -846,7 +850,7 @@ void main() {
           locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: AddAccountScreen(),
+          home: AddAccountScreen(page: AccountActionPage.importFile),
         ),
       ),
     );
@@ -893,7 +897,7 @@ void main() {
           locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: AddAccountScreen(),
+          home: AddAccountScreen(page: AccountActionPage.importFile),
         ),
       ),
     );
@@ -945,7 +949,7 @@ void main() {
           locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: AddAccountScreen(),
+          home: AddAccountScreen(page: AccountActionPage.importFile),
         ),
       ),
     );
@@ -1098,7 +1102,7 @@ void main() {
           locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: AddAccountScreen(),
+          home: AddAccountScreen(page: AccountActionPage.importFile),
         ),
       ),
     );
@@ -1225,7 +1229,7 @@ void main() {
             locale: Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: AddAccountScreen(),
+            home: AddAccountScreen(page: AccountActionPage.importFile),
           ),
         ),
       );
@@ -1362,7 +1366,7 @@ void main() {
           locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: AddAccountScreen(),
+          home: AddAccountScreen(page: AccountActionPage.importFile),
         ),
       ),
     );
@@ -1421,7 +1425,7 @@ void main() {
             locale: Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: AddAccountScreen(),
+            home: AddAccountScreen(page: AccountActionPage.importFile),
           ),
         ),
       );
@@ -1468,7 +1472,7 @@ void main() {
             locale: Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: AddAccountScreen(),
+            home: AddAccountScreen(page: AccountActionPage.importFile),
           ),
         ),
       );
@@ -1493,10 +1497,20 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
       expect(find.text('Decrypting backup. Please wait.'), findsOneWidget);
-      await tester.runAsync(() async {
-        await Future<void>.delayed(const Duration(seconds: 2));
-      });
-      await tester.pumpAndSettle();
+      for (
+        var i = 0;
+        i < 300 &&
+            find
+                .textContaining('Import failed. Check the file')
+                .evaluate()
+                .isEmpty;
+        i++
+      ) {
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 100)),
+        );
+        await tester.pump(const Duration(milliseconds: 100));
+      }
       expect(
         find.textContaining('Import failed. Check the file'),
         findsOneWidget,

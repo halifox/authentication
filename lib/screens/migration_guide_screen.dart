@@ -1,5 +1,6 @@
 import 'package:authentication/l10n/generated/app_localizations.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/material.dart';
 
 class AboutScreen extends StatelessWidget {
@@ -24,9 +25,8 @@ class AboutScreen extends StatelessWidget {
           const SizedBox(height: 8),
           const SelectableText('https://github.com/halifox/authentication'),
           const SizedBox(height: 24),
-          Material(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(24),
+          AppGlassCard(
+            padding: EdgeInsets.zero,
             child: ListTile(
               title: Text(l10n.openSourceLicenses),
               trailing: const Icon(Icons.chevron_right),
@@ -60,12 +60,7 @@ class UserGuideScreen extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
         itemCount: sections.length,
         separatorBuilder: (_, _) => const SizedBox(height: 16),
-        itemBuilder: (context, index) => Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(24),
-          ),
+        itemBuilder: (context, index) => AppGlassCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -112,10 +107,8 @@ class MigrationGuideScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           for (final guide in guides) ...[
-            Material(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(24),
-              clipBehavior: Clip.antiAlias,
+            AppGlassCard(
+              padding: EdgeInsets.zero,
               child: ExpansionTile(
                 title: Text(guide.title),
                 childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),

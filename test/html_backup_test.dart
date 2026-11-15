@@ -98,7 +98,7 @@ void main() {
           locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: AddAccountScreen(),
+          home: AddAccountScreen(page: AccountActionPage.exportFile),
         ),
       ),
     );

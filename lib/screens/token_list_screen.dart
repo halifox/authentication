@@ -10,6 +10,7 @@ import 'package:authentication/router/app_router.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:authentication/widgets/glass_surface.dart';
 import 'package:authentication/widgets/token_list_item.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -68,8 +69,10 @@ class TokenListScreen extends HookConsumerWidget {
       appBar: CustomAppBar(
         title: AppLocalizations.of(context)!.appTitle,
         leftIcon: Icons.settings,
+        leftTooltip: l10n.settings,
         leftOnPressed: (_) => Navigator.pushNamed(context, AppRoutes.settings),
         rightIcon: Icons.add,
+        rightTooltip: l10n.add,
         rightOnPressed: (_) => Navigator.pushNamed(context, AppRoutes.add),
       ),
       body: Column(
@@ -96,103 +99,108 @@ class TokenListScreen extends HookConsumerWidget {
           if (backupReminders && backupNeeded)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: Material(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(24),
+              child: AppGlassCard(
+                padding: EdgeInsets.zero,
                 child: ListTile(
                   title: Text(l10n.backupReminderMessage),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.add),
+                  onTap: () =>
+                      Navigator.pushNamed(context, AppRoutes.exportFile),
                 ),
               ),
             ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: searchController,
-                    onChanged: (value) => query.value = value,
-                    decoration: InputDecoration(
-                      labelText: l10n.search,
-                      prefixIcon: const Icon(Icons.search),
-                      suffixIcon: query.value.isEmpty
-                          ? null
-                          : IconButton(
-                              tooltip: l10n.clearSearch,
-                              icon: const Icon(Icons.clear),
-                              onPressed: () {
-                                searchController.clear();
-                                query.value = '';
-                              },
-                            ),
-                      border: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(14)),
+            child: AppGlassCard(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: searchController,
+                      onChanged: (value) => query.value = value,
+                      decoration: InputDecoration(
+                        labelText: l10n.search,
+                        prefixIcon: const Icon(Icons.search),
+                        suffixIcon: query.value.isEmpty
+                            ? null
+                            : IconButton(
+                                tooltip: l10n.clearSearch,
+                                icon: const Icon(Icons.clear),
+                                onPressed: () {
+                                  searchController.clear();
+                                  query.value = '';
+                                },
+                              ),
+                        border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(14)),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                PopupMenuButton<int>(
-                  tooltip: l10n.categoryFilter,
-                  icon: Icon(
-                    selectedCategory == -1
-                        ? Icons.filter_list
-                        : Icons.filter_alt,
-                  ),
-                  initialValue: selectedCategory,
-                  onSelected: (value) => categoryFilter.value = value,
-                  itemBuilder: (_) => [
-                    PopupMenuItem(value: -1, child: Text(l10n.allCategories)),
-                    PopupMenuItem(value: 0, child: Text(l10n.uncategorized)),
-                    for (final category in categoryList)
-                      PopupMenuItem(
-                        value: category.id,
-                        child: Text(category.name),
-                      ),
-                  ],
-                ),
-                PopupMenuButton<int>(
-                  tooltip: l10n.sortAccounts,
-                  icon: const Icon(Icons.sort),
-                  initialValue: sortMode,
-                  enabled: !busy,
-                  onSelected: (value) => ref
-                      .read(settingsOperationsProvider.notifier)
-                      .updateInteger(sortModeKey, value),
-                  itemBuilder: (_) => [
-                    PopupMenuItem(value: 0, child: Text(l10n.sortCustom)),
-                    PopupMenuItem(
-                      value: 1,
-                      child: Text(l10n.sortNameAscending),
-                    ),
-                    PopupMenuItem(
-                      value: 2,
-                      child: Text(l10n.sortNameDescending),
-                    ),
-                    PopupMenuItem(
-                      value: 3,
-                      child: Text(l10n.sortCopiesAscending),
-                    ),
-                    PopupMenuItem(
-                      value: 4,
-                      child: Text(l10n.sortCopiesDescending),
-                    ),
-                  ],
-                ),
-                if (sortMode == 0)
-                  IconButton(
-                    tooltip: sortLocked ? l10n.unlockSorting : l10n.lockSorting,
+                  PopupMenuButton<int>(
+                    tooltip: l10n.categoryFilter,
                     icon: Icon(
-                      sortLocked ? Icons.lock_outline : Icons.lock_open,
+                      selectedCategory == -1
+                          ? Icons.filter_list
+                          : Icons.filter_alt,
                     ),
-                    onPressed: busy
-                        ? null
-                        : () => ref
-                              .read(settingsOperationsProvider.notifier)
-                              .update(sortLockedKey, !sortLocked),
+                    initialValue: selectedCategory,
+                    onSelected: (value) => categoryFilter.value = value,
+                    itemBuilder: (_) => [
+                      PopupMenuItem(value: -1, child: Text(l10n.allCategories)),
+                      PopupMenuItem(value: 0, child: Text(l10n.uncategorized)),
+                      for (final category in categoryList)
+                        PopupMenuItem(
+                          value: category.id,
+                          child: Text(category.name),
+                        ),
+                    ],
                   ),
-              ],
+                  PopupMenuButton<int>(
+                    tooltip: l10n.sortAccounts,
+                    icon: const Icon(Icons.sort),
+                    initialValue: sortMode,
+                    enabled: !busy,
+                    onSelected: (value) => ref
+                        .read(settingsOperationsProvider.notifier)
+                        .updateInteger(sortModeKey, value),
+                    itemBuilder: (_) => [
+                      PopupMenuItem(value: 0, child: Text(l10n.sortCustom)),
+                      PopupMenuItem(
+                        value: 1,
+                        child: Text(l10n.sortNameAscending),
+                      ),
+                      PopupMenuItem(
+                        value: 2,
+                        child: Text(l10n.sortNameDescending),
+                      ),
+                      PopupMenuItem(
+                        value: 3,
+                        child: Text(l10n.sortCopiesAscending),
+                      ),
+                      PopupMenuItem(
+                        value: 4,
+                        child: Text(l10n.sortCopiesDescending),
+                      ),
+                    ],
+                  ),
+                  if (sortMode == 0)
+                    IconButton(
+                      tooltip: sortLocked
+                          ? l10n.unlockSorting
+                          : l10n.lockSorting,
+                      icon: Icon(
+                        sortLocked ? Icons.lock_outline : Icons.lock_open,
+                      ),
+                      onPressed: busy
+                          ? null
+                          : () => ref
+                                .read(settingsOperationsProvider.notifier)
+                                .update(sortLockedKey, !sortLocked),
+                    ),
+                ],
+              ),
             ),
           ),
           if (selectedCategory != -1)

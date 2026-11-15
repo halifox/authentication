@@ -21,14 +21,18 @@ import 'package:authentication/otp/migration.dart';
 import 'package:authentication/otp/otp_provider.dart';
 import 'package:authentication/router/app_router.dart';
 import 'package:authentication/screens/auth_error_localization.dart';
+import 'package:authentication/settings/settings.dart';
 import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/widgets/action_result_sheet.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart'
+    show GlassListTile;
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 /// 添加方式选项的模型类。
@@ -37,7 +41,7 @@ class AddMethodOption {
   /// [icon] 选项显示的图标。
   /// [label] 选项显示的文字标签。
   /// [onTap] 点击该选项时触发的回调函数。
-  AddMethodOption(this.icon, this.label, this.onTap);
+  AddMethodOption(this.icon, this.label, this.onTap, {this.group = 0});
 
   /// 图标数据
   final IconData icon;
@@ -47,12 +51,16 @@ class AddMethodOption {
 
   /// 点击回调
   final VoidCallback onTap;
+  final int group;
 }
 
 /// 添加账号页面，提供多种添加 2FA 令牌的方式（扫码、上传图片、手动输入等）。
+enum AccountActionPage { add, backupHub, importFile, exportFile }
+
 class AddAccountScreen extends ConsumerWidget {
   /// 创建添加账号页面。
-  const AddAccountScreen({super.key});
+  const AddAccountScreen({super.key, this.page = AccountActionPage.add});
+  final AccountActionPage page;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -61,146 +69,262 @@ class AddAccountScreen extends ConsumerWidget {
         ref.watch(accountOperationsProvider).isLoading ||
         ref.watch(backupOperationsProvider).isLoading;
 
-    final List<AddMethodOption> options = [
-      AddMethodOption(
-        Icons.camera_enhance,
-        l10n.scanQRCode,
-        () => _handleScan(context, ref),
+    final (title, options) = switch (page) {
+      AccountActionPage.add => (
+        l10n.add,
+        [
+          AddMethodOption(
+            Icons.camera_enhance,
+            l10n.scanQRCode,
+            () => _handleScan(context, ref),
+          ),
+          AddMethodOption(
+            Icons.photo_library,
+            l10n.uploadQRCode,
+            () => _handleUpload(context, ref),
+          ),
+          AddMethodOption(
+            Icons.keyboard,
+            l10n.enterKey,
+            () => Navigator.pushNamed(context, AppRoutes.form),
+          ),
+          AddMethodOption(
+            Icons.file_upload_outlined,
+            l10n.importFile,
+            () => Navigator.pushNamed(context, AppRoutes.importFile),
+            group: 1,
+          ),
+          AddMethodOption(
+            Icons.help_outline,
+            l10n.migrationGuides,
+            () => Navigator.pushNamed(context, AppRoutes.migrationGuides),
+            group: 1,
+          ),
+        ],
       ),
-      AddMethodOption(
-        Icons.photo_library,
-        l10n.uploadQRCode,
-        () => _handleUpload(context, ref),
+      AccountActionPage.backupHub => (
+        l10n.backupHubTitle,
+        [
+          AddMethodOption(
+            Icons.file_download_outlined,
+            l10n.exportAppBackup,
+            () => _handleBackup(context, ref),
+          ),
+          AddMethodOption(
+            Icons.restore,
+            l10n.restoreAppBackup,
+            () => _handleRestore(context, ref),
+          ),
+          AddMethodOption(
+            Icons.file_upload_outlined,
+            l10n.importOtherFormats,
+            () => Navigator.pushNamed(context, AppRoutes.importFile),
+            group: 1,
+          ),
+          AddMethodOption(
+            Icons.ios_share,
+            l10n.exportOtherFormats,
+            () => Navigator.pushNamed(context, AppRoutes.exportFile),
+            group: 1,
+          ),
+          AddMethodOption(
+            Icons.schedule,
+            l10n.automaticBackup,
+            () => Navigator.pushNamed(context, AppRoutes.automaticBackup),
+            group: 1,
+          ),
+        ],
       ),
-      AddMethodOption(
-        Icons.help_outline,
-        l10n.migrationGuides,
-        () => Navigator.pushNamed(context, AppRoutes.migrationGuides),
-      ),
-      AddMethodOption(
-        Icons.keyboard,
-        l10n.enterKey,
-        () => Navigator.pushNamed(context, AppRoutes.form),
-      ),
-      AddMethodOption(
-        Icons.file_upload_outlined,
+      AccountActionPage.importFile => (
         l10n.importFile,
-        () => _handleRestore(context, ref),
+        [
+          AddMethodOption(
+            Icons.file_upload_outlined,
+            l10n.restoreAppBackup,
+            () => _handleRestore(context, ref),
+          ),
+          AddMethodOption(
+            Icons.playlist_add,
+            l10n.importUriList,
+            () => _handleUriImport(context, ref),
+            group: 1,
+          ),
+          AddMethodOption(
+            Icons.lock_open,
+            l10n.encryptedUriImport,
+            () => _handleUriImport(context, ref, encrypted: true),
+            group: 1,
+          ),
+          AddMethodOption(
+            Icons.file_open,
+            l10n.legacyImport,
+            () => _handleLegacyImport(context, ref),
+            group: 2,
+          ),
+          AddMethodOption(
+            Icons.file_open_outlined,
+            l10n.tokenListImport,
+            () => _handleTokenListImport(context, ref),
+            group: 2,
+          ),
+          AddMethodOption(
+            Icons.file_open_outlined,
+            l10n.vaultImport,
+            () => _handleVaultImport(context, ref),
+            group: 2,
+          ),
+          AddMethodOption(
+            Icons.file_open_outlined,
+            l10n.groupedImport,
+            () => _handleGroupedImport(context, ref),
+            group: 2,
+          ),
+          AddMethodOption(
+            Icons.file_open_outlined,
+            l10n.uriBackupImport,
+            () => _handleUriBackupImport(context, ref),
+            group: 2,
+          ),
+          AddMethodOption(
+            Icons.file_open_outlined,
+            l10n.freeOtpImport,
+            () => _handleFreeOtpImport(context, ref),
+            group: 2,
+          ),
+          AddMethodOption(
+            Icons.file_open_outlined,
+            l10n.totpAuthImport,
+            () => _handleTotpAuthImport(context, ref),
+            group: 2,
+          ),
+          AddMethodOption(
+            Icons.file_open_outlined,
+            l10n.winAuthImport,
+            () => _handleWinAuthImport(context, ref),
+            group: 2,
+          ),
+          AddMethodOption(
+            Icons.file_open_outlined,
+            l10n.plusImport,
+            () => _handleWinAuthImport(context, ref, accountsZip: true),
+            group: 2,
+          ),
+          AddMethodOption(
+            Icons.lock_open,
+            l10n.kdbxImport,
+            () => _handleKdbxImport(context, ref),
+            group: 2,
+          ),
+          AddMethodOption(
+            Icons.file_open_outlined,
+            l10n.lastPassImport,
+            () => _handleLastPassImport(context, ref),
+            group: 2,
+          ),
+          AddMethodOption(
+            Icons.file_open_outlined,
+            l10n.twoFasImport,
+            () => _handleTwoFasImport(context, ref),
+            group: 2,
+          ),
+          AddMethodOption(
+            Icons.file_open_outlined,
+            l10n.authproImport,
+            () => _handleAuthproImport(context, ref),
+            group: 2,
+          ),
+        ],
       ),
-      AddMethodOption(
-        Icons.file_download_outlined,
+      AccountActionPage.exportFile => (
         l10n.exportFile,
-        () => _handleBackup(context, ref),
+        [
+          AddMethodOption(
+            Icons.file_download_outlined,
+            l10n.exportAppBackup,
+            () => _handleBackup(context, ref),
+          ),
+          AddMethodOption(
+            Icons.list_alt,
+            l10n.exportUriList,
+            () => _handleUriExport(context, ref),
+            group: 1,
+          ),
+          AddMethodOption(
+            Icons.html,
+            l10n.exportHtml,
+            () => _handleHtmlExport(context, ref),
+            group: 1,
+          ),
+        ],
       ),
-      AddMethodOption(
-        Icons.playlist_add,
-        l10n.importUriList,
-        () => _handleUriImport(context, ref),
-      ),
-      AddMethodOption(
-        Icons.lock_open,
-        l10n.encryptedUriImport,
-        () => _handleUriImport(context, ref, encrypted: true),
-      ),
-      AddMethodOption(
-        Icons.file_open,
-        l10n.legacyImport,
-        () => _handleLegacyImport(context, ref),
-      ),
-      AddMethodOption(
-        Icons.file_open_outlined,
-        l10n.tokenListImport,
-        () => _handleTokenListImport(context, ref),
-      ),
-      AddMethodOption(
-        Icons.file_open_outlined,
-        l10n.vaultImport,
-        () => _handleVaultImport(context, ref),
-      ),
-      AddMethodOption(
-        Icons.file_open_outlined,
-        l10n.groupedImport,
-        () => _handleGroupedImport(context, ref),
-      ),
-      AddMethodOption(
-        Icons.file_open_outlined,
-        l10n.uriBackupImport,
-        () => _handleUriBackupImport(context, ref),
-      ),
-      AddMethodOption(
-        Icons.file_open_outlined,
-        l10n.freeOtpImport,
-        () => _handleFreeOtpImport(context, ref),
-      ),
-      AddMethodOption(
-        Icons.file_open_outlined,
-        l10n.totpAuthImport,
-        () => _handleTotpAuthImport(context, ref),
-      ),
-      AddMethodOption(
-        Icons.file_open_outlined,
-        l10n.winAuthImport,
-        () => _handleWinAuthImport(context, ref),
-      ),
-      AddMethodOption(
-        Icons.file_open_outlined,
-        l10n.plusImport,
-        () => _handleWinAuthImport(context, ref, accountsZip: true),
-      ),
-      AddMethodOption(
-        Icons.lock_open,
-        l10n.kdbxImport,
-        () => _handleKdbxImport(context, ref),
-      ),
-      AddMethodOption(
-        Icons.file_open_outlined,
-        l10n.lastPassImport,
-        () => _handleLastPassImport(context, ref),
-      ),
-      AddMethodOption(
-        Icons.file_open_outlined,
-        l10n.twoFasImport,
-        () => _handleTwoFasImport(context, ref),
-      ),
-      AddMethodOption(
-        Icons.file_open_outlined,
-        l10n.authproImport,
-        () => _handleAuthproImport(context, ref),
-      ),
-      AddMethodOption(
-        Icons.list_alt,
-        l10n.exportUriList,
-        () => _handleUriExport(context, ref),
-      ),
-      AddMethodOption(
-        Icons.html,
-        l10n.exportHtml,
-        () => _handleHtmlExport(context, ref),
-      ),
-    ];
-
+    };
     return Scaffold(
-      appBar: CustomAppBar(title: l10n.add),
-      body: GridView.builder(
-        physics: const BouncingScrollPhysics(
-          parent: AlwaysScrollableScrollPhysics(),
+      appBar: CustomAppBar(title: title),
+      body: SafeArea(
+        top: false,
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 720),
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                for (final group in {
+                  for (final option in options) option.group,
+                }) ...[
+                  AppGlassGroup(
+                    header: Text(switch ((page, group)) {
+                      (AccountActionPage.add, 0) => l10n.addMethods,
+                      (AccountActionPage.add, _) => l10n.settingsHelp,
+                      (AccountActionPage.backupHub, 0) => l10n.appBackupGroup,
+                      (AccountActionPage.backupHub, _) => l10n.settingsData,
+                      (AccountActionPage.importFile, 0) => l10n.appBackupGroup,
+                      (AccountActionPage.importFile, 1) => l10n.uriFormats,
+                      (AccountActionPage.importFile, _) => l10n.otherSources,
+                      (AccountActionPage.exportFile, 0) => l10n.appBackupGroup,
+                      (AccountActionPage.exportFile, _) => l10n.plainExports,
+                    }),
+                    children: [
+                      for (final option in options.where(
+                        (item) => item.group == group,
+                      ))
+                        GlassListTile(
+                          leading: Icon(
+                            option.icon,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          title: Text(option.label),
+                          titleStyle: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer,
+                              ),
+                          onTap: busy ? null : option.onTap,
+                        ),
+                      if (page == AccountActionPage.backupHub && group == 1)
+                        SwitchListTile(
+                          title: Text(l10n.backupReminders),
+                          value:
+                              ref
+                                  .watch(settingsProvider)
+                                  .value?[backupRemindersKey] ??
+                              true,
+                          onChanged:
+                              ref.watch(settingsOperationsProvider).isLoading
+                              ? null
+                              : (value) => ref
+                                    .read(settingsOperationsProvider.notifier)
+                                    .update(backupRemindersKey, value),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ],
+            ),
+          ),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 700,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          mainAxisExtent: 90,
-        ),
-        itemCount: options.length,
-        itemBuilder: (BuildContext context, int index) {
-          final AddMethodOption option = options[index];
-          return AddMethodTile(
-            option.icon,
-            option.label,
-            busy ? null : option.onTap,
-          );
-        },
       ),
     );
   }
@@ -1160,71 +1284,6 @@ class AddAccountScreen extends ConsumerWidget {
       AppLocalizations.of(context)!.platformNotSupported,
     );
   }
-}
-
-/// 添加方式的列表项组件。
-class AddMethodTile extends StatelessWidget {
-  /// 创建一个添加方式的列表项。
-  /// [icon] 图标。
-  /// [label] 文字。
-  /// [onTap] 点击回调。
-  const AddMethodTile(this.icon, this.label, this.onTap, {super.key});
-
-  /// 图标数据
-  final IconData icon;
-
-  /// 标签文字
-  final String label;
-
-  /// 点击回调
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) => GestureDetector(
-    onTap: onTap,
-    child: Container(
-      padding: const EdgeInsets.all(16),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer,
-        borderRadius: const BorderRadius.all(Radius.circular(24)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            height: 48,
-            width: 48,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
-              borderRadius: const BorderRadius.all(Radius.circular(12)),
-            ),
-            child: Icon(
-              icon,
-              size: 24,
-              color: Theme.of(context).colorScheme.onPrimary,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              label,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                height: 0,
-                fontSize: 18,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-        ],
-      ),
-    ),
-  );
 }
 
 class _BackupPasswordDialog extends HookWidget {

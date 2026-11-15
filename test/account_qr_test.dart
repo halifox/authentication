@@ -198,6 +198,7 @@ void main() {
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('account_qr')), findsNothing);
+    await tester.ensureVisible(find.text('Show saved account QR code'));
     await tester.tap(find.text('Show saved account QR code'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('OK'));

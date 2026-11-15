@@ -14,7 +14,10 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 
 class AppRoutes {
   static const home = '/';
+  static const backupHub = '/backup';
   static const add = '/add';
+  static const importFile = '/add/import';
+  static const exportFile = '/settings/export';
   static const settings = '/settings';
   static const categories = '/categories';
   static const form = '/form';
@@ -57,13 +60,24 @@ Route<void> externalAccountRoute(String name) {
         : TokenFormScreen(
             initialEntry: parsedAccount,
             expectedPinLength: pinLength,
+            returnToOrigin: true,
           ),
   );
 }
 
 Route<dynamic> onGenerateRoute(RouteSettings settings) {
   final Widget screen = switch (settings.name) {
+    AppRoutes.home => const TokenListScreen(),
     AppRoutes.add => const AddAccountScreen(),
+    AppRoutes.backupHub => const AddAccountScreen(
+      page: AccountActionPage.backupHub,
+    ),
+    AppRoutes.importFile => const AddAccountScreen(
+      page: AccountActionPage.importFile,
+    ),
+    AppRoutes.exportFile => const AddAccountScreen(
+      page: AccountActionPage.exportFile,
+    ),
     AppRoutes.settings => const SettingsScreen(),
     AppRoutes.categories => const CategoriesScreen(),
     AppRoutes.form => TokenFormScreen(
@@ -76,7 +90,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     AppRoutes.about => const AboutScreen(),
     AppRoutes.automaticBackup => const AutomaticBackupScreen(),
     AppRoutes.password => const PasswordScreen(),
-    _ => const TokenListScreen(),
+    _ => const _UnavailableRouteScreen(),
   };
   if (settings.name == AppRoutes.icons) {
     return MaterialPageRoute<String>(
@@ -90,5 +104,50 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
       builder: (_) => screen,
     );
   }
-  return MaterialPageRoute<void>(settings: settings, builder: (_) => screen);
+  final safeSettings = screen is _UnavailableRouteScreen
+      ? const RouteSettings(name: '/unavailable')
+      : settings;
+  return MaterialPageRoute<void>(
+    settings: safeSettings,
+    builder: (_) => screen,
+  );
+}
+
+class _UnavailableRouteScreen extends StatelessWidget {
+  const _UnavailableRouteScreen();
+
+  static void _leave(BuildContext context) {
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+    } else {
+      navigator.pushReplacementNamed(AppRoutes.home);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Scaffold(
+      appBar: CustomAppBar(title: l10n.tip, leftOnPressed: _leave),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(l10n.pageUnavailable, textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: () => _leave(context),
+                child: Text(
+                  MaterialLocalizations.of(context).backButtonTooltip,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

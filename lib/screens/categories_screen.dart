@@ -4,6 +4,7 @@ import 'package:authentication/otp/category_provider.dart';
 import 'package:authentication/otp/otp_provider.dart';
 import 'package:authentication/widgets/category_selection.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
+import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -49,6 +50,7 @@ class CategoriesScreen extends ConsumerWidget {
       appBar: CustomAppBar(
         title: l10n.categories,
         rightIcon: Icons.add,
+        rightTooltip: l10n.add,
         rightOnPressed: busy ? null : (_) => edit(),
       ),
       body: categories.when(
@@ -74,11 +76,8 @@ class CategoriesScreen extends ConsumerWidget {
               return Padding(
                 key: ValueKey(category.id),
                 padding: const EdgeInsets.only(bottom: 16),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(24),
-                  ),
+                child: AppGlassCard(
+                  padding: EdgeInsets.zero,
                   child: ListTile(
                     title: Text(
                       category.name,

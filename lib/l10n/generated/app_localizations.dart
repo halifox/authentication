@@ -1575,7 +1575,7 @@ abstract class AppLocalizations {
   /// No description provided for @guideBackupBody.
   ///
   /// In en, this message translates to:
-  /// **'Export a password-protected backup and store it safely. Test recovery before replacing your device. Unencrypted exports and QR codes reveal account secrets.'**
+  /// **'Open Settings, then Backup & restore, and export a password-protected backup. Store it safely and test recovery before replacing your device. Unencrypted exports and QR codes reveal account secrets.'**
   String get guideBackupBody;
 
   /// No description provided for @guideMigrationTitle.
@@ -1859,6 +1859,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Removing the password allows this device to open the app without it. Continue?'**
   String get passwordRemoveWarning;
+
+  /// No description provided for @backupHubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup & restore'**
+  String get backupHubTitle;
+
+  /// No description provided for @restoreAppBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore app backup'**
+  String get restoreAppBackup;
+
+  /// No description provided for @exportAppBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Export app backup'**
+  String get exportAppBackup;
+
+  /// No description provided for @settingsCodes.
+  ///
+  /// In en, this message translates to:
+  /// **'Codes'**
+  String get settingsCodes;
+
+  /// No description provided for @settingsAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settingsAppearance;
+
+  /// No description provided for @settingsData.
+  ///
+  /// In en, this message translates to:
+  /// **'Data'**
+  String get settingsData;
+
+  /// No description provided for @settingsSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get settingsSecurity;
+
+  /// No description provided for @settingsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get settingsHelp;
+
+  /// No description provided for @importOtherFormats.
+  ///
+  /// In en, this message translates to:
+  /// **'Import other formats'**
+  String get importOtherFormats;
+
+  /// No description provided for @exportOtherFormats.
+  ///
+  /// In en, this message translates to:
+  /// **'All export formats'**
+  String get exportOtherFormats;
+
+  /// No description provided for @accountActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Account actions'**
+  String get accountActions;
+
+  /// No description provided for @pageUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This page is unavailable.'**
+  String get pageUnavailable;
+
+  /// No description provided for @addMethods.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an account'**
+  String get addMethods;
+
+  /// No description provided for @appBackupGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'App backup'**
+  String get appBackupGroup;
+
+  /// No description provided for @uriFormats.
+  ///
+  /// In en, this message translates to:
+  /// **'URI files'**
+  String get uriFormats;
+
+  /// No description provided for @otherSources.
+  ///
+  /// In en, this message translates to:
+  /// **'Other sources'**
+  String get otherSources;
+
+  /// No description provided for @plainExports.
+  ///
+  /// In en, this message translates to:
+  /// **'Unencrypted formats'**
+  String get plainExports;
+
+  /// No description provided for @scannerUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera unavailable. Check camera permission and try again.'**
+  String get scannerUnavailable;
+
+  /// No description provided for @torchOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn flashlight on'**
+  String get torchOn;
+
+  /// No description provided for @torchOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn flashlight off'**
+  String get torchOff;
+
+  /// No description provided for @torchUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Flashlight unavailable.'**
+  String get torchUnavailable;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @reviewExternalAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Review external account'**
+  String get reviewExternalAccount;
+
+  /// No description provided for @editAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit account'**
+  String get editAccount;
+
+  /// No description provided for @addAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Add account'**
+  String get addAccount;
 }
 
 class _AppLocalizationsDelegate

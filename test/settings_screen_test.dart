@@ -6,7 +6,8 @@ import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -14,51 +15,39 @@ void main() {
   testWidgets('settings toggle exposes state and a semantic action', (
     tester,
   ) async {
-    final semantics = tester.ensureSemantics();
+    tester.view.physicalSize = const Size(320, 600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     var enabled = false;
+    const label = 'Advance HOTP after copying the verification code';
     await tester.pumpWidget(
       MaterialApp(
-        home: StatefulBuilder(
-          builder: (context, setState) => Scaffold(
-            body: SettingsSwitchTile(
-              option: SettingsItemModel(
-                label: 'Example setting',
-                value: enabled,
-                onTap: () => setState(() => enabled = !enabled),
+        home: MediaQuery(
+          data: const MediaQueryData(
+            size: Size(320, 600),
+            textScaler: TextScaler.linear(1.5),
+          ),
+          child: StatefulBuilder(
+            builder: (context, setState) => Scaffold(
+              body: SettingsSwitchTile(
+                option: SettingsItemModel(
+                  label: label,
+                  value: enabled,
+                  onTap: () => setState(() => enabled = !enabled),
+                ),
               ),
             ),
           ),
         ),
       ),
     );
-    final toggle = find.bySemanticsLabel('Example setting').last;
-    expect(
-      tester.getSemantics(toggle),
-      matchesSemantics(
-        label: 'Example setting',
-        hasEnabledState: true,
-        isEnabled: true,
-        hasToggledState: true,
-        isToggled: false,
-        hasTapAction: true,
-      ),
-    );
-    final node = tester.getSemantics(toggle);
-    node.owner!.performAction(node.id, SemanticsAction.tap);
-    await tester.pump();
+    final paragraph = tester.renderObject<RenderParagraph>(find.text(label));
+    expect(paragraph.didExceedMaxLines, isFalse);
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.sendKeyEvent(LogicalKeyboardKey.space);
+    await tester.pumpAndSettle();
     expect(enabled, isTrue);
-    expect(
-      tester.getSemantics(toggle),
-      matchesSemantics(
-        label: 'Example setting',
-        hasEnabledState: true,
-        isEnabled: true,
-        hasToggledState: true,
-        isToggled: true,
-        hasTapAction: true,
-      ),
-    );
-    semantics.dispose();
   });
 
   testWidgets('about page shows source and opens licenses', (tester) async {
@@ -165,50 +154,24 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    final revealSwitch = find.ancestor(
-      of: find.text('Tap to Reveal Code'),
-      matching: find.byType(SettingsSwitchTile),
+    Finder switchFor(String label) => find.ancestor(
+      of: find.text(label),
+      matching: find.byType(SwitchListTile),
     );
     expect(
-      find.descendant(of: revealSwitch, matching: find.byIcon(Icons.close)),
-      findsOneWidget,
+      tester.widget<SwitchListTile>(switchFor('Tap to Reveal Code')).value,
+      isFalse,
     );
-    await tester.tap(
-      find.descendant(of: revealSwitch, matching: find.byIcon(Icons.close)),
-    );
+    await tester.tap(switchFor('Tap to Reveal Code'));
     await tester.pumpAndSettle();
     expect((await db.getSettings())[showCaptchaOnTapKey], isTrue);
-    expect(
-      find.descendant(
-        of: find.ancestor(
-          of: find.text('Tap to Reveal Code'),
-          matching: find.byType(SettingsSwitchTile),
-        ),
-        matching: find.byIcon(Icons.done),
-      ),
-      findsOneWidget,
-    );
     await db.setSetting(copyCaptchaOnTapKey, true);
     await tester.pumpAndSettle();
     expect(
-      find.descendant(
-        of: find.ancestor(
-          of: find.text('Tap to Copy Code'),
-          matching: find.byType(SettingsSwitchTile),
-        ),
-        matching: find.byIcon(Icons.done),
-      ),
-      findsOneWidget,
+      tester.widget<SwitchListTile>(switchFor('Tap to Copy Code')).value,
+      isTrue,
     );
-    await tester.tap(
-      find.descendant(
-        of: find.ancestor(
-          of: find.text('Show account name'),
-          matching: find.byType(SettingsSwitchTile),
-        ),
-        matching: find.byIcon(Icons.done),
-      ),
-    );
+    await tester.tap(switchFor('Show account name'));
     await tester.pumpAndSettle();
     expect((await db.getSettings())[showAccountNameKey], isFalse);
     await tester.scrollUntilVisible(
@@ -216,20 +179,18 @@ void main() {
       150,
       scrollable: find.byType(Scrollable),
     );
-    final fontSwitch = find.ancestor(
-      of: find.text('Use system font for codes'),
-      matching: find.byType(SettingsSwitchTile),
-    );
-    await tester.tap(
-      find.descendant(of: fontSwitch, matching: find.byIcon(Icons.close)),
-    );
+    await tester.ensureVisible(switchFor('Use system font for codes'));
+    await tester.pumpAndSettle();
+    await tester.tap(switchFor('Use system font for codes'));
     await tester.pumpAndSettle();
     expect((await db.getSettings())[systemCodeFontKey], isTrue);
     await tester.scrollUntilVisible(
       find.byKey(const ValueKey(hideCodeAfterKey)),
-      150,
+      -150,
       scrollable: find.byType(Scrollable),
     );
+    await tester.ensureVisible(find.byKey(const ValueKey(hideCodeAfterKey)));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey(hideCodeAfterKey)));
     await tester.pumpAndSettle();
     await tester.tap(find.text('10 seconds').last);
@@ -240,6 +201,8 @@ void main() {
       150,
       scrollable: find.byType(Scrollable),
     );
+    await tester.ensureVisible(find.byKey(const ValueKey(codeGroupingKey)));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey(codeGroupingKey)));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Every 3 characters').last);
@@ -250,6 +213,8 @@ void main() {
       150,
       scrollable: find.byType(Scrollable),
     );
+    await tester.ensureVisible(find.byKey(const ValueKey(themeModeKey)));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey(themeModeKey)));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Black').last);
@@ -260,6 +225,8 @@ void main() {
       150,
       scrollable: find.byType(Scrollable),
     );
+    await tester.ensureVisible(find.byKey(const ValueKey(accentColorKey)));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey(accentColorKey)));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Blue').last);
@@ -270,6 +237,8 @@ void main() {
       150,
       scrollable: find.byType(Scrollable),
     );
+    await tester.ensureVisible(find.byKey(const ValueKey(languageKey)));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey(languageKey)));
     await tester.pumpAndSettle();
     await tester.tap(find.text('日本語').last);

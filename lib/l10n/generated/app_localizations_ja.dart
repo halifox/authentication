@@ -832,7 +832,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get guideBackupBody =>
-      'Export a password-protected backup and store it safely. Test recovery before replacing your device. Unencrypted exports and QR codes reveal account secrets.';
+      'Open Settings, then Backup & restore, and export a password-protected backup. Store it safely and test recovery before replacing your device. Unencrypted exports and QR codes reveal account secrets.';
 
   @override
   String get guideMigrationTitle => 'Move existing accounts';
@@ -993,4 +993,80 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get passwordRemoveWarning =>
       'Removing the password allows this device to open the app without it. Continue?';
+
+  @override
+  String get backupHubTitle => 'Backup & restore';
+
+  @override
+  String get restoreAppBackup => 'Restore app backup';
+
+  @override
+  String get exportAppBackup => 'Export app backup';
+
+  @override
+  String get settingsCodes => 'Codes';
+
+  @override
+  String get settingsAppearance => 'Appearance';
+
+  @override
+  String get settingsData => 'Data';
+
+  @override
+  String get settingsSecurity => 'Security';
+
+  @override
+  String get settingsHelp => 'Help';
+
+  @override
+  String get importOtherFormats => 'Import other formats';
+
+  @override
+  String get exportOtherFormats => 'All export formats';
+
+  @override
+  String get accountActions => 'Account actions';
+
+  @override
+  String get pageUnavailable => 'This page is unavailable.';
+
+  @override
+  String get addMethods => 'Add an account';
+
+  @override
+  String get appBackupGroup => 'App backup';
+
+  @override
+  String get uriFormats => 'URI files';
+
+  @override
+  String get otherSources => 'Other sources';
+
+  @override
+  String get plainExports => 'Unencrypted formats';
+
+  @override
+  String get scannerUnavailable =>
+      'Camera unavailable. Check camera permission and try again.';
+
+  @override
+  String get torchOn => 'Turn flashlight on';
+
+  @override
+  String get torchOff => 'Turn flashlight off';
+
+  @override
+  String get torchUnavailable => 'Flashlight unavailable.';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get reviewExternalAccount => 'Review external account';
+
+  @override
+  String get editAccount => 'Edit account';
+
+  @override
+  String get addAccount => 'Add account';
 }
