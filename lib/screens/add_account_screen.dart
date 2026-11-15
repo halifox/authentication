@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:authentication/actions/qr_actions.dart';
-
 import 'package:authentication/backup/authpro_import.dart';
 import 'package:authentication/backup/backup.dart';
 import 'package:authentication/backup/backup_provider.dart';
@@ -24,6 +23,7 @@ import 'package:authentication/screens/auth_error_localization.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/widgets/action_result_sheet.dart';
+import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/cupertino.dart';
@@ -59,8 +59,13 @@ enum AccountActionPage { add, backupHub, importFile, exportFile }
 
 class AddAccountScreen extends ConsumerWidget {
   /// 创建添加账号页面。
-  const AddAccountScreen({super.key, this.page = AccountActionPage.add});
+  const AddAccountScreen({
+    super.key,
+    this.page = AccountActionPage.add,
+    this.root = false,
+  });
   final AccountActionPage page;
+  final bool root;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -258,16 +263,19 @@ class AddAccountScreen extends ConsumerWidget {
         ],
       ),
     };
-    return Scaffold(
-      appBar: CustomAppBar(title: title),
+    return AppScaffold(
+      largeTitle: true,
+      appBar: CustomAppBar(
+        title: title,
+        leftIcon: root ? null : Icons.arrow_back,
+      ),
       body: SafeArea(
         top: false,
         child: Align(
           alignment: Alignment.topCenter,
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 720),
-            child: ListView(
-              padding: const EdgeInsets.all(16),
+            child: AppPageList(
               children: [
                 for (final group in {
                   for (final option in options) option.group,
@@ -296,15 +304,14 @@ class AddAccountScreen extends ConsumerWidget {
                           title: Text(option.label),
                           titleStyle: Theme.of(context).textTheme.bodyLarge
                               ?.copyWith(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimaryContainer,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
+                          trailing: GlassListTile.chevron,
                           onTap: busy ? null : option.onTap,
                         ),
                       if (page == AccountActionPage.backupHub && group == 1)
-                        SwitchListTile(
-                          title: Text(l10n.backupReminders),
+                        AppSwitchTile(
+                          label: l10n.backupReminders,
                           value:
                               ref
                                   .watch(settingsProvider)
@@ -1312,9 +1319,8 @@ class _BackupPasswordDialog extends HookWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (canUseAppPassword)
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(l10n.backupUseAppPassword),
+              AppSwitchTile(
+                label: l10n.backupUseAppPassword,
                 subtitle: Text(l10n.backupUseAppPasswordHint),
                 value: useAppPassword.value,
                 onChanged: (value) {

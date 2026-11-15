@@ -69,7 +69,7 @@ void main() {
       expect(find.textContaining('private error'), findsNothing);
       await tester.tap(find.text('Try again'));
       await tester.pumpAndSettle();
-      expect(find.text('Authentication'), findsOneWidget);
+      expect(find.text('Accounts'), findsWidgets);
       expect(calls, 2);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);

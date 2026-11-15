@@ -1,5 +1,8 @@
 {
   "@@locale": "en",
+  "accountsTab": "Accounts",
+  "accountLoadFailed": "Accounts could not be loaded.",
+  "backupTab": "Backup",
   "appTitle": "Authentication",
   "add": "Add",
   "scan": "Scan",

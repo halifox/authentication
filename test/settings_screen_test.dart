@@ -4,6 +4,7 @@ import 'package:authentication/screens/settings_screen.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
+import 'package:authentication/widgets/glass_surface.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -156,10 +157,10 @@ void main() {
     await tester.pumpAndSettle();
     Finder switchFor(String label) => find.ancestor(
       of: find.text(label),
-      matching: find.byType(SwitchListTile),
+      matching: find.byType(AppSwitchTile),
     );
     expect(
-      tester.widget<SwitchListTile>(switchFor('Tap to Reveal Code')).value,
+      tester.widget<AppSwitchTile>(switchFor('Tap to Reveal Code')).value,
       isFalse,
     );
     await tester.tap(switchFor('Tap to Reveal Code'));
@@ -168,7 +169,7 @@ void main() {
     await db.setSetting(copyCaptchaOnTapKey, true);
     await tester.pumpAndSettle();
     expect(
-      tester.widget<SwitchListTile>(switchFor('Tap to Copy Code')).value,
+      tester.widget<AppSwitchTile>(switchFor('Tap to Copy Code')).value,
       isTrue,
     );
     await tester.tap(switchFor('Show account name'));

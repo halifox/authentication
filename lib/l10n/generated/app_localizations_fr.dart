@@ -10,6 +10,15 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
+  String get accountsTab => 'Comptes';
+
+  @override
+  String get accountLoadFailed => 'Accounts could not be loaded.';
+
+  @override
+  String get backupTab => 'Sauvegarde';
+
+  @override
   String get appTitle => 'Authentication';
 
   @override

@@ -114,6 +114,24 @@ abstract class AppLocalizations {
     Locale('zh'),
   ];
 
+  /// No description provided for @accountsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Accounts'**
+  String get accountsTab;
+
+  /// No description provided for @accountLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Accounts could not be loaded.'**
+  String get accountLoadFailed;
+
+  /// No description provided for @backupTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup'**
+  String get backupTab;
+
   /// 应用程序主标题，显示在应用栏和应用名称
   ///
   /// In en, this message translates to:

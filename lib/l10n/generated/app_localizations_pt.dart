@@ -10,6 +10,15 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
+  String get accountsTab => 'Contas';
+
+  @override
+  String get accountLoadFailed => 'Accounts could not be loaded.';
+
+  @override
+  String get backupTab => 'Backup';
+
+  @override
   String get appTitle => 'Authentication';
 
   @override

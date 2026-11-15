@@ -100,16 +100,18 @@ class AppPageScrollView extends StatelessWidget {
           ),
           slivers: [
             if (page.controller != null)
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _NavigationClearance(
+                  MediaQuery.paddingOf(context).top + 56,
+                ),
+              ),
+            if (page.controller != null)
               GlassLargeTitle(
                 text: page.title,
                 controller: page.controller!,
                 color: Theme.of(context).colorScheme.onSurface,
-                padding: EdgeInsets.fromLTRB(
-                  inset + 8,
-                  MediaQuery.paddingOf(context).top + 64,
-                  inset + 8,
-                  20,
-                ),
+                padding: EdgeInsets.fromLTRB(inset + 8, 8, inset + 8, 20),
               ),
             SliverPadding(
               padding: EdgeInsets.fromLTRB(inset, 0, inset, 32),
@@ -120,6 +122,27 @@ class AppPageScrollView extends StatelessWidget {
       },
     );
   }
+}
+
+/// Tell scrolling and focus reveal calculations about the floating toolbar.
+class _NavigationClearance extends SliverPersistentHeaderDelegate {
+  const _NavigationClearance(this.extent);
+
+  final double extent;
+
+  @override
+  double get minExtent => extent;
+  @override
+  double get maxExtent => extent;
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) => const SizedBox.expand();
+  @override
+  bool shouldRebuild(_NavigationClearance oldDelegate) =>
+      extent != oldDelegate.extent;
 }
 
 class AppPageList extends StatelessWidget {

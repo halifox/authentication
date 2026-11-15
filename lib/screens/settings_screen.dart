@@ -4,6 +4,7 @@ import 'package:authentication/router/app_router.dart';
 import 'package:authentication/settings/settings.dart';
 import 'package:authentication/settings/settings_provider.dart';
 import 'package:authentication/storage/device_key_store.dart';
+import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:authentication/widgets/glass_surface.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,9 @@ class SettingsItemModel {
 /// 设置页面，用于配置应用的全局偏好（如点击显示验证码、点击复制等）。
 class SettingsScreen extends ConsumerWidget {
   /// 创建设置页面。
-  const SettingsScreen({super.key});
+  const SettingsScreen({super.key, this.root = false});
+
+  final bool root;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -111,8 +114,12 @@ class SettingsScreen extends ConsumerWidget {
         ),
     };
 
-    return Scaffold(
-      appBar: CustomAppBar(title: AppLocalizations.of(context)!.settings),
+    return AppScaffold(
+      largeTitle: true,
+      appBar: CustomAppBar(
+        title: l10n.settings,
+        leftIcon: root ? null : Icons.arrow_back,
+      ),
       body: settings.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => Center(child: Text(l10n.settingsLoadError)),
@@ -120,141 +127,63 @@ class SettingsScreen extends ConsumerWidget {
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (_, _) => Center(child: Text(l10n.settingsLoadError)),
           data: (values) {
-            Widget choice(String settingKey) {
-              return AppGlassCard(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: Tooltip(
-                  message: settingKey == accentColorKey
-                      ? l10n.accentPriority
-                      : '',
-                  child: DropdownButtonFormField<int>(
-                    key: ValueKey(settingKey),
-                    isExpanded: true,
-                    initialValue: values[settingKey],
-                    decoration: InputDecoration(
-                      labelText: switch (settingKey) {
-                        hideCodeAfterKey => l10n.hideCodeAfter,
-                        codeGroupingKey => l10n.codeGrouping,
-                        themeModeKey => l10n.themeChoice,
-                        accentColorKey => l10n.accentChoice,
-                        languageKey => l10n.languageChoice,
-                        _ => l10n.accountView,
-                      },
-                    ),
-                    items: switch (settingKey) {
-                      hideCodeAfterKey => [
-                        DropdownMenuItem(value: 0, child: Text(l10n.never)),
-                        for (final seconds in hideCodeDelayOptions.skip(1))
-                          DropdownMenuItem(
-                            value: seconds,
-                            child: Text(l10n.seconds(seconds)),
-                          ),
-                      ],
-                      codeGroupingKey => [
-                        DropdownMenuItem(value: 0, child: Text(l10n.groupNone)),
-                        for (final n in [2, 3, 4])
-                          DropdownMenuItem(
-                            value: n,
-                            child: Text(l10n.groupEvery(n)),
-                          ),
-                        DropdownMenuItem(
-                          value: 5,
-                          child: Text(l10n.groupHalves),
-                        ),
-                        DropdownMenuItem(
-                          value: 6,
-                          child: Text(l10n.groupThirds),
-                        ),
-                      ],
-                      themeModeKey => [
-                        DropdownMenuItem(
-                          value: 0,
-                          child: Text(l10n.themeSystem),
-                        ),
-                        DropdownMenuItem(
-                          value: 1,
-                          child: Text(l10n.themeLight),
-                        ),
-                        DropdownMenuItem(value: 2, child: Text(l10n.themeDark)),
-                        DropdownMenuItem(
-                          value: 3,
-                          child: Text(l10n.themeBlack),
-                        ),
-                        DropdownMenuItem(
-                          value: 4,
-                          child: Text(l10n.themeSystemBlack),
-                        ),
-                      ],
-                      accentColorKey => [
-                        DropdownMenuItem(
-                          value: 0,
-                          child: Text(l10n.accentDefault),
-                        ),
-                        DropdownMenuItem(value: 1, child: Text(l10n.accentRed)),
-                        DropdownMenuItem(
-                          value: 2,
-                          child: Text(l10n.accentOrange),
-                        ),
-                        DropdownMenuItem(
-                          value: 3,
-                          child: Text(l10n.accentGreen),
-                        ),
-                        DropdownMenuItem(
-                          value: 4,
-                          child: Text(l10n.accentTeal),
-                        ),
-                        DropdownMenuItem(
-                          value: 5,
-                          child: Text(l10n.accentBlue),
-                        ),
-                        DropdownMenuItem(
-                          value: 6,
-                          child: Text(l10n.accentIndigo),
-                        ),
-                        DropdownMenuItem(
-                          value: 7,
-                          child: Text(l10n.accentPink),
-                        ),
-                      ],
-                      languageKey => [
-                        DropdownMenuItem(
-                          value: 0,
-                          child: Text(l10n.languageSystem),
-                        ),
-                        for (var i = 0; i < languageNames.length; i++)
-                          DropdownMenuItem(
-                            value: i + 1,
-                            child: Text(languageNames[i]),
-                          ),
-                      ],
-                      _ => [
-                        DropdownMenuItem(
-                          value: 0,
-                          child: Text(l10n.viewDefault),
-                        ),
-                        DropdownMenuItem(
-                          value: 1,
-                          child: Text(l10n.viewCompact),
-                        ),
-                        DropdownMenuItem(value: 2, child: Text(l10n.viewTiles)),
-                      ],
-                    },
-                    onChanged: busy
-                        ? null
-                        : (value) {
-                            if (value != null) {
-                              ref
-                                  .read(settingsOperationsProvider.notifier)
-                                  .updateInteger(settingKey, value);
-                            }
-                          },
-                  ),
-                ),
-              );
-            }
+            Widget choice(String settingKey) => AppChoiceTile<int>(
+              key: ValueKey(settingKey),
+              label: switch (settingKey) {
+                hideCodeAfterKey => l10n.hideCodeAfter,
+                codeGroupingKey => l10n.codeGrouping,
+                themeModeKey => l10n.themeChoice,
+                accentColorKey => l10n.accentChoice,
+                languageKey => l10n.languageChoice,
+                _ => l10n.accountView,
+              },
+              value: values[settingKey] ?? 0,
+              options: switch (settingKey) {
+                hideCodeAfterKey => {
+                  0: l10n.never,
+                  for (final seconds in hideCodeDelayOptions.skip(1))
+                    seconds: l10n.seconds(seconds),
+                },
+                codeGroupingKey => {
+                  0: l10n.groupNone,
+                  for (final n in [2, 3, 4]) n: l10n.groupEvery(n),
+                  5: l10n.groupHalves,
+                  6: l10n.groupThirds,
+                },
+                themeModeKey => {
+                  0: l10n.themeSystem,
+                  1: l10n.themeLight,
+                  2: l10n.themeDark,
+                  3: l10n.themeBlack,
+                  4: l10n.themeSystemBlack,
+                },
+                accentColorKey => {
+                  0: l10n.accentDefault,
+                  1: l10n.accentRed,
+                  2: l10n.accentOrange,
+                  3: l10n.accentGreen,
+                  4: l10n.accentTeal,
+                  5: l10n.accentBlue,
+                  6: l10n.accentIndigo,
+                  7: l10n.accentPink,
+                },
+                languageKey => {
+                  0: l10n.languageSystem,
+                  for (var i = 0; i < languageNames.length; i++)
+                    i + 1: languageNames[i],
+                },
+                _ => {
+                  0: l10n.viewDefault,
+                  1: l10n.viewCompact,
+                  2: l10n.viewTiles,
+                },
+              },
+              onChanged: busy
+                  ? null
+                  : (value) => ref
+                        .read(settingsOperationsProvider.notifier)
+                        .updateInteger(settingKey, value),
+            );
 
             SettingsItemModel option(String key) => options[key]!;
 
@@ -268,8 +197,7 @@ class SettingsScreen extends ConsumerWidget {
               alignment: Alignment.topCenter,
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 720),
-                child: ListView(
-                  padding: const EdgeInsets.all(16),
+                child: AppPageList(
                   children: [
                     AppGlassGroup(
                       header: Text(l10n.settingsCodes),
@@ -284,12 +212,10 @@ class SettingsScreen extends ConsumerWidget {
                             option: option(key),
                             enabled: !busy,
                           ),
+                        choice(hideCodeAfterKey),
+                        choice(codeGroupingKey),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    choice(hideCodeAfterKey),
-                    const SizedBox(height: 16),
-                    choice(codeGroupingKey),
                     const SizedBox(height: 16),
                     AppGlassGroup(
                       header: Text(l10n.settingsAppearance),
@@ -302,15 +228,16 @@ class SettingsScreen extends ConsumerWidget {
                           option: option(systemCodeFontKey),
                           enabled: !busy,
                         ),
+                        for (final key in [
+                          themeModeKey,
+                          accentColorKey,
+                          languageKey,
+                          accountViewKey,
+                        ])
+                          choice(key),
                       ],
                     ),
                     const SizedBox(height: 16),
-                    for (final key in [
-                      themeModeKey,
-                      accentColorKey,
-                      languageKey,
-                      accountViewKey,
-                    ]) ...[choice(key), const SizedBox(height: 16)],
                     AppGlassGroup(
                       header: Text(l10n.settingsData),
                       children: [
@@ -425,7 +352,7 @@ class PasswordScreen extends HookConsumerWidget {
       );
     }
 
-    return Scaffold(
+    return AppScaffold(
       appBar: CustomAppBar(title: l10n.passwordTitle),
       body: enabled.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -588,7 +515,7 @@ class AutomaticBackupScreen extends HookConsumerWidget {
       AutomaticBackupStatus.configurationFailed => l10n.autoBackupConfigFailed,
       AutomaticBackupStatus.failed => l10n.autoBackupFailed,
     };
-    return Scaffold(
+    return AppScaffold(
       appBar: CustomAppBar(title: l10n.automaticBackup),
       body: Align(
         alignment: Alignment.topCenter,
@@ -718,8 +645,8 @@ class SettingsSwitchTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SwitchListTile.adaptive(
-      title: Text(option.label),
+    return AppSwitchTile(
+      label: option.label,
       value: option.value,
       onChanged: enabled ? (_) => option.onTap() : null,
     );

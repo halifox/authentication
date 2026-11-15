@@ -76,7 +76,7 @@ void main() {
     );
     await db.setSetting(sortLockedKey, false);
     await tester.pumpAndSettle();
-    expect(find.byType(ReorderableListView), findsOneWidget);
+    expect(find.byType(SliverReorderableList), findsOneWidget);
     await db.setSetting(sortLockedKey, true);
     await tester.pumpAndSettle();
     final backup = await encodeBackupAccounts(

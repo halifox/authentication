@@ -1,5 +1,7 @@
 {
   "@@locale": "ko",
+  "accountsTab": "계정",
+  "backupTab": "백업",
   "appTitle": "Authentication",
   "add": "추가",
   "scan": "스캔",

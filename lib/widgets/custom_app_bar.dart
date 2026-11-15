@@ -102,3 +102,48 @@ class AppBarIconButton extends StatelessWidget {
     return tooltip == null ? button : Tooltip(message: tooltip!, child: button);
   }
 }
+
+/// A glass menu anchored to a floating navigation control.
+class AppMenuButton<T> extends StatelessWidget {
+  const AppMenuButton({
+    required this.icon,
+    required this.tooltip,
+    required this.options,
+    required this.onSelected,
+    this.value,
+    super.key,
+  });
+
+  final IconData icon;
+  final String tooltip;
+  final Map<T, String> options;
+  final T? value;
+  final ValueChanged<T>? onSelected;
+
+  @override
+  Widget build(BuildContext context) => AppBarIconButton(
+    icon: icon,
+    tooltip: tooltip,
+    onPressed: onSelected == null
+        ? null
+        : () => showGlassActionSheet<void>(
+            context: context,
+            title: tooltip,
+            quality: appGlassQuality,
+            cancelLabel: MaterialLocalizations.of(context).cancelButtonLabel,
+            actions: [
+              for (final option in options.entries)
+                GlassActionSheetAction(
+                  label: option.value,
+                  icon: Icon(
+                    Icons.check,
+                    color: value == option.key
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.transparent,
+                  ),
+                  onPressed: () => onSelected?.call(option.key),
+                ),
+            ],
+          ),
+  );
+}

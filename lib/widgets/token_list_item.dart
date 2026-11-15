@@ -228,7 +228,7 @@ class _TokenHeader extends ConsumerWidget {
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onPrimaryContainer,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               Text(
@@ -243,7 +243,7 @@ class _TokenHeader extends ConsumerWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onPrimaryContainer.withValues(
+                    color: theme.colorScheme.onSurfaceVariant.withValues(
                       alpha: 0.8,
                     ),
                   ),

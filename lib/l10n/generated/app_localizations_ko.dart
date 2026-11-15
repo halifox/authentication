@@ -10,6 +10,15 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get accountsTab => '계정';
+
+  @override
+  String get accountLoadFailed => 'Accounts could not be loaded.';
+
+  @override
+  String get backupTab => '백업';
+
+  @override
   String get appTitle => 'Authentication';
 
   @override

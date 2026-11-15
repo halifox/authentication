@@ -3,11 +3,11 @@ import 'package:authentication/otp/account.dart';
 import 'package:authentication/screens/add_account_screen.dart';
 import 'package:authentication/screens/categories_screen.dart';
 import 'package:authentication/screens/icon_selection_screen.dart';
+import 'package:authentication/screens/main_navigation_screen.dart';
 import 'package:authentication/screens/migration_guide_screen.dart';
 import 'package:authentication/screens/qr_scanner_screen.dart';
 import 'package:authentication/screens/settings_screen.dart';
 import 'package:authentication/screens/token_form_screen.dart';
-import 'package:authentication/screens/token_list_screen.dart';
 import 'package:authentication/widgets/app_scaffold.dart';
 import 'package:authentication/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +68,7 @@ Route<void> externalAccountRoute(String name) {
 
 Route<dynamic> onGenerateRoute(RouteSettings settings) {
   final Widget screen = switch (settings.name) {
-    AppRoutes.home => const TokenListScreen(),
+    AppRoutes.home => const MainNavigationScreen(),
     AppRoutes.add => const AddAccountScreen(),
     AppRoutes.backupHub => const AddAccountScreen(
       page: AccountActionPage.backupHub,

@@ -10,6 +10,15 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get accountsTab => 'Аккаунты';
+
+  @override
+  String get accountLoadFailed => 'Accounts could not be loaded.';
+
+  @override
+  String get backupTab => 'Копия';
+
+  @override
   String get appTitle => 'Authentication';
 
   @override

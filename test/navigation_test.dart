@@ -134,6 +134,11 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.byTooltip('Account actions'),
+      100,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.byTooltip('Account actions'), findsOneWidget);
     await tester.tap(find.byTooltip('Account actions'));
     await tester.pumpAndSettle();

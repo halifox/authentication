@@ -10,6 +10,7 @@ import 'package:authentication/settings/settings.dart';
 import 'package:authentication/storage/database.dart';
 import 'package:authentication/storage/database_provider.dart';
 import 'package:authentication/storage/encryption.dart';
+import 'package:authentication/widgets/glass_surface.dart';
 import 'package:drift/native.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -73,7 +74,7 @@ void main() {
     await tester.tap(find.text('Export app backup'));
     await tester.pumpAndSettle();
     expect(find.text('Use app password'), findsOneWidget);
-    await tester.tap(find.byType(SwitchListTile));
+    await tester.tap(find.byType(AppSwitchTile));
     await tester.pumpAndSettle();
     expect(find.text('Current password'), findsOneWidget);
     expect(find.textContaining('unencrypted'), findsNothing);
@@ -261,7 +262,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Backup reminders'));
-    await tester.tap(find.byType(SwitchListTile));
+    await tester.tap(find.byType(AppSwitchTile));
     await tester.pumpAndSettle();
     await tester.pumpWidget(
       ProviderScope(

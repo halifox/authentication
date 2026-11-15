@@ -1,5 +1,7 @@
 {
   "@@locale": "ru",
+  "accountsTab": "Аккаунты",
+  "backupTab": "Копия",
   "appTitle": "Authentication",
   "add": "Добавить",
   "scan": "Сканировать",

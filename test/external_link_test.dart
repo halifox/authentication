@@ -151,7 +151,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
-    expect(find.text('Settings'), findsOneWidget);
+    expect(find.text('Settings'), findsWidgets);
     expect((await db.getAllConfigs()).single.account, 'user');
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 10));

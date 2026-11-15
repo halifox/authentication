@@ -1,5 +1,8 @@
 {
   "@@locale": "zh",
+  "accountsTab": "账户",
+  "accountLoadFailed": "无法加载账户。",
+  "backupTab": "备份",
   "appTitle": "Authentication",
   "@appTitle": {
     "description": "应用程序主标题，显示在应用栏和应用名称"

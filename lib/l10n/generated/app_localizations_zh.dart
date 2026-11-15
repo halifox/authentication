@@ -10,6 +10,15 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get accountsTab => '账户';
+
+  @override
+  String get accountLoadFailed => '无法加载账户。';
+
+  @override
+  String get backupTab => '备份';
+
+  @override
   String get appTitle => 'Authentication';
 
   @override

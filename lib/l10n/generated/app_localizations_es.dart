@@ -10,6 +10,15 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
+  String get accountsTab => 'Cuentas';
+
+  @override
+  String get accountLoadFailed => 'Accounts could not be loaded.';
+
+  @override
+  String get backupTab => 'Copia';
+
+  @override
   String get appTitle => 'Authentication';
 
   @override

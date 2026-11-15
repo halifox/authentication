@@ -1,5 +1,7 @@
 {
   "@@locale": "es",
+  "accountsTab": "Cuentas",
+  "backupTab": "Copia",
   "appTitle": "Authentication",
   "add": "Añadir",
   "scan": "Escanear",
