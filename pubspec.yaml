@@ -57,7 +57,7 @@ dev_dependencies:
 
   # Code Generation
   build_runner: ^2.16.2
-  drift_dev: ^2.35.2
+  drift_dev: ^2.35.3
   riverpod_generator: ^4.0.9
 
   # Tools
