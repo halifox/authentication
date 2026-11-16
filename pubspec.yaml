@@ -27,7 +27,7 @@ dependencies:
   go_router: ^18.1.2
 
   # Database & Persistence
-  drift: ^2.35.3
+  drift: ^2.35.4
   drift_flutter: ^0.3.1
   shared_preferences: ^2.5.6
 
